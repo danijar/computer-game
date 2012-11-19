@@ -4,9 +4,9 @@ int main()
 {
 	System World;
 
-	World.Add("settings", new ComponentSettings(), Input);
-	World.Add("window", new ComponentWindow(), Input);
-	World.Add("input", new ComponentInput(), Input);
+	World.Add("settings", new ComponentSettings(), Input );
+	World.Add("window",   new ComponentWindow(),   Input );
+	World.Add("input",    new ComponentInput(),    Input );
 	World.Add("renderer", new ComponentRenderer(), Output);
 
 	World.Init();

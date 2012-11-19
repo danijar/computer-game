@@ -2,11 +2,11 @@
 
 #include "system.h"
 
-#include "window.h"
-#include "settings.h"
-
 #include <SFML/Window.hpp>
 using namespace sf;
+
+#include "window.h"
+#include "settings.h"
 
 
 class ComponentWindow : public Component
@@ -27,10 +27,22 @@ class ComponentWindow : public Component
 			sf::Event evt;
 			while (wnd->pollEvent(evt))
 			{
-				if      (evt.type == Event::KeyPressed)  { Event->Fire("InputKeyPressed", &evt.key.code); }
-				else if (evt.type == Event::KeyReleased) { Event->Fire("InputKeyReleased", &evt.key.code); }
-				else if (evt.type == Event::Closed)      { Close(); }
-				else if (evt.type == Event::Resized)     { Event->Fire("WindowResize", &evt.size); }
+				switch(evt.type)
+				{
+				case Event::KeyPressed:
+					Event->Fire("InputKeyPressed", &evt.key.code);
+					break;
+				case Event::KeyReleased:
+					Event->Fire("InputKeyReleased", &evt.key.code);
+					break;
+				case Event::Closed:
+					Close();
+					break;
+				case Event::Resized:
+					Storage->Get<StorageSettings>("settings")->Size = Vector2i(evt.size.width, evt.size.height);
+					Event->Fire("WindowResize", &evt.size);
+					break;
+				}
 			}
 		}
 	}
@@ -47,9 +59,12 @@ class ComponentWindow : public Component
 	void Create()
 	{
 		Storage->Add<StorageWindow>("window");
+		auto stg = Storage->Get<StorageSettings>("settings");
 
-		auto fls = Storage->Get<StorageSettings>("settings")->Fullscreen;
-		Mode(fls);
+		VideoMode mde = VideoMode::getDesktopMode();
+
+		stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
+		Mode(stg->Fullscreen);
 	}
 
 	void Mode()
@@ -76,12 +91,13 @@ class ComponentWindow : public Component
 
 		if(State)
 		{
+			stg->Position = wnd->getPosition();
 			wnd->create(VideoMode(mde.width, mde.height), stg->Title, Style::Fullscreen, cts);
 		}
 		else
 		{
-			wnd->create(VideoMode(stg->Width, stg->Height), stg->Title, Style::Default, cts);
-			wnd->setPosition(Vector2i(mde.width / 2 - stg->Width / 2, mde.height / 2 - stg->Height / 2));
+			wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
+			wnd->setPosition(stg->Position);
 		}
 	}
 

@@ -1,11 +1,10 @@
 #pragma once
 
+#include "system.h"
+
 #include <iostream>
 using namespace std;
 
-#include "system.h"
-
-#include "example.h"
 #include "settings.h"
 #include "window.h"
 

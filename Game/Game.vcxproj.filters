@@ -27,9 +27,6 @@
     <ClInclude Include="system.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="example.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
     <ClInclude Include="window.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
@@ -43,9 +40,6 @@
     </ClCompile>
     <ClCompile Include="system.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="example.cpp">
-      <Filter>Quelldateien\components</Filter>
     </ClCompile>
     <ClCompile Include="window.cpp">
       <Filter>Quelldateien\components</Filter>
