@@ -4,11 +4,13 @@
 
 #include "window.h"
 
+#define GLEW_STATIC
+#include <GLEW/glew.h>
 #include <SFML/Window.hpp>
 #include <SFML/OpenGL.hpp>
 using namespace sf;
-// include GLEW
 // maybe include GLM
+
 
 class ComponentRenderer : public Component
 {
@@ -16,9 +18,12 @@ class ComponentRenderer : public Component
 	void Init()
 	{
 		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		(*wnd).setVerticalSyncEnabled(true);
+		wnd->setVerticalSyncEnabled(true);
 
-		// init GLEW
+		glewExperimental = GL_TRUE;
+		glewInit();
+
+		Listeners();
 	}
 
 	void Update()
@@ -33,10 +38,16 @@ class ComponentRenderer : public Component
 
 		// swap buffers
 		Storage->Get<StorageWindow>("window")->Window.display();
-		//auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		//(*wnd).display();
 
 		//glEnd();
+	}
+
+	void Listeners()
+	{
+		Event->ListenData("WindowResize", [=](void* Size){
+			auto sze = *(Event::SizeEvent*)Size;
+			glViewport(0, 0, sze.width, sze.height);
+		});
 	}
 
 };

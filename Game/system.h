@@ -89,7 +89,6 @@ private:
 
 struct ManagerTool
 {
-	// fps counter
 	// file access
 	// time
 	// timer

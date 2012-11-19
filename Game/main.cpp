@@ -14,5 +14,5 @@ int main()
 	string Message = World.UpdateWhile();
 	cout << "System exited with message: " << Message << endl;
 
-	cin.get();
+	// cin.get();
 }
