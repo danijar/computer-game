@@ -12,7 +12,7 @@ class ComponentSettings : public Component
 		auto stg = Storage->Add<StorageSettings>("settings");
 		stg->Fullscreen = false;
 		stg->Size       = Vector2<int>(800, 600);
-		stg->Title      = "Application Title";
+		stg->Title      = "Graphics Application";
 	}
 
 	void Update()
