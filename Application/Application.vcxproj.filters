@@ -53,5 +53,8 @@
     <ClInclude Include="window.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
+    <ClInclude Include="buffers.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

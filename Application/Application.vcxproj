@@ -22,6 +22,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="system.h" />
+    <ClInclude Include="buffers.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

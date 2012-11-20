@@ -7,10 +7,12 @@ using namespace std;
 #include <SFML/System/Vector2.hpp>
 using namespace sf;
 
+
 struct StorageSettings : public Storage
 {
 	bool Fullscreen;
 	Vector2i Position;
 	Vector2i Size;
+	float AspectRatio() { return (float)Size.x / (float)Size.y; }
 	string Title;
 };
