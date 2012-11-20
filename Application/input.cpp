@@ -11,6 +11,16 @@ class ComponentInput : public Component
 
 	void Init()
 	{
+		Listeners();
+	}
+
+	void Update()
+	{
+
+	}
+
+	void Listeners()
+	{
 		Event->ListenData("InputKeyboard", [=](void* Code){
 			auto cde = *(Keyboard::Key*)Code;
 
@@ -18,11 +28,16 @@ class ComponentInput : public Component
 			//if(Keyboard::Key::Escape == cde){ }
 			//else if ...
 		});
-	}
 
-	void Update()
-	{
-		//sleep(milliseconds(2000));
+		Event->ListenData("InputKeyReleased", [=](void* Code){
+			auto cde = *(Keyboard::Key*)Code;
+			switch(cde)
+			{
+			case Keyboard::Key::Space:
+				this->Event->Fire("InputBindJump");
+				break;
+			}
+		});
 	}
 
 };

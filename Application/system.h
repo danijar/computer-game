@@ -5,6 +5,9 @@
 #include <unordered_map>
 #include <functional> 
 #include <memory>
+#ifdef _DEBUG
+#include <iostream>
+#endif
 
 using namespace std;
 
@@ -85,17 +88,6 @@ private:
 
 
 
-// manager tool
-
-struct ManagerTool
-{
-	// file access
-	// time
-	// timer
-};
-
-
-
 // manager component
 
 class Component
@@ -104,13 +96,11 @@ public:
 	virtual void Init(){}
 	void SetStorage(ManagerStorage* Storage);
 	void SetEvent(ManagerEvent* Event);
-	void SetTool(ManagerTool* Tool);
 	void SetMessage(string* Message);
 	virtual void Update() = 0;
 protected:
 	ManagerStorage* Storage;
 	ManagerEvent* Event;
-	ManagerTool* Tool;
 	void Exit(string Message);
 private:
 	string* Message;
@@ -125,7 +115,7 @@ public:
 	ManagerComponent(string* Message);
 	void Add(string Name, Component* Component, ComponentType Type = Calculation);
 	void Remove(string Name);
-	void Init(ManagerStorage* Storage, ManagerEvent* Event, ManagerTool* Tool, string* Message);
+	void Init(ManagerStorage* Storage, ManagerEvent* Event, string* Message);
 	void Update();
 private:
 	ListComponent List;
@@ -151,6 +141,5 @@ public:
 private:
 	ManagerComponent* Components;
 	ManagerEvent* Events;
-	ManagerTool* Tools;
 	string Message;
 };

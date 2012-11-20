@@ -99,6 +99,8 @@ class ComponentWindow : public Component
 			wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
 			wnd->setPosition(stg->Position);
 		}
+
+		Event->Fire("WindowCreated", &State);
 	}
 
 	void Close()

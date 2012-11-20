@@ -34,6 +34,10 @@ void ManagerEvent::Fire(string Name, int State, void* Data)
 	Key Key(Name, State);
 	Value Functions = List[Key];
 	for (auto i = Functions.begin(); i != Functions.end(); i++) i->Call(Data);
+
+	#ifdef _DEBUG
+	cout << "Event " << Name; if(State) cout << "(" << State << ")"; cout << endl;
+	#endif
 }
 void ManagerEvent::FireRange(string Name, int From, int To)
 {
@@ -61,10 +65,6 @@ void Component::SetStorage(ManagerStorage* Storage)
 void Component::SetEvent(ManagerEvent* Event)
 {
 	this->Event = Event;
-}
-void Component::SetTool(ManagerTool* Tool)
-{
-	this->Tool = Tool;
 }
 void Component::SetMessage(string* Message)
 {
@@ -94,7 +94,7 @@ void ManagerComponent::Remove(string Name)
 		}
 	}
 }
-void ManagerComponent::Init(ManagerStorage* Storage, ManagerEvent* Event, ManagerTool* Tool, string* Message)
+void ManagerComponent::Init(ManagerStorage* Storage, ManagerEvent* Event, string* Message)
 {
 	ComponentType Types[] = { Input, Calculation, Output };
 	for(int i = 0; i < sizeof(Types) / sizeof(Types[0]); i++) {
@@ -102,7 +102,6 @@ void ManagerComponent::Init(ManagerStorage* Storage, ManagerEvent* Event, Manage
 		for (auto i = List.begin(); i != List.end(); i++) {
 			i->second->SetStorage(Storage);
 			i->second->SetEvent(Event);
-			i->second->SetTool(Tool);
 			i->second->SetMessage(Message);
 			i->second->Init();
 		}
@@ -121,12 +120,6 @@ void ManagerComponent::Update()
 
 
 
-// manager tool
-
-//...
-
-
-
 // system
 
 System::System()
@@ -135,7 +128,6 @@ System::System()
 	Components = new ManagerComponent(&Message);
 	Events = new ManagerEvent();
 	Storages = new ManagerStorage();
-	Tools = new ManagerTool();
 }
 void System::Add(string Name, Component* Component, ComponentType Type)
 {
@@ -147,7 +139,7 @@ void System::Remove(string Name)
 }
 void System::Init()
 {
-	Components->Init(Storages, Events, Tools, &Message);
+	Components->Init(Storages, Events, &Message);
 }
 bool System::Update()
 {

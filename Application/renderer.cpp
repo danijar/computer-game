@@ -47,37 +47,31 @@ class ComponentRenderer : public Component
 		ProgramActivate(ShaderProgram);
 
 		Listeners();
+
+		// testing
+		jumping = false;
 	}
 
 	void Update()
 	{
+		auto bfs = Storage->Get<StorageBuffers>("buffers");
+		auto stg = Storage->Get<StorageSettings>("settings");
+
 		// clear
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*/ testing
-		glBegin(GL_TRIANGLES);
-		glColor3f(1.f, 1.f, .4f);
-		glVertex2f(.2f, .3f);
-		glVertex2f(.4f, .5f);
-		glVertex2f(.2f, .6f);
-		glEnd();
-		//*/
-
-		auto bfs = Storage->Get<StorageBuffers>("buffers");
-		auto stg = Storage->Get<StorageSettings>("settings");
-
 		// vertices
 		const float Vertices[] = {
-			-1.0, -1.0,  1.0,  1.0, 0.0, 0.0,  0.8,
-			 1.0, -1.0,  1.0,  0.0, 1.0, 0.0,  0.8,
-			 1.0,  1.0,  1.0,  0.0, 0.0, 1.0,  0.8,
-			-1.0,  1.0,  1.0,  1.0, 1.0, 1.0,  0.8,
- 
-			-1.0, -1.0, -1.0,  0.0, 0.0, 1.0,  0.8,
-			 1.0, -1.0, -1.0,  1.0, 1.0, 1.0,  0.8,
-			 1.0,  1.0, -1.0,  1.0, 0.0, 0.0,  0.8,
-			-1.0,  1.0, -1.0,  0.0, 1.0, 0.0,  0.8,
+  			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
+			 1.f, -1.f,  1.f,  0.f,  1.f,  0.f,  .8f,
+			 1.f,  1.f,  1.f,  0.f,  0.f,  1.f,  .8f,
+			-1.f,  1.f,  1.f,  1.f,  1.f,  1.f,  .8f,
+   
+			-1.f, -1.f, -1.f,  0.f,  0.f,  1.f,  .8f,
+			 1.f, -1.f, -1.f,  1.f,  1.f,  1.f,  .8f,
+			 1.f,  1.f, -1.f,  1.f,  0.f,  0.f,  .8f,
+			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
 		};
 		glBindBuffer(GL_ARRAY_BUFFER, bfs->VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
@@ -105,6 +99,11 @@ class ComponentRenderer : public Component
 		float sc = .3f;
 		ModelMatrix = scale(ModelMatrix, vec3(sc, sc, sc));
 		//ModelMatrix = rotate(ModelMatrix, time * 360.0f, vec3(0, 0, 1));
+		if(jumping){
+			float jumpposition = glm::sin((float)jumptime.getElapsedTime().asSeconds() * 10);
+			if(jumpposition < 0) jumping = false;
+			else ModelMatrix = translate(ModelMatrix, vec3(0, 0, jumpposition));
+		}
 		GLint ModelUniform = glGetUniformLocation(ShaderProgram, "model");
 		glUniformMatrix4fv(ModelUniform, 1, GL_FALSE, value_ptr(ModelMatrix));
 		// view matrix
@@ -123,21 +122,31 @@ class ComponentRenderer : public Component
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
 		// swap buffers
-		(&Storage->Get<StorageWindow>("window")->Window)->display();
+		Storage->Get<StorageWindow>("window")->Window.display();
 	}
 
 	GLuint ShaderProgram;
 
+	bool jumping;
+	Clock jumptime;
+
 	void Listeners()
 	{
+		Event->Listen("WindowCreated", [=]{
+			ProgramActivate(ShaderProgram);
+		});
+
 		Event->ListenData("WindowResize", [=](void* Size){
 			auto sze = *(Event::SizeEvent*)Size;
 			glViewport(0, 0, sze.width, sze.height);
 		});
 
-		Event->ListenData("InputKeyReleased", [=](void* Code){
-			auto cde = *(Keyboard::Key*)Code;
-			if(Keyboard::Key::Space == cde) /* jump */;
+		Event->Listen("InputBindJump", [=]{
+			if(!jumping)
+			{
+				jumping = true;
+				jumptime.restart();
+			}
 		});
 	}
 
@@ -201,7 +210,7 @@ class ComponentRenderer : public Component
 
 		// load
 		Stream.seekg(0, ios::end);   
-		Source.reserve(Stream.tellg());
+		Source.reserve(static_cast<unsigned int>(Stream.tellg()));
 		Stream.seekg(0, ios::beg);
 		Source.assign((istreambuf_iterator<char>(Stream)), istreambuf_iterator<char>());
 
