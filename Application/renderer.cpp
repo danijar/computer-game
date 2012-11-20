@@ -2,7 +2,6 @@
 
 #include "system.h"
 
-#define GLEW_STATIC
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>

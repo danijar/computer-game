@@ -13,26 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Quelldateien\components">
-      <UniqueIdentifier>{f410b7f2-e81e-4bc4-97ea-781efbfd6f11}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Headerdateien\storages">
-      <UniqueIdentifier>{42925303-e43c-4f51-9f0e-ca76a68d39af}</UniqueIdentifier>
+      <UniqueIdentifier>{44a469fa-0e4a-4925-96ee-3521aee36e49}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="window.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
+    <Filter Include="Quelldateien\components">
+      <UniqueIdentifier>{5f900003-d8d0-4cd5-b775-19002200d61c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,17 +27,31 @@
     <ClCompile Include="system.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="window.cpp">
-      <Filter>Quelldateien\components</Filter>
-    </ClCompile>
-    <ClCompile Include="settings.cpp">
-      <Filter>Quelldateien\components</Filter>
-    </ClCompile>
     <ClCompile Include="input.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
     <ClCompile Include="renderer.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
+    <ClCompile Include="window.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="main.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="window.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
