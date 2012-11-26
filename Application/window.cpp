@@ -45,6 +45,10 @@ class ComponentWindow : public Component
 				}
 			}
 		}
+
+		// FPS counter
+		auto stg = Storage->Get<StorageSettings>("settings");
+		wnd->setTitle(stg->Title + " (" + to_string((int)stg->FPS) + " FPS)");
 	}
 
 	void Listeners()
@@ -114,9 +118,3 @@ class ComponentWindow : public Component
 	}
 
 };
-
-
-// fps counter
-// auto tle = Storage->Get<StorageSettings>("settings")->Title;
-// auto wnd &Storage->Get<StorageWindow>("window")->Window
-// wnd->setTitle(tle + " 60 FPS");

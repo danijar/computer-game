@@ -27,10 +27,7 @@ class ComponentRenderer : public Component
 	void Init()
 	{
 		auto stg = Storage->Get<StorageSettings>("settings");
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
 		auto bfs = Storage->Add<StorageBuffers>("buffers");
-
-		wnd->setVerticalSyncEnabled(true);
 
 		glewExperimental = GL_TRUE;
 		glewInit();
@@ -41,14 +38,14 @@ class ComponentRenderer : public Component
 		glBindVertexArray(bfs->VertexArray);
 		glGenBuffers(1, &bfs->VertexBuffer);
 		glGenBuffers(1, &bfs->ElementBuffer);
-		glEnable(GL_DEPTH_TEST);
 
 		ShaderProgram = ProgramCreate("shaders/vertex.txt", "", "shaders/fragment.txt");
-		ProgramActivate(ShaderProgram);
+
+		Setup();
 
 		Listeners();
 
-		// testing
+		// jumping
 		jumping = false;
 	}
 
@@ -56,6 +53,8 @@ class ComponentRenderer : public Component
 	{
 		auto bfs = Storage->Get<StorageBuffers>("buffers");
 		auto stg = Storage->Get<StorageSettings>("settings");
+
+		float time = clock.getElapsedTime().asSeconds();
 
 		// clear
 		glClearColor(.4f,.6f,.9f,0.f);
@@ -73,8 +72,10 @@ class ComponentRenderer : public Component
 			 1.f,  1.f, -1.f,  1.f,  0.f,  0.f,  .8f,
 			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
 		};
+
 		glBindBuffer(GL_ARRAY_BUFFER, bfs->VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+
 		// elements
 		const int Elements[] = {
 			0, 1, 2, 2, 3, 0,
@@ -84,40 +85,56 @@ class ComponentRenderer : public Component
 			4, 5, 1, 1, 0, 4,
 			3, 2, 6, 6, 7, 3,
 		};
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bfs->ElementBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
+
 		// position
 		GLint PositionAttribute = glGetAttribLocation(ShaderProgram, "position");
 		glEnableVertexAttribArray(PositionAttribute);
 		glVertexAttribPointer(PositionAttribute, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
+
 		// color
 		GLint ColorAttribute = glGetAttribLocation(ShaderProgram, "color");
 		glEnableVertexAttribArray(ColorAttribute);
 		glVertexAttribPointer(ColorAttribute, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+
 		// model matrix
 		mat4 ModelMatrix;
-		float sc = .3f;
-		ModelMatrix = scale(ModelMatrix, vec3(sc, sc, sc));
-		//ModelMatrix = rotate(ModelMatrix, time * 360.0f, vec3(0, 0, 1));
+
+		float sle = .25f;
+		float rdn = 2.5f;
+		ModelMatrix = scale(ModelMatrix, vec3(sle, sle, sle));								// scale down a bit
+		ModelMatrix = translate(ModelMatrix, vec3(-1.5f, -1.5f, 0.f));						// move away from camera a bit
+		ModelMatrix = translate(ModelMatrix, vec3(sin(time) * rdn, cos(time) * rdn, 0));	// turn around a radian
+		ModelMatrix = rotate(ModelMatrix, time * 360.f, vec3(0, 0, 1));						// spin around itself
+
+		// jumping
 		if(jumping){
 			float jumpposition = glm::sin((float)jumptime.getElapsedTime().asSeconds() * 10);
 			if(jumpposition < 0) jumping = false;
 			else ModelMatrix = translate(ModelMatrix, vec3(0, 0, jumpposition));
 		}
+
 		GLint ModelUniform = glGetUniformLocation(ShaderProgram, "model");
 		glUniformMatrix4fv(ModelUniform, 1, GL_FALSE, value_ptr(ModelMatrix));
+
 		// view matrix
 		mat4 ViewMatrix = lookAt(
 			vec3(1.2, 1.2, 1.2),
 			vec3(0.0, 0.0, 0.0),
 			vec3(0.0, 0.0, 1.0)
 		);
+
 		GLint ViewUniform = glGetUniformLocation(ShaderProgram, "view");
 		glUniformMatrix4fv(ViewUniform, 1, GL_FALSE, value_ptr(ViewMatrix));
+
 		// projection matrix
 		mat4 ProjectionMatrix = perspective(45.0f, stg->AspectRatio(), 1.0f, 10.0f);
+
 		GLint ProjectionUniform = glGetUniformLocation(ShaderProgram, "proj" );
 		glUniformMatrix4fv(ProjectionUniform, 1, GL_FALSE, value_ptr(ProjectionMatrix));
+
 		// draw
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
@@ -126,14 +143,16 @@ class ComponentRenderer : public Component
 	}
 
 	GLuint ShaderProgram;
+	Clock clock;
 
+	// jumping
 	bool jumping;
 	Clock jumptime;
 
 	void Listeners()
 	{
 		Event->Listen("WindowCreated", [=]{
-			ProgramActivate(ShaderProgram);
+			Setup();
 		});
 
 		Event->ListenData("WindowResize", [=](void* Size){
@@ -149,6 +168,15 @@ class ComponentRenderer : public Component
 			}
 		});
 	}
+
+	void Setup()
+	{
+		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
+
+		wnd->setVerticalSyncEnabled(true);
+		glEnable(GL_DEPTH_TEST);
+		ProgramActivate(ShaderProgram);
+	};
 
 
 	// #region: Shader and Programs

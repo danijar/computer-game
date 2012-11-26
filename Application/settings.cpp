@@ -10,6 +10,9 @@ class ComponentSettings : public Component
 	void Init()
 	{
 		auto stg = Storage->Add<StorageSettings>("settings");
+
+		stg->FPS = 0;
+
 		stg->Fullscreen = false;
 		stg->Size       = Vector2<int>(800, 600);
 		stg->Title      = "Graphics Application";
@@ -17,6 +20,18 @@ class ComponentSettings : public Component
 
 	void Update()
 	{
+		auto stg = Storage->Get<StorageSettings>("settings");
 
+		if(clock.getElapsedTime().asMilliseconds() >= 1000)
+		{
+			clock.restart();
+			stg->FPS = Frames;
+			Frames = 0;
+		}
+		Frames++;
 	}
+
+	int Frames;
+	Clock clock;
+
 };
