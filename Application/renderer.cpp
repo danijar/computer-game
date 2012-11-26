@@ -45,13 +45,14 @@ class ComponentRenderer : public Component
 
 		Listeners();
 
+		Cube();
+
 		// jumping
 		jumping = false;
 	}
 
 	void Update()
 	{
-		auto bfs = Storage->Get<StorageBuffers>("buffers");
 		auto stg = Storage->Get<StorageSettings>("settings");
 
 		float time = clock.getElapsedTime().asSeconds();
@@ -60,50 +61,11 @@ class ComponentRenderer : public Component
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// vertices
-		const float Vertices[] = {
-  			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
-			 1.f, -1.f,  1.f,  0.f,  1.f,  0.f,  .8f,
-			 1.f,  1.f,  1.f,  0.f,  0.f,  1.f,  .8f,
-			-1.f,  1.f,  1.f,  1.f,  1.f,  1.f,  .8f,
-   
-			-1.f, -1.f, -1.f,  0.f,  0.f,  1.f,  .8f,
-			 1.f, -1.f, -1.f,  1.f,  1.f,  1.f,  .8f,
-			 1.f,  1.f, -1.f,  1.f,  0.f,  0.f,  .8f,
-			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
-		};
-
-		glBindBuffer(GL_ARRAY_BUFFER, bfs->VertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-
-		// elements
-		const int Elements[] = {
-			0, 1, 2, 2, 3, 0,
-			1, 5, 6, 6, 2, 1,
-			7, 6, 5, 5, 4, 7,
-			4, 0, 3, 3, 7, 4,
-			4, 5, 1, 1, 0, 4,
-			3, 2, 6, 6, 7, 3,
-		};
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bfs->ElementBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
-
-		// position
-		GLint PositionAttribute = glGetAttribLocation(ShaderProgram, "position");
-		glEnableVertexAttribArray(PositionAttribute);
-		glVertexAttribPointer(PositionAttribute, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
-
-		// color
-		GLint ColorAttribute = glGetAttribLocation(ShaderProgram, "color");
-		glEnableVertexAttribArray(ColorAttribute);
-		glVertexAttribPointer(ColorAttribute, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
-
 		// model matrix
 		mat4 ModelMatrix;
 
-		float sle = .25f;
-		float rdn = 2.5f;
+		const float sle = .25f;
+		const float rdn = 2.5f;
 		ModelMatrix = scale(ModelMatrix, vec3(sle, sle, sle));								// scale down a bit
 		ModelMatrix = translate(ModelMatrix, vec3(-1.5f, -1.5f, 0.f));						// move away from camera a bit
 		ModelMatrix = translate(ModelMatrix, vec3(sin(time) * rdn, cos(time) * rdn, 0));	// turn around a radian
@@ -176,7 +138,52 @@ class ComponentRenderer : public Component
 		wnd->setVerticalSyncEnabled(true);
 		glEnable(GL_DEPTH_TEST);
 		ProgramActivate(ShaderProgram);
-	};
+	}
+
+	void Cube()
+	{
+		auto bfs = Storage->Get<StorageBuffers>("buffers");
+
+		// vertices
+		const float Vertices[] = {
+  			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
+			 1.f, -1.f,  1.f,  0.f,  1.f,  0.f,  .8f,
+			 1.f,  1.f,  1.f,  0.f,  0.f,  1.f,  .8f,
+			-1.f,  1.f,  1.f,  1.f,  1.f,  1.f,  .8f,
+   
+			-1.f, -1.f, -1.f,  0.f,  0.f,  1.f,  .8f,
+			 1.f, -1.f, -1.f,  1.f,  1.f,  1.f,  .8f,
+			 1.f,  1.f, -1.f,  1.f,  0.f,  0.f,  .8f,
+			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
+		};
+
+		glBindBuffer(GL_ARRAY_BUFFER, bfs->VertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+
+		// elements
+		const int Elements[] = {
+			0, 1, 2, 2, 3, 0,
+			1, 5, 6, 6, 2, 1,
+			7, 6, 5, 5, 4, 7,
+			4, 0, 3, 3, 7, 4,
+			4, 5, 1, 1, 0, 4,
+			3, 2, 6, 6, 7, 3,
+		};
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bfs->ElementBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
+
+		// position
+		GLint PositionAttribute = glGetAttribLocation(ShaderProgram, "position");
+		glEnableVertexAttribArray(PositionAttribute);
+		glVertexAttribPointer(PositionAttribute, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
+
+		// color
+		GLint ColorAttribute = glGetAttribLocation(ShaderProgram, "color");
+		glEnableVertexAttribArray(ColorAttribute);
+		glVertexAttribPointer(ColorAttribute, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+	}
+
 
 
 	// #region: Shader and Programs
@@ -196,20 +203,20 @@ class ComponentRenderer : public Component
 		if(PathGeometry != "") ShaderDelete(Shader[1]);
 		if(PathFragment != "") ShaderDelete(Shader[2]);
 
-		cout << "program create " << Id << endl;
+		cout << "Shader program create " << Id << endl;
 		return Id;
 	}
 
 	void ProgramActivate(int Id)
 	{
 		glUseProgram(Id);
-		cout << "program activate " << Id << endl;
+		cout << "Shader program activate " << Id << endl;
 	}
 
 	void ProgramDelete(int Id)
 	{
 		glDeleteProgram(Id);
-		cout << "program delete " << Id << endl;
+		cout << "Shader program delete " << Id << endl;
 	}
 
 	bool ProgramTest(int Id)
@@ -218,7 +225,7 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
 		bool Result = (Success == GL_TRUE) ? true : false;
-		cout << "program link " << Id << " " << (Result ? "success" : "fail") << endl;
+		cout << "Shader program link " << Id << " " << (Result ? "success" : "fail") << endl;
 
 		// info log
 		GLchar Log[513];
@@ -234,7 +241,7 @@ class ComponentRenderer : public Component
 		string Source;
 		ifstream Stream(Path);
 
-		if(!Stream.is_open()) cout << "shader create fail " << Path << endl;
+		if(!Stream.is_open()) cout << "Shader create fail " << Path << endl;
 
 		// load
 		Stream.seekg(0, ios::end);   
@@ -248,14 +255,14 @@ class ComponentRenderer : public Component
 		glShaderSource(Id, 1, &SourceString, NULL);
 		glCompileShader(Id);
 
-		cout << "shader create " << Id << endl;
+		cout << "Shader create " << Id << endl;
 		return Id;
 	}
 
 	void ShaderDelete(int Id)
 	{
 		glDeleteShader(Id);
-		cout << "shader delete " << Id << endl;
+		cout << "Shader delete " << Id << endl;
 	}
 
 	bool ShaderTest(int Id)
@@ -264,7 +271,7 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
 		bool Result = (Success == GL_TRUE) ? true : false;
-		cout << "shader compile " << Id << " " << (Result ? "success" : "fail") << endl;
+		cout << "Shader compile " << Id << " " << (Result ? "success" : "fail") << endl;
 
 		// info log
 		GLchar Log[513];
