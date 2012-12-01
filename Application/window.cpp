@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "debug.h"
 
 #include <SFML/Window.hpp>
 using namespace sf;
@@ -14,13 +15,20 @@ class ComponentWindow : public Component
 
 	void Init()
 	{
-		Create();
+		Storage->Add<StorageWindow>("window");
+		auto stg = Storage->Get<StorageSettings>("settings");
+
+		VideoMode mde = VideoMode::getDesktopMode();
+		stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
+		Create(stg->Fullscreen);
+
 		Listeners();
 	}
 
 	void Update()
 	{
 		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
+		auto stg = Storage->Get<StorageSettings>("settings");
 		
 		if(wnd->isOpen())
 		{
@@ -39,16 +47,15 @@ class ComponentWindow : public Component
 					Close();
 					break;
 				case Event::Resized:
-					Storage->Get<StorageSettings>("settings")->Size = Vector2i(evt.size.width, evt.size.height);
-					Event->Fire("WindowResize", &evt.size);
+					Vector2i sze(evt.size.width, evt.size.height);
+					Storage->Get<StorageSettings>("settings")->Size = sze;
+					Event->Fire("WindowResize", &sze);
 					break;
 				}
 			}
 		}
 
-		// FPS counter
-		auto stg = Storage->Get<StorageSettings>("settings");
-		wnd->setTitle(stg->Title + " (" + to_string((int)stg->FPS) + " FPS)");
+		wnd->setTitle(stg->Title + " (" + to_string(stg->FPS) + " FPS)");
 	}
 
 	void Listeners()
@@ -56,34 +63,24 @@ class ComponentWindow : public Component
 		Event->ListenData("InputKeyReleased", [=](void* Code){
 			auto cde = *(Keyboard::Key*)Code;
 			if(Keyboard::Key::Escape == cde) Close();
-			if(Keyboard::Key::F11    == cde) Mode();
+			if(Keyboard::Key::F11    == cde) Create();
 		});
 	}
 
 	void Create()
 	{
-		Storage->Add<StorageWindow>("window");
-		auto stg = Storage->Get<StorageSettings>("settings");
-
-		VideoMode mde = VideoMode::getDesktopMode();
-
-		stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
-		Mode(stg->Fullscreen);
-	}
-
-	void Mode()
-	{
 		auto fls = Storage->Get<StorageSettings>("settings")->Fullscreen;
-		Mode(!fls);
+		Create(!fls);
 	}
 
-	void Mode(bool State) // State(true:fullscreen, false:windowed)
+	void Create(bool Fullscreen)
 	{
 		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
 		auto stg = Storage->Get<StorageSettings>("settings");
 
-		stg->Fullscreen = State;
+		stg->Fullscreen = Fullscreen;
 
+		bool Recreated = wnd->isOpen();
 		VideoMode mde = VideoMode::getDesktopMode();
 
 		ContextSettings cts;
@@ -93,7 +90,7 @@ class ComponentWindow : public Component
 		cts.majorVersion      =  3;
 		cts.minorVersion      =  0;
 
-		if(State)
+		if(Fullscreen)
 		{
 			stg->Position = wnd->getPosition();
 			wnd->create(VideoMode(mde.width, mde.height), stg->Title, Style::Fullscreen, cts);
@@ -104,7 +101,9 @@ class ComponentWindow : public Component
 			wnd->setPosition(stg->Position);
 		}
 
-		Event->Fire("WindowCreated", &State);
+		Debug::PassFail("Window creation", wnd->isOpen());
+
+		if(Recreated) Event->Fire("WindowRecreated", &Fullscreen);
 	}
 
 	void Close()

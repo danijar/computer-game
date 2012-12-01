@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "debug.h"
 
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -10,7 +11,6 @@ using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace glm;
-#include <iostream>
 #include <sstream>
 #include <fstream>
 #include <streambuf>
@@ -41,27 +41,22 @@ class ComponentRenderer : public Component
 
 		ShaderProgram = ProgramCreate("shaders/vertex.txt", "", "shaders/fragment.txt");
 
-		Setup();
-
-		Listeners();
+		Window();
+		Perspective();
 
 		Cube();
-
-		// jumping
 		jumping = false;
+
+		Listeners();
 	}
 
 	void Update()
 	{
-		auto stg = Storage->Get<StorageSettings>("settings");
-
 		float time = clock.getElapsedTime().asSeconds();
 
-		// clear
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// model matrix
 		mat4 ModelMatrix;
 
 		const float sle = .25f;
@@ -71,7 +66,6 @@ class ComponentRenderer : public Component
 		ModelMatrix = translate(ModelMatrix, vec3(sin(time) * rdn, cos(time) * rdn, 0));	// turn around a radian
 		ModelMatrix = rotate(ModelMatrix, time * 360.f, vec3(0, 0, 1));						// spin around itself
 
-		// jumping
 		if(jumping){
 			float jumpposition = glm::sin((float)jumptime.getElapsedTime().asSeconds() * 10);
 			if(jumpposition < 0) jumping = false;
@@ -81,7 +75,6 @@ class ComponentRenderer : public Component
 		GLint ModelUniform = glGetUniformLocation(ShaderProgram, "model");
 		glUniformMatrix4fv(ModelUniform, 1, GL_FALSE, value_ptr(ModelMatrix));
 
-		// view matrix
 		mat4 ViewMatrix = lookAt(
 			vec3(1.2, 1.2, 1.2),
 			vec3(0.0, 0.0, 0.0),
@@ -91,35 +84,29 @@ class ComponentRenderer : public Component
 		GLint ViewUniform = glGetUniformLocation(ShaderProgram, "view");
 		glUniformMatrix4fv(ViewUniform, 1, GL_FALSE, value_ptr(ViewMatrix));
 
-		// projection matrix
-		mat4 ProjectionMatrix = perspective(45.0f, stg->AspectRatio(), 1.0f, 10.0f);
-
-		GLint ProjectionUniform = glGetUniformLocation(ShaderProgram, "proj" );
-		glUniformMatrix4fv(ProjectionUniform, 1, GL_FALSE, value_ptr(ProjectionMatrix));
-
-		// draw
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-		// swap buffers
 		Storage->Get<StorageWindow>("window")->Window.display();
 	}
 
-	GLuint ShaderProgram;
 	Clock clock;
+	GLuint ShaderProgram;
+	mat4 ProjectionMatrix;
 
-	// jumping
 	bool jumping;
 	Clock jumptime;
 
 	void Listeners()
 	{
-		Event->Listen("WindowCreated", [=]{
-			Setup();
+		Event->Listen("WindowRecreated", [=]{
+			Window();
+			Perspective();
+			Cube();
 		});
 
 		Event->ListenData("WindowResize", [=](void* Size){
-			auto sze = *(Event::SizeEvent*)Size;
-			glViewport(0, 0, sze.width, sze.height);
+			auto sze = *(Vector2i*)Size;
+
+			Perspective(sze);
 		});
 
 		Event->Listen("InputBindJump", [=]{
@@ -131,20 +118,36 @@ class ComponentRenderer : public Component
 		});
 	}
 
-	void Setup()
+	void Window()
+	{
+		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
+		
+		wnd->setVerticalSyncEnabled(true);
+
+		glEnable(GL_DEPTH_TEST);
+		glUseProgram(ShaderProgram);
+	}
+
+	void Perspective()
 	{
 		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
 
-		wnd->setVerticalSyncEnabled(true);
-		glEnable(GL_DEPTH_TEST);
-		ProgramActivate(ShaderProgram);
+		Perspective((Vector2i)wnd->getSize());
+	}
+
+	void Perspective(Vector2i Size)
+	{
+		glViewport(0, 0, Size.x, Size.y);
+
+		ProjectionMatrix = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 100.0f);
+		GLint ProjectionUniform = glGetUniformLocation(ShaderProgram, "proj" );
+		glUniformMatrix4fv(ProjectionUniform, 1, GL_FALSE, value_ptr(ProjectionMatrix));
 	}
 
 	void Cube()
 	{
 		auto bfs = Storage->Get<StorageBuffers>("buffers");
 
-		// vertices
 		const float Vertices[] = {
   			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
 			 1.f, -1.f,  1.f,  0.f,  1.f,  0.f,  .8f,
@@ -160,7 +163,6 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ARRAY_BUFFER, bfs->VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
-		// elements
 		const int Elements[] = {
 			0, 1, 2, 2, 3, 0,
 			1, 5, 6, 6, 2, 1,
@@ -173,20 +175,14 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bfs->ElementBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
 
-		// position
 		GLint PositionAttribute = glGetAttribLocation(ShaderProgram, "position");
 		glEnableVertexAttribArray(PositionAttribute);
 		glVertexAttribPointer(PositionAttribute, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
 
-		// color
 		GLint ColorAttribute = glGetAttribLocation(ShaderProgram, "color");
 		glEnableVertexAttribArray(ColorAttribute);
 		glVertexAttribPointer(ColorAttribute, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
 	}
-
-
-
-	// #region: Shader and Programs
 
 	GLuint ProgramCreate(string PathVertex, string PathGeometry, string PathFragment)
 	{
@@ -199,24 +195,12 @@ class ComponentRenderer : public Component
 
 		glLinkProgram(Id);
 
-		if(PathVertex   != "") ShaderDelete(Shader[0]);
-		if(PathGeometry != "") ShaderDelete(Shader[1]);
-		if(PathFragment != "") ShaderDelete(Shader[2]);
+		if(PathVertex   != "") glDeleteShader(Shader[0]);
+		if(PathGeometry != "") glDeleteShader(Shader[1]);
+		if(PathFragment != "") glDeleteShader(Shader[2]);
 
-		cout << "Shader program create " << Id << endl;
+		Debug::Pass("Shader program created " + to_string(Id));
 		return Id;
-	}
-
-	void ProgramActivate(int Id)
-	{
-		glUseProgram(Id);
-		cout << "Shader program activate " << Id << endl;
-	}
-
-	void ProgramDelete(int Id)
-	{
-		glDeleteProgram(Id);
-		cout << "Shader program delete " << Id << endl;
 	}
 
 	bool ProgramTest(int Id)
@@ -225,7 +209,8 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
 		bool Result = (Success == GL_TRUE) ? true : false;
-		cout << "Shader program link " << Id << " " << (Result ? "success" : "fail") << endl;
+		
+		Debug::PassFail("Shader program link " + to_string(Id), Result);
 
 		// info log
 		GLchar Log[513];
@@ -241,7 +226,11 @@ class ComponentRenderer : public Component
 		string Source;
 		ifstream Stream(Path);
 
-		if(!Stream.is_open()) cout << "Shader create fail " << Path << endl;
+		if(!Stream.is_open())
+		{
+			Debug::Fail("Shader create fail " + Path);
+			return 0;
+		}
 
 		// load
 		Stream.seekg(0, ios::end);   
@@ -255,14 +244,8 @@ class ComponentRenderer : public Component
 		glShaderSource(Id, 1, &SourceString, NULL);
 		glCompileShader(Id);
 
-		cout << "Shader create " << Id << endl;
+		Debug::Pass("Shader create " + to_string(Id));
 		return Id;
-	}
-
-	void ShaderDelete(int Id)
-	{
-		glDeleteShader(Id);
-		cout << "Shader delete " << Id << endl;
 	}
 
 	bool ShaderTest(int Id)
@@ -271,7 +254,7 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
 		bool Result = (Success == GL_TRUE) ? true : false;
-		cout << "Shader compile " << Id << " " << (Result ? "success" : "fail") << endl;
+		Debug::PassFail("Shader compile " + to_string(Id), Result);
 
 		// info log
 		GLchar Log[513];
@@ -281,7 +264,5 @@ class ComponentRenderer : public Component
 
 		return Result;
 	}
-
-	// #endregion: Shader and Programs
 
 };

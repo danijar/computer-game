@@ -39,6 +39,9 @@
     <ClCompile Include="window.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -55,6 +58,9 @@
     </ClInclude>
     <ClInclude Include="buffers.h">
       <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

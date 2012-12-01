@@ -14,9 +14,8 @@ struct StorageSettings : public Storage
 	bool Fullscreen;
 	Vector2i Position;
 	Vector2i Size;
-	float AspectRatio() { return (float)Size.x / (float)Size.y; }
 
 	string Title;
 
-	float FPS;
+	int FPS;
 };

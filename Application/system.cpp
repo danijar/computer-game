@@ -36,7 +36,7 @@ void ManagerEvent::Fire(string Name, int State, void* Data)
 	for (auto i = Functions.begin(); i != Functions.end(); i++) i->Call(Data);
 
 	#ifdef _DEBUG
-	cout << "Event " << Name; if(State) cout << "(" << State << ")"; cout << endl;
+	cout << "Event " << Name << " "; if(State) cout << State << " "; cout << "(" << Functions.size() << ")" << endl;
 	#endif
 }
 void ManagerEvent::FireRange(string Name, int From, int To)
