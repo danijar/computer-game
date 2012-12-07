@@ -20,7 +20,7 @@ This cube is all you can see for now.
 Instructions
 ------------
 
-A precompiled executables for Windows is found in the `Debug` folder. You only need the `Application.exe`, it is standalone and has all needed libraries included.
+A precompiled executables for Windows is found in the `Debug` folder. You need the `Application.exe` and the `shaders` folder and it's content. You can find that in the `Debug` folder of that project. The executable has all needed libraries included. 
 
 ###Key controls
 
