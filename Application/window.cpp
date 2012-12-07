@@ -38,18 +38,18 @@ class ComponentWindow : public Component
 				switch(evt.type)
 				{
 				case Event::KeyPressed:
-					Event->Fire("InputKeyPressed", &evt.key.code);
+					Event->Fire<Keyboard::Key>("InputKeyPressed", evt.key.code);
 					break;
 				case Event::KeyReleased:
-					Event->Fire("InputKeyReleased", &evt.key.code);
+					Event->Fire<Keyboard::Key>("InputKeyReleased", evt.key.code);
 					break;
 				case Event::Closed:
 					Close();
 					break;
 				case Event::Resized:
-					Vector2i sze(evt.size.width, evt.size.height);
-					Storage->Get<StorageSettings>("settings")->Size = sze;
-					Event->Fire("WindowResize", &sze);
+					Vector2i Size(evt.size.width, evt.size.height);
+					Storage->Get<StorageSettings>("settings")->Size = Size;
+					Event->Fire<Vector2i>("WindowResize", Size);
 					break;
 				}
 			}
@@ -60,10 +60,16 @@ class ComponentWindow : public Component
 
 	void Listeners()
 	{
-		Event->ListenData("InputKeyReleased", [=](void* Code){
-			auto cde = *(Keyboard::Key*)Code;
-			if(Keyboard::Key::Escape == cde) Close();
-			if(Keyboard::Key::F11    == cde) Create();
+		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			switch(Code)
+			{
+			case Keyboard::Key::Escape:
+				Close();
+				break;
+			case Keyboard::Key::F11:
+				Create();
+				break;
+			}
 		});
 	}
 

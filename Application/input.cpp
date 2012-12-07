@@ -21,17 +21,8 @@ class ComponentInput : public Component
 
 	void Listeners()
 	{
-		Event->ListenData("InputKeyboard", [=](void* Code){
-			auto cde = *(Keyboard::Key*)Code;
-
-			// check all keys and bind them to events related to user settings
-			//if(Keyboard::Key::Escape == cde){ }
-			//else if ...
-		});
-
-		Event->ListenData("InputKeyReleased", [=](void* Code){
-			auto cde = *(Keyboard::Key*)Code;
-			switch(cde)
+		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			switch(Code)
 			{
 			case Keyboard::Key::Space:
 				this->Event->Fire("InputBindJump");

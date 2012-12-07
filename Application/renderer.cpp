@@ -103,10 +103,8 @@ class ComponentRenderer : public Component
 			Cube();
 		});
 
-		Event->ListenData("WindowResize", [=](void* Size){
-			auto sze = *(Vector2i*)Size;
-
-			Perspective(sze);
+		Event->Listen<Vector2i>("WindowResize", [=](Vector2i Size){
+			Perspective(Size);
 		});
 
 		Event->Listen("InputBindJump", [=]{

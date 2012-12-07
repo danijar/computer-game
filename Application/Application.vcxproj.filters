@@ -24,9 +24,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="system.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="input.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
