@@ -28,7 +28,6 @@ class ComponentAnimation : public Component
 			const float spd = 10.f;
 
 			float Jumpheight = sin(Jumptime.getElapsedTime().asSeconds() * spd);
-			Debug::Pass(to_string(Jumpheight));
 			if(Jumpheight < 0)
 			{
 				Jumping = false;
