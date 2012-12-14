@@ -26,7 +26,9 @@ A precompiled executables for Windows is found in the `Debug` folder. You need t
 
 - Esc. Exit the application.
 - F11. Toggle between fullscreen and windowed mode.
-- Top, Down, Left, Right. Moves the cube.
+- Up, Down, Left, Right or W, A, S, D. Move the cube.
+- PageUp, PageDown or Q, E. Raise and lower the cube.
+- Space. The cube will do a little jump.
 
 Upcoming Features
 -----------------

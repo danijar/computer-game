@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="animation.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="form.cpp" />
     <ClCompile Include="input.cpp" />

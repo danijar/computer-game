@@ -6,8 +6,9 @@
 #include "settings.cpp"
 #include "window.cpp"
 #include "input.cpp"
-#include "renderer.cpp"
 #include "form.cpp"
+#include "animation.cpp"
+#include "renderer.cpp"
 
 
 int main()
@@ -18,6 +19,7 @@ int main()
 	World.Add("window",		new ComponentWindow(),		Input);
 	World.Add("input",		new ComponentInput(),		Input);
 	World.Add("form",		new ComponentForm(),		Calculation);
+	World.Add("animation",	new ComponentAnimation(),	Calculation);
 	World.Add("renderer",	new ComponentRenderer(),	Output);
 
 	World.Init();

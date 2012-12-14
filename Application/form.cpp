@@ -3,7 +3,7 @@
 #include "system.h"
 #include "debug.h"
 
-#include <cstdlib>
+//#include <cstdlib>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -34,10 +34,12 @@ class ComponentForm : public Component
 
 		vec3 move;
 		const float spd = .03f;
-		if (Keyboard::isKeyPressed(Keyboard::Up)   ) move += vec3(-spd, -spd, 0);
-		if (Keyboard::isKeyPressed(Keyboard::Down) ) move += vec3( spd,  spd, 0);
-		if (Keyboard::isKeyPressed(Keyboard::Left) ) move += vec3( spd, -spd, 0);
-		if (Keyboard::isKeyPressed(Keyboard::Right)) move += vec3(-spd,  spd, 0);
+		if (Keyboard::isKeyPressed(Keyboard::Up)       || Keyboard::isKeyPressed(Keyboard::W)) move += vec3(-spd, -spd,   0 );
+		if (Keyboard::isKeyPressed(Keyboard::Down)     || Keyboard::isKeyPressed(Keyboard::S)) move += vec3( spd,  spd,   0 );
+		if (Keyboard::isKeyPressed(Keyboard::Left)     || Keyboard::isKeyPressed(Keyboard::A)) move += vec3( spd, -spd,   0 );
+		if (Keyboard::isKeyPressed(Keyboard::Right)    || Keyboard::isKeyPressed(Keyboard::D)) move += vec3(-spd,  spd,   0 );
+		if (Keyboard::isKeyPressed(Keyboard::PageUp)   || Keyboard::isKeyPressed(Keyboard::Q)) move += vec3(  0,    0,   spd);
+		if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move += vec3(  0,    0,  -spd);
 		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
 		{
 			i->Position += move;

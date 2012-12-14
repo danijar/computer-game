@@ -42,6 +42,9 @@
     <ClCompile Include="form.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
+    <ClCompile Include="animation.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system.h">
