@@ -42,7 +42,7 @@ class ComponentRenderer : public Component
 	void Update()
 	{
 		auto shd = Storage->Get<StorageShader>("shader");
-		auto fms = Storage->Get<StorageForms>("forms")->List;
+		auto fms = Storage->Get<StorageForms>("forms");
 		float time = clock.getElapsedTime().asSeconds();
 
 		glClearColor(.4f,.6f,.9f,0.f);
@@ -60,7 +60,7 @@ class ComponentRenderer : public Component
 		);
 		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(View));
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
+		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
 		{
 			mat4 Scale		= scale(mat4(1), i->Scale);
 			mat4 Translate	= translate(mat4(1), i->Position);
