@@ -89,14 +89,14 @@ public:
 	{
 		T* t = new T();
 		auto result = List.insert(make_pair(Name, unique_ptr<Storage>(t)));
-		if (!result.second) throw runtime_error("Cannot add storage because " + Name + " already exists."); // doesn't work
+		// if (!result.second) throw runtime_error("Cannot add storage because " + Name + " already exists."); // doesn't work
 		return t;
 	}
 	template <typename T>
 	T* Get(string Name)
 	{
 		auto i = List.find(Name);
-		return (i != List.end()) ? static_cast<T*>(i->second.get()) : nullptr;
+		return (i != List.end()) ? (T*)(i->second.get()) : nullptr;
 	}
 	void Delete(string Name)
 	{
@@ -218,10 +218,12 @@ public:
 	void Init()
 	{
 		Components->Init(Storages, Events, &Message);
+		Events->Fire("SystemInited");
 	}
 	bool Update()
 	{
 		Components->Update();
+		Events->Fire("SystemUpdated");
 		if(Message == "") return true;
 		else return false;
 	}

@@ -2,16 +2,6 @@
 
 namespace Debug
 {
-	void PassFail(string Message, bool Result)
-	{
-		PassFail(Message, Result, "success", "fail");
-	}
-
-	void PassFail(string Message, bool Result, string MessagePass, string MessageFail)
-	{
-		if(Result) Pass(Message + " " + MessagePass);
-		else       Fail(Message + " " + MessageFail);
-	}
 
 	void Pass(string Message)
 	{
@@ -23,8 +13,15 @@ namespace Debug
 		cout << Message << endl;
 	}
 
+	void PassFail(string Message, bool Result, string MessagePass, string MessageFail)
+	{
+		if(Result) Pass(Message + " " + MessagePass);
+		else       Fail(Message + " " + MessageFail);
+	}
+
 	void Error(string Message)
 	{
 		cout << "Error: " << Message << endl;
 	}
+
 };

@@ -71,6 +71,11 @@ class ComponentWindow : public Component
 				break;
 			}
 		});
+
+		Event->Listen("SystemUpdated", [=]{
+			auto wnd = &Storage->Get<StorageWindow>("window")->Window;
+			wnd->display();
+		});
 	}
 
 	void Create()

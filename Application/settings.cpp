@@ -11,11 +11,11 @@ class ComponentSettings : public Component
 	{
 		auto stg = Storage->Add<StorageSettings>("settings");
 
-		stg->FPS = 0;
-
 		stg->Fullscreen = false;
 		stg->Size       = Vector2<int>(800, 600);
 		stg->Title      = "Graphics Application";
+
+		Frames = 0;
 	}
 
 	void Update()

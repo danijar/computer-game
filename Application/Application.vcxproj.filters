@@ -39,11 +39,11 @@
     <ClCompile Include="debug.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="form.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="system.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -53,11 +53,14 @@
     <ClInclude Include="window.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
-    <ClInclude Include="buffers.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
     <ClInclude Include="debug.h">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="form.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>Headerdateien\storages</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

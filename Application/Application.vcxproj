@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="form.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="renderer.cpp" />
@@ -20,10 +21,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="debug.h" />
-    <ClInclude Include="main.h" />
+    <ClInclude Include="form.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="system.h" />
-    <ClInclude Include="buffers.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

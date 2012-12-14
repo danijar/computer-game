@@ -6,9 +6,8 @@ using namespace std;
 
 namespace Debug
 {
-	void PassFail(string Message, bool Result);
-	void PassFail(string Message, bool Result, string MessagePass, string MessageFail);
 	void Pass(string Message);
 	void Fail(string Message);
+	void PassFail(string Message, bool Result, string MessagePass = "success", string MessageFail = "fail");
 	void Error(string Message);
 };

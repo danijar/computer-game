@@ -14,8 +14,7 @@ struct StorageSettings : public Storage
 	bool Fullscreen;
 	Vector2i Position;
 	Vector2i Size;
-
 	string Title;
-
 	int FPS;
+	StorageSettings() : FPS(0) {}
 };
