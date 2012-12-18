@@ -22,13 +22,14 @@ Instructions
 
 A precompiled executables for Windows is found in the `Debug` folder. You need the `Application.exe` and the `shaders` folder and it's content. You can find that in the `Debug` folder of that project. The executable has all needed libraries included. 
 
-###Key controls
+### Key controls
 
-- Esc. Exit the application.
-- F11. Toggle between fullscreen and windowed mode.
-- Up, Down, Left, Right or W, A, S, D. Move the cube.
-- PageUp, PageDown or Q, E. Raise and lower the cube.
-- Space. The cube will do a little jump.
+- `Esc` Exit the application.
+- `F11` Toggle between fullscreen and windowed mode.
+- `Tab` Insert new cube at the center.
+- `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move cubes.
+- `PageUp`, `PageDown` or `Q`, `E` Raise and lower the cube.
+- ``Space` Let cubes jump.
 
 Upcoming Features
 -----------------

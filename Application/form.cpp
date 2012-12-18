@@ -14,8 +14,8 @@ using namespace glm;
 
 #include "form.h"
 #include "transform.h"
-#include "movable.h"
-//#include "chunk.h"
+#include "movement.h"
+#include "animation.h"
 
 
 class ComponentForm : public Component
@@ -24,34 +24,21 @@ class ComponentForm : public Component
 
 	void Init()
 	{
-		// ...
-
 		Listeners();
 	}
 
 	void Update()
 	{
-		auto fms = Entity->Get<StorageForms>();
+		auto fms = Entity->Get<StorageForm>();
 		float time = clock.getElapsedTime().asSeconds();
 
 		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
 			unsigned int id = i->first;
-			auto frm = ((StorageForm*)&i->second);
+			auto frm = i->second;
 
 			// update
 		}
-
-		/*
-		auto terrain = Storage->Get<StorageForm>("terrain");
-		auto chunk = Storage->Get<StorageChunk>("chunk");
-
-		if(chunk->changed)
-		{
-			chunk->changed = false;
-			// update VBO
-		}
-		*/
 	}
 	
 	void Listeners()
@@ -59,7 +46,6 @@ class ComponentForm : public Component
 		Event->Listen("InputBindCreate", [=]{
 			Create();
 		});
-		
 	}
 
 	void Create() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
@@ -67,7 +53,8 @@ class ComponentForm : public Component
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
-		Entity->Add<StorageMovable>(id); // if movable
+		Entity->Add<StorageMovement>(id); // if movable
+		Entity->Add<StorageAnimation>(id); // if movable
 
 		const float Vertices[] = {
   			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,

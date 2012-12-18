@@ -2,11 +2,17 @@
 
 #include "system.h"
 
+#include <SFML/System/Clock.hpp>
+using namespace sf;
+
 #include "settings.h"
 
 
 class ComponentSettings : public Component
 {
+	int Frames;
+	Clock clock;
+
 	void Init()
 	{
 		auto stg = Global->Add<StorageSettings>("settings");
@@ -30,8 +36,4 @@ class ComponentSettings : public Component
 		}
 		Frames++;
 	}
-
-	int Frames;
-	Clock clock;
-
 };

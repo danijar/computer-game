@@ -3,59 +3,50 @@
 #include "system.h"
 #include "debug.h"
 
-#include <SFML/System/Clock.hpp>
-using namespace sf;
+#include "animation.h"
+#include "transform.h"
 
-#include "form.h"
 
 class ComponentAnimation : public Component
 {
 	void Init()
 	{
-
-		/*
-		Jumping = false;
-		Lastheight = 0;
-
 		Listeners();
-		*/
 	}
 
 	void Update()
 	{
-		/*
-		auto cube = Storage->Get<StorageForm>("cube");
-
-		if(Jumping)
+		auto ams = Entity->Get<StorageAnimation>();
+		for(auto i = ams.begin(); i != ams.end(); ++i)
 		{
-			const float hgt = .3f;
-			const float spd = 10.f;
-
-			float Jumpheight = sin(Jumptime.getElapsedTime().asSeconds() * spd);
-			if(Jumpheight < 0)
+			if(i->second->Active)
 			{
-				Jumping = false;
-				Jumpheight = 0;
-				Lastheight = 0;
-			}
-			cube->Position += vec3(0, 0, (Jumpheight - Lastheight) * hgt);
-			Lastheight = Jumpheight;
-		}
-		*/
+				auto tsf = Entity->Get<StorageTransform>(i->first);
+				const float hgt = .3f;
+				const float spd = 10.f;
 
+				float Height = sin(i->second->Starttime.getElapsedTime().asSeconds() * spd);
+				if(Height < 0)
+				{
+					i->second->Active = false;
+					Height = 0;
+					i->second->Lastheight = 0;
+				}
+				tsf->Position += vec3(0, 0, (Height - i->second->Lastheight) * hgt);
+				i->second->Lastheight = Height;
+			}
+		}
 	}
-	/*
-	Clock Jumptime;
-	bool Jumping;
-	float Lastheight;
 
 	void Listeners()
 	{
 		Event->Listen("InputBindJump", [=]{
+			auto ams = Entity->Get<StorageAnimation>();
+			for(auto i = ams.begin(); i != ams.end(); ++i)
+			{
+				i->second->Start();
+			}
 			Debug::Pass("Animation jump");
-			Jumping = true;
-			Jumptime.restart();
 		});
 	}
-	*/
 };

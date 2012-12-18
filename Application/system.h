@@ -117,12 +117,18 @@ public:
 		return t;
 	}
 	template <typename T>
-	unordered_map<int, shared_ptr<Storage> > Get()
+	unordered_map<int, T*> Get()
 	{
-		// improvement: convert storage* to T*
+		unordered_map<int, T*> output;
 		auto key = type_index(typeid(T));
-		if (!Check(key)) return unordered_map<int, shared_ptr<Storage> >();
-		return list[key];
+		if (Check(key))
+		{
+			for(auto i = list[key].begin(); i != list[key].end(); ++i)
+			{
+				output.insert(make_pair(i->first, static_cast<T*>(i->second.get())));
+			}
+		}
+		return output;
 	}
 	template <typename T>
 	T* Get(unsigned int id)

@@ -10,7 +10,7 @@ using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
 
-#include "movable.h"
+#include "movement.h"
 #include "transform.h"
 
 
@@ -25,7 +25,7 @@ class ComponentMovable : public Component
 
 	void Update()
 	{
-		auto mvb = Entity->Get<StorageMovable>();
+		auto mvb = Entity->Get<StorageMovement>();
 		float time = clock.getElapsedTime().asSeconds();
 
 		for(auto i = mvb.begin(); i != mvb.end(); ++i)

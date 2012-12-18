@@ -2,8 +2,6 @@
 
 #include "system.h"
 
-#include <vector>
-using namespace std;
 #include <GLM/glm.hpp>
 using namespace glm;
 

@@ -68,13 +68,13 @@
     <ClInclude Include="shader.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
-    <ClInclude Include="movable.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="chunk.h">
-      <Filter>Headerdateien\storages</Filter>
-    </ClInclude>
     <ClInclude Include="transform.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="movement.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="animation.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
   </ItemGroup>
