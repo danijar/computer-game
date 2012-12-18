@@ -8,12 +8,12 @@ using namespace std;
 using namespace glm;
 
 
+struct StorageMovable  : public Storage
+{
+	// vec3 Momentum;
+};
+
 struct StorageMovables : public Storage
 {
-	struct Movable 
-	{
-		// vec3 Momentum;
-	};
-
-	vector<Movable> List;
+	vector<StorageMovable> List;
 };

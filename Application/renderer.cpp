@@ -43,6 +43,7 @@ class ComponentRenderer : public Component
 	{
 		auto shd = Storage->Get<StorageShader>("shader");
 		auto fms = Storage->Get<StorageForms>("forms");
+		auto cube = Storage->Get<StorageForm>("cube");
 		float time = clock.getElapsedTime().asSeconds();
 
 		glClearColor(.4f,.6f,.9f,0.f);
@@ -60,16 +61,10 @@ class ComponentRenderer : public Component
 		);
 		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(View));
 
+		Draw(cube);
 		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
 		{
-			mat4 Scale		= scale(mat4(1), i->Scale);
-			mat4 Translate	= translate(mat4(1), i->Position);
-			mat4 Rotate		= rotate(mat4(1), time * 360, i->Rotation);
-			mat4 Model = Translate * Rotate * Scale;
-
-			glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));	// maybe draw later
-
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+			Draw(&fms->List[0] + (i - fms->List.begin()));
 		}
 	}
 
@@ -86,6 +81,21 @@ class ComponentRenderer : public Component
 		Event->Listen<Vector2i>("WindowResize", [=](Vector2i Size){
 			Perspective(Size);
 		});
+	}
+
+	void Draw(StorageForm* i)
+	{
+		auto shd = Storage->Get<StorageShader>("shader");
+		float time = clock.getElapsedTime().asSeconds();
+
+		mat4 Scale		= scale(mat4(1), i->Scale);
+		mat4 Translate	= translate(mat4(1), i->Position);
+		mat4 Rotate		= rotate(mat4(1), time * 360, i->Rotation);
+		mat4 Model = Translate * Rotate * Scale;
+
+		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));	// maybe draw later
+
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	}
 
 	void Window()

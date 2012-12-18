@@ -13,21 +13,40 @@ using namespace sf;
 using namespace glm;
 
 #include "form.h"
+#include "chunk.h"
 
 
 class ComponentForm : public Component
 {
 	void Init()
 	{
-		auto fms = Storage->Add<StorageForms>("forms");
+		//Storage->Add<StorageForms>("forms");
+		Storage->Add<StorageForm>("cube");
+		Storage->Add<StorageForm>("terrain");
 
 		Listeners();
 	}
 
 	void Update()
 	{
+		/*
 		auto fms = Storage->Get<StorageForms>("forms");
-		float time = clock.getElapsedTime().asSeconds();		
+		float time = clock.getElapsedTime().asSeconds();
+
+		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
+		{
+			// update
+		}
+		*/
+
+		auto terrain = Storage->Get<StorageForm>("terrain");
+		auto chunk = Storage->Get<StorageChunk>("chunk");
+
+		if(chunk->changed)
+		{
+			chunk->changed = false;
+			// update VBO
+		}
 	}
 
 	Clock clock;
@@ -35,16 +54,17 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("SystemInited", [=]{
-			Create();
+			CreateCube();
 		});
 		
 	}
 
-	void Create() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
+	void CreateCube() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
 	{
-		auto fms = Storage->Get<StorageForms>("forms");
+		//auto fms = Storage->Get<StorageForms>("forms");
+		auto cube = Storage->Get<StorageForm>("cube");
 
-		StorageForms::Form frm;
+		StorageForm frm;
 
 		const float Vertices[] = {
   			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
@@ -79,8 +99,9 @@ class ComponentForm : public Component
 		frm.Position = vec3(-1.5f, -1.5f, 0);
 		frm.Rotation = vec3(0, 0, 1);
 
-		fms->List.push_back(frm);
+		//fms->List.push_back(frm);
+		*cube = frm;
 
-		Debug::Pass("Form added");
+		Debug::Pass("Form cube added");
 	}
 };

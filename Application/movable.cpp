@@ -14,17 +14,17 @@ using namespace glm;
 #include "movable.h"
 
 
-class ComponentForm : public Component
+class ComponentMovable : public Component
 {
 	void Init()
 	{
-		auto mvs = Storage->Add<StorageMovables>("movables");
+		Storage->Add<StorageMovables>("movables");
 	}
 
 	void Update()
 	{
 		auto mvb = Storage->Get<StorageMovables>("movables");
-		auto fms = Storage->Get<StorageForms>("forms");
+		auto cube = Storage->Get<StorageForm>("cube");
 		float time = clock.getElapsedTime().asSeconds();
 
 		vec3 move;
@@ -35,11 +35,12 @@ class ComponentForm : public Component
 		if (Keyboard::isKeyPressed(Keyboard::Right)    || Keyboard::isKeyPressed(Keyboard::D)) move += vec3(-spd,  spd,   0 );
 		if (Keyboard::isKeyPressed(Keyboard::PageUp)   || Keyboard::isKeyPressed(Keyboard::Q)) move += vec3(  0,    0,   spd);
 		if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move += vec3(  0,    0,  -spd);
+		cube->Position += move;
+
 		for(auto i = mvb->List.begin(); i != mvb->List.end(); ++i)
 		{
-			i->Position += move;
+			// update
 		}
-		
 	}
 
 	Clock clock;

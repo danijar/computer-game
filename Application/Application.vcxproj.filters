@@ -19,9 +19,6 @@
     <Filter Include="Quelldateien\components">
       <UniqueIdentifier>{5f900003-d8d0-4cd5-b775-19002200d61c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Headerdateien\entities">
-      <UniqueIdentifier>{ef29be1f-c0f3-4a7c-a5af-fd3eb60a4398}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,9 +45,6 @@
     <ClCompile Include="animation.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
-    <ClCompile Include="terrain.cpp">
-      <Filter>Quelldateien\components</Filter>
-    </ClCompile>
     <ClCompile Include="movable.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
@@ -74,10 +68,13 @@
     <ClInclude Include="shader.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
-    <ClInclude Include="chunk.h">
-      <Filter>Headerdateien\entities</Filter>
-    </ClInclude>
     <ClInclude Include="movable.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="chunk.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
   </ItemGroup>

@@ -20,7 +20,7 @@ class ComponentAnimation : public Component
 
 	void Update()
 	{
-		auto fms = Storage->Get<StorageForms>("forms");
+		auto cube = Storage->Get<StorageForm>("cube");
 
 		if(Jumping)
 		{
@@ -34,12 +34,10 @@ class ComponentAnimation : public Component
 				Jumpheight = 0;
 				Lastheight = 0;
 			}
-			for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
-			{
-				i->Position += vec3(0, 0, (Jumpheight - Lastheight) * hgt);
-			}
+			cube->Position += vec3(0, 0, (Jumpheight - Lastheight) * hgt);
 			Lastheight = Jumpheight;
 		}
+
 	}
 
 	Clock Jumptime;

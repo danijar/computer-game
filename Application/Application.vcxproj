@@ -19,7 +19,6 @@
     <ClCompile Include="movable.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="settings.cpp" />
-    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +29,7 @@
     <ClInclude Include="settings.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="transform.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
