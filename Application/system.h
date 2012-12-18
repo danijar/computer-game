@@ -15,9 +15,9 @@ using namespace std;
 
 #ifdef _DEBUG
 #include <iostream>
-#define Debug(text) { cout << "Error: " << text << endl; cin.clear(); cin.get(); exit(1); }
+#define Debug(text) do { cout << "Error: " << text << endl; cin.clear(); cin.get(); exit(1); } while(0)
 #else
-#define Debug(text) ;
+#define Debug(text) do {} while(0)
 #endif
 
 
