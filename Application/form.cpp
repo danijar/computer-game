@@ -14,7 +14,8 @@ using namespace glm;
 
 #include "form.h"
 #include "transform.h"
-#include "chunk.h"
+#include "movable.h"
+//#include "chunk.h"
 
 
 class ComponentForm : public Component
@@ -30,15 +31,17 @@ class ComponentForm : public Component
 
 	void Update()
 	{
-		/*
-		auto fms = Storage->Get<StorageForms>("forms");
+		auto fms = Entity->Get<StorageForms>();
 		float time = clock.getElapsedTime().asSeconds();
 
-		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
+		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
+			unsigned int id = i->first;
+			auto frm = ((StorageForm*)&i->second);
+
 			// update
 		}
-		*/
+
 		/*
 		auto terrain = Storage->Get<StorageForm>("terrain");
 		auto chunk = Storage->Get<StorageChunk>("chunk");
@@ -64,6 +67,7 @@ class ComponentForm : public Component
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
+		Entity->Add<StorageMovable>(id); // if movable
 
 		const float Vertices[] = {
   			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
