@@ -20,11 +20,13 @@ class ComponentForm : public Component
 {
 	void Init()
 	{
+		/*
 		//Storage->Add<StorageForms>("forms");
 		Storage->Add<StorageForm>("cube");
 		Storage->Add<StorageForm>("terrain");
 
 		Listeners();
+		*/
 	}
 
 	void Update()
@@ -38,7 +40,7 @@ class ComponentForm : public Component
 			// update
 		}
 		*/
-
+		/*
 		auto terrain = Storage->Get<StorageForm>("terrain");
 		auto chunk = Storage->Get<StorageChunk>("chunk");
 
@@ -47,8 +49,9 @@ class ComponentForm : public Component
 			chunk->changed = false;
 			// update VBO
 		}
+		*/
 	}
-
+	/*
 	Clock clock;
 
 	void Listeners()
@@ -104,4 +107,5 @@ class ComponentForm : public Component
 
 		Debug::Pass("Form cube added");
 	}
+	*/
 };

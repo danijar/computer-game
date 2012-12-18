@@ -12,14 +12,18 @@ class ComponentAnimation : public Component
 {
 	void Init()
 	{
+
+		/*
 		Jumping = false;
 		Lastheight = 0;
 
 		Listeners();
+		*/
 	}
 
 	void Update()
 	{
+		/*
 		auto cube = Storage->Get<StorageForm>("cube");
 
 		if(Jumping)
@@ -37,9 +41,10 @@ class ComponentAnimation : public Component
 			cube->Position += vec3(0, 0, (Jumpheight - Lastheight) * hgt);
 			Lastheight = Jumpheight;
 		}
+		*/
 
 	}
-
+	/*
 	Clock Jumptime;
 	bool Jumping;
 	float Lastheight;
@@ -52,4 +57,5 @@ class ComponentAnimation : public Component
 			Jumptime.restart();
 		});
 	}
+	*/
 };

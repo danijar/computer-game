@@ -12,11 +12,12 @@ using namespace sf;
 
 class ComponentWindow : public Component
 {
+	unsigned int window;
 
 	void Init()
 	{
-		Storage->Add<StorageWindow>("window");
-		auto stg = Storage->Get<StorageSettings>("settings");
+		Global->Add<StorageWindow>("window");
+		auto stg = Global->Get<StorageSettings>("settings");
 
 		VideoMode mde = VideoMode::getDesktopMode();
 		stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
@@ -27,8 +28,8 @@ class ComponentWindow : public Component
 
 	void Update()
 	{
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		auto stg = Storage->Get<StorageSettings>("settings");
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto stg = Global->Get<StorageSettings>("settings");
 		
 		if(wnd->isOpen())
 		{
@@ -48,7 +49,7 @@ class ComponentWindow : public Component
 					break;
 				case Event::Resized:
 					Vector2i Size(evt.size.width, evt.size.height);
-					Storage->Get<StorageSettings>("settings")->Size = Size;
+					stg->Size = Size;
 					Event->Fire<Vector2i>("WindowResize", Size);
 					break;
 				}
@@ -73,21 +74,20 @@ class ComponentWindow : public Component
 		});
 
 		Event->Listen("SystemUpdated", [=]{
-			auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-			wnd->display();
+			(&Global->Get<StorageWindow>("window")->Window)->display();
 		});
 	}
 
 	void Create()
 	{
-		auto fls = Storage->Get<StorageSettings>("settings")->Fullscreen;
-		Create(!fls);
+		auto stg = Global->Get<StorageSettings>("settings");
+		Create(!stg->Fullscreen);
 	}
 
 	void Create(bool Fullscreen)
 	{
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		auto stg = Storage->Get<StorageSettings>("settings");
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto stg = Global->Get<StorageSettings>("settings");
 
 		stg->Fullscreen = Fullscreen;
 
@@ -120,10 +120,7 @@ class ComponentWindow : public Component
 	void Close()
 	{
 		Event->Fire("WindowClose");
-
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		wnd->close();
-
+		(&Entity->Get<StorageWindow>(window)->Window)->close();
 		Exit("The window was closed.");
 	}
 

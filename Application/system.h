@@ -5,9 +5,20 @@
 #include <unordered_map>
 #include <functional> 
 #include <memory>
+#include <typeindex>
 
 using namespace std;
 
+
+
+// debug
+
+#ifdef _DEBUG
+#include <iostream>
+#define Debug(text) { cout << "Error: " << text << endl; cin.clear(); cin.get(); exit(1); }
+#else
+#define Debug(text) ;
+#endif
 
 
 // manager event
@@ -22,7 +33,7 @@ public:
 	}
 	void Listen(string Name, int State, function<void()> Function)
 	{
-		List[Name][State].push_back(make_pair(new function<void()>(Function), false));
+		list[Name][State].push_back(make_pair(new function<void()>(Function), false));
 	}
 	template <typename T>
 	void Listen(string Name, function<void(T)> Function)
@@ -32,7 +43,7 @@ public:
 	template <typename T>
 	void Listen(string Name, int State, function<void(T)> Function)
 	{
-		List[Name][State].push_back(make_pair(new function<void(T)>(Function), true));
+		list[Name][State].push_back(make_pair(new function<void(T)>(Function), true));
 	}
 	void Fire(string Name)
 	{
@@ -40,7 +51,7 @@ public:
 	}
 	void Fire(string Name, int State)
 	{
-		auto Functions = List[Name][State];
+		auto Functions = list[Name][State];
 
 		for (auto i = Functions.begin(); i != Functions.end(); ++i)
 		{
@@ -60,7 +71,7 @@ public:
 	template <typename T>
 	void Fire(string Name, int State, T Data)
 	{
-		auto Functions = List[Name][State];
+		auto Functions = list[Name][State];
 
 		for (auto i = Functions.begin(); i != Functions.end(); ++i)
 		{
@@ -69,42 +80,128 @@ public:
 		}
 	}
 private:
-	Events List;
+	Events list;
 };
 
 
 
-// manager storage
+// manager entity
 
 struct Storage {
 	virtual ~Storage() {}
 };
 
-class ManagerStorage
+class ManagerEntity
 {
-	typedef unordered_map<string, unique_ptr<Storage>> Storages;
+	typedef unordered_map<type_index, unordered_map<int, shared_ptr<Storage> > > Entities;
+public:
+	ManagerEntity() : index(0) {}
+	int New()
+	{
+		return ++index;
+	}
+	template <typename T>
+	T* Add(unsigned int id)
+	{
+		if(id > index || id == 0) Debug("Could not add " + to_string(id) + " because it is not an entity id. Use 'int New()'.");
+		auto key = type_index(typeid(T));
+
+		if (list.find(key) == list.end())
+		{
+			auto value = new unordered_map<int, shared_ptr<Storage> >();
+			list.insert(make_pair(key, *value));
+		}
+		T* t = new T();
+		auto result = list[key].insert(make_pair(id, shared_ptr<Storage>(t)));
+		if (!result.second) Debug("Could not add " + to_string(id) + " to " + string(key.name()) + " because it already exists.");
+		return t;
+	}
+	template <typename T>
+	unordered_map<int, shared_ptr<Storage> > Get()
+	{
+		// improvement: convert storage* to T*
+		auto key = type_index(typeid(T));
+		if (!Check(key)) Debug("Could not get map of entities because " + string(key.name()) + " does not exist.");
+		return list[key];
+	}
+	template <typename T>
+	T* Get(unsigned int id)
+	{
+		auto key = type_index(typeid(T));
+		if (!Check(key, id))
+		{
+			Debug("Could not get entity because " + to_string(id) + " in " + string(key.name()) + " does not exist.");
+			return nullptr;
+		}
+		else return static_cast<T*>(list[key][id].get());
+	}
+	void Delete(unsigned int id)
+	{
+		for(auto i = list.begin(); i != list.end(); ++i)
+		{
+			if (Check(i->first, id))
+			{
+				auto j = i->second.find(id);
+				j->second.reset();
+				i->second.erase(j);
+			}
+		}
+	}
+	template <typename T>
+	void Delete(unsigned int id)
+	{
+		auto key = type_index(typeid(T));
+		if (!Check(key, id)) Debug("Could delete not entity because " + key.name() + " in " + key.name() + " does not exist.");
+		auto j = list[key].find(id);
+		j->second.reset();
+		list[key].erase(j);
+	}
+private:
+	unsigned int index;
+	Entities list;
+	bool Check(type_index key)
+	{
+		if (list.find(key) == list.end()) return false;
+		return true;
+	}
+	bool Check(type_index key, int entity)
+	{
+		if (!Check(key)) return false;
+		if (list[key].find(entity) == list[key].end()) return false;
+		return true;
+	}
+};
+
+
+
+
+// manager global
+
+class ManagerGlobal
+{
+	typedef unordered_map<string, unique_ptr<Storage>> Globals;
 public:
 	template <typename T>
 	T* Add(string Name)
 	{
 		T* t = new T();
-		auto result = List.insert(make_pair(Name, unique_ptr<Storage>(t)));
-		// if (!result.second) throw runtime_error("Cannot add storage because " + Name + " already exists."); // doesn't work
+		auto result = list.insert(make_pair(Name, unique_ptr<Storage>(t)));
+		if (!result.second) Debug("Cannot add storage because " + Name + " already exists.");
 		return t;
 	}
 	template <typename T>
 	T* Get(string Name)
 	{
-		auto i = List.find(Name);
-		return (i != List.end()) ? (T*)(i->second.get()) : nullptr;
+		auto i = list.find(Name);
+		return (i != list.end()) ? static_cast<T*>(i->second.get()) : nullptr;
 	}
 	void Delete(string Name)
 	{
-		auto i = List.find(Name);
-		if(i != List.end()) List.erase(i);
+		auto i = list.find(Name);
+		if(i != list.end()) list.erase(i);
 	}
 private:
-	Storages List;
+	Globals list;
 };
 
 
@@ -117,13 +214,17 @@ class Component
 {
 public:
 	virtual void Init(){}
-	void SetStorage(ManagerStorage* Storage)
-	{
-		this->Storage = Storage;
-	}
 	void SetEvent(ManagerEvent* Event)
 	{
 		this->Event = Event;
+	}
+	void SetEntity(ManagerEntity* Entity)
+	{
+		this->Entity = Entity;
+	}
+	void SetGlobal(ManagerGlobal* Global)
+	{
+		this->Global = Global;
 	}
 	void SetMessage(string* Message)
 	{
@@ -131,8 +232,9 @@ public:
 	}
 	virtual void Update() = 0;
 protected:
-	ManagerStorage* Storage;
 	ManagerEvent* Event;
+	ManagerEntity* Entity;
+	ManagerGlobal* Global;
 	void Exit(string Message)
 	{
 		*this->Message = Message;
@@ -148,31 +250,32 @@ class ManagerComponent
 public:
 	ManagerComponent(string* Message)
 	{
-		this->Message = Message;
+		this->message = Message;
 	}
 	void Add(string Name, Component* Component, Type Type = Calculation)
 	{
-		List[Type][Name] = Component;
+		list[Type][Name] = Component;
 	}
 	void Remove(string Name)
 	{
-		for (auto i = List.begin(); i != List.end(); i++)
+		for (auto i = list.begin(); i != list.end(); i++)
 		{
-			auto List = i->second;
-			if(List.find(Name) != List.end()){
-				List.erase(Name);
+			auto list = i->second;
+			if(list.find(Name) != list.end()){
+				list.erase(Name);
 				break;
 			}
 		}
 	}
-	void Init(ManagerStorage* Storage, ManagerEvent* Event, string* Message)
+	void Init(ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, string* Message)
 	{
 		Type Types[] = { Input, Calculation, Output };
 		for(int i = 0; i < sizeof(Types) / sizeof(Types[0]); i++) {
-			auto List = this->List[Types[i]];
-			for (auto i = List.begin(); i != List.end(); i++) {
-				i->second->SetStorage(Storage);
+			auto list = this->list[Types[i]];
+			for (auto i = list.begin(); i != list.end(); i++) {
 				i->second->SetEvent(Event);
+				i->second->SetEntity(Entity);
+				i->second->SetGlobal(Global);
 				i->second->SetMessage(Message);
 				i->second->Init();
 			}
@@ -182,15 +285,15 @@ public:
 	{
 		Type Types[] = { Input, Calculation, Output };
 		for(int i = 0; i < sizeof(Types) / sizeof(Types[0]); i++) {
-			auto List = this->List[Types[i]];
-			for (auto i = List.begin(); i != List.end(); i++)
-				if(*Message == "")
+			auto list = this->list[Types[i]];
+			for (auto i = list.begin(); i != list.end(); i++)
+				if(*message == "")
 					i->second->Update();
 		}
 	}
 private:
-	Components List;
-	string* Message;
+	Components list;
+	string* message;
 };
 
 
@@ -202,43 +305,43 @@ class System
 public:
 	System()
 	{
-		Message = "";
-		Components = new ManagerComponent(&Message);
-		Events = new ManagerEvent();
-		Storages = new ManagerStorage();	
+		message = "";
+		component = new ManagerComponent(&message);
+		event = new ManagerEvent();
+		entity = new ManagerEntity();
+		global = new ManagerGlobal();
 	}
 	void Add(string Name, Component* Component, Type Type = Calculation)
 	{
-		Components->Add(Name, Component, Type);
+		component->Add(Name, Component, Type);
 	}
 	void Remove(string Name)
 	{
-		Components->Remove(Name);
+		component->Remove(Name);
 	}
 	void Init()
 	{
-		Components->Init(Storages, Events, &Message);
-		Events->Fire("SystemInited");
+		component->Init(event, entity, global, &message);
 	}
 	bool Update()
 	{
-		Components->Update();
-		Events->Fire("SystemUpdated");
-		if(Message == "") return true;
+		component->Update();
+		if(message == "") return true;
 		else return false;
 	}
 	string UpdateWhile()
 	{
 		while(Update());
-		return Message;
+		return message;
 	}
 	string GetMessage()
 	{
-		return Message;
+		return message;
 	}	
 private:
-	ManagerComponent* Components;
-	ManagerEvent* Events;
-	ManagerStorage* Storages;
-	string Message;
+	ManagerComponent* component;
+	ManagerEvent* event;
+	ManagerEntity* entity;
+	ManagerGlobal* global;
+	string message;
 };

@@ -18,11 +18,14 @@ class ComponentMovable : public Component
 {
 	void Init()
 	{
+		/*
 		Storage->Add<StorageMovables>("movables");
+		*/
 	}
 
 	void Update()
 	{
+		/*
 		auto mvb = Storage->Get<StorageMovables>("movables");
 		auto cube = Storage->Get<StorageForm>("cube");
 		float time = clock.getElapsedTime().asSeconds();
@@ -41,8 +44,9 @@ class ComponentMovable : public Component
 		{
 			// update
 		}
+		*/
 	}
-
+	/*
 	Clock clock;
-
+	*/
 };

@@ -9,7 +9,7 @@ class ComponentSettings : public Component
 {
 	void Init()
 	{
-		auto stg = Storage->Add<StorageSettings>("settings");
+		auto stg = Global->Add<StorageSettings>("settings");
 
 		stg->Fullscreen = false;
 		stg->Size       = Vector2<int>(800, 600);
@@ -20,7 +20,7 @@ class ComponentSettings : public Component
 
 	void Update()
 	{
-		auto stg = Storage->Get<StorageSettings>("settings");
+		auto stg = Global->Get<StorageSettings>("settings");
 
 		if(clock.getElapsedTime().asMilliseconds() >= 1000)
 		{

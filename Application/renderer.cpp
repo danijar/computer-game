@@ -25,6 +25,7 @@ class ComponentRenderer : public Component
 
 	void Init()
 	{
+		/*
 		glewExperimental = GL_TRUE;
 		glewInit();
 
@@ -37,10 +38,12 @@ class ComponentRenderer : public Component
 		Perspective();
 
 		Listeners();
+		*/
 	}
 
 	void Update()
 	{
+		/*
 		auto shd = Storage->Get<StorageShader>("shader");
 		auto fms = Storage->Get<StorageForms>("forms");
 		auto cube = Storage->Get<StorageForm>("cube");
@@ -66,8 +69,9 @@ class ComponentRenderer : public Component
 		{
 			Draw(&fms->List[0] + (i - fms->List.begin()));
 		}
+		*/
 	}
-
+	/*
 	Clock clock;
 
 	void Listeners()
@@ -195,5 +199,5 @@ class ComponentRenderer : public Component
 		}
 		return Result;
 	}
-
+	*/
 };
