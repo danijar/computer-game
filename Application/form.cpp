@@ -13,20 +13,19 @@ using namespace sf;
 using namespace glm;
 
 #include "form.h"
+#include "transform.h"
 #include "chunk.h"
 
 
 class ComponentForm : public Component
 {
+	Clock clock;
+
 	void Init()
 	{
-		/*
-		//Storage->Add<StorageForms>("forms");
-		Storage->Add<StorageForm>("cube");
-		Storage->Add<StorageForm>("terrain");
+		// ...
 
 		Listeners();
-		*/
 	}
 
 	void Update()
@@ -51,23 +50,20 @@ class ComponentForm : public Component
 		}
 		*/
 	}
-	/*
-	Clock clock;
-
+	
 	void Listeners()
 	{
-		Event->Listen("SystemInited", [=]{
-			CreateCube();
+		Event->Listen("InputBindCreate", [=]{
+			Create();
 		});
 		
 	}
 
-	void CreateCube() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
+	void Create() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
 	{
-		//auto fms = Storage->Get<StorageForms>("forms");
-		auto cube = Storage->Get<StorageForm>("cube");
-
-		StorageForm frm;
+		unsigned int id = Entity->New();
+		auto frm = Entity->Add<StorageForm>(id);
+		auto tsf = Entity->Add<StorageTransform>(id);
 
 		const float Vertices[] = {
   			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
@@ -81,8 +77,8 @@ class ComponentForm : public Component
 			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
 		};
 
-		glGenBuffers(1, &frm.VertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, frm.VertexBuffer);
+		glGenBuffers(1, &frm->VertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 		
 		const int Elements[] = {
@@ -94,18 +90,14 @@ class ComponentForm : public Component
 			3, 2, 6, 6, 7, 3,
 		};
 
-		glGenBuffers(1, &frm.ElementBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm.ElementBuffer);
+		glGenBuffers(1, &frm->ElementBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->ElementBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
 
-		frm.Scale = vec3(.25f);
-		frm.Position = vec3(-1.5f, -1.5f, 0);
-		frm.Rotation = vec3(0, 0, 1);
-
-		//fms->List.push_back(frm);
-		*cube = frm;
+		frm->Scale = vec3(.25f);
+		tsf->Position = vec3(-1.5f, -1.5f, 0);
+		tsf->Rotation = vec3(0, 0, 1);
 
 		Debug::Pass("Form cube added");
 	}
-	*/
 };

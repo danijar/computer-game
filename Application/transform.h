@@ -12,8 +12,3 @@ struct StorageTransform : public Storage
 {
 	vec3 Position, Rotation;
 };
-
-struct StorageTransforms : public Storage
-{
-	vector<StorageTransform> List;
-};

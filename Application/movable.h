@@ -12,8 +12,3 @@ struct StorageMovable  : public Storage
 {
 	// vec3 Momentum;
 };
-
-struct StorageMovables : public Storage
-{
-	vector<StorageMovable> List;
-};

@@ -74,7 +74,8 @@ class ComponentWindow : public Component
 		});
 
 		Event->Listen("SystemUpdated", [=]{
-			(&Global->Get<StorageWindow>("window")->Window)->display();
+			auto wnd = &Global->Get<StorageWindow>("window")->Window;
+			wnd->display();
 		});
 	}
 
@@ -120,7 +121,7 @@ class ComponentWindow : public Component
 	void Close()
 	{
 		Event->Fire("WindowClose");
-		(&Entity->Get<StorageWindow>(window)->Window)->close();
+		(&Global->Get<StorageWindow>("window")->Window)->close();
 		Exit("The window was closed.");
 	}
 

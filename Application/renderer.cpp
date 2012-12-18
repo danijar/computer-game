@@ -18,6 +18,7 @@ using namespace std;
 #include "window.h"
 #include "shader.h"
 #include "form.h"
+#include "transform.h"
 
 
 class ComponentRenderer : public Component
@@ -25,7 +26,6 @@ class ComponentRenderer : public Component
 
 	void Init()
 	{
-		/*
 		glewExperimental = GL_TRUE;
 		glewInit();
 
@@ -38,15 +38,12 @@ class ComponentRenderer : public Component
 		Perspective();
 
 		Listeners();
-		*/
 	}
 
 	void Update()
 	{
-		/*
-		auto shd = Storage->Get<StorageShader>("shader");
-		auto fms = Storage->Get<StorageForms>("forms");
-		auto cube = Storage->Get<StorageForm>("cube");
+		auto shd = Global->Get<StorageShader>("shader");
+		auto fms = Entity->Get<StorageForm>();
 		float time = clock.getElapsedTime().asSeconds();
 
 		glClearColor(.4f,.6f,.9f,0.f);
@@ -64,14 +61,12 @@ class ComponentRenderer : public Component
 		);
 		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(View));
 
-		Draw(cube);
-		for(auto i = fms->List.begin(); i != fms->List.end(); ++i)
+		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
-			Draw(&fms->List[0] + (i - fms->List.begin()));
+			Draw(i->first);
 		}
-		*/
 	}
-	/*
+
 	Clock clock;
 
 	void Listeners()
@@ -87,42 +82,44 @@ class ComponentRenderer : public Component
 		});
 	}
 
-	void Draw(StorageForm* i)
+	void Draw(unsigned int id)
 	{
-		auto shd = Storage->Get<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
+		auto frm = Entity->Get<StorageForm>(id);
+		auto tsf = Entity->Get<StorageTransform>(id);
 		float time = clock.getElapsedTime().asSeconds();
 
-		mat4 Scale		= scale(mat4(1), i->Scale);
-		mat4 Translate	= translate(mat4(1), i->Position);
-		mat4 Rotate		= rotate(mat4(1), time * 360, i->Rotation);
+		mat4 Scale		= scale(mat4(1), frm->Scale);
+		mat4 Translate	= translate(mat4(1), tsf->Position);
+		mat4 Rotate		= rotate(mat4(1), time * 360, tsf->Rotation);
 		mat4 Model = Translate * Rotate * Scale;
 
-		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));	// maybe draw later
+		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
 
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	}
 
 	void Window()
 	{
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
-		auto pgr = Storage->Get<StorageShader>("shader")->Program;
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto shd = Global->Get<StorageShader>("shader");
 		
 		wnd->setVerticalSyncEnabled(true);
 
 		glEnable(GL_DEPTH_TEST);
-		glUseProgram(pgr);
+		glUseProgram(shd->Program);
 	}
 
 	void Perspective()
 	{
-		auto wnd = &Storage->Get<StorageWindow>("window")->Window;
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 
 		Perspective((Vector2i)wnd->getSize());
 	}
 
 	void Perspective(Vector2i Size)
 	{
-		auto shd = Storage->Get<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
 
 		glViewport(0, 0, Size.x, Size.y);
 
@@ -132,7 +129,7 @@ class ComponentRenderer : public Component
 
 	void Shader(string PathVertex, string PathFragment)
 	{
-		auto shd = Storage->Add<StorageShader>("shader");
+		auto shd = Global->Add<StorageShader>("shader");
 
 		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
 		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());
@@ -161,7 +158,7 @@ class ComponentRenderer : public Component
 
 	void Attributes()
 	{
-		auto shd = Storage->Get<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
 
 		shd->View = glGetUniformLocation(shd->Program, "view");
 		shd->Projection = glGetUniformLocation(shd->Program, "proj");
@@ -199,5 +196,4 @@ class ComponentRenderer : public Component
 		}
 		return Result;
 	}
-	*/
 };

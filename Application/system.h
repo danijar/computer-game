@@ -121,7 +121,7 @@ public:
 	{
 		// improvement: convert storage* to T*
 		auto key = type_index(typeid(T));
-		if (!Check(key)) Debug("Could not get map of entities because " + string(key.name()) + " does not exist.");
+		if (!Check(key)) return unordered_map<int, shared_ptr<Storage> >();
 		return list[key];
 	}
 	template <typename T>
@@ -322,10 +322,12 @@ public:
 	void Init()
 	{
 		component->Init(event, entity, global, &message);
+		event->Fire("SystemInitialized");
 	}
 	bool Update()
 	{
 		component->Update();
+		event->Fire("SystemUpdated");
 		if(message == "") return true;
 		else return false;
 	}

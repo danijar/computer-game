@@ -27,6 +27,9 @@ class ComponentInput : public Component
 			case Keyboard::Key::Space:
 				this->Event->Fire("InputBindJump");
 				break;
+			case Keyboard::Key::Tab:
+				this->Event->Fire("InputBindCreate");
+				break;
 			}
 		});
 	}
