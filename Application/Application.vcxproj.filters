@@ -45,10 +45,10 @@
     <ClCompile Include="animation.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
-    <ClCompile Include="movable.cpp">
+    <ClCompile Include="terrain.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
-    <ClCompile Include="terrain.cpp">
+    <ClCompile Include="movement.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
   </ItemGroup>
