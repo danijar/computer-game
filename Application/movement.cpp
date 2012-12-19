@@ -14,7 +14,7 @@ using namespace glm;
 #include "transform.h"
 
 
-class ComponentMovable : public Component
+class ComponentMovement : public Component
 {
 	Clock clock;
 

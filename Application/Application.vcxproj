@@ -16,7 +16,7 @@
     <ClCompile Include="form.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="movable.cpp" />
+    <ClCompile Include="movement.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="window.cpp" />
