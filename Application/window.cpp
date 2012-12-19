@@ -115,7 +115,7 @@ class ComponentWindow : public Component
 
 		Debug::PassFail("Window creation", wnd->isOpen());
 
-		if(Recreated) Event->Fire("WindowRecreated", &Fullscreen);
+		if(Recreated) Event->Fire<bool>("WindowRecreated", Fullscreen);
 	}
 
 	void Close()

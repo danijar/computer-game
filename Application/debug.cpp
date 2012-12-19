@@ -19,9 +19,12 @@ namespace Debug
 		else       Fail(Message + " " + MessageFail);
 	}
 
-	void Error(string Message)
+	void Crash(string Message)
 	{
 		cout << "Error: " << Message << endl;
+		cin.clear();
+		cin.get();
+		exit(EXIT_FAILURE);
 	}
 
 };

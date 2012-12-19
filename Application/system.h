@@ -15,9 +15,11 @@ using namespace std;
 
 #ifdef _DEBUG
 #include <iostream>
-#define Debug(text) do { cout << "Error: " << text << endl; cin.clear(); cin.get(); exit(1); } while(0)
+#define Error(text)		do { cout << "System error: "   << text << endl; cin.clear(); cin.get(); exit(EXIT_FAILURE); } while(0)
+#define Warning(text)	do { cout << "System warning: " << text << endl;											 } while(0)
 #else
-#define Debug(text) do {} while(0)
+#define Error(text)		do {} while(0)
+#define Warning(text)	do {} while(0)
 #endif
 
 
@@ -103,7 +105,7 @@ public:
 	template <typename T>
 	T* Add(unsigned int id)
 	{
-		if(id > index || id == 0) Debug("Could not add " + to_string(id) + " because it is not an entity id. Use 'int New()'.");
+		if(id > index || id == 0) Error("Could not add " + to_string(id) + " because it is not an entity id. Use 'int New()'.");
 		auto key = type_index(typeid(T));
 
 		if (list.find(key) == list.end())
@@ -113,7 +115,11 @@ public:
 		}
 		T* t = new T();
 		auto result = list[key].insert(make_pair(id, shared_ptr<Storage>(t)));
-		if (!result.second) Debug("Could not add " + to_string(id) + " to " + string(key.name()) + " because it already exists.");
+		if (!result.second)
+		{
+			Warning("Could not add " + to_string(id) + " to " + string(key.name()) + " because it already exists.");
+			return Get<T>(id);
+		}
 		return t;
 	}
 	template <typename T>
@@ -136,13 +142,18 @@ public:
 		auto key = type_index(typeid(T));
 		if (!Check(key, id))
 		{
-			Debug("Could not get entity because " + to_string(id) + " in " + string(key.name()) + " does not exist.");
+			Error("Could not get entity because " + to_string(id) + " in " + string(key.name()) + " does not exist.");
 			return nullptr;
 		}
 		else return static_cast<T*>(list[key][id].get());
 	}
 	void Delete(unsigned int id)
 	{
+		if(id > index || id == 0)
+		{
+			Error("Could not delete " + to_string(id) + " because it is not an entity id.");
+			return;
+		}
 		for(auto i = list.begin(); i != list.end(); ++i)
 		{
 			if (Check(i->first, id))
@@ -157,7 +168,11 @@ public:
 	void Delete(unsigned int id)
 	{
 		auto key = type_index(typeid(T));
-		if (!Check(key, id)) Debug("Could delete not entity because " + key.name() + " in " + key.name() + " does not exist.");
+		if (!Check(key, id))
+		{
+			Error("Could delete not entity because " + key.name() + " in " + key.name() + " does not exist.");
+			return;
+		}
 		auto j = list[key].find(id);
 		j->second.reset();
 		list[key].erase(j);
@@ -192,19 +207,33 @@ public:
 	{
 		T* t = new T();
 		auto result = list.insert(make_pair(Name, unique_ptr<Storage>(t)));
-		if (!result.second) Debug("Cannot add storage because " + Name + " already exists.");
+		if (!result.second)
+		{
+			Warning("Cannot add " + Name + " because it already exists.");
+			return Get<T>(Name);
+		}
 		return t;
 	}
 	template <typename T>
 	T* Get(string Name)
 	{
 		auto i = list.find(Name);
-		return (i != list.end()) ? static_cast<T*>(i->second.get()) : nullptr;
+		if(i == list.end())
+		{
+			Error("Cannot get " + Name + " because it does not exists.");
+			return nullptr;
+		}
+		return static_cast<T*>(i->second.get());
 	}
 	void Delete(string Name)
 	{
 		auto i = list.find(Name);
-		if(i != list.end()) list.erase(i);
+		if(i == list.end())
+		{
+			Warning("Cannot delete " + Name + " because it does not exists.");
+			return;
+		}
+		list.erase(i);
 	}
 private:
 	Globals list;

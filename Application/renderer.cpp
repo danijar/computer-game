@@ -33,9 +33,7 @@ class ComponentRenderer : public Component
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		Shader("shaders/vertex.txt", "shaders/fragment.txt");
-
 		Window();
-		Perspective();
 
 		Listeners();
 	}
@@ -73,8 +71,6 @@ class ComponentRenderer : public Component
 	{
 		Event->Listen("WindowRecreated", [=]{
 			Window();
-			Perspective();
-			Attributes();
 		});
 
 		Event->Listen<Vector2i>("WindowResize", [=](Vector2i Size){
@@ -105,9 +101,11 @@ class ComponentRenderer : public Component
 		auto shd = Global->Get<StorageShader>("shader");
 		
 		wnd->setVerticalSyncEnabled(true);
-
+		
 		glEnable(GL_DEPTH_TEST);
 		glUseProgram(shd->Program);
+
+		Perspective();
 	}
 
 	void Perspective()

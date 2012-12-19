@@ -46,6 +46,15 @@ class ComponentForm : public Component
 		Event->Listen("InputBindCreate", [=]{
 			Create();
 		});
+
+		Event->Listen("WindowRecreated", [=]{
+			auto fms = Entity->Get<StorageForm>();
+			for(auto i = fms.begin(); i != fms.end(); ++i)
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, i->second->VertexBuffer);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, i->second->ElementBuffer);
+			}
+		});
 	}
 
 	void Create() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data

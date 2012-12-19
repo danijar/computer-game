@@ -9,5 +9,5 @@ namespace Debug
 	void Pass(string Message);
 	void Fail(string Message);
 	void PassFail(string Message, bool Result, string MessagePass = "success", string MessageFail = "fail");
-	void Error(string Message);
+	void Crash(string Message);
 };
