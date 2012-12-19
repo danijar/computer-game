@@ -28,9 +28,6 @@ class ComponentRenderer : public Component
 		glewExperimental = GL_TRUE;
 		glewInit();
 
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		Shader("shaders/vertex.txt", "shaders/fragment.txt");
 		Window();
 
@@ -104,6 +101,9 @@ class ComponentRenderer : public Component
 		wnd->setVerticalSyncEnabled(true);
 		
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
 		glUseProgram(shd->Program);
 
 		Perspective();
