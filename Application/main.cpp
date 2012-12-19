@@ -7,7 +7,6 @@
 #include "window.cpp"
 #include "input.cpp"
 #include "form.cpp"
-#include "terrain.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
 #include "renderer.cpp"
@@ -21,7 +20,6 @@ int main()
 	World.Add("window",		new ComponentWindow(),		Input);
 	World.Add("input",		new ComponentInput(),		Input);
 	World.Add("form",		new ComponentForm(),		Calculation);
-	World.Add("terrain",	new ComponentTerrain(),		Calculation);
 	World.Add("movement",	new ComponentMovement(),	Calculation);
 	World.Add("animation",	new ComponentAnimation(),	Calculation);
 	World.Add("renderer",	new ComponentRenderer(),	Output);
