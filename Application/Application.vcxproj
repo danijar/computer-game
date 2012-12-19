@@ -19,10 +19,12 @@
     <ClCompile Include="movable.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="settings.cpp" />
+    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
+    <ClInclude Include="chunk.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="movement.h" />

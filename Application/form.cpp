@@ -21,7 +21,7 @@ using namespace glm;
 class ComponentForm : public Component
 {
 	Clock clock;
-
+	
 	void Init()
 	{
 		Listeners();
@@ -44,7 +44,9 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			Create();
+			const float VERTICES[] = {-1.f,-1.f,1.f,1.f,0.f,0.f,.8f,1.f,-1.f,1.f,0.f,1.f,0.f,.8f,1.f,1.f,1.f,0.f,0.f,1.f,.8f,-1.f,1.f,1.f,1.f,1.f,1.f,.8f,-1.f,-1.f,-1.f,0.f,0.f,1.f,.8f,1.f,-1.f,-1.f,1.f,1.f,1.f,.8f,1.f,1.f,-1.f,1.f,0.f,0.f,.8f,-1.f,1.f,-1.f,0.f,1.f,0.f,.8f};
+			const int   ELEMENTS[] = {0,1,2,2,3,0,1,5,6,6,2,1,7,6,5,5,4,7,4,0,3,3,7,4,4,5,1,1,0,4,3,2,6,6,7,3};
+			Create(VERTICES, ELEMENTS);
 		});
 
 		Event->Listen("WindowRecreated", [=]{
@@ -57,7 +59,8 @@ class ComponentForm : public Component
 		});
 	}
 
-	void Create() // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
+	template<size_t VerticesN, size_t ElementsN>
+	void Create(const float (&Vertices)[VerticesN], const int (&Elements)[ElementsN]) // pass [path to model], [path to texture], [position], [rotation] and [scale] instead of using example data
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -65,34 +68,13 @@ class ComponentForm : public Component
 		Entity->Add<StorageMovement>(id); // if movable
 		Entity->Add<StorageAnimation>(id); // if movable
 
-		const float Vertices[] = {
-  			-1.f, -1.f,  1.f,  1.f,  0.f,  0.f,  .8f,
-			 1.f, -1.f,  1.f,  0.f,  1.f,  0.f,  .8f,
-			 1.f,  1.f,  1.f,  0.f,  0.f,  1.f,  .8f,
-			-1.f,  1.f,  1.f,  1.f,  1.f,  1.f,  .8f,
-   
-			-1.f, -1.f, -1.f,  0.f,  0.f,  1.f,  .8f,
-			 1.f, -1.f, -1.f,  1.f,  1.f,  1.f,  .8f,
-			 1.f,  1.f, -1.f,  1.f,  0.f,  0.f,  .8f,
-			-1.f,  1.f, -1.f,  0.f,  1.f,  0.f,  .8f,
-		};
-
 		glGenBuffers(1, &frm->VertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->VertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-		
-		const int Elements[] = {
-			0, 1, 2, 2, 3, 0,
-			1, 5, 6, 6, 2, 1,
-			7, 6, 5, 5, 4, 7,
-			4, 0, 3, 3, 7, 4,
-			4, 5, 1, 1, 0, 4,
-			3, 2, 6, 6, 7, 3,
-		};
 
 		glGenBuffers(1, &frm->ElementBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->ElementBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), &Elements, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), Elements, GL_STATIC_DRAW);
 
 		frm->Scale = vec3(.25f);
 		tsf->Position = vec3(-1.5f, -1.5f, 0);
