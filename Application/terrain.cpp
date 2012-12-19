@@ -80,40 +80,40 @@ class ComponentTerrain : public Component
 				Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z-.5f);
 				Position.push_back(x+.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
 				Position.push_back(x-.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(.8f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(.8f);
-				if(!Get(ix + 1, iy, iz))
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				if(!Get(ix + 1, iy, iz)) // left front
 				{
 					Elements.push_back(i+1); Elements.push_back(i+5); Elements.push_back(i+6);
 					Elements.push_back(i+6); Elements.push_back(i+2); Elements.push_back(i+1);
 				}
-				if(!Get(ix, iy + 1, iz))
+				if(!Get(ix, iy + 1, iz)) // right front
 				{
 					Elements.push_back(i+3); Elements.push_back(i+2); Elements.push_back(i+6);
 					Elements.push_back(i+6); Elements.push_back(i+7); Elements.push_back(i+3);
 				}
-				if(!Get(ix, iy, iz + 1))
+				if(!Get(ix, iy, iz + 1)) // top
 				{
 					Elements.push_back(i+0); Elements.push_back(i+1); Elements.push_back(i+2);
 					Elements.push_back(i+2); Elements.push_back(i+3); Elements.push_back(i+0);
 				}
-				if(!Get(ix - 1, iy, iz))
+				if(!Get(ix - 1, iy, iz)) // right back
 				{
 					Elements.push_back(i+4); Elements.push_back(i+0); Elements.push_back(i+3);
 					Elements.push_back(i+3); Elements.push_back(i+7); Elements.push_back(i+4);
 				}
-				if(!Get(ix, iy - 1, iz))
+				if(!Get(ix, iy - 1, iz)) // left back
 				{
 					Elements.push_back(i+4); Elements.push_back(i+5); Elements.push_back(i+1);
 					Elements.push_back(i+1); Elements.push_back(i+0); Elements.push_back(i+4);
 				}
-				if(!Get(ix, iy, iz - 1))
+				if(!Get(ix, iy, iz - 1)) // bottom
 				{
 					Elements.push_back(i+7); Elements.push_back(i+6); Elements.push_back(i+5);
 					Elements.push_back(i+5); Elements.push_back(i+4); Elements.push_back(i+7);
