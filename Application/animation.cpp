@@ -9,6 +9,8 @@
 
 class ComponentAnimation : public Component
 {
+	Clock clock;
+
 	void Init()
 	{
 		Listeners();
@@ -16,9 +18,16 @@ class ComponentAnimation : public Component
 
 	void Update()
 	{
+		float time = clock.getElapsedTime().asSeconds();
+
 		auto ams = Entity->Get<StorageAnimation>();
 		for(auto i = ams.begin(); i != ams.end(); ++i)
 		{
+			// rotation
+			auto tsf = Entity->Get<StorageTransform>(i->first);
+			tsf->Angle = time * 360;
+
+			// jump
 			if(i->second->Active)
 			{
 				auto tsf = Entity->Get<StorageTransform>(i->first);

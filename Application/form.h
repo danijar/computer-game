@@ -8,7 +8,7 @@ using namespace glm;
 
 struct StorageForm : public Storage
 {
-	unsigned int VertexBuffer, ElementBuffer;
+	unsigned int VerticesPosition, VerticesColor, Elements, Program;
 	vec3 Scale;
-	StorageForm() : VertexBuffer(-1), ElementBuffer(-1), Scale(1) {}
+	StorageForm() : VerticesPosition(-1), VerticesColor(-1), Elements(-1), Program(-1), Scale(1) {}
 };

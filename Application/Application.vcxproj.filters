@@ -45,6 +45,9 @@
     <ClCompile Include="animation.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
     <ClCompile Include="movement.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
@@ -75,6 +78,9 @@
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
     <ClInclude Include="animation.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="chunk.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
   </ItemGroup>

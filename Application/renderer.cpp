@@ -23,14 +23,10 @@ using namespace std;
 
 class ComponentRenderer : public Component
 {
-
 	void Init()
 	{
 		glewExperimental = GL_TRUE;
 		glewInit();
-
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		Shader("shaders/vertex.txt", "shaders/fragment.txt");
 		Window();
@@ -42,15 +38,9 @@ class ComponentRenderer : public Component
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 		auto fms = Entity->Get<StorageForm>();
-		float time = clock.getElapsedTime().asSeconds();
 
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glEnableVertexAttribArray(shd->Position);
-		glVertexAttribPointer(shd->Position, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), 0);
-		glEnableVertexAttribArray(shd->Color);
-		glVertexAttribPointer(shd->Color, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
 
 		mat4 View = lookAt(
 			vec3(1.2, 1.2, 1.2),
@@ -59,13 +49,8 @@ class ComponentRenderer : public Component
 		);
 		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(View));
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
-		{
-			Draw(i->first);
-		}
+		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 	}
-
-	Clock clock;
 
 	void Listeners()
 	{
@@ -83,16 +68,29 @@ class ComponentRenderer : public Component
 		auto shd = Global->Get<StorageShader>("shader");
 		auto frm = Entity->Get<StorageForm>(id);
 		auto tsf = Entity->Get<StorageTransform>(id);
-		float time = clock.getElapsedTime().asSeconds();
+
+		glUseProgram(frm->Program);
 
 		mat4 Scale		= scale(mat4(1), frm->Scale);
 		mat4 Translate	= translate(mat4(1), tsf->Position);
-		mat4 Rotate		= rotate(mat4(1), time * 360, tsf->Rotation);
+		mat4 Rotate		= rotate(mat4(1), tsf->Angle, tsf->Rotation);
 		mat4 Model = Translate * Rotate * Scale;
-
 		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
 
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glEnableVertexAttribArray(shd->Position);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
+		glVertexAttribPointer(shd->Position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glEnableVertexAttribArray(shd->Color);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesColor);
+		glVertexAttribPointer(shd->Color, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+		int qty; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &qty);
+		glDrawElements(GL_TRIANGLES, qty/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+
+		glDisableVertexAttribArray(shd->Position);
+		glDisableVertexAttribArray(shd->Color);
 	}
 
 	void Window()
@@ -103,6 +101,9 @@ class ComponentRenderer : public Component
 		wnd->setVerticalSyncEnabled(true);
 		
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
 		glUseProgram(shd->Program);
 
 		Perspective();
