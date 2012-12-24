@@ -25,7 +25,7 @@ class ComponentAnimation : public Component
 		{
 			// rotation
 			auto tsf = Entity->Get<StorageTransform>(i->first);
-			tsf->Angle = time * 360;
+			tsf->Rotation.z = time * 360;
 
 			// jump
 			if(i->second->Active)

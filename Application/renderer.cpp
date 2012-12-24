@@ -73,7 +73,9 @@ class ComponentRenderer : public Component
 
 		mat4 Scale		= scale(mat4(1), frm->Scale);
 		mat4 Translate	= translate(mat4(1), tsf->Position);
-		mat4 Rotate		= rotate(mat4(1), tsf->Angle, tsf->Rotation);
+		mat4 Rotate		= rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
+						* rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
+						* rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 		mat4 Model = Translate * Rotate * Scale;
 		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
 

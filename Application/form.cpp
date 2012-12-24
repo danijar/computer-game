@@ -48,14 +48,14 @@ class ComponentForm : public Component
 			const float POSITIONS[] = {-1.f,-1.f,+1.f,+1.f,-1.f,+1.f,+1.f,+1.f,+1.f,-1.f,+1.f,+1.f,-1.f,-1.f,-1.f,+1.f,-1.f,-1.f,+1.f,+1.f,-1.f,-1.f,+1.f,-1.f};
 			const float COLORS[]    = {1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f};
 			const int   ELEMENTS[]  = {0,1,2,2,3,0,1,5,6,6,2,1,7,6,5,5,4,7,4,0,3,3,7,4,4,5,1,1,0,4,3,2,6,6,7,3};
-			unsigned int id = Create(POSITIONS, COLORS, ELEMENTS, vec3(-1.5f, -1.5f, 0), vec3(0, 0, 1), 0, vec3(.25f));
+			unsigned int id = Create(POSITIONS, COLORS, ELEMENTS, vec3(-1.5f, -1.5f, 0), vec3(0, 0, 0), vec3(.25f));
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
 		});
 	}
 
 	template<size_t VerticesPositionN, size_t VerticesColorN, size_t ElementsN>
-	int Create(const float (&VerticesPosition)[VerticesPositionN], const float (&VerticesColor)[VerticesColorN], const int (&Elements)[ElementsN], vec3 Position, vec3 Rotation = vec3(0), float Angle = 0, vec3 Scale = vec3(1))
+	int Create(const float (&VerticesPosition)[VerticesPositionN], const float (&VerticesColor)[VerticesColorN], const int (&Elements)[ElementsN], vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -79,7 +79,6 @@ class ComponentForm : public Component
 		frm->Scale = Scale;
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
-		tsf->Angle = Angle;
 
 		Debug::Pass("Form cube added");
 		return id;
