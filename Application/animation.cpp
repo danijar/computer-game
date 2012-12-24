@@ -3,6 +3,9 @@
 #include "system.h"
 #include "debug.h"
 
+#include <SFML/System/Clock.hpp>
+using namespace sf;
+
 #include "animation.h"
 #include "transform.h"
 
