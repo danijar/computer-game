@@ -9,6 +9,9 @@ using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 using namespace sf;
+#include <GLM/glm.hpp>
+#include <glm/gtc/noise.hpp>
+using namespace glm;
 
 #include "form.h"
 #include "transform.h"
@@ -35,8 +38,8 @@ class ComponentTerrain : public Component
 		tsf->Position = vec3(-5);
 		frm->Scale = vec3(.25f);
 
+		Generate();
 		// testing
-		for(int x = 0; x < CHUNK_X; ++x) for(int y = 0; y < CHUNK_Y; ++y) Set(x, y, 0, true);
 		wait = 0;
 
 		Listeners();
@@ -45,8 +48,8 @@ class ComponentTerrain : public Component
 	void Update()
 	{
 		// testing
-		if(++wait > 60){ wait = 0; Toggle(rand() % CHUNK_X, rand() % CHUNK_Y, rand() % CHUNK_Z); }
-		Entity->Get<StorageTransform>(id)->Rotation += vec3(.2f, 0, 1.f);
+		//if(++wait > 60){ wait = 0; Toggle(rand() % CHUNK_X, rand() % CHUNK_Y, rand() % CHUNK_Z); }
+		Entity->Get<StorageTransform>(id)->Rotation.z += 1.f;
 			
 		auto cnk = Entity->Get<StorageChunk>(id);
 		auto frm = Entity->Get<StorageForm>(id);
@@ -57,13 +60,13 @@ class ComponentTerrain : public Component
 
 			vector<float> Position, Color;
 			vector<int> Elements;
-			int i = 0;
-			for(int ix = 0; ix < CHUNK_X; ++ix)
-			for(int iy = 0; iy < CHUNK_Y; ++iy)
-			for(int iz = 0; iz < CHUNK_Z; ++iz)
+			int n = 0;
+			for(int i = 0; i < CHUNK_X; ++i)
+			for(int j = 0; j < CHUNK_Y; ++j)
+			for(int k = 0; k < CHUNK_Z; ++k)
 			{
-				if(!Get(ix, iy, iz)) continue;
-				int x = ix-(CHUNK_X/2), y = iy-(CHUNK_Y/2), z = iz-(CHUNK_Z/2);
+				if(!Get(i, j, k)) continue;
+				int x = i-(CHUNK_X/2), y = j-(CHUNK_Y/2), z = k-(CHUNK_Z/2);
 				Position.push_back(x-.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
 				Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
 				Position.push_back(x+.5f); Position.push_back(y+.5f); Position.push_back(z+.5f);
@@ -80,37 +83,37 @@ class ComponentTerrain : public Component
 				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-				if(!Get(ix + 1, iy, iz)) // left front
+				if(!Get(i + 1, j, k)) // left front
 				{
-					Elements.push_back(i+1); Elements.push_back(i+5); Elements.push_back(i+6);
-					Elements.push_back(i+6); Elements.push_back(i+2); Elements.push_back(i+1);
+					Elements.push_back(n+1); Elements.push_back(n+5); Elements.push_back(n+6);
+					Elements.push_back(n+6); Elements.push_back(n+2); Elements.push_back(n+1);
 				}
-				if(!Get(ix, iy + 1, iz)) // right front
+				if(!Get(i, j + 1, k)) // right front
 				{
-					Elements.push_back(i+3); Elements.push_back(i+2); Elements.push_back(i+6);
-					Elements.push_back(i+6); Elements.push_back(i+7); Elements.push_back(i+3);
+					Elements.push_back(n+3); Elements.push_back(n+2); Elements.push_back(n+6);
+					Elements.push_back(n+6); Elements.push_back(n+7); Elements.push_back(n+3);
 				}
-				if(!Get(ix, iy, iz + 1)) // top
+				if(!Get(i, j, k + 1)) // top
 				{
-					Elements.push_back(i+0); Elements.push_back(i+1); Elements.push_back(i+2);
-					Elements.push_back(i+2); Elements.push_back(i+3); Elements.push_back(i+0);
+					Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
+					Elements.push_back(n+2); Elements.push_back(n+3); Elements.push_back(n+0);
 				}
-				if(!Get(ix - 1, iy, iz)) // right back
+				if(!Get(i - 1, j, k)) // right back
 				{
-					Elements.push_back(i+4); Elements.push_back(i+0); Elements.push_back(i+3);
-					Elements.push_back(i+3); Elements.push_back(i+7); Elements.push_back(i+4);
+					Elements.push_back(n+4); Elements.push_back(n+0); Elements.push_back(n+3);
+					Elements.push_back(n+3); Elements.push_back(n+7); Elements.push_back(n+4);
 				}
-				if(!Get(ix, iy - 1, iz)) // left back
+				if(!Get(i, j - 1, k)) // left back
 				{
-					Elements.push_back(i+4); Elements.push_back(i+5); Elements.push_back(i+1);
-					Elements.push_back(i+1); Elements.push_back(i+0); Elements.push_back(i+4);
+					Elements.push_back(n+4); Elements.push_back(n+5); Elements.push_back(n+1);
+					Elements.push_back(n+1); Elements.push_back(n+0); Elements.push_back(n+4);
 				}
-				if(!Get(ix, iy, iz - 1)) // bottom
+				if(!Get(i, j, k - 1)) // bottom
 				{
-					Elements.push_back(i+7); Elements.push_back(i+6); Elements.push_back(i+5);
-					Elements.push_back(i+5); Elements.push_back(i+4); Elements.push_back(i+7);
+					Elements.push_back(n+7); Elements.push_back(n+6); Elements.push_back(n+5);
+					Elements.push_back(n+5); Elements.push_back(n+4); Elements.push_back(n+7);
 				}
-				i += 8;
+				n += 8;
 			}
 
 			glGenBuffers(1, &frm->VerticesPosition);
@@ -134,6 +137,19 @@ class ComponentTerrain : public Component
 			auto frm = Entity->Get<StorageForm>(id);
 			frm->Program = Global->Get<StorageShader>("shader")->Program;
 		});
+	}
+
+	void Generate()
+	{
+		for(int x = 0; x < CHUNK_X; ++x)
+		for(int y = 0; y < CHUNK_Y; ++y)
+		{
+			int height = (int)((simplex(vec2((float)x / CHUNK_X, (float)y / CHUNK_Y))/2+.5f) * CHUNK_Z);
+			for(int z = 0; z < height; ++z)
+			{
+				Set(x, y, z, true);
+			}
+		}		
 	}
 
 	bool Get(int x, int y, int z) {
