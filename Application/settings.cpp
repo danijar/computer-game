@@ -18,7 +18,8 @@ class ComponentSettings : public Component
 		auto stg = Global->Add<StorageSettings>("settings");
 
 		stg->Fullscreen = false;
-		stg->Size       = Vector2<int>(800, 600);
+		stg->Mouse		= false;
+		stg->Size       = Vector2u(800, 600);
 		stg->Title      = "Graphics Application";
 
 		Frames = 0;

@@ -48,8 +48,6 @@ namespace detail
 	template <typename T> struct tmat4x3;
 	template <typename T> struct tmat4x4;
 
-	// \brief Template for 2 columns and 3 rows matrix of floating-point numbers.
-	// \ingroup core_template
 	template <typename T> 
 	struct tmat2x3
 	{
@@ -58,12 +56,13 @@ namespace detail
 		typedef std::size_t size_type;
 		typedef tvec3<T> col_type;
 		typedef tvec2<T> row_type;
-        GLM_FUNC_DECL size_type length() const;
+		typedef tmat2x3<T> type;
+		typedef tmat3x2<T> transpose_type;
+
 		static GLM_FUNC_DECL size_type col_size();
 		static GLM_FUNC_DECL size_type row_size();
 
-		typedef tmat2x3<T> type;
-		typedef tmat3x2<T> transpose_type;
+		GLM_FUNC_DECL GLM_CONSTEXPR size_type length() const;
 
 	private:
 		// Data 
@@ -84,25 +83,25 @@ namespace detail
 		GLM_FUNC_DECL explicit tmat2x3(
 			col_type const & v0, 
 			col_type const & v1);
-            
+
 		//////////////////////////////////////
 		// Conversions
 		template <typename U> 
 		GLM_FUNC_DECL explicit tmat2x3(
-            U const & x);
+			U const & x);
 			
 		template <typename X1, typename Y1, typename Z1, typename X2, typename Y2, typename Z2> 
 		GLM_FUNC_DECL explicit tmat2x3(
-            X1 const & x1, Y1 const & y1, Z1 const & z1, 
-            X2 const & x2, Y2 const & y2, Z2 const & z2);
+			X1 const & x1, Y1 const & y1, Z1 const & z1, 
+			X2 const & x2, Y2 const & y2, Z2 const & z2);
 			
 		template <typename U, typename V> 
 		GLM_FUNC_DECL explicit tmat2x3(
-            tvec3<U> const & v1, 
-            tvec3<V> const & v2);
-            
+			tvec3<U> const & v1, 
+			tvec3<V> const & v2);
+
 		//////////////////////////////////////
-        // Matrix conversion
+		// Matrix conversion
 		template <typename U> 
 		GLM_FUNC_DECL explicit tmat2x3(tmat2x3<U> const & m);
 
@@ -147,12 +146,12 @@ namespace detail
 	tmat2x3<T> operator+ (
 		tmat2x3<T> const & m, 
 		typename tmat2x3<T>::value_type const & s);
-	    
+
 	template <typename T> 
 	tmat2x3<T> operator+ (
 		tmat2x3<T> const & m1, 
 		tmat2x3<T> const & m2);
-	    
+
 	template <typename T> 
 	tmat2x3<T> operator- (
 		tmat2x3<T> const & m, 

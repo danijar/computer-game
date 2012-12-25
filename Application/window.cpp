@@ -48,9 +48,9 @@ class ComponentWindow : public Component
 					Close();
 					break;
 				case Event::Resized:
-					Vector2i Size(evt.size.width, evt.size.height);
+					Vector2u Size(evt.size.width, evt.size.height);
 					stg->Size = Size;
-					Event->Fire<Vector2i>("WindowResize", Size);
+					Event->Fire<Vector2u>("WindowResize", Size);
 					break;
 				}
 			}

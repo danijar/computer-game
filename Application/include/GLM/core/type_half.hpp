@@ -39,8 +39,6 @@ namespace detail
 	float toFloat32(hdata value);
 	hdata toFloat16(float const & value);
 
-	/// 16-bit floating point type.
-	/// @ingroup gtc_half_float
 	class half
 	{
 	public: 
@@ -52,8 +50,9 @@ namespace detail
 		GLM_FUNC_DECL explicit half(U const & s);
 
 		// Cast
-		template <typename U>
-		GLM_FUNC_DECL operator U() const;
+		//template <typename U>
+		//GLM_FUNC_DECL operator U() const;
+		GLM_FUNC_DECL operator float() const;
 
 		// Unary updatable operators
 		GLM_FUNC_DECL half& operator= (half const & s);

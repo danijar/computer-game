@@ -142,59 +142,6 @@ namespace glm
 	}
 
 	template <typename T> 
-	GLM_FUNC_QUALIFIER T angle
-	(
-		detail::tquat<T> const & x
-	)
-	{
-		return glm::degrees(acos(x.w) * T(2));
-	}
-
-	template <typename T> 
-	GLM_FUNC_QUALIFIER detail::tvec3<T> axis
-	(
-		detail::tquat<T> const & x
-	)
-	{
-		T tmp1 = T(1) - x.w * x.w;
-		if(tmp1 <= T(0))
-			return detail::tvec3<T>(0, 0, 1);
-		T tmp2 = T(1) / sqrt(tmp1);
-		return detail::tvec3<T>(x.x * tmp2, x.y * tmp2, x.z * tmp2);
-	}
-
-	template <typename valType> 
-	GLM_FUNC_QUALIFIER detail::tquat<valType> angleAxis
-	(
-		valType const & angle, 
-		valType const & x, 
-		valType const & y, 
-		valType const & z
-	)
-	{
-		return angleAxis(angle, detail::tvec3<valType>(x, y, z));
-	}
-
-	template <typename valType> 
-	GLM_FUNC_QUALIFIER detail::tquat<valType> angleAxis
-	(
-		valType const & angle, 
-		detail::tvec3<valType> const & v
-	)
-	{
-		detail::tquat<valType> result;
-
-		valType a = glm::radians(angle);
-		valType s = glm::sin(a * valType(0.5));
-
-		result.w = glm::cos(a * valType(0.5));
-		result.x = v.x * s;
-		result.y = v.y * s;
-		result.z = v.z * s;
-		return result;
-	}
-
-	template <typename T> 
 	GLM_FUNC_QUALIFIER T extractRealComponent
 	(
 		detail::tquat<T> const & q
@@ -205,33 +152,6 @@ namespace glm
 			return T(0);
 		else
 			return -sqrt(w);
-	}
-
-	template <typename valType> 
-	GLM_FUNC_QUALIFIER valType roll
-	(
-		detail::tquat<valType> const & q
-	)
-	{
-		return glm::degrees(atan2(valType(2) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
-	}
-
-	template <typename valType> 
-	GLM_FUNC_QUALIFIER valType pitch
-	(
-		detail::tquat<valType> const & q
-	)
-	{
-		return glm::degrees(atan2(valType(2) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
-	}
-
-	template <typename valType> 
-	GLM_FUNC_QUALIFIER valType yaw
-	(
-		detail::tquat<valType> const & q
-	)
-	{
-		return glm::degrees(asin(valType(-2) * (q.x * q.z - q.w * q.y)));
 	}
 
 	template <typename T>

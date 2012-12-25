@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 using namespace std;
 #include <GLEW/glew.h>
@@ -30,27 +29,30 @@ class ComponentForm : public Component
 
 	void Update()
 	{
-		auto fms = Entity->Get<StorageForm>();
-		float time = clock.getElapsedTime().asSeconds();
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
-		{
-			unsigned int id = i->first;
-			auto frm = i->second;
-
-			// update
-		}
 	}
 	
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			const float POSITIONS[] = {-1.f,-1.f,+1.f,+1.f,-1.f,+1.f,+1.f,+1.f,+1.f,-1.f,+1.f,+1.f,-1.f,-1.f,-1.f,+1.f,-1.f,-1.f,+1.f,+1.f,-1.f,-1.f,+1.f,-1.f};
-			const float COLORS[]    = {1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f};
-			const int   ELEMENTS[]  = {0,1,2,2,3,0,1,5,6,6,2,1,7,6,5,5,4,7,4,0,3,3,7,4,4,5,1,1,0,4,3,2,6,6,7,3};
-			unsigned int id = Create(POSITIONS, COLORS, ELEMENTS, vec3(-1.5f, -1.5f, 0), vec3(0, 0, 0), vec3(.25f));
+			unsigned int id = CreateCube(vec3(0));
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
+		});
+
+		Event->Listen("SystemInitialized", [=]{
+			const int a = 3;
+
+			for(float i = -2; i <= 2;  ++i)
+			for(float j = -2; j <= 2; j+=4)
+			for(float k = -2; k <= 2;  ++k)
+				CreateCube(vec3(i*a, j*a, k*a));
+
+			for(float i = -2; i <= 2; i+=2)
+			for(float j = -1; j <= 1;  ++j)
+			for(float k = -2; k <= 2; k+=2)
+				if(i == 0 && k == 0) continue;
+				else CreateCube(vec3(i*a, j*a, k*a));
 		});
 	}
 
@@ -80,7 +82,15 @@ class ComponentForm : public Component
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
 
-		Debug::Pass("Form cube added");
+		return id;
+	}
+
+	unsigned int CreateCube(vec3 Position)
+	{
+		const float POSITIONS[] = {-1.f,-1.f,+1.f,+1.f,-1.f,+1.f,+1.f,+1.f,+1.f,-1.f,+1.f,+1.f,-1.f,-1.f,-1.f,+1.f,-1.f,-1.f,+1.f,+1.f,-1.f,-1.f,+1.f,-1.f};
+		const float COLORS[]    = {1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f};
+		const int   ELEMENTS[]  = {0,1,2,2,3,0,1,5,6,6,2,1,7,6,5,5,4,7,4,0,3,3,7,4,4,5,1,1,0,4,3,2,6,6,7,3};
+		unsigned int id = Create(POSITIONS, COLORS, ELEMENTS, Position);
 		return id;
 	}
 };

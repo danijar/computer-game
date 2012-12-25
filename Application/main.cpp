@@ -10,6 +10,7 @@
 #include "terrain.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
+#include "camera.cpp"
 #include "renderer.cpp"
 
 
@@ -24,6 +25,7 @@ int main()
 	World.Add("terrain",	new ComponentTerrain(),		Calculation);
 	World.Add("movement",	new ComponentMovement(),	Calculation);
 	World.Add("animation",	new ComponentAnimation(),	Calculation);
+	World.Add("camera",		new ComponentCamera(),		Output);
 	World.Add("renderer",	new ComponentRenderer(),	Output);
 
 	World.Init();

@@ -27,7 +27,7 @@
 ///
 /// @see core (dependence)
 ///
-/// @defgroup gtx_matrix_interpolation GLM_GTX_matrix_interpolation: Rotation and translation matrix interpolation
+/// @defgroup gtx_matrix_interpolation GLM_GTX_matrix_interpolation
 /// @ingroup gtx
 /// 
 /// @brief Allows to directly interpolate two exiciting matrices.
@@ -64,6 +64,12 @@ namespace glm
     detail::tmat4x4<T> axisAngleMatrix(
         detail::tvec3<T> const & axis,
         T const angle);
+
+	//! Extracts the rotation part of a matrix.
+    //! From GLM_GTX_matrix_interpolation extension.
+	template <typename T>
+	detail::tmat4x4<T> extractMatrixRotation(
+		detail::tmat4x4<T> const & mat);
 
 	//! Build a interpolation of 4 * 4 matrixes.
     //! From GLM_GTX_matrix_interpolation extension.

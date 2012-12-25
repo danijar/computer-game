@@ -44,8 +44,6 @@ namespace detail
 	template <typename T> struct tvec2;
 	template <typename T> struct tvec3;
 
-	// Basic 4D vector type.
-	// @ingroup core_template
 	template <typename T>
 	struct tvec4
 	{
@@ -53,10 +51,10 @@ namespace detail
 
 		typedef T value_type;
 		typedef std::size_t size_type;
-		GLM_FUNC_DECL size_type length() const;
-
 		typedef tvec4<T> type;
 		typedef tvec4<bool> bool_type;
+
+		GLM_FUNC_DECL GLM_CONSTEXPR size_type length() const;
 
 		//////////////////////////////////////
 		// Data
@@ -166,47 +164,47 @@ namespace detail
 		template <typename U> 
 		GLM_FUNC_DECL explicit tvec4(tvec4<U> const & v);
 
-        template <int E0, int E1, int E2, int E3>
-        GLM_FUNC_DECL tvec4(glm::detail::swizzle<4, T, tvec4<T>, E0, E1, E2, E3> const & that)
-        {
-            *this = that();
-        }
+		template <int E0, int E1, int E2, int E3>
+		GLM_FUNC_DECL tvec4(glm::detail::swizzle<4, T, tvec4<T>, E0, E1, E2, E3> const & that)
+		{
+			*this = that();
+		}
 
-        template <int E0, int E1, int F0, int F1>
-        GLM_FUNC_DECL tvec4(glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, glm::detail::swizzle<2, T, tvec2<T>, F0, F1, -1, -2> const & u)
-        {
-            *this = tvec4<T>(v(), u());
-        }
+		template <int E0, int E1, int F0, int F1>
+		GLM_FUNC_DECL tvec4(glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, glm::detail::swizzle<2, T, tvec2<T>, F0, F1, -1, -2> const & u)
+		{
+			*this = tvec4<T>(v(), u());
+		}
 
-        template <int E0, int E1>
-        GLM_FUNC_DECL tvec4(T const & x, T const & y, glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v)
-        {
-            *this = tvec4<T>(x, y, v());
-        }
+		template <int E0, int E1>
+		GLM_FUNC_DECL tvec4(T const & x, T const & y, glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v)
+		{
+			*this = tvec4<T>(x, y, v());
+		}
 
-        template <int E0, int E1>
-        GLM_FUNC_DECL tvec4(T const & x, glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, T const & w)
-        {
-            *this = tvec4<T>(x, v(), w);
-        }
+		template <int E0, int E1>
+		GLM_FUNC_DECL tvec4(T const & x, glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, T const & w)
+		{
+			*this = tvec4<T>(x, v(), w);
+		}
 
-        template <int E0, int E1>
-        GLM_FUNC_DECL tvec4(glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, T const & z, T const & w)
-        {
-            *this = tvec4<T>(v(), z, w);
-        }
+		template <int E0, int E1>
+		GLM_FUNC_DECL tvec4(glm::detail::swizzle<2, T, tvec2<T>, E0, E1, -1, -2> const & v, T const & z, T const & w)
+		{
+			*this = tvec4<T>(v(), z, w);
+		}
 
-        template <int E0, int E1, int E2>
-        GLM_FUNC_DECL tvec4(glm::detail::swizzle<3, T, tvec3<T>, E0, E1, E2, -1> const & v, T const & w)
-        {
-            *this = tvec4<T>(v(), w);
-        }
+		template <int E0, int E1, int E2>
+		GLM_FUNC_DECL tvec4(glm::detail::swizzle<3, T, tvec3<T>, E0, E1, E2, -1> const & v, T const & w)
+		{
+			*this = tvec4<T>(v(), w);
+		}
 
-        template <int E0, int E1, int E2>
-        GLM_FUNC_DECL tvec4(T const & x, glm::detail::swizzle<3, T, tvec3<T>, E0, E1, E2, -1> const & v)
-        {
-            *this = tvec4<T>(x, v());
-        }
+		template <int E0, int E1, int E2>
+		GLM_FUNC_DECL tvec4(T const & x, glm::detail::swizzle<3, T, tvec3<T>, E0, E1, E2, -1> const & v)
+		{
+			*this = tvec4<T>(x, v());
+		}
 
 		//////////////////////////////////////
 		// Swizzle constructors

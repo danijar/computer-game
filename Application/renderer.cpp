@@ -19,6 +19,7 @@ using namespace std;
 #include "shader.h"
 #include "form.h"
 #include "transform.h"
+#include "camera.h"
 
 
 class ComponentRenderer : public Component
@@ -37,17 +38,13 @@ class ComponentRenderer : public Component
 	void Update()
 	{
 		auto shd = Global->Get<StorageShader>("shader");
+		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		mat4 View = lookAt(
-			vec3(1.2, 1.2, 1.2),
-			vec3(0.0, 0.0, 0.0),
-			vec3(0.0, 0.0, 1.0)
-		);
-		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(View));
+		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(cam->View));
 
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 	}
@@ -58,7 +55,7 @@ class ComponentRenderer : public Component
 			Window();
 		});
 
-		Event->Listen<Vector2i>("WindowResize", [=](Vector2i Size){
+		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
 			Perspective(Size);
 		});
 	}
@@ -116,16 +113,16 @@ class ComponentRenderer : public Component
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 
-		Perspective((Vector2i)wnd->getSize());
+		Perspective(wnd->getSize());
 	}
 
-	void Perspective(Vector2i Size)
+	void Perspective(Vector2u Size)
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		mat4 Projection = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 100.0f);
+		mat4 Projection = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 100.0f); // get FOV from settings
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
 	}
 
