@@ -41,18 +41,7 @@ class ComponentForm : public Component
 		});
 
 		Event->Listen("SystemInitialized", [=]{
-			const int a = 3;
 
-			for(float i = -2; i <= 2;  ++i)
-			for(float j = -2; j <= 2; j+=4)
-			for(float k = -2; k <= 2;  ++k)
-				CreateCube(vec3(i*a, j*a, k*a));
-
-			for(float i = -2; i <= 2; i+=2)
-			for(float j = -1; j <= 1;  ++j)
-			for(float k = -2; k <= 2; k+=2)
-				if(i == 0 && k == 0) continue;
-				else CreateCube(vec3(i*a, j*a, k*a));
 		});
 	}
 

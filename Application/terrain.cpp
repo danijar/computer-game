@@ -3,7 +3,6 @@
 #include "system.h"
 #include "debug.h"
 
-#include <stdio.h>
 #include <vector>
 using namespace std;
 #include <GLEW/glew.h>
@@ -31,25 +30,16 @@ class ComponentTerrain : public Component
 	{
 		id = Entity->New();
 		Entity->Add<StorageChunk>(id);
-		auto tsf = Entity->Add<StorageTransform>(id);
-		auto frm = Entity->Add<StorageForm>(id);
-
-		tsf->Position = vec3(-5);
-		frm->Scale = vec3(.25f);
+		Entity->Add<StorageTransform>(id);
+		Entity->Add<StorageForm>(id);
 
 		Generate();
-		// testing
-		wait = 0;
 
 		Listeners();
 	}
 	
 	void Update()
 	{
-		// testing
-		//if(++wait > 60){ wait = 0; Toggle(rand() % CHUNK_X, rand() % CHUNK_Y, rand() % CHUNK_Z); }
-		Entity->Get<StorageTransform>(id)->Rotation.z += 1.f;
-			
 		auto cnk = Entity->Get<StorageChunk>(id);
 		auto frm = Entity->Get<StorageForm>(id);
 
@@ -74,14 +64,14 @@ class ComponentTerrain : public Component
 				Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z-.5f);
 				Position.push_back(x+.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
 				Position.push_back(x-.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
 				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-				Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
+				Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
 				if(!Get(i + 1, j, k)) // left front
 				{
 					Elements.push_back(n+1); Elements.push_back(n+5); Elements.push_back(n+6);
@@ -141,10 +131,10 @@ class ComponentTerrain : public Component
 	void Generate()
 	{
 		for(int x = 0; x < CHUNK_X; ++x)
-		for(int y = 0; y < CHUNK_Y; ++y)
+		for(int z = 0; z < CHUNK_Y; ++z)
 		{
-			int height = (int)((simplex(vec2((float)x / CHUNK_X, (float)y / CHUNK_Y))/2+.5f) * CHUNK_Z);
-			for(int z = 0; z < height; ++z)
+			int height = (int)((simplex(vec2((float)x / CHUNK_X, (float)z / CHUNK_Z))/2+.5f) * CHUNK_Y);
+			for(int y = 0; y < height; ++y)
 			{
 				Set(x, y, z, true);
 			}

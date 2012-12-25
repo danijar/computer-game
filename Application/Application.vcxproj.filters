@@ -51,6 +51,9 @@
     <ClCompile Include="terrain.cpp">
       <Filter>Quelldateien\components</Filter>
     </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>Quelldateien\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system.h">
@@ -81,6 +84,9 @@
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
     <ClInclude Include="chunk.h">
+      <Filter>Headerdateien\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
       <Filter>Headerdateien\storages</Filter>
     </ClInclude>
   </ItemGroup>
