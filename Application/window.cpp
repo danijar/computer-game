@@ -44,13 +44,16 @@ class ComponentWindow : public Component
 				case Event::KeyReleased:
 					Event->Fire<Keyboard::Key>("InputKeyReleased", evt.key.code);
 					break;
+				case Event::MouseMoved:
+					Event->Fire<Vector2i>("InputMouseMove", Vector2i(evt.mouseMove.x, evt.mouseMove.y));
+					break;
 				case Event::Closed:
 					Close();
 					break;
 				case Event::Resized:
-					Vector2i Size(evt.size.width, evt.size.height);
+					Vector2u Size(evt.size.width, evt.size.height);
 					stg->Size = Size;
-					Event->Fire<Vector2i>("WindowResize", Size);
+					Event->Fire<Vector2u>("WindowResize", Size);
 					break;
 				}
 			}

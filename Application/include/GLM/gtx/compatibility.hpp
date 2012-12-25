@@ -28,7 +28,7 @@
 /// @see core (dependence)
 /// @see gtc_half_float (dependence)
 ///
-/// @defgroup gtx_compatibility GLM_GTX_compatibility: Cg and HLSL compatibility
+/// @defgroup gtx_compatibility GLM_GTX_compatibility
 /// @ingroup gtx
 /// 
 /// @brief Provide functions to increase the compatibility with Cg and HLSL languages
@@ -49,12 +49,12 @@
 #endif
 
 #if(GLM_COMPILER & GLM_COMPILER_VC)
-#include <cfloat>
+#	include <cfloat>
 #elif(GLM_COMPILER & GLM_COMPILER_GCC)
-#include <cmath>
-#   if(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
-#       undef isfinite
-#   endif
+#	include <cmath>
+#	if(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+#		undef isfinite
+#	endif
 #endif//GLM_COMPILER
 
 namespace glm
@@ -171,6 +171,6 @@ namespace glm
 }//namespace glm
 
 #include "compatibility.inl"
-    
+
 #endif//GLM_GTX_compatibility
 

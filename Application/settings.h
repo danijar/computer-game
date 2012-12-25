@@ -10,10 +10,14 @@ using namespace sf;
 
 struct StorageSettings : public Storage
 {
+	StorageSettings() : FPS(0) {}
+
 	bool Fullscreen;
+	bool Mouse;
+
 	Vector2i Position;
-	Vector2i Size;
+	Vector2u Size;
+
 	string Title;
 	int FPS;
-	StorageSettings() : FPS(0) {}
 };

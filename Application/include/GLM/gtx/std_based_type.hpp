@@ -28,7 +28,7 @@
 /// @see core (dependence)
 /// @see gtx_extented_min_max (dependence)
 ///
-/// @defgroup gtx_std_based_type GLM_GTX_std_based_type: Add types based on STL
+/// @defgroup gtx_std_based_type GLM_GTX_std_based_type
 /// @ingroup gtx
 /// 
 /// @brief Adds vector types based on STL value types.
@@ -52,27 +52,27 @@ namespace glm
 	/// @{
 	
 	/// Vector type based of two std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec2<std::size_t>		size2;
 	
 	/// Vector type based of three std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec3<std::size_t>		size3;
 
 	/// Vector type based of four std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec4<std::size_t>		size4;
 
 	/// Vector type based of two std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec2<std::size_t>		size2_t;
 	
 	/// Vector type based of three std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec3<std::size_t>		size3_t;
 	
 	/// Vector type based of four std::size_t components.
-	/// @see - GLM_GTX_std_based_type
+	/// @see GLM_GTX_std_based_type
 	typedef detail::tvec4<std::size_t>		size4_t;
 
 	/// @}

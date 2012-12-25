@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="form.cpp" />
     <ClCompile Include="input.cpp" />
@@ -23,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="movement.h" />

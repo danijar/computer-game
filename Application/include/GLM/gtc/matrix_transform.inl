@@ -48,7 +48,11 @@ namespace glm
 		detail::tvec3<T> const & v
 	)
 	{
-		T a = radians(angle);
+#ifdef GLM_FORCE_RADIANS
+		T a = angle;
+#else
+		T a = radians(angle);		
+#endif
 		T c = cos(a);
 		T s = sin(a);
 
@@ -120,7 +124,11 @@ namespace glm
 		detail::tvec3<T> const & v
 	)
 	{
-		T a = radians(angle);
+#ifdef GLM_FORCE_RADIANS
+		T const a = angle;
+#else
+		T const a = radians(angle);
+#endif
 		T c = cos(a);
 		T s = sin(a);
 		detail::tmat4x4<T> Result;
@@ -242,7 +250,7 @@ namespace glm
 		Result[3][2] = - (valType(2) * zFar * zNear) / (zFar - zNear);
 		return Result;
 	}
-
+	
 	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType> perspectiveFov
 	(
@@ -253,9 +261,13 @@ namespace glm
 		valType const & zFar
 	)
 	{
+#ifdef GLM_FORCE_RADIANS
+		valType rad = fov;
+#else
 		valType rad = glm::radians(fov);
+#endif
 		valType h = glm::cos(valType(0.5) * rad) / glm::sin(valType(0.5) * rad);
-		valType w = h * height / width;
+		valType w = h * height / width; ///todo max(width , Height) / min(width , Height)?
 
 		detail::tmat4x4<valType> Result(valType(0));
 		Result[0][0] = w;
@@ -274,7 +286,11 @@ namespace glm
 		T zNear
 	)
 	{
-		T range = tan(radians(fovy / T(2))) * zNear;	
+#ifdef GLM_FORCE_RADIANS
+		T const range = tan(fovy / T(2)) * zNear;	
+#else
+		T const range = tan(radians(fovy / T(2))) * zNear;	
+#endif
 		T left = -range * aspect;
 		T right = range * aspect;
 		T bottom = -range;
@@ -297,7 +313,11 @@ namespace glm
 		T zNear
 	)
 	{
+#ifdef GLM_FORCE_RADIANS
+		T range = tan(fovy / T(2)) * zNear;	
+#else
 		T range = tan(radians(fovy / T(2))) * zNear;	
+#endif
 		T left = -range * aspect;
 		T right = range * aspect;
 		T bottom = -range;

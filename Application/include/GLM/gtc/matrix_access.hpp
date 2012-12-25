@@ -27,7 +27,7 @@
 /// 
 /// @see core (dependence)
 /// 
-/// @defgroup gtc_matrix_access GLM_GTC_matrix_access: Access matrix rows and columns
+/// @defgroup gtc_matrix_access GLM_GTC_matrix_access
 /// @ingroup gtc
 /// 
 /// Defines functions to access rows or columns of a matrix easily.
@@ -58,7 +58,7 @@ namespace glm
 
 	/// Set a specific row to a matrix.
 	/// @see gtc_matrix_access
-    template <typename genType> 
+	template <typename genType> 
 	genType row(
 		genType const & m, 
 		int index, 

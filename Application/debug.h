@@ -2,10 +2,12 @@
 
 #include <iostream>
 #include <string>
-using namespace std;
+
 
 namespace Debug
 {
+	using namespace std;
+
 	void Pass(string Message);
 	void Fail(string Message);
 	void PassFail(string Message, bool Result, string MessagePass = "success", string MessageFail = "fail");
