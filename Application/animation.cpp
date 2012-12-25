@@ -56,7 +56,7 @@ class ComponentAnimation : public Component
 			auto ams = Entity->Get<StorageAnimation>();
 			for(auto i = ams.begin(); i != ams.end(); ++i)
 			{
-				i->second->Start();
+				if(!i->second->Active) i->second->Start();
 			}
 			Debug::Pass("Animation jump");
 		});
