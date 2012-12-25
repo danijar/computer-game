@@ -44,9 +44,6 @@ class ComponentWindow : public Component
 				case Event::KeyReleased:
 					Event->Fire<Keyboard::Key>("InputKeyReleased", evt.key.code);
 					break;
-				case Event::MouseMoved:
-					Event->Fire<Vector2i>("InputMouseMove", Vector2i(evt.mouseMove.x, evt.mouseMove.y));
-					break;
 				case Event::Closed:
 					Close();
 					break;

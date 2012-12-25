@@ -14,6 +14,9 @@ using namespace glm;
 
 class ComponentCamera : public Component
 {
+	Clock clock;
+	float duration;
+
 	void Init()
 	{
 		Global->Add<StorageCamera>("camera");
@@ -26,58 +29,34 @@ class ComponentCamera : public Component
 
 	void Update()
 	{
+		auto cam = Global->Get<StorageCamera>("camera");
+		if(!cam->Active) return;
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		duration = clock.restart().asSeconds();
+		
+		Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
+		Vector2i position = Mouse::getPosition(*wnd);
+		if(position != center)
+		{
+			Mouse::setPosition(center, *wnd);
+			Vector2i delta = position - center;
+			Rotate(delta);
+		}
 
+		vec3 move;
+		if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
+		if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
+		if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z++;
+		if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z--;
+		if (Keyboard::isKeyPressed(Keyboard::PageUp  ) || Keyboard::isKeyPressed(Keyboard::Q)) move.y++;
+		if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move.y--;
+		Move(move);
+
+		Calculate();
 	}
 
 	void Listeners()
 	{
-		Event->Listen<Vector2i>("InputMouseMove", [=](Vector2i Position){
-			if(Global->Get<StorageCamera>("camera")->Active)
-			{
-				auto wnd = &Global->Get<StorageWindow>("window")->Window;
-				Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
-				if(Position == center) return;
-				Mouse::setPosition(center, *wnd);
-				Vector2i delta = Position - center;
-				Rotate(delta);
-			}
-		});
-
-		Event->Listen<Keyboard::Key>("InputKeyPressed", [=](Keyboard::Key Code){
-			if(Global->Get<StorageCamera>("camera")->Active)
-			{
-				vec3 move;
-				switch(Code)
-				{
-				case Keyboard::Key::Down:
-				case Keyboard::Key::S:
-					move.x++;
-					break;
-				case Keyboard::Key::Up:
-				case Keyboard::Key::W:
-					move.x--;
-					break;
-				case Keyboard::Key::Right:
-				case Keyboard::Key::D:
-					move.z++;
-					break;
-				case Keyboard::Key::Left:
-				case Keyboard::Key::A:
-					move.z--;
-					break;
-				case Keyboard::Key::PageUp:
-				case Keyboard::Key::Q:
-					move.y++;
-					break;
-				case Keyboard::Key::PageDown:
-				case Keyboard::Key::E:
-					move.y--;
-					break;
-				}
-				Move(move);
-			}
-		});
-
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
 			switch(Code)
 			{
@@ -107,8 +86,8 @@ class ComponentCamera : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 
-		cam->Active = !cam->Active;
-		wnd->setMouseCursorVisible(!cam->Active);
+		cam->Active = Active;
+		wnd->setMouseCursorVisible(!Active);
 
 		Mouse::setPosition(Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
 	}
@@ -117,15 +96,8 @@ class ComponentCamera : public Component
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 
-		const float speed = .0008f;
-		cam->Angles += vec2(Amount.x, Amount.y) * speed;
-
-		Calculate();
-	}
-
-	void Move(vec2 Amount)
-	{
-		Move(vec3(Amount.x, 0, Amount.y));
+		const float speed = .08f;
+		cam->Angles += vec2(-Amount.x, -Amount.y) * speed * duration;
 	}
 
 	void Move(vec3 Amount)
@@ -135,12 +107,10 @@ class ComponentCamera : public Component
 		vec3 forward = vec3(sinf(cam->Angles.x), 0, cosf(cam->Angles.x));
 		vec3 right = vec3(-forward.z, 0, forward.x);
 
-		const float speed = .1f;
-		cam->Position += forward * speed * -Amount.x;
-		cam->Position.y += speed * Amount.y;
-		cam->Position += right * speed * Amount.z;
-
-		Calculate();
+		const float speed = 10.f;
+		cam->Position   += forward * Amount.x * speed * duration;
+		cam->Position.y +=           Amount.y * speed * duration;
+		cam->Position   += right   * Amount.z * speed * duration;
 	}
 
 	void Calculate()

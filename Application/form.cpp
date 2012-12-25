@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 using namespace std;
 #include <GLEW/glew.h>
@@ -30,22 +29,13 @@ class ComponentForm : public Component
 
 	void Update()
 	{
-		auto fms = Entity->Get<StorageForm>();
-		float time = clock.getElapsedTime().asSeconds();
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
-		{
-			unsigned int id = i->first;
-			auto frm = i->second;
-
-			// update
-		}
 	}
 	
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			unsigned int id = CreateCube(vec3(10, 10, 0));
+			unsigned int id = CreateCube(vec3(0));
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
 		});
@@ -53,14 +43,16 @@ class ComponentForm : public Component
 		Event->Listen("SystemInitialized", [=]{
 			const int a = 3;
 
-			for(float i = -2; i <= 2; ++i)
+			for(float i = -2; i <= 2;  ++i)
 			for(float j = -2; j <= 2; j+=4)
-			for(float k = -2; k <= 2; ++k)
-				CreateCube(vec3(i * a, j * a, k * a));
+			for(float k = -2; k <= 2;  ++k)
+				CreateCube(vec3(i*a, j*a, k*a));
 
-			for(int i = -2; i <= 2; i+=4)
-			for(int j = -2; j <= 2; j+=4)
-				CreateCube(vec3(i * a, 0, j * a));
+			for(float i = -2; i <= 2; i+=2)
+			for(float j = -1; j <= 1;  ++j)
+			for(float k = -2; k <= 2; k+=2)
+				if(i == 0 && k == 0) continue;
+				else CreateCube(vec3(i*a, j*a, k*a));
 		});
 	}
 
@@ -90,7 +82,6 @@ class ComponentForm : public Component
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
 
-		Debug::Pass("Form cube added");
 		return id;
 	}
 
