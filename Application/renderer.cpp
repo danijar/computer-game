@@ -122,7 +122,7 @@ class ComponentRenderer : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		mat4 Projection = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 100.0f); // get FOV from settings
+		mat4 Projection = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 1000.0f); // get FOV from settings
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
 	}
 
