@@ -33,7 +33,6 @@ class ComponentTerrain : public Component
 		Entity->Add<StorageChunk>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 		auto frm = Entity->Add<StorageForm>(id);
-		Entity->Add<StorageMovement>(id);
 
 		tsf->Position = vec3(-5);
 		frm->Scale = vec3(.25f);
