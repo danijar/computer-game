@@ -10,7 +10,7 @@ using namespace sf;
 
 struct StorageSettings : public Storage
 {
-	StorageSettings() : FPS(0) {}
+	StorageSettings() : Fullscreen(false), Mouse(true), Size(640, 480), Title(""), FPS(0), Fieldofview(45.f), Viewdistance(100.f) {}
 
 	bool Fullscreen;
 	bool Mouse;
@@ -20,4 +20,6 @@ struct StorageSettings : public Storage
 
 	string Title;
 	int FPS;
+
+	float Fieldofview, Viewdistance;
 };

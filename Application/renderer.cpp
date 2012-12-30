@@ -27,8 +27,9 @@ class ComponentRenderer : public Component
 	void Init()
 	{
 		glewExperimental = GL_TRUE;
-		glewInit();
-
+		int result = glewInit();
+		Debug::PassFail("Glew initialization", result ? false : true);
+		
 		Shader("shaders/vertex.txt", "shaders/fragment.txt");
 		Window();
 
@@ -68,11 +69,11 @@ class ComponentRenderer : public Component
 
 		glUseProgram(frm->Program);
 
-		mat4 Scale		= scale(mat4(1), frm->Scale);
-		mat4 Translate	= translate(mat4(1), tsf->Position);
-		mat4 Rotate		= rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
-						* rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
-						* rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
+		mat4 Scale      = scale(mat4(1), frm->Scale);
+		mat4 Translate  = translate(mat4(1), tsf->Position);
+		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
+		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
+		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 		mat4 Model = Translate * Rotate * Scale;
 		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
 
@@ -118,11 +119,12 @@ class ComponentRenderer : public Component
 
 	void Perspective(Vector2u Size)
 	{
+		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		mat4 Projection = perspective(45.0f, (float)Size.x / (float)Size.y, 1.0f, 100.0f); // get FOV from settings
+		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
 	}
 
