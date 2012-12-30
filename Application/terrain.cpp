@@ -30,7 +30,6 @@ class ComponentTerrain : public Component
 		Entity->Add<StorageTransform>(id);
 		Entity->Add<StorageForm>(id);
 
-		Debug::Pass("Terrain generating");
 		Generate();
 
 		Listeners();
@@ -53,6 +52,10 @@ class ComponentTerrain : public Component
 		for(int k = 0; k < CHUNK_Z; ++k)
 		{
 			if(!Get(i, j, k)) continue;
+
+			bool next_pos_i = Get(i+1, j, k), next_neg_i = Get(i-1, j, k), next_pos_j = Get(i, j+1, k), next_neg_j = Get(i, j-1, k), next_pos_k = Get(i, j, k+1), next_neg_k = Get(i, j, k-1);
+			if(next_pos_i && next_neg_i && next_pos_j && next_neg_j && next_pos_k && next_neg_k) continue;
+
 			int x = i-(CHUNK_X/2), y = j-(CHUNK_Y/2), z = k-(CHUNK_Z/2);
 			Position.push_back(x-.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
 			Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
@@ -70,36 +73,12 @@ class ComponentTerrain : public Component
 			Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
 			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
 			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-			if(!Get(i + 1, j, k)) // left front
-			{
-				Elements.push_back(n+1); Elements.push_back(n+5); Elements.push_back(n+6);
-				Elements.push_back(n+6); Elements.push_back(n+2); Elements.push_back(n+1);
-			}
-			if(!Get(i, j + 1, k)) // right front
-			{
-				Elements.push_back(n+3); Elements.push_back(n+2); Elements.push_back(n+6);
-				Elements.push_back(n+6); Elements.push_back(n+7); Elements.push_back(n+3);
-			}
-			if(!Get(i, j, k + 1)) // top
-			{
-				Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
-				Elements.push_back(n+2); Elements.push_back(n+3); Elements.push_back(n+0);
-			}
-			if(!Get(i - 1, j, k)) // right back
-			{
-				Elements.push_back(n+4); Elements.push_back(n+0); Elements.push_back(n+3);
-				Elements.push_back(n+3); Elements.push_back(n+7); Elements.push_back(n+4);
-			}
-			if(!Get(i, j - 1, k)) // left back
-			{
-				Elements.push_back(n+4); Elements.push_back(n+5); Elements.push_back(n+1);
-				Elements.push_back(n+1); Elements.push_back(n+0); Elements.push_back(n+4);
-			}
-			if(!Get(i, j, k - 1)) // bottom
-			{
-				Elements.push_back(n+7); Elements.push_back(n+6); Elements.push_back(n+5);
-				Elements.push_back(n+5); Elements.push_back(n+4); Elements.push_back(n+7);
-			}
+			if(!next_pos_i) { Elements.push_back(n+1); Elements.push_back(n+5); Elements.push_back(n+6); Elements.push_back(n+6); Elements.push_back(n+2); Elements.push_back(n+1); }
+			if(!next_neg_i) { Elements.push_back(n+4); Elements.push_back(n+0); Elements.push_back(n+3); Elements.push_back(n+3); Elements.push_back(n+7); Elements.push_back(n+4); }
+			if(!next_pos_j) { Elements.push_back(n+3); Elements.push_back(n+2); Elements.push_back(n+6); Elements.push_back(n+6); Elements.push_back(n+7); Elements.push_back(n+3); }
+			if(!next_neg_j) { Elements.push_back(n+4); Elements.push_back(n+5); Elements.push_back(n+1); Elements.push_back(n+1); Elements.push_back(n+0); Elements.push_back(n+4); }
+			if(!next_pos_k) { Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2); Elements.push_back(n+2); Elements.push_back(n+3); Elements.push_back(n+0); }
+			if(!next_neg_k) { Elements.push_back(n+7); Elements.push_back(n+6); Elements.push_back(n+5); Elements.push_back(n+5); Elements.push_back(n+4); Elements.push_back(n+7); }
 			n += 8;
 		}
 
@@ -114,8 +93,6 @@ class ComponentTerrain : public Component
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
-
-		Debug::Pass("Terrain buffer complete");
 	}
 
 	void Listeners()
