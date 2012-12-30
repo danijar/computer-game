@@ -124,7 +124,7 @@ class ComponentRenderer : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance)
+		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
 	}
 

@@ -46,41 +46,8 @@ class ComponentTerrain : public Component
 
 		vector<float> Position, Color;
 		vector<int> Elements;
-		int n = 0;
-		for(int i = 0; i < CHUNK_X; ++i)
-		for(int j = 0; j < CHUNK_Y; ++j)
-		for(int k = 0; k < CHUNK_Z; ++k)
-		{
-			if(!Get(i, j, k)) continue;
-
-			bool next_pos_i = Get(i+1, j, k), next_neg_i = Get(i-1, j, k), next_pos_j = Get(i, j+1, k), next_neg_j = Get(i, j-1, k), next_pos_k = Get(i, j, k+1), next_neg_k = Get(i, j, k-1);
-			if(next_pos_i && next_neg_i && next_pos_j && next_neg_j && next_pos_k && next_neg_k) continue;
-
-			int x = i-(CHUNK_X/2), y = j-(CHUNK_Y/2), z = k-(CHUNK_Z/2);
-			Position.push_back(x-.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
-			Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z+.5f);
-			Position.push_back(x+.5f); Position.push_back(y+.5f); Position.push_back(z+.5f);
-			Position.push_back(x-.5f); Position.push_back(y+.5f); Position.push_back(z+.5f);
-			Position.push_back(x-.5f); Position.push_back(y-.5f); Position.push_back(z-.5f);
-			Position.push_back(x+.5f); Position.push_back(y-.5f); Position.push_back(z-.5f);
-			Position.push_back(x+.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
-			Position.push_back(x-.5f); Position.push_back(y+.5f); Position.push_back(z-.5f);
-			Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(.4f); Color.push_back(.2f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-			Color.push_back(0.f); Color.push_back(1.f); Color.push_back(0.f); Color.push_back(1.f);
-			if(!next_pos_i) { Elements.push_back(n+1); Elements.push_back(n+5); Elements.push_back(n+6); Elements.push_back(n+6); Elements.push_back(n+2); Elements.push_back(n+1); }
-			if(!next_neg_i) { Elements.push_back(n+4); Elements.push_back(n+0); Elements.push_back(n+3); Elements.push_back(n+3); Elements.push_back(n+7); Elements.push_back(n+4); }
-			if(!next_pos_j) { Elements.push_back(n+3); Elements.push_back(n+2); Elements.push_back(n+6); Elements.push_back(n+6); Elements.push_back(n+7); Elements.push_back(n+3); }
-			if(!next_neg_j) { Elements.push_back(n+4); Elements.push_back(n+5); Elements.push_back(n+1); Elements.push_back(n+1); Elements.push_back(n+0); Elements.push_back(n+4); }
-			if(!next_pos_k) { Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2); Elements.push_back(n+2); Elements.push_back(n+3); Elements.push_back(n+0); }
-			if(!next_neg_k) { Elements.push_back(n+7); Elements.push_back(n+6); Elements.push_back(n+5); Elements.push_back(n+5); Elements.push_back(n+4); Elements.push_back(n+7); }
-			n += 8;
-		}
+		
+		CreateA(&Position, &Color, &Elements);
 
 		glGenBuffers(1, &frm->VerticesPosition);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
@@ -113,7 +80,12 @@ class ComponentTerrain : public Component
 			{
 				Set(x, y, z, true);
 			}
-		}		
+		}
+	}
+
+	bool Get(vec3 pos)
+	{
+		return Get((int)pos.x, (int)pos.y, (int)pos.z);
 	}
 
 	bool Get(int x, int y, int z) {
@@ -123,14 +95,99 @@ class ComponentTerrain : public Component
 	}
 
 	void Set(int x, int y, int z, bool solid) {
+		if(x < 0 || y < 0 || z < 0 || x > CHUNK_X-1 || y > CHUNK_Y-1 || z > CHUNK_Z-1) return;
 		auto cnk = Entity->Get<StorageChunk>(id);
 		cnk->blocks[x][y][z] = solid;
 		cnk->changed = true;
 	}
 
-	void Toggle(int x, int y, int z)
+	inline vec3 Shift(int Dimension, vec3 Vector)
 	{
-		Set(x, y, z, !Get(x, y, z));
+		if      (Dimension % 3 == 1) return vec3(Vector.z, Vector.x, Vector.y);
+		else if (Dimension % 3 == 2) return vec3(Vector.y, Vector.z, Vector.x);
+		else                         return Vector;
 	}
 
+	void CreateA(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	{
+		int n = 0;
+		for(int X = 0; X < CHUNK_X; ++X)
+		for(int Y = 0; Y < CHUNK_Y; ++Y)
+		for(int Z = 0; Z < CHUNK_Z; ++Z)
+			if(Get(X, Y, Z))
+			{
+
+				bool next_pos_i = Get(X+1, Y, Z), next_neg_i = Get(X-1, Y, Z), next_pos_j = Get(X, Y+1, Z), next_neg_j = Get(X, Y-1, Z), next_pos_k = Get(X, Y, Z+1), next_neg_k = Get(X, Y, Z-1);
+				
+				// vertices
+				Position->push_back(X-.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
+				Position->push_back(X+.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
+				Position->push_back(X+.5f); Position->push_back(Y+.5f); Position->push_back(Z+.5f);
+				Position->push_back(X-.5f); Position->push_back(Y+.5f); Position->push_back(Z+.5f);
+				Position->push_back(X-.5f); Position->push_back(Y-.5f); Position->push_back(Z-.5f);
+				Position->push_back(X+.5f); Position->push_back(Y-.5f); Position->push_back(Z-.5f);
+				Position->push_back(X+.5f); Position->push_back(Y+.5f); Position->push_back(Z-.5f);
+				Position->push_back(X-.5f); Position->push_back(Y+.5f); Position->push_back(Z-.5f);
+
+				// colors
+				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+
+				// elements
+				if(!next_pos_i) { Elements->push_back(n+1); Elements->push_back(n+5); Elements->push_back(n+6); Elements->push_back(n+6); Elements->push_back(n+2); Elements->push_back(n+1); }
+				if(!next_neg_i) { Elements->push_back(n+4); Elements->push_back(n+0); Elements->push_back(n+3); Elements->push_back(n+3); Elements->push_back(n+7); Elements->push_back(n+4); }
+				if(!next_pos_j) { Elements->push_back(n+3); Elements->push_back(n+2); Elements->push_back(n+6); Elements->push_back(n+6); Elements->push_back(n+7); Elements->push_back(n+3); }
+				if(!next_neg_j) { Elements->push_back(n+4); Elements->push_back(n+5); Elements->push_back(n+1); Elements->push_back(n+1); Elements->push_back(n+0); Elements->push_back(n+4); }
+				if(!next_pos_k) { Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2); Elements->push_back(n+2); Elements->push_back(n+3); Elements->push_back(n+0); }
+				if(!next_neg_k) { Elements->push_back(n+7); Elements->push_back(n+6); Elements->push_back(n+5); Elements->push_back(n+5); Elements->push_back(n+4); Elements->push_back(n+7); }
+				n += 8;
+			}
+		Debug::Pass("Terrain elements " + to_string(n));
+	}
+
+	void CreateB(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	{
+		int n = 0;
+		for(int X = 0; X < CHUNK_X; ++X)
+		for(int Y = 0; Y < CHUNK_Y; ++Y)
+		for(int Z = 0; Z < CHUNK_Z; ++Z)
+			if(Get(X, Y, Z))
+				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
+					if(!Get(vec3(X, Y, Z) + Shift(dim, vec3(dir, 0, 0))))
+					{
+						// faces
+						for(float i = 0; i <= 1; ++i)
+						for(float j = 0; j <= 1; ++j)
+						{
+							// vertices
+							vec3 vertex = vec3(X, Y, Z) + Shift(dim, vec3((dir+1)/2, i, j));
+							Position->push_back(vertex.x); Position->push_back(vertex.y); Position->push_back(vertex.z);
+						}
+
+						// colors
+						Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+						Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
+						Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+						Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+
+						// elements
+						if(dir == -1) {
+							Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
+							Elements->push_back(n+1); Elements->push_back(n+3); Elements->push_back(n+2);
+						} else {
+							Elements->push_back(n+0); Elements->push_back(n+2); Elements->push_back(n+1);
+							Elements->push_back(n+1); Elements->push_back(n+2); Elements->push_back(n+3);
+						}
+						n += 4;
+					}
+				dir *= -1; } while(dir > 0); }
+
+		Debug::Pass("Terrain elements " + to_string(n));
+	}
 };
