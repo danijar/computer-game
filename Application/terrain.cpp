@@ -9,7 +9,7 @@ using namespace std;
 #include <SFML/OpenGL.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
-#include <glm/gtc/noise.hpp>
+#include <GLM/gtc/noise.hpp>
 using namespace glm;
 
 #include "form.h"
@@ -42,12 +42,13 @@ class ComponentTerrain : public Component
 
 		if(!cnk->changed) return;
 		cnk->changed = false;
+
 		Debug::Pass("Terrain calculation vertices");
 
 		vector<float> Position, Color;
 		vector<int> Elements;
 		
-		CreateA(&Position, &Color, &Elements);
+		CreateB(&Position, &Color, &Elements);
 
 		glGenBuffers(1, &frm->VerticesPosition);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
@@ -109,6 +110,8 @@ class ComponentTerrain : public Component
 	}
 
 	void CreateA(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	// 1520 triangles per second and 3.1 vertices per triangle
+	// generated chunk has 0, 0, 0 at its center
 	{
 		int n = 0;
 		for(int X = 0; X < CHUNK_X; ++X)
@@ -116,9 +119,9 @@ class ComponentTerrain : public Component
 		for(int Z = 0; Z < CHUNK_Z; ++Z)
 			if(Get(X, Y, Z))
 			{
-
 				bool next_pos_i = Get(X+1, Y, Z), next_neg_i = Get(X-1, Y, Z), next_pos_j = Get(X, Y+1, Z), next_neg_j = Get(X, Y-1, Z), next_pos_k = Get(X, Y, Z+1), next_neg_k = Get(X, Y, Z-1);
-				
+				if(next_pos_i && next_neg_i && next_pos_j && next_neg_j && next_pos_k && next_neg_k) continue;
+
 				// vertices
 				Position->push_back(X-.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
 				Position->push_back(X+.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
@@ -148,10 +151,11 @@ class ComponentTerrain : public Component
 				if(!next_neg_k) { Elements->push_back(n+7); Elements->push_back(n+6); Elements->push_back(n+5); Elements->push_back(n+5); Elements->push_back(n+4); Elements->push_back(n+7); }
 				n += 8;
 			}
-		Debug::Pass("Terrain elements " + to_string(n));
 	}
 
 	void CreateB(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	// 1543 triangles per second and somehow 2.0 vertices per triangle
+	// generated chunk has 0, 0, 0 at its front bottom right corner point 
 	{
 		int n = 0;
 		for(int X = 0; X < CHUNK_X; ++X)
@@ -187,7 +191,5 @@ class ComponentTerrain : public Component
 						n += 4;
 					}
 				dir *= -1; } while(dir > 0); }
-
-		Debug::Pass("Terrain elements " + to_string(n));
 	}
 };

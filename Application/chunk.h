@@ -3,9 +3,9 @@
 #include "system.h"
 
 
-#define CHUNK_X 32
+#define CHUNK_X 64
 #define CHUNK_Y 16
-#define CHUNK_Z 32
+#define CHUNK_Z 64
 
 struct StorageChunk : public Storage
 {
