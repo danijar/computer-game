@@ -48,7 +48,7 @@ class ComponentTerrain : public Component
 		vector<float> Position, Color;
 		vector<int> Elements;
 		
-		CreateB(&Position, &Color, &Elements);
+		VerticesA(&Position, &Color, &Elements);
 
 		glGenBuffers(1, &frm->VerticesPosition);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
@@ -109,7 +109,7 @@ class ComponentTerrain : public Component
 		else                         return Vector;
 	}
 
-	void CreateA(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	void VerticesA(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
 	// 1520 triangles per second and 3.1 vertices per triangle
 	// generated chunk has 0, 0, 0 at its center
 	{
@@ -143,17 +143,30 @@ class ComponentTerrain : public Component
 				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
 
 				// elements
-				if(!next_pos_i) { Elements->push_back(n+1); Elements->push_back(n+5); Elements->push_back(n+6); Elements->push_back(n+6); Elements->push_back(n+2); Elements->push_back(n+1); }
-				if(!next_neg_i) { Elements->push_back(n+4); Elements->push_back(n+0); Elements->push_back(n+3); Elements->push_back(n+3); Elements->push_back(n+7); Elements->push_back(n+4); }
-				if(!next_pos_j) { Elements->push_back(n+3); Elements->push_back(n+2); Elements->push_back(n+6); Elements->push_back(n+6); Elements->push_back(n+7); Elements->push_back(n+3); }
-				if(!next_neg_j) { Elements->push_back(n+4); Elements->push_back(n+5); Elements->push_back(n+1); Elements->push_back(n+1); Elements->push_back(n+0); Elements->push_back(n+4); }
-				if(!next_pos_k) { Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2); Elements->push_back(n+2); Elements->push_back(n+3); Elements->push_back(n+0); }
-				if(!next_neg_k) { Elements->push_back(n+7); Elements->push_back(n+6); Elements->push_back(n+5); Elements->push_back(n+5); Elements->push_back(n+4); Elements->push_back(n+7); }
+				if(!next_pos_i) {
+					Elements->push_back(n+1); Elements->push_back(n+5); Elements->push_back(n+6);
+					Elements->push_back(n+6); Elements->push_back(n+2); Elements->push_back(n+1);
+				} if(!next_neg_i) {
+					Elements->push_back(n+4); Elements->push_back(n+0); Elements->push_back(n+3);
+					Elements->push_back(n+3); Elements->push_back(n+7); Elements->push_back(n+4);
+				} if(!next_pos_j) {
+					Elements->push_back(n+3); Elements->push_back(n+2); Elements->push_back(n+6);
+					Elements->push_back(n+6); Elements->push_back(n+7); Elements->push_back(n+3);
+				} if(!next_neg_j) {
+					Elements->push_back(n+4); Elements->push_back(n+5); Elements->push_back(n+1);
+					Elements->push_back(n+1); Elements->push_back(n+0); Elements->push_back(n+4);
+				} if(!next_pos_k) {
+					Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
+					Elements->push_back(n+2); Elements->push_back(n+3); Elements->push_back(n+0);
+				} if(!next_neg_k) {
+					Elements->push_back(n+7); Elements->push_back(n+6); Elements->push_back(n+5);
+					Elements->push_back(n+5); Elements->push_back(n+4); Elements->push_back(n+7);
+				}
 				n += 8;
 			}
 	}
 
-	void CreateB(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	void VerticesB(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
 	// 1543 triangles per second and somehow 2.0 vertices per triangle
 	// generated chunk has 0, 0, 0 at its front bottom right corner point 
 	{
