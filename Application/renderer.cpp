@@ -52,6 +52,16 @@ class ComponentRenderer : public Component
 
 	void Listeners()
 	{
+		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			switch(Code)
+			{
+			case Keyboard::Key::F2:
+				auto stg = Global->Get<StorageSettings>("settings");
+				Wireframe(!stg->Wireframe);
+				break;
+			}
+		});
+
 		Event->Listen("WindowRecreated", [=]{
 			Window();
 		});
@@ -104,6 +114,7 @@ class ComponentRenderer : public Component
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		Wireframe();
 		
 		glUseProgram(shd->Program);
 
@@ -126,6 +137,19 @@ class ComponentRenderer : public Component
 
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
+	}
+
+	void Wireframe()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		Wireframe(stg->Wireframe);
+	}
+
+	void Wireframe(bool State)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		stg->Wireframe = State;
+		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
 	}
 
 	void Shader(string PathVertex, string PathFragment)
