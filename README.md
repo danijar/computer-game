@@ -3,6 +3,13 @@ Graphics Application
 
 This is an OpenGL graphics application using a component and data based [Graphics Architecture](https://github.com/ComputerGame/GraphicsArchitecture) with event manager.
 
+Features
+--------
+
+- Camera
+- Movement
+- Textures
+
 Libraries
 ---------
 
@@ -13,9 +20,7 @@ Libraries
 Screenshot
 ----------
 
-This cube is all you can see for now.
-
-[![Screenshot](http://danijar.org/wp-content/uploads/graphicsapplicationcube.png)](http://danijar.org/wp-content/uploads/graphicsapplicationcube.png)
+![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/master/screenshot.png)
 
 Instructions
 ------------
@@ -29,7 +34,14 @@ A precompiled executables for Windows is found in the `Debug` folder. You need t
 - `Tab` Insert new cube at the center.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move cubes.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the cube.
-- ``Space` Let cubes jump.
+- `Space` Let the cube jump.
+
+Branches
+--------
+
+### [Terrain](https://github.com/ComputerGame/GraphicsApplication/tree/terrain)
+
+In this branch a voxel based terrain generator and renderer is implmented.
 
 Upcoming Features
 -----------------
