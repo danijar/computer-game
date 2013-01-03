@@ -6,7 +6,7 @@ Screenshot
 
 Unfortunatly, since there is not lighing it is hard to recognize the different blocks.
 
-![Screenshot](https://github.com/ComputerGame/GraphicsApplication/blob/terrain/screenshot.png)]
+![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/terrain/screenshot.png)]
 
 Instructions
 ------------
