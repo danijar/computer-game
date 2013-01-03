@@ -7,6 +7,7 @@ using namespace std;
 #include <SFML/OpenGL.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics/Image.hpp>
 using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
@@ -35,38 +36,48 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			unsigned int id = CreateCube(vec3(0));
+			unsigned int id = CreateCube("forms/textures/magic.jpg");
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
 		});
 
 		Event->Listen("SystemInitialized", [=]{
-
+			
 		});
 	}
 
-	template<size_t VerticesPositionN, size_t VerticesColorN, size_t ElementsN>
-	int Create(const float (&VerticesPosition)[VerticesPositionN], const float (&VerticesColor)[VerticesColorN], const int (&Elements)[ElementsN], vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
+	template<size_t PositionsN, size_t TexcoordsN, size_t ElementsN>
+	int Create(const float (&Positions)[PositionsN], const float (&Texcoords)[TexcoordsN], const int(&Elements)[ElementsN], string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
 	{
+		auto shd = Global->Get<StorageShader>("shader");
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
-		auto shd = Global->Get<StorageShader>("shader");
 
-		frm->Program = shd->Program;
+		glGenBuffers(1, &frm->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Positions), Positions, GL_STATIC_DRAW);
 
-		glGenBuffers(1, &frm->VerticesPosition);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesPosition), VerticesPosition, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &frm->VerticesColor);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesColor);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(VerticesColor), VerticesColor, GL_STATIC_DRAW);
+		glGenBuffers(1, &frm->Texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(Texcoords), Texcoords, GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), Elements, GL_STATIC_DRAW);
 
+		Image image;
+		bool result = image.loadFromFile(Texture);
+		auto size = image.getSize();
+		glGenTextures(1, &frm->Texture);
+		glBindTexture(GL_TEXTURE_2D, frm->Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		frm->Program = shd->Program;
 		frm->Scale = Scale;
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
@@ -74,12 +85,12 @@ class ComponentForm : public Component
 		return id;
 	}
 
-	unsigned int CreateCube(vec3 Position)
+	unsigned int CreateCube(string Texture, vec3 Position = vec3(0))
 	{
-		const float POSITIONS[] = {-1.f,-1.f,+1.f,+1.f,-1.f,+1.f,+1.f,+1.f,+1.f,-1.f,+1.f,+1.f,-1.f,-1.f,-1.f,+1.f,-1.f,-1.f,+1.f,+1.f,-1.f,-1.f,+1.f,-1.f};
-		const float COLORS[]    = {1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,0.f,0.f,1.f,.8f,1.f,1.f,1.f,.8f,1.f,0.f,0.f,.8f,0.f,1.f,0.f,.8f};
-		const int   ELEMENTS[]  = {0,1,2,2,3,0,1,5,6,6,2,1,7,6,5,5,4,7,4,0,3,3,7,4,4,5,1,1,0,4,3,2,6,6,7,3};
-		unsigned int id = Create(POSITIONS, COLORS, ELEMENTS, Position);
-		return id;
+		const float Positions[] = {-1.,-1.,1.,1.,-1.,1.,1.,1.,1.,-1.,1.,1.,-1.,1.,1.,1.,1.,1.,1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,-1.,-1.,-1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,1.,-1.,1.,-1.,1.,1.,-1.,-1.,1.,1.,-1.,1.,1.,1.};
+		const float Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
+		const int   Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
+
+		return Create(Positions, Texcoords, Elements, Texture, Position);
 	}
 };

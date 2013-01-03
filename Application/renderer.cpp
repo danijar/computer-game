@@ -52,6 +52,16 @@ class ComponentRenderer : public Component
 
 	void Listeners()
 	{
+		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			switch(Code)
+			{
+			case Keyboard::Key::F2:
+				auto stg = Global->Get<StorageSettings>("settings");
+				Wireframe(!stg->Wireframe);
+				break;
+			}
+		});
+
 		Event->Listen("WindowRecreated", [=]{
 			Window();
 		});
@@ -78,19 +88,20 @@ class ComponentRenderer : public Component
 		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
 
 		glEnableVertexAttribArray(shd->Position);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
 		glVertexAttribPointer(shd->Position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glEnableVertexAttribArray(shd->Color);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesColor);
-		glVertexAttribPointer(shd->Color, 4, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(shd->Texcoord);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+		glVertexAttribPointer(shd->Texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		int qty; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &qty);
-		glDrawElements(GL_TRIANGLES, qty/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 
-		glDisableVertexAttribArray(shd->Position);
-		glDisableVertexAttribArray(shd->Color);
+		glBindTexture(GL_TEXTURE_2D, frm->Texture);
+		//glUniform1i(shd->Texture, 0);
+
+		int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
+		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	}
 
 	void Window()
@@ -104,10 +115,12 @@ class ComponentRenderer : public Component
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_TEXTURE_2D);
 		
 		glUseProgram(shd->Program);
 
 		Perspective();
+		Wireframe();
 	}
 
 	void Perspective()
@@ -126,6 +139,19 @@ class ComponentRenderer : public Component
 
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
+	}
+
+	void Wireframe()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		Wireframe(stg->Wireframe);
+	}
+
+	void Wireframe(bool State)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		stg->Wireframe = State;
+		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
 	}
 
 	void Shader(string PathVertex, string PathFragment)
@@ -161,11 +187,12 @@ class ComponentRenderer : public Component
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 
-		shd->View = glGetUniformLocation(shd->Program, "view");
-		shd->Projection = glGetUniformLocation(shd->Program, "proj");
-		shd->Model = glGetUniformLocation(shd->Program, "model");
-		shd->Position = glGetAttribLocation(shd->Program, "position");
-		shd->Color = glGetAttribLocation(shd->Program, "color");
+		shd->View       = glGetUniformLocation(shd->Program, "view"    );
+		shd->Projection = glGetUniformLocation(shd->Program, "proj"    );
+		shd->Model      = glGetUniformLocation(shd->Program, "model"   );
+		shd->Texture    = glGetUniformLocation(shd->Program, "tex"     );
+		shd->Position   = glGetAttribLocation (shd->Program, "position");
+		shd->Texcoord   = glGetAttribLocation (shd->Program, "texcoord");
 	}
 
 	bool ProgramTest(int Id, bool Output = false)
