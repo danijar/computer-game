@@ -24,4 +24,5 @@ struct StorageSettings : public Storage
 
 	// Renderer
 	float Fieldofview, Viewdistance;
+	bool Wireframe;
 };

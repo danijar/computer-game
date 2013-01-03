@@ -7,6 +7,7 @@
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
+#include <SFML/Graphics/Image.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
@@ -45,22 +46,33 @@ class ComponentTerrain : public Component
 
 		Debug::Pass("Terrain calculation vertices");
 
-		vector<float> Position, Color;
+		vector<float> Positions, Texcoords;
 		vector<int> Elements;
 		
-		VerticesA(&Position, &Color, &Elements);
+		Vertices(&Positions, &Texcoords, &Elements);
 
-		glGenBuffers(1, &frm->VerticesPosition);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesPosition);
-		glBufferData(GL_ARRAY_BUFFER, Position.size() * sizeof(float), &Position[0], GL_STATIC_DRAW);
+		glGenBuffers(1, &frm->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glBufferData(GL_ARRAY_BUFFER, Positions.size() * sizeof(float), &Positions[0], GL_STATIC_DRAW);
 
-		glGenBuffers(1, &frm->VerticesColor);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->VerticesColor);
-		glBufferData(GL_ARRAY_BUFFER, Color.size() * sizeof(float), &Color[0], GL_STATIC_DRAW);
+		glGenBuffers(1, &frm->Texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(float), &Texcoords[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
+
+		Image image;
+		bool result = image.loadFromFile("forms/textures/dirt.jpg");
+		auto size = image.getSize();
+		glGenTextures(1, &frm->Texture);
+		glBindTexture(GL_TEXTURE_2D, frm->Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
 	void Listeners()
@@ -109,64 +121,7 @@ class ComponentTerrain : public Component
 		else                         return Vector;
 	}
 
-	void VerticesA(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
-	// 1520 triangles per second and 3.1 vertices per triangle
-	// generated chunk has 0, 0, 0 at its center
-	{
-		int n = 0;
-		for(int X = 0; X < CHUNK_X; ++X)
-		for(int Y = 0; Y < CHUNK_Y; ++Y)
-		for(int Z = 0; Z < CHUNK_Z; ++Z)
-			if(Get(X, Y, Z))
-			{
-				bool next_pos_i = Get(X+1, Y, Z), next_neg_i = Get(X-1, Y, Z), next_pos_j = Get(X, Y+1, Z), next_neg_j = Get(X, Y-1, Z), next_pos_k = Get(X, Y, Z+1), next_neg_k = Get(X, Y, Z-1);
-				if(next_pos_i && next_neg_i && next_pos_j && next_neg_j && next_pos_k && next_neg_k) continue;
-
-				// vertices
-				Position->push_back(X-.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
-				Position->push_back(X+.5f); Position->push_back(Y-.5f); Position->push_back(Z+.5f);
-				Position->push_back(X+.5f); Position->push_back(Y+.5f); Position->push_back(Z+.5f);
-				Position->push_back(X-.5f); Position->push_back(Y+.5f); Position->push_back(Z+.5f);
-				Position->push_back(X-.5f); Position->push_back(Y-.5f); Position->push_back(Z-.5f);
-				Position->push_back(X+.5f); Position->push_back(Y-.5f); Position->push_back(Z-.5f);
-				Position->push_back(X+.5f); Position->push_back(Y+.5f); Position->push_back(Z-.5f);
-				Position->push_back(X-.5f); Position->push_back(Y+.5f); Position->push_back(Z-.5f);
-
-				// colors
-				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-				Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-
-				// elements
-				if(!next_pos_i) {
-					Elements->push_back(n+1); Elements->push_back(n+5); Elements->push_back(n+6);
-					Elements->push_back(n+6); Elements->push_back(n+2); Elements->push_back(n+1);
-				} if(!next_neg_i) {
-					Elements->push_back(n+4); Elements->push_back(n+0); Elements->push_back(n+3);
-					Elements->push_back(n+3); Elements->push_back(n+7); Elements->push_back(n+4);
-				} if(!next_pos_j) {
-					Elements->push_back(n+3); Elements->push_back(n+2); Elements->push_back(n+6);
-					Elements->push_back(n+6); Elements->push_back(n+7); Elements->push_back(n+3);
-				} if(!next_neg_j) {
-					Elements->push_back(n+4); Elements->push_back(n+5); Elements->push_back(n+1);
-					Elements->push_back(n+1); Elements->push_back(n+0); Elements->push_back(n+4);
-				} if(!next_pos_k) {
-					Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
-					Elements->push_back(n+2); Elements->push_back(n+3); Elements->push_back(n+0);
-				} if(!next_neg_k) {
-					Elements->push_back(n+7); Elements->push_back(n+6); Elements->push_back(n+5);
-					Elements->push_back(n+5); Elements->push_back(n+4); Elements->push_back(n+7);
-				}
-				n += 8;
-			}
-	}
-
-	void VerticesB(vector<float> *Position, vector<float> *Color, vector<int> *Elements)
+	void Vertices(vector<float> *Position, vector<float> *Texcoords, vector<int> *Elements)
 	// 1543 triangles per second and somehow 2.0 vertices per triangle
 	// generated chunk has 0, 0, 0 at its front bottom right corner point 
 	{
@@ -188,10 +143,10 @@ class ComponentTerrain : public Component
 						}
 
 						// colors
-						Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-						Color->push_back(0.f); Color->push_back(1.f); Color->push_back(0.f); Color->push_back(1.f);
-						Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
-						Color->push_back(.4f); Color->push_back(.2f); Color->push_back(0.f); Color->push_back(1.f);
+						Texcoords->push_back(0.f); Texcoords->push_back(0.f);
+						Texcoords->push_back(1.f); Texcoords->push_back(1.f);
+						Texcoords->push_back(1.f); Texcoords->push_back(0.f);
+						Texcoords->push_back(0.f); Texcoords->push_back(1.f);
 
 						// elements
 						if(dir == -1) {
