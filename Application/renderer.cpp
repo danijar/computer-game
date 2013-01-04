@@ -91,6 +91,10 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
 		glVertexAttribPointer(shd->Position, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
+		glEnableVertexAttribArray(shd->Normals);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+		glVertexAttribPointer(shd->Normals, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
 		glEnableVertexAttribArray(shd->Texcoord);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 		glVertexAttribPointer(shd->Texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
@@ -192,6 +196,7 @@ class ComponentRenderer : public Component
 		shd->Model      = glGetUniformLocation(shd->Program, "model"   );
 		shd->Texture    = glGetUniformLocation(shd->Program, "tex"     );
 		shd->Position   = glGetAttribLocation (shd->Program, "position");
+		shd->Normals    = glGetAttribLocation (shd->Program, "normal"  );
 		shd->Texcoord   = glGetAttribLocation (shd->Program, "texcoord");
 	}
 

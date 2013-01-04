@@ -8,6 +8,6 @@ using namespace sf;
 struct StorageShader : public Storage
 {
 	GLuint Vertex, Fragment, Program,			// shaders
-		   Position, Texcoord,					// inputs
+		   Position, Normals, Texcoord,			// inputs
 	       Model, View, Projection, Texture;	// uniforms
 };
