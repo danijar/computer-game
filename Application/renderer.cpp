@@ -210,7 +210,7 @@ class ComponentRenderer : public Component
 			GLchar Log[513];
 			GLsizei Length;
 			glGetProgramInfoLog(Id, 512, &Length, Log);
-			if(Length > 0) Debug::PassFail(Log, Result, "", "");
+			if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
 		}
 		return Result;
 	}
@@ -225,7 +225,7 @@ class ComponentRenderer : public Component
 			GLchar Log[513];
 			GLsizei Length;
 			glGetShaderInfoLog(Id, 512, &Length, Log);
-			if(Length > 0) Debug::PassFail(Log, Result, "", "");
+			if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
 		}
 		return Result;
 	}
