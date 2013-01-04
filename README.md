@@ -9,6 +9,7 @@ Features
 - Camera
 - Movement
 - Textures
+- Basic Voxel Lighting
 
 Libraries
 ---------

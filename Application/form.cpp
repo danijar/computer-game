@@ -2,8 +2,6 @@
 
 #include "system.h"
 
-#include <array>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/System/Clock.hpp>
@@ -37,24 +35,29 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			unsigned int id = CreateCube("forms/textures/magic.jpg");
+			unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 4, 0));
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
+			auto tsf = Entity->Get<StorageTransform>(id);
+			tsf->Rotation += vec3(.5, 0, .5);
 		});
 
 		Event->Listen("SystemInitialized", [=]{
 			const int a = 3;
+			for(float x = -3; x <= 3; ++x)
+			for(float z = -3; z <= 3; ++z)
+				CreateCube("forms/textures/dirt.jpg", vec3(a*x, 1, a*z));
 
-			for(float i = -2; i <= 2;  ++i)
-			for(float j = -2; j <= 2; j+=4)
-			for(float k = -2; k <= 2;  ++k)
-				CreateCube("forms/textures/dirt.jpg", vec3(i*a, j*a, k*a));
+			for(float x = -3; x <= 3; x+=3)
+			for(float z = -3; z <= 3; z+=3)
+				if(x == 0 && z == 0) continue;
+				else CreateCube("forms/textures/grass.jpg", vec3(a*x, a+1, a*z));
 
-			for(float i = -2; i <= 2; i+=2)
-			for(float j = -1; j <= 1;  ++j)
-			for(float k = -2; k <= 2; k+=2)
-				if(i == 0 && k == 0) continue;
-				else CreateCube("forms/textures/dirt.jpg", vec3(i*a, j*a, k*a));
+			const float l = 30.f;
+			const float Positions[] = { -l,0.,-l, -l,0.,l, l,0.,l, l,0.,-l };
+			const float Texcoords[] = { 0.,0., l/2,0., l/2,l/2, 0.,l/2 };
+			const int   Elements[]  = { 0,1,2, 2,3,0 };
+			Create(Positions, 12, Texcoords, 8, Elements, 6, "forms/textures/bottom.jpg", vec3(0));
 		});
 	}
 
@@ -103,8 +106,9 @@ class ComponentForm : public Component
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 		frm->Program = shd->Program;
 		frm->Scale = Scale;
