@@ -46,14 +46,18 @@ class ComponentTerrain : public Component
 
 		Debug::Pass("Terrain calculation vertices");
 
-		vector<float> Positions, Texcoords;
+		vector<float> Positions, Normals, Texcoords;
 		vector<int> Elements;
 		
-		Vertices(&Positions, &Texcoords, &Elements);
+		Vertices(&Positions, &Normals, &Texcoords, &Elements);
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
 		glBufferData(GL_ARRAY_BUFFER, Positions.size() * sizeof(float), &Positions[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &frm->Normals);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(float), &Normals[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
@@ -121,9 +125,7 @@ class ComponentTerrain : public Component
 		else                         return Vector;
 	}
 
-	void Vertices(vector<float> *Position, vector<float> *Texcoords, vector<int> *Elements)
-	// 1543 triangles per second and somehow 2.0 vertices per triangle
-	// generated chunk has 0, 0, 0 at its front bottom right corner point 
+	void Vertices(vector<float> *Position, vector<float> *Normals, vector<float> *Texcoords, vector<int> *Elements)
 	{
 		int n = 0;
 		for(int X = 0; X < CHUNK_X; ++X)
@@ -133,22 +135,24 @@ class ComponentTerrain : public Component
 				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 					if(!Get(vec3(X, Y, Z) + Shift(dim, vec3(dir, 0, 0))))
 					{
-						// faces
 						for(float i = 0; i <= 1; ++i)
 						for(float j = 0; j <= 1; ++j)
 						{
-							// vertices
 							vec3 vertex = vec3(X, Y, Z) + Shift(dim, vec3((dir+1)/2, i, j));
 							Position->push_back(vertex.x); Position->push_back(vertex.y); Position->push_back(vertex.z);
 						}
 
-						// colors
+						vec3 normal = normalize(Shift(dim, vec3(dir, 0, 0)));
+						for(int i = 0; i < 4; ++i)
+						{
+							Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
+						}
+
 						Texcoords->push_back(0.f); Texcoords->push_back(0.f);
 						Texcoords->push_back(1.f); Texcoords->push_back(1.f);
 						Texcoords->push_back(1.f); Texcoords->push_back(0.f);
 						Texcoords->push_back(0.f); Texcoords->push_back(1.f);
 
-						// elements
 						if(dir == -1) {
 							Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
 							Elements->push_back(n+1); Elements->push_back(n+3); Elements->push_back(n+2);
