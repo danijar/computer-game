@@ -2,6 +2,7 @@
 
 #include "system.h"
 
+#include <array>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -57,8 +58,21 @@ class ComponentForm : public Component
 		});
 	}
 
-	template<size_t PositionsN, size_t TexcoordsN, size_t ElementsN>
-	int Create(const float (&Positions)[PositionsN], const float (&Texcoords)[TexcoordsN], const int(&Elements)[ElementsN], string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
+	int Create(const float* Positions, int PositionsN, const float* Texcoords, int TexcoordsN, const int* Elements, int ElementsN, string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
+	{
+		float *Normals = new float[PositionsN];
+		for(int i = 0; i < PositionsN; i += 9)
+		{
+			vec3 A(Positions[i+0], Positions[i+1], Positions[i+2]),
+				 B(Positions[i+3], Positions[i+4], Positions[i+5]),
+				 C(Positions[i+6], Positions[i+7], Positions[i+8]);
+			vec3 normal = normalize(cross((B - A), (C - A)));
+			for(int j = 0; j < 3; ++j){ Normals[i+j+0] = normal.x; Normals[i+j+1] = normal.y; Normals[i+j+2] = normal.z; }
+		}
+		return Create(Positions, PositionsN, &Normals[0], PositionsN, Texcoords, TexcoordsN, Elements, ElementsN, Texture, Position, Rotation, Scale);
+	}
+
+	int Create(const float* Positions, int PositionsN, const float* Normals, int NormalsN, const float* Texcoords, int TexcoordsN, const int* Elements, int ElementsN, string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 		unsigned int id = Entity->New();
@@ -67,15 +81,19 @@ class ComponentForm : public Component
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Positions), Positions, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, PositionsN * sizeof(float), Positions, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &frm->Normals);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+		glBufferData(GL_ARRAY_BUFFER, NormalsN * sizeof(float), Normals, GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Texcoords), Texcoords, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, TexcoordsN * sizeof(float), Texcoords, GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Elements), Elements, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementsN * sizeof(int), Elements, GL_STATIC_DRAW);
 
 		Image image;
 		bool result = image.loadFromFile(Texture);
@@ -102,6 +120,6 @@ class ComponentForm : public Component
 		const float Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
 		const int   Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
 
-		return Create(Positions, Texcoords, Elements, Texture, Position);
+		return Create(Positions, 72, Texcoords, 48, Elements, 36, Texture, Position);
 	}
 };
