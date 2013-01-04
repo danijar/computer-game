@@ -31,6 +31,7 @@ There is a precompiled executable for Windows. To use it, download the content o
 ### Key controls
 
 - `Esc` Exit the application.
+- `F1` Toggle mouse capture for camera movement
 - `F2` Toggle wire frame mode.
 - `F11` Toggle between fullscreen and windowed mode.
 - `Tab` Insert new cube at the center.
