@@ -1,22 +1,13 @@
 Graphics Application: Terrain
 =============================
 
-This is an OpenGL graphics application using a component and data based [Graphics Architecture](https://github.com/ComputerGame/GraphicsArchitecture) with event manager.
+This is a branch of [Graphics Architecture](https://github.com/ComputerGame/GraphicsApplication) extending the basic functionality by voxel based terrain capabilities.
 
 Features
 --------
 
-- First person camera
-- Movement
-- Textures
-- Basic lighting
-
-Libraries
----------
-
-- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
-- [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
-- [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
+- Random terrain generation using [Simplex noise](http://en.wikipedia.org/wiki/Simplex_noise)
+- Culled mesh generation from voxel data
 
 Screenshot
 ----------
@@ -28,18 +19,11 @@ Instructions
 
 There is a precompiled executable for Windows. To use it, download the content of the `Release` folder and start the executable.
 
-### Key controls
-
-- `Esc` Exit the application.
-- `F1` Toggle mouse capture for camera movement.
-- `F2` Toggle wire frame mode.
-- `F11` Toggle between fullscreen and windowed mode.
-- `Tab` Insert new cube at the center.
-- `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
-- `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
-- `Space` Let the inserted cubes jump.
+Also see the [key controls](https://github.com/ComputerGame/GraphicsApplication/#key-controls) of the main application.
 
 Upcoming Features
 -----------------
 
+- Generation of more simple meshes with adjacent face merging
+- Block modification at runtime
 - Terrain smoothing by a particular algorithm
