@@ -11,7 +11,8 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
-vec3 light = vec3(-1.0, 1.0, -1.5);
+vec3 light = vec3(0.5, 1.0, 1.5);
+float amount = 0.6;
 
 void main()
 {
@@ -20,5 +21,5 @@ void main()
     f_texcoord = texcoord;
 
 	vec3 diffuse = max(0.0, dot(normalize(normal), normalize(light)));
-    f_color = vec4(diffuse, 1.0) / 2 + 0.5;
+    f_color = vec4(diffuse, 1.0) * amount + (1-amount);
 }

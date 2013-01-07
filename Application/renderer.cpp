@@ -30,7 +30,7 @@ class ComponentRenderer : public Component
 		int result = glewInit();
 		Debug::PassFail("Glew initialization", result ? false : true);
 		
-		Shader("shaders/vertex.txt", "shaders/fragment.txt");
+		Shader("shaders/basic.vert", "shaders/basic.frag");
 		Window();
 
 		Listeners();
