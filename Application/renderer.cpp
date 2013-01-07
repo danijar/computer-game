@@ -45,7 +45,7 @@ class ComponentRenderer : public Component
 		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUniformMatrix4fv(shd->View, 1, GL_FALSE, value_ptr(cam->View));
+		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 	}
@@ -84,20 +84,23 @@ class ComponentRenderer : public Component
 		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
 		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
-		mat4 Model = Translate * Rotate * Scale;
-		glUniformMatrix4fv(shd->Model, 1, GL_FALSE, value_ptr(Model));
+		mat4 Vertex = Translate * Rotate * Scale;
+		glUniformMatrix4fv(shd->UniVertex, 1, GL_FALSE, value_ptr(Vertex));
 
-		glEnableVertexAttribArray(shd->Position);
+		mat4 Normal = Rotate;
+		glUniformMatrix4fv(shd->UniNormal, 1, GL_FALSE, value_ptr(Normal));
+
+		glEnableVertexAttribArray(shd->AtrVertex);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
-		glVertexAttribPointer(shd->Position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(shd->AtrVertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glEnableVertexAttribArray(shd->Normals);
+		glEnableVertexAttribArray(shd->AtrNormal);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glVertexAttribPointer(shd->Normals, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(shd->AtrNormal, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glEnableVertexAttribArray(shd->Texcoord);
+		glEnableVertexAttribArray(shd->AtrTexcoord);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glVertexAttribPointer(shd->Texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(shd->AtrTexcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
@@ -142,7 +145,7 @@ class ComponentRenderer : public Component
 		glViewport(0, 0, Size.x, Size.y);
 
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(shd->Projection, 1, GL_FALSE, value_ptr(Projection));
+		glUniformMatrix4fv(shd->UniProjection, 1, GL_FALSE, value_ptr(Projection));
 	}
 
 	void Wireframe()
@@ -191,13 +194,14 @@ class ComponentRenderer : public Component
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 
-		shd->View       = glGetUniformLocation(shd->Program, "view"    );
-		shd->Projection = glGetUniformLocation(shd->Program, "proj"    );
-		shd->Model      = glGetUniformLocation(shd->Program, "model"   );
-		shd->Texture    = glGetUniformLocation(shd->Program, "tex"     );
-		shd->Position   = glGetAttribLocation (shd->Program, "position");
-		shd->Normals    = glGetAttribLocation (shd->Program, "normal"  );
-		shd->Texcoord   = glGetAttribLocation (shd->Program, "texcoord");
+		shd->UniView       = glGetUniformLocation(shd->Program, "view_mat"  );
+		shd->UniProjection = glGetUniformLocation(shd->Program, "proj_mat"  );
+		shd->UniVertex     = glGetUniformLocation(shd->Program, "vertex_mat");
+		shd->UniNormal     = glGetUniformLocation(shd->Program, "normal_mat");
+		shd->UniTexture    = glGetUniformLocation(shd->Program, "tex"       );
+		shd->AtrVertex     = glGetAttribLocation (shd->Program, "vertex"    );
+		shd->AtrNormal     = glGetAttribLocation (shd->Program, "normal"    );
+		shd->AtrTexcoord   = glGetAttribLocation (shd->Program, "texcoord"  );
 	}
 
 	bool ProgramTest(int Id, bool Output = false)
@@ -205,13 +209,12 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
 		bool Result = (Success == GL_TRUE);
-		if(Output)
-		{
-			GLchar Log[513];
-			GLsizei Length;
-			glGetProgramInfoLog(Id, 512, &Length, Log);
-			if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-		}
+
+		GLchar Log[513];
+		GLsizei Length;
+		glGetProgramInfoLog(Id, 512, &Length, Log);
+		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
+
 		return Result;
 	}
 
@@ -220,13 +223,12 @@ class ComponentRenderer : public Component
 		GLint Success;
 		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
 		bool Result = (Success == GL_TRUE);
-		if(Output)
-		{
-			GLchar Log[513];
-			GLsizei Length;
-			glGetShaderInfoLog(Id, 512, &Length, Log);
-			if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-		}
+
+		GLchar Log[513];
+		GLsizei Length;
+		glGetShaderInfoLog(Id, 512, &Length, Log);
+		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
+
 		return Result;
 	}
 };
