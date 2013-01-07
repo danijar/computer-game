@@ -6,10 +6,10 @@ This is an OpenGL graphics application using a component and data based [Graphic
 Features
 --------
 
-- Camera
+- First person camera
 - Movement
 - Textures
-- Basic Voxel Lighting
+- Basic lighting
 
 Libraries
 ---------
@@ -31,7 +31,7 @@ There is a precompiled executable for Windows. To use it, download the content o
 ### Key controls
 
 - `Esc` Exit the application.
-- `F1` Toggle mouse capture for camera movement
+- `F1` Toggle mouse capture for camera movement.
 - `F2` Toggle wire frame mode.
 - `F11` Toggle between fullscreen and windowed mode.
 - `Tab` Insert new cube at the center.
@@ -51,14 +51,15 @@ Upcoming Features
 
 There is a lot to do since the core development isn't finished yet.
 
-- Lighting, optimally [global illumination](http://en.wikipedia.org/wiki/Global_illumination)
-- Physics and Collision
+- Shadows
 - Model Loading
+- [Global illumination](http://en.wikipedia.org/wiki/Global_illumination)
+- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
+- Physics and Collision
 
 Desired features that might be implemented in future.
 
-- Animations
 - Characters
+- Animations
 - Artificial intelligence
 - Networking, for multiplayer
-- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
