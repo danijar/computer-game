@@ -4,6 +4,7 @@
 #include "debug.h"
 
 #include <vector>
+#include <cstdlib>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -78,8 +79,9 @@ class ComponentTerrain : public Component
 		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	void Listeners()
@@ -131,11 +133,17 @@ class ComponentTerrain : public Component
 
 	void Vertices(vector<float> *Position, vector<float> *Normals, vector<float> *Texcoords, vector<int> *Elements)
 	{
+		const vec2 grid(1.f / TILES_U, 1.f / TILES_V);
+		const float gap = .01f;
+
 		int n = 0;
 		for(int X = 0; X < CHUNK_X; ++X)
 		for(int Y = 0; Y < CHUNK_Y; ++Y)
 		for(int Z = 0; Z < CHUNK_Z; ++Z)
 			if(Get(X, Y, Z))
+			{
+				int Tile = Bound(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
+
 				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 					if(!Get(vec3(X, Y, Z) + Shift(dim, vec3(dir, 0, 0))))
 					{
@@ -152,8 +160,12 @@ class ComponentTerrain : public Component
 							Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
 						}
 
-						auto texcoords =  Texture(4);
-						Texcoords->insert(Texcoords->end(), texcoords.begin(), texcoords.end());
+						vec2 coords(Tile % TILES_U, Tile / TILES_U);
+						vec2 position = coords * grid;
+						Texcoords->push_back(position.x          + gap); Texcoords->push_back(position.y          + gap);
+						Texcoords->push_back(position.x + grid.x - gap); Texcoords->push_back(position.y          + gap);
+						Texcoords->push_back(position.x          + gap); Texcoords->push_back(position.y + grid.y - gap);
+						Texcoords->push_back(position.x + grid.x - gap); Texcoords->push_back(position.y + grid.y - gap);
 
 						if(dir == -1) {
 							Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
@@ -165,21 +177,14 @@ class ComponentTerrain : public Component
 						n += 4;
 					}
 				dir *= -1; } while(dir > 0); }
+			}
 	}
 
-	vector<float> Texture(int Tile)
+	template <typename T>
+	T Bound(T Value, T Min, T Max)
 	{
-		if(Tile < 0) Tile = 0;
-		if(Tile > TILES_U * TILES_V - 1) Tile = TILES_U * TILES_V - 1;
-		const float width  = 1.f / TILES_U,
-		            height = 1.f / TILES_V;
-		const int u = Tile / TILES_U,
-		          v = Tile % TILES_U;
-		vector<float> texcoords;
-		texcoords.push_back(  u   * width); texcoords.push_back(  v   * height);
-		texcoords.push_back((u+1) * width); texcoords.push_back(  v   * height);
-		texcoords.push_back(  u   * width); texcoords.push_back((v+1) * height);
-		texcoords.push_back((u+1) * width); texcoords.push_back((v+1) * height);
-		return texcoords;
+		if(Value < Min) return Min;
+		if(Value > Max) return Max;
+		return Value;
 	}
 };
