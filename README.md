@@ -8,6 +8,8 @@ Features
 
 - Random terrain generation using [Simplex noise](http://en.wikipedia.org/wiki/Simplex_noise)
 - Culled mesh generation from voxel data
+- Different block looks using a texture atlas
+- Fog fading out far landscapes
 
 Screenshot
 ----------

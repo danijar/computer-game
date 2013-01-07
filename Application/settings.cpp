@@ -20,7 +20,7 @@ class ComponentSettings : public Component
 		stg->Fullscreen = false;
 		stg->Mouse		= false;
 		stg->Size       = Vector2u(800, 600);
-		stg->Title      = "Graphics Application";
+		stg->Title      = "Graphics Application: Terrain";
 		stg->Fieldofview  = 45.f;
 		stg->Viewdistance = 1000.f;
 

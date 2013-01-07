@@ -97,7 +97,9 @@ class ComponentTerrain : public Component
 		for(int x = 0; x < CHUNK_X; ++x)
 		for(int z = 0; z < CHUNK_Z; ++z)
 		{
-			int height = (int)((simplex(vec2((float)x / CHUNK_X, (float)z / CHUNK_Z))/2+.5f) * CHUNK_Y);
+			float height_base = simplex(vec2((float)x / CHUNK_X, (float)z / CHUNK_Z)) / 3 + .3f;
+			float height_fine = simplex(vec2(5 * (float)x / CHUNK_X, 5 * (float)z / CHUNK_Z)) * 0.05;
+			int height = (int)((height_base + height_fine) * CHUNK_Y);
 			for(int y = 0; y < height; ++y)
 			{
 				Set(x, y, z, true);
