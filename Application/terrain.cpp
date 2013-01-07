@@ -20,6 +20,9 @@ using namespace glm;
 #include "movement.h"
 
 
+#define TILES_U 4
+#define TILES_V 4
+
 class ComponentTerrain : public Component
 {
 	unsigned int id;
@@ -68,7 +71,7 @@ class ComponentTerrain : public Component
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
 
 		Image image;
-		bool result = image.loadFromFile("forms/textures/dirt.jpg");
+		bool result = image.loadFromFile("forms/textures/terrain.png");
 		auto size = image.getSize();
 		glGenTextures(1, &frm->Texture);
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
@@ -97,6 +100,7 @@ class ComponentTerrain : public Component
 			{
 				Set(x, y, z, true);
 			}
+			Set(x, 0, z, true);
 		}
 	}
 
@@ -148,10 +152,8 @@ class ComponentTerrain : public Component
 							Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
 						}
 
-						Texcoords->push_back(0.f); Texcoords->push_back(0.f);
-						Texcoords->push_back(1.f); Texcoords->push_back(0.f);
-						Texcoords->push_back(0.f); Texcoords->push_back(1.f);
-						Texcoords->push_back(1.f); Texcoords->push_back(1.f);
+						auto texcoords =  Texture(4);
+						Texcoords->insert(Texcoords->end(), texcoords.begin(), texcoords.end());
 
 						if(dir == -1) {
 							Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
@@ -163,5 +165,21 @@ class ComponentTerrain : public Component
 						n += 4;
 					}
 				dir *= -1; } while(dir > 0); }
+	}
+
+	vector<float> Texture(int Tile)
+	{
+		if(Tile < 0) Tile = 0;
+		if(Tile > TILES_U * TILES_V - 1) Tile = TILES_U * TILES_V - 1;
+		const float width  = 1.f / TILES_U,
+		            height = 1.f / TILES_V;
+		const int u = Tile / TILES_U,
+		          v = Tile % TILES_U;
+		vector<float> texcoords;
+		texcoords.push_back(  u   * width); texcoords.push_back(  v   * height);
+		texcoords.push_back((u+1) * width); texcoords.push_back(  v   * height);
+		texcoords.push_back(  u   * width); texcoords.push_back((v+1) * height);
+		texcoords.push_back((u+1) * width); texcoords.push_back((v+1) * height);
+		return texcoords;
 	}
 };
