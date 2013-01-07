@@ -36,6 +36,10 @@
     <ClInclude Include="transform.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.frag" />
+    <None Include="shaders\basic.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{618FA48E-BA22-4EB0-B2CB-9705A438936D}</ProjectGuid>
     <RootNamespace>Application</RootNamespace>

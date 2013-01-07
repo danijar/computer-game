@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Ressourcendateien">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -18,6 +14,13 @@
     </Filter>
     <Filter Include="Source\components">
       <UniqueIdentifier>{5f900003-d8d0-4cd5-b775-19002200d61c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{a2c16395-030b-469c-bce1-b7f5ef01867b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,10 +51,10 @@
     <ClCompile Include="movement.cpp">
       <Filter>Source\components</Filter>
     </ClCompile>
-    <ClCompile Include="terrain.cpp">
+    <ClCompile Include="camera.cpp">
       <Filter>Source\components</Filter>
     </ClCompile>
-    <ClCompile Include="camera.cpp">
+    <ClCompile Include="terrain.cpp">
       <Filter>Source\components</Filter>
     </ClCompile>
   </ItemGroup>
@@ -83,11 +86,19 @@
     <ClInclude Include="animation.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
-    <ClInclude Include="chunk.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
+    <ClInclude Include="chunk.h">
+      <Filter>Header\storages</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\basic.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\basic.vert">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>
