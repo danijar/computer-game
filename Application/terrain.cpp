@@ -149,9 +149,9 @@ class ComponentTerrain : public Component
 						}
 
 						Texcoords->push_back(0.f); Texcoords->push_back(0.f);
-						Texcoords->push_back(1.f); Texcoords->push_back(1.f);
 						Texcoords->push_back(1.f); Texcoords->push_back(0.f);
 						Texcoords->push_back(0.f); Texcoords->push_back(1.f);
+						Texcoords->push_back(1.f); Texcoords->push_back(1.f);
 
 						if(dir == -1) {
 							Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
