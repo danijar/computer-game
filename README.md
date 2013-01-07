@@ -1,7 +1,7 @@
 Graphics Application: Terrain
 =============================
 
-This is a branch of [Graphics Architecture](https://github.com/ComputerGame/GraphicsApplication) extending the basic functionality by voxel based terrain capabilities.
+This is a branch of a basic [Graphics Application](https://github.com/ComputerGame/GraphicsApplication) extending the functionality by voxel based terrain capabilities.
 
 Features
 --------
@@ -14,7 +14,7 @@ Features
 Screenshot
 ----------
 
-![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/terrain/screenshot.png)]
+![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/terrain/screenshot.png)
 
 Instructions
 ------------
