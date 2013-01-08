@@ -26,7 +26,7 @@
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="chunk.h" />
+    <ClInclude Include="terrain.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="movement.h" />

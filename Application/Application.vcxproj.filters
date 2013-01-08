@@ -89,7 +89,7 @@
     <ClInclude Include="camera.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
-    <ClInclude Include="chunk.h">
+    <ClInclude Include="terrain.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
   </ItemGroup>
