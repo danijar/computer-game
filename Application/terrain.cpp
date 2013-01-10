@@ -166,11 +166,12 @@ class ComponentTerrain : public Component
 		auto cnk = Entity->Get<StorageChunk>(id);
 		auto frm = Entity->Get<StorageForm>(id);
 
+		// vertices
+
 		vector<float> Vertices, Normals, Texcoords;
 		vector<int> Elements;
 
 		const vec2 grid(1.f / TILES_U, 1.f / TILES_V);
-		const float gap = .01f;
 
 		int n = 0;
 		for(int X = 0; X < CHUNK_X; ++X)
@@ -197,12 +198,11 @@ class ComponentTerrain : public Component
 							Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
 						}
 
-						vec2 coords(Tile % TILES_U, Tile / TILES_U);
-						vec2 Vertices = coords * grid;
-						Texcoords.push_back(Vertices.x          + gap); Texcoords.push_back(Vertices.y          + gap);
-						Texcoords.push_back(Vertices.x + grid.x - gap); Texcoords.push_back(Vertices.y          + gap);
-						Texcoords.push_back(Vertices.x          + gap); Texcoords.push_back(Vertices.y + grid.y - gap);
-						Texcoords.push_back(Vertices.x + grid.x - gap); Texcoords.push_back(Vertices.y + grid.y - gap);
+						vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * grid;
+						Texcoords.push_back(position.x);            Texcoords.push_back(position.y);
+						Texcoords.push_back(position.x + grid.x/2); Texcoords.push_back(position.y);
+						Texcoords.push_back(position.x);            Texcoords.push_back(position.y + grid.y/2);
+						Texcoords.push_back(position.x + grid.x/2); Texcoords.push_back(position.y + grid.y/2);
 
 						if(dir == -1) {
 							Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
@@ -215,6 +215,8 @@ class ComponentTerrain : public Component
 					}
 				dir *= -1; } while(dir > 0); }
 			}
+
+		// buffers
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
@@ -232,16 +234,40 @@ class ComponentTerrain : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
 
-		Image image;
-		bool result = image.loadFromFile("forms/textures/terrain.png");
-		auto size = image.getSize();
+		// texture
+		
 		glGenTextures(1, &frm->Texture);
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		Image image;
+		bool result = image.loadFromFile("forms/textures/terrain.png");
+		if(!result){ Debug::Fail("Terrain texture loading fail"); return; }
+
+		Vector2u size = Vector2u(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
+		Image texture;
+		texture.create(image.getSize().x * 2, image.getSize().y * 2, Color());
+		for(int u = 0; u < TILES_U; ++u)
+		for(int v = 0; v < TILES_V; ++v)
+		{
+			Image tile, quarter;
+			tile.create(size.x, size.y, Color());
+			tile.copy(image, 0, 0, IntRect(size.x * u, size.y * v, size.x, size.y), true);
+			quarter.create(size.x, size.y, Color());
+			quarter.copy(tile, 0,          0,          IntRect(size.x / 2, size.y / 2, size.x / 2, size.y / 2), true);
+			quarter.copy(tile, size.x / 2, 0,          IntRect(0,          size.y / 2, size.x / 2, size.y / 2), true);
+			quarter.copy(tile, 0,          size.y / 2, IntRect(size.x / 2, 0,          size.x / 2, size.y / 2), true);
+			quarter.copy(tile, size.x / 2, size.y / 2, IntRect(0,          0,          size.x / 2, size.y / 2), true);
+			texture.copy(quarter, (u * 2    ) * size.x, (v * 2    ) * size.y, IntRect(0, 0, 0, 0), true);
+			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2    ) * size.y, IntRect(0, 0, 0, 0), true);
+			texture.copy(quarter, (u * 2    ) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
+			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
