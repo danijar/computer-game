@@ -20,7 +20,8 @@ class ComponentCamera : public Component
 	void Init()
 	{
 		auto cam = Global->Add<StorageCamera>("camera");
-		cam->Position = vec3(0, 5, -7);
+		cam->Position = vec3(0, 15, 0);
+		cam->Angles = vec2(0.75, -0.25);
 		Calculate();
 
 		Active();
