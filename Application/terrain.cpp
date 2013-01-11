@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <cstdlib>
+#include <future>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -14,6 +15,8 @@ using namespace sf;
 #include <GLM/gtc/noise.hpp>
 using namespace glm;
 
+//#include "settings.h"
+//#include "camera.h"
 #include "form.h"
 #include "transform.h"
 #include "terrain.h"
@@ -32,45 +35,71 @@ class ComponentTerrain : public Component
 	{
 		auto wld = Global->Add<StorageTerrain>("terrain");
 
+		tasking = false;
+
+		Texture();
+
 		Listeners();
 	}
-	
+
 	void Update()
 	{
+		//auto stg = Global->Get<StorageSettings>("settings");
+		//auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		for(auto chunk : cks)
+		/*
+		const int ChunkDistance = stg->Viewdistance / ((CHUNK_X + CHUNK_Z) / 2);
+		const int ChunkArea = ChunkDistance * ChunkDistance;
+		for(int x = -ChunkDistance; x <= ChunkDistance; ++x)
+		for(int z = -ChunkDistance; z <= ChunkDistance; ++z)
+		if(x * x + z * z <= ChunkArea)
+		{
+			addChunk(x + cam->Position.x / CHUNK_X, 0, z + cam->Position.z / CHUNK_Z);
+		}
+		*/
+
+		if(tasking)
+		{
+			if(task.wait_for(chrono::milliseconds(0)) == future_status::ready)
+			{
+				tasking = false;
+				Data data = task.get();
+				Buffers(data);
+			}
+		}
+		else
+		{
+			for(auto chunk : cks)
 			if(chunk.second->changed)
 			{
-				Mesh(chunk.first);
+				tasking = true;
 				chunk.second->changed = false;
+				task = async(launch::async, &ComponentTerrain::Mesh, this, Data(chunk.first));
+				break;
 			}
+		}
 	}
+
+	struct Data
+	{
+		Data() {}
+		Data(unsigned int id) : id(id) {}
+		unsigned int id;
+		vector<float> Vertices, Normals, Texcoords;
+		vector<int> Elements;
+	};
+
+	future<Data> task;
+	bool tasking;
+	Image texture;
 
 	void Listeners()
 	{
 		Event->Listen("SystemInitialized", [=]{
-
-			// generate test chunks
-			//
-			//     0 1 2 3 4 5 6
-			//
-			// 0   X X X X X X X
-			// 1   X       X X X
-			// 2   X       X X X
-			// 3   X       X X X
-			// 4   X X X X X X X
-			// 5   X X X X X X X
-			// 6   X X X X X X X
-
-
-			for(int x = 0; x < 7; ++x)
-			for(int z = 0; z < 7; ++z)
-				addChunk(x, 0, z);
-			
-			for(int x = 1; x < 4; ++x)
-			for(int z = 1; z < 4; ++z)
-				deleteChunk(x, 0, z);
+				for(int x = -5; x <= 5; ++x)
+				for(int z = -5; z <= 5; ++z)
+					addChunk(x, 0, z);
 		});
 	}
 
@@ -82,26 +111,28 @@ class ComponentTerrain : public Component
 		return (i != wld->chunks.end()) ? i->second : 0;
 	}
 
-	void addChunk(int X, int Y, int Z)
+	int addChunk(int X, int Y, int Z)
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
 		auto shd = Global->Get<StorageShader>("shader");
 
 		unsigned int id = getChunk(X, Y, Z);
-		if(id > 0) return;
+		if(!id)
+		{
+			id = Entity->New();
+			Entity->Add<StorageChunk>(id);
+			auto frm = Entity->Add<StorageForm>(id);
+			auto tsf = Entity->Add<StorageTransform>(id);
 
-		id = Entity->New();
-		Entity->Add<StorageChunk>(id);
-		auto frm = Entity->Add<StorageForm>(id);
-		auto tsf = Entity->Add<StorageTransform>(id);
+			frm->Program = shd->Program;
+			tsf->Position = vec3(X * CHUNK_X, Y * CHUNK_Y, Z * CHUNK_Z);
 
-		frm->Program = shd->Program;
-		tsf->Position = vec3(X * CHUNK_X, Y * CHUNK_Y, Z * CHUNK_Z);
+			Generate(id, X, Y, Z);
 
-		Generate(id, X, Y, Z);
-
-		array<int, 3> key = {X, Y, Z};
-		wld->chunks.insert(make_pair(key, id));
+			array<int, 3> key = {X, Y, Z};
+			wld->chunks.insert(make_pair(key, id));
+		}
+		return id;
 	}
 
 	void deleteChunk(int X, int Y, int Z)
@@ -161,15 +192,11 @@ class ComponentTerrain : public Component
 		}
 	}
 
-	void Mesh(unsigned int id)
+	Data Mesh(Data data)
 	{
-		auto cnk = Entity->Get<StorageChunk>(id);
-		auto frm = Entity->Get<StorageForm>(id);
-
-		// vertices
-
-		vector<float> Vertices, Normals, Texcoords;
-		vector<int> Elements;
+		auto cnk = Entity->Get<StorageChunk>(data.id);
+		auto *Vertices = &data.Vertices, *Normals = &data.Normals, *Texcoords = &data.Texcoords;
+		auto *Elements = &data.Elements;
 
 		const vec2 grid(1.f / TILES_U, 1.f / TILES_V);
 
@@ -183,72 +210,83 @@ class ComponentTerrain : public Component
 
 				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 					vec3i neigh = Shift(dim, vec3i(dir, 0, 0)) + vec3i(X, Y, Z);
-					if(!cnk->blocks[neigh.x][neigh.y][neigh.z] || !Inside(neigh, vec3i(0), vec3i(CHUNK_X, CHUNK_Y, CHUNK_Z) - 1))
+
+					if(Inside(neigh, vec3i(0), vec3i(CHUNK_X, CHUNK_Y, CHUNK_Z) - 1))
+						if(cnk->blocks[neigh.x][neigh.y][neigh.z])
+							goto skip;
+
+					for(float i = 0; i <= 1; ++i)
+					for(float j = 0; j <= 1; ++j)
 					{
-						for(float i = 0; i <= 1; ++i)
-						for(float j = 0; j <= 1; ++j)
-						{
-							vec3 vertex = vec3(X, Y, Z) + floatify(Shift(dim, vec3i((dir+1)/2, i, j)));
-							Vertices.push_back(vertex.x); Vertices.push_back(vertex.y); Vertices.push_back(vertex.z);
-						}
-
-						vec3 normal = normalize(floatify(Shift(dim, vec3i(dir, 0, 0))));
-						for(int i = 0; i < 4; ++i)
-						{
-							Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
-						}
-
-						vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * grid;
-						Texcoords.push_back(position.x);            Texcoords.push_back(position.y);
-						Texcoords.push_back(position.x + grid.x/2); Texcoords.push_back(position.y);
-						Texcoords.push_back(position.x);            Texcoords.push_back(position.y + grid.y/2);
-						Texcoords.push_back(position.x + grid.x/2); Texcoords.push_back(position.y + grid.y/2);
-
-						if(dir == -1) {
-							Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
-							Elements.push_back(n+1); Elements.push_back(n+3); Elements.push_back(n+2);
-						} else {
-							Elements.push_back(n+0); Elements.push_back(n+2); Elements.push_back(n+1);
-							Elements.push_back(n+1); Elements.push_back(n+2); Elements.push_back(n+3);
-						}
-						n += 4;
+						vec3 vertex = vec3(X, Y, Z) + floatify(Shift(dim, vec3i((dir+1)/2, i, j)));
+						Vertices->push_back(vertex.x); Vertices->push_back(vertex.y); Vertices->push_back(vertex.z);
 					}
+
+					vec3 normal = normalize(floatify(Shift(dim, vec3i(dir, 0, 0))));
+					for(int i = 0; i < 4; ++i)
+					{
+						Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
+					}
+
+					vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * grid;
+					Texcoords->push_back(position.x);            Texcoords->push_back(position.y);
+					Texcoords->push_back(position.x + grid.x/2); Texcoords->push_back(position.y);
+					Texcoords->push_back(position.x);            Texcoords->push_back(position.y + grid.y/2);
+					Texcoords->push_back(position.x + grid.x/2); Texcoords->push_back(position.y + grid.y/2);
+
+					if(dir == -1) {
+						Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
+						Elements->push_back(n+1); Elements->push_back(n+3); Elements->push_back(n+2);
+					} else {
+						Elements->push_back(n+0); Elements->push_back(n+2); Elements->push_back(n+1);
+						Elements->push_back(n+1); Elements->push_back(n+2); Elements->push_back(n+3);
+					}
+					n += 4;
+
+					skip:
 				dir *= -1; } while(dir > 0); }
 			}
 
-		// buffers
+		return data;
+	}
+
+	void Buffers(Data data)
+	{
+		auto frm = Entity->Get<StorageForm>(data.id);
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
-		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(float), &Vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data.Vertices.size() * sizeof(float), &(data.Vertices[0]), GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Normals);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(float), &Normals[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data.Normals.size() * sizeof(float), &(data.Normals[0]), GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(float), &Texcoords[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data.Texcoords.size() * sizeof(float), &(data.Texcoords[0]), GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.Elements.size() * sizeof(int), &data.Elements[0], GL_STATIC_DRAW);
 
-		// texture
-		
 		glGenTextures(1, &frm->Texture);
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 
+	void Texture()
+	{
 		Image image;
 		bool result = image.loadFromFile("forms/textures/terrain.png");
 		if(!result){ Debug::Fail("Terrain texture loading fail"); return; }
 
 		Vector2u size = Vector2u(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
-		Image texture;
 		texture.create(image.getSize().x * 2, image.getSize().y * 2, Color());
 		for(int u = 0; u < TILES_U; ++u)
 		for(int v = 0; v < TILES_V; ++v)
@@ -266,9 +304,6 @@ class ComponentTerrain : public Component
 			texture.copy(quarter, (u * 2    ) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
 			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
 		}
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
-		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
 	template <typename T>
