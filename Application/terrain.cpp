@@ -16,7 +16,7 @@ using namespace sf;
 using namespace glm;
 
 //#include "settings.h"
-//#include "camera.h"
+#include "camera.h"
 #include "form.h"
 #include "transform.h"
 #include "terrain.h"
@@ -97,6 +97,10 @@ class ComponentTerrain : public Component
 	void Listeners()
 	{
 		Event->Listen("SystemInitialized", [=]{
+				auto cam = Global->Get<StorageCamera>("camera");
+				cam->Position = vec3(0, CHUNK_Y, 0);
+				cam->Angles = vec2(0.75, -0.25);
+
 				for(int x = -5; x <= 5; ++x)
 				for(int z = -5; z <= 5; ++z)
 					addChunk(x, 0, z);
@@ -150,6 +154,7 @@ class ComponentTerrain : public Component
 		Entity->Delete<StorageTransform>(id);
 	}
 
+	/*
 	bool getBlock(vec3 pos)
 	{
 		return getBlock((int)pos.x, (int)pos.y, (int)pos.z);
@@ -169,27 +174,33 @@ class ComponentTerrain : public Component
 		int X = x / CHUNK_X; x %= CHUNK_X;
 		int Y = y / CHUNK_Y; y %= CHUNK_Y;
 		int Z = z / CHUNK_Z; z %= CHUNK_Z;
+		setBlock(X, Y, Z, x, y, z, enabled);
+	}
+
+	void setBlock(int X, int Y, int Z, int x, int y, int z, bool enabled) {
 		if(x < 0 || y < 0 || z < 0 || x > CHUNK_X-1 || y > CHUNK_Y-1 || z > CHUNK_Z-1) return;
 
 		auto cnk = Entity->Get<StorageChunk>(getChunk(X, Y, Z));
 		cnk->blocks[x][y][z] = enabled;
 		cnk->changed = true;
 	}
+	*/
 
 	void Generate(unsigned int id, int X, int Y, int Z)
 	{
 		auto cnk = Entity->Get<StorageChunk>(id);
 		cnk->changed = true;
 
-		for(int x = 0; x < CHUNK_X; ++x)
-		for(int z = 0; z < CHUNK_Z; ++z)
-		{
-			double height_base = simplex(vec2((float)(x+X*CHUNK_X) / CHUNK_X, (float)z / (z+Z*CHUNK_Z))) / 3 + .3f;
-			double height_fine = simplex(vec2(5 * (float)(x+X*CHUNK_X) / CHUNK_X, 5 * (float)z / (z+Z*CHUNK_Z))) * 0.05;
-			int height = (int)((height_base + height_fine) * CHUNK_Y);
-			for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = true;
-			cnk->blocks[x][0][z] = true;
-		}
+		for(int x = 0; x < CHUNK_X; ++x) {
+		const float i = X + (float)x / CHUNK_X;
+		for(int z = 0; z < CHUNK_Z; ++z) {
+		const float j = Z + (float)z / CHUNK_Z;
+				double height_bias = 0.30;
+				double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
+				double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
+				int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
+				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = true;
+		} }
 	}
 
 	Data Mesh(Data data)

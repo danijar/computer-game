@@ -54,12 +54,15 @@ class ComponentRenderer : public Component
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			auto stg = Global->Get<StorageSettings>("settings");
 			switch(Code)
 			{
 			case Keyboard::Key::F2:
-				auto stg = Global->Get<StorageSettings>("settings");
 				Wireframe(!stg->Wireframe);
 				break;
+			case Keyboard::Key::F3:
+				stg->VerticalSync = !stg->VerticalSync;
+				Global->Get<StorageWindow>("window")->Window.setVerticalSyncEnabled(stg->VerticalSync);
 			}
 		});
 
@@ -115,9 +118,10 @@ class ComponentRenderer : public Component
 	void Window()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
 		
-		wnd->setVerticalSyncEnabled(true);
+		wnd->setVerticalSyncEnabled(stg->VerticalSync);
 		
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
