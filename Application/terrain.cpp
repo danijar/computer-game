@@ -40,33 +40,31 @@ class ComponentTerrain : public Component
 	void Update()
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
+		auto stg = Global->Get<StorageSettings>("settings");
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		for(int X = -10 + cam->Position.x / CHUNK.x; X <= 10 + cam->Position.x  / CHUNK.x; ++X)
-		for(int Z = -10 + cam->Position.z / CHUNK.z; Z <= 10 + cam->Position.z  / CHUNK.z; ++Z)
+		const ivec2 distance = ivec2((int)(stg->Viewdistance / CHUNK.x), (int)(stg->Viewdistance / CHUNK.z)) / 5;
+		const ivec2 camera   = ivec2((int)(cam->Position.x   / CHUNK.x), (int)(cam->Position.z   / CHUNK.z));
+
+		vector<ivec3> keys;
+		for(auto i = wld->chunks.begin(); i != wld->chunks.end(); ++i)
 		{
-			if(inRange(ivec3(X, 0, Z)))
-				addChunk(ivec3(X, 0, Z));
-		}
-		/*
-		for(auto i = wld->chunks.begin(); i != wld->chunks.end(); )
-		{
-			if(inRange(i->first))
+			if(distance.x < abs(i->first.x - camera.x) && distance.y < abs(i->first.z - camera.y))
 			{
-				Entity->Delete<StorageChunk>(i->second);
-				Entity->Delete<StorageForm>(i->second);
-				Entity->Delete<StorageTransform>(i->second);
-
-				wld->chunks.erase(i++);
-
-				Debug::Pass("chunk deleted");
-
-				// free ressources
+				keys.push_back(i->first);
 			}
-			else ++i;
 		}
-		*/
+		for(auto i : keys) disableChunk(i);
+
+		ivec2 i;
+		for(i.x = camera.x - distance.x; i.x < camera.x + distance.x; ++i.x) {
+		for(i.y = camera.y - distance.y; i.y < camera.y + distance.y; ++i.y) {
+			if(abs(i.x - camera.x) < distance.x && abs(i.y - camera.y) < distance.y)
+			{
+				enableChunk(ivec3(i.x, 0, i.y));
+			}
+		} }
 
 		if(tasking)
 		{
@@ -120,62 +118,50 @@ class ComponentTerrain : public Component
 		return (i != wld->chunks.end()) ? i->second : 0;
 	}
 
-	int addChunk(ivec3 key)
+	int enableChunk(ivec3 key)
 	{
 		unsigned int id = getChunk(key);
 		if(!id)
 		{
+			Debug::Info("enable chunk " + vec_to_string(key));
+
 			id = Entity->New();
 			Entity->Add<StorageChunk>(id);
 			auto tsf = Entity->Add<StorageTransform>(id);
+			auto wld = Global->Get<StorageTerrain>("terrain");
 
 			tsf->Position = key * CHUNK;
 
 			Generate(id, key);
 
-			auto wld = Global->Get<StorageTerrain>("terrain");
 			wld->chunks.insert(make_pair(key, id));
 		}
 		return id;
 	}
 
-	void deleteChunk(ivec3 key)
+	void disableChunk(ivec3 key)
 	{
-		Debug::Info("inside deleteChunk()!");
-
 		unsigned int id = getChunk(key);
-		if(!id) return;
+		if(id)
+		{
+			Debug::Info("disable chunk " + vec_to_string(key));
 
-		Debug::Info("Terrain delete chunk " + to_string(key.x) + " " + to_string(key.y) + " " + to_string(key.z));
+			auto wld = Global->Get<StorageTerrain>("terrain");
+			auto frm = Entity->Get<StorageForm>(id);
 
-		auto wld = Global->Get<StorageTerrain>("terrain");
-		wld->chunks.erase(key);
+			glDeleteBuffers(1, &frm->Positions);
+			glDeleteBuffers(1, &frm->Normals);
+			glDeleteBuffers(1, &frm->Texcoords);
+			glDeleteBuffers(1, &frm->Elements);
+			glDeleteTextures(1, &frm->Texture);
 
-		auto frm = Entity->Add<StorageForm>(id);
-		glDeleteBuffers(1, &frm->Positions);
-		glDeleteBuffers(1, &frm->Normals);
-		glDeleteBuffers(1, &frm->Texcoords);
-		glDeleteBuffers(1, &frm->Elements);
-		glDeleteTextures(1, &frm->Texture);
+			// deleting those will crash parallel meshing
+			// Entity->Delete<StorageChunk>(id);
+			// Entity->Delete<StorageForm>(id);
+			// Entity->Delete<StorageTransform>(id);
 
-		Entity->Delete<StorageChunk>(id);
-		Entity->Delete<StorageForm>(id);
-		Entity->Delete<StorageTransform>(id);
-	}
-
-	bool inRange(ivec3 key)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		auto cam = Global->Get<StorageCamera>("camera");
-
-		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
-		ivec3 Camera = ivec3(cam->Position) / CHUNK;
-
-		int X = key.x - Camera.x,
-		    Y = key.y - Camera.y,
-		    Z = key.z - Camera.z;
-
-		return (X * X + Y * Y + Z * Z <= Distance * Distance);
+			wld->chunks.erase(key);
+		}
 	}
 
 	/*
@@ -360,5 +346,10 @@ class ComponentTerrain : public Component
 		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
 		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
 		else                         return Vector;
+	}
+
+	string vec_to_string(ivec3 a)
+	{
+		return (a.x >= 0 ? " " : "") + to_string(a.x) + (a.x >= 0 ? "  " : " ") + to_string(a.y) + (a.x >= 0 ? "  " : " ") + to_string(a.z);
 	}
 };
