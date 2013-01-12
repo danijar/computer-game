@@ -170,7 +170,7 @@ public:
 		auto key = type_index(typeid(T));
 		if (!Check(key, id))
 		{
-			Error("Could delete not entity because " + key.name() + " in " + key.name() + " does not exist.");
+			Error("Could delete not entity because " + string(key.name()) + " in " + string(key.name()) + " does not exist.");
 			return;
 		}
 		auto j = list[key].find(id);

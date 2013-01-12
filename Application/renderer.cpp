@@ -31,6 +31,7 @@ class ComponentRenderer : public Component
 		Debug::PassFail("Glew initialization", result ? false : true);
 		
 		Shader("shaders/basic.vert", "shaders/basic.frag");
+
 		Window();
 
 		Listeners();
@@ -53,12 +54,16 @@ class ComponentRenderer : public Component
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			auto stg = Global->Get<StorageSettings>("settings");
 			switch(Code)
 			{
 			case Keyboard::Key::F2:
-				auto stg = Global->Get<StorageSettings>("settings");
 				Wireframe(!stg->Wireframe);
 				break;
+			case Keyboard::Key::F3:
+				stg->Verticalsync = !stg->Verticalsync;
+				auto wnd = &Global->Get<StorageWindow>("window")->Window;
+				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			}
 		});
 
@@ -114,9 +119,10 @@ class ComponentRenderer : public Component
 	void Window()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
 		
-		wnd->setVerticalSyncEnabled(true);
+		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 		
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);

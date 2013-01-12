@@ -19,8 +19,8 @@ class ComponentCamera : public Component
 
 	void Init()
 	{
-		auto cam = Global->Add<StorageCamera>("camera");
-		cam->Position = vec3(0, 5, -7);
+		Global->Add<StorageCamera>("camera");
+
 		Calculate();
 
 		Active();
@@ -122,7 +122,7 @@ class ComponentCamera : public Component
 		if		(cam->Angles.x < -pi)	cam->Angles.x += pi*2;
 		else if	(cam->Angles.x >  pi)	cam->Angles.x -= pi*2;
  
-		const float margin = .5f;
+		const float margin = .2f;
 		if		(cam->Angles.y < -pi/2+margin)	cam->Angles.y = -pi/2+margin;
 		else if	(cam->Angles.y >  pi/2-margin)	cam->Angles.y =  pi/2-margin;
 

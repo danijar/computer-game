@@ -2,6 +2,10 @@
 
 namespace Debug
 {
+	void Info(string Message)
+	{
+		cout << Message << endl;
+	}
 
 	void Pass(string Message)
 	{
@@ -17,6 +21,13 @@ namespace Debug
 	{
 		if(Result) Pass(Message + " " + MessagePass);
 		else       Fail(Message + " " + MessageFail);
+	}
+
+	void Wait(string Message)
+	{
+		cout << Message << endl;
+		cin.clear();
+		cin.get();
 	}
 
 	void Crash(string Message)
