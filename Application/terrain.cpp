@@ -15,7 +15,7 @@ using namespace sf;
 #include <GLM/gtc/noise.hpp>
 using namespace glm;
 
-//#include "settings.h"
+#include "settings.h"
 #include "camera.h"
 #include "form.h"
 #include "transform.h"
@@ -23,9 +23,6 @@ using namespace glm;
 #include "shader.h"
 #include "movement.h"
 
-
-#define TILES_U 4
-#define TILES_V 4
 
 typedef detail::tvec3<int> vec3i;
 
@@ -44,20 +41,26 @@ class ComponentTerrain : public Component
 
 	void Update()
 	{
-		//auto stg = Global->Get<StorageSettings>("settings");
-		//auto cam = Global->Get<StorageCamera>("camera");
+		auto wld = Global->Get<StorageTerrain>("terrain");
+		auto stg = Global->Get<StorageSettings>("settings");
+		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		/*
-		const int ChunkDistance = stg->Viewdistance / ((CHUNK_X + CHUNK_Z) / 2);
-		const int ChunkArea = ChunkDistance * ChunkDistance;
-		for(int x = -ChunkDistance; x <= ChunkDistance; ++x)
-		for(int z = -ChunkDistance; z <= ChunkDistance; ++z)
-		if(x * x + z * z <= ChunkArea)
+		const float Distance = 0.5 * stg->Viewdistance / CHUNK_X / 2;
+		for(int X = -Distance; X <= Distance; ++X)
+		for(int Z = -Distance; Z <= Distance; ++Z)
+		if(X * X + Z * Z <= Distance * Distance)
 		{
-			addChunk(x + cam->Position.x / CHUNK_X, 0, z + cam->Position.z / CHUNK_Z);
+			addChunk(X + cam->Position.x / CHUNK_X, 0, Z + cam->Position.z / CHUNK_Z);
 		}
-		*/
+
+		for(auto chunk : wld->chunks)
+		{
+			auto chk = cks.find(chunk.second); // should find that for sure
+			float distance = vec3(chunk.first[0] * CHUNK_X - cam->Position.x, chunk.first[1] * CHUNK_Y - cam->Position.y, chunk.first[2] * CHUNK_Z - cam->Position.z).length();
+			if(distance > stg->Viewdistance)
+				deleteChunk(chunk.first[0], chunk.first[1], chunk.first[2]);
+		}
 
 		if(tasking)
 		{
@@ -100,10 +103,6 @@ class ComponentTerrain : public Component
 				auto cam = Global->Get<StorageCamera>("camera");
 				cam->Position = vec3(0, CHUNK_Y, 0);
 				cam->Angles = vec2(0.75, -0.25);
-
-				for(int x = -5; x <= 5; ++x)
-				for(int z = -5; z <= 5; ++z)
-					addChunk(x, 0, z);
 		});
 	}
 
@@ -202,6 +201,9 @@ class ComponentTerrain : public Component
 				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = true;
 		} }
 	}
+
+	#define TILES_U 4
+	#define TILES_V 4
 
 	Data Mesh(Data data)
 	{
