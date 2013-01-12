@@ -24,8 +24,6 @@ using namespace glm;
 #include "movement.h"
 
 
-typedef detail::tvec3<int> vec3i;
-
 class ComponentTerrain : public Component
 {
 	void Init()
@@ -33,7 +31,7 @@ class ComponentTerrain : public Component
 		auto wld = Global->Add<StorageTerrain>("terrain");
 
 		tasking = false;
-		
+
 		Texture();
 
 		Listeners();
@@ -47,20 +45,18 @@ class ComponentTerrain : public Component
 		auto cks = Entity->Get<StorageChunk>();
 
 		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
+		ivec3 Camera = intify(cam->Position / vec3(CHUNK_X, CHUNK_Y, CHUNK_Z));
 		for(int X = -Distance; X <= Distance; ++X)
 		for(int Z = -Distance; Z <= Distance; ++Z)
 		if(X * X + Z * Z <= Distance * Distance)
 		{
-			addChunk(X + (int)cam->Position.x / CHUNK_X, 0, Z + (int)cam->Position.z / CHUNK_Z);
+			addChunk(ivec3(X + Camera.x, 0, Z + Camera.z));
 		}
-		/*
 		for(auto chunk : wld->chunks)
 		{
-			auto chk = cks.find(chunk.second); // should find that for sure;
-			if(distance > stg->Viewdistance)
-				deleteChunk(chunk.first[0], chunk.first[1], chunk.first[2]);
+			if((signed)(chunk.first - Camera).length() > Distance)
+				deleteChunk(chunk.first);
 		}
-		*/
 
 		if(tasking)
 		{
@@ -106,48 +102,39 @@ class ComponentTerrain : public Component
 		});
 	}
 
-	unsigned int getChunk(int X, int Y, int Z)
+	unsigned int getChunk(ivec3 key)
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
-		array<int, 3> key = {X, Y, Z};
 		auto i = wld->chunks.find(key);
 		return (i != wld->chunks.end()) ? i->second : 0;
 	}
 
-	int addChunk(int X, int Y, int Z)
+	int addChunk(ivec3 key)
 	{
-		auto wld = Global->Get<StorageTerrain>("terrain");
-
-		unsigned int id = getChunk(X, Y, Z);
+		unsigned int id = getChunk(key);
 		if(!id)
 		{
-			Debug::Info("Terrain add chunk " + to_string(X) + " " + to_string(Y) + " " + to_string(Z));
-
 			id = Entity->New();
 			Entity->Add<StorageChunk>(id);
 			auto tsf = Entity->Add<StorageTransform>(id);
-			
-			tsf->Position = vec3(X * CHUNK_X, Y * CHUNK_Y, Z * CHUNK_Z);
 
-			Generate(id, X, Y, Z);
+			tsf->Position = key * CHUNK;
 
-			array<int, 3> key = {X, Y, Z};
-			wld->chunks.insert(make_pair(key, id));
+			Generate(id, key);
+
+			Global->Get<StorageTerrain>("terrain")->chunks.insert(make_pair(key, id));
 		}
 		return id;
 	}
 
-	void deleteChunk(int X, int Y, int Z)
+	void deleteChunk(ivec3 key)
 	{
-		auto wld = Global->Get<StorageTerrain>("terrain");
-
-		unsigned int id = getChunk(X, Y, Z);
+		unsigned int id = getChunk(key);
 		if(id < 1) return;
 
-		Debug::Info("Terrain delete chunk " + to_string(X) + " " + to_string(Y) + " " + to_string(Z));
+		Debug::Info("Terrain delete chunk " + to_string(key.x) + " " + to_string(key.y) + " " + to_string(key.z));
 
-		array<int, 3> key = {X, Y, Z};
-		wld->chunks.erase(key);
+		Global->Get<StorageTerrain>("terrain")->chunks.erase(key);
 
 		auto frm = Entity->Add<StorageForm>(id);
 		glDeleteBuffers(1, &frm->Positions);
@@ -193,15 +180,15 @@ class ComponentTerrain : public Component
 	}
 	*/
 
-	void Generate(unsigned int id, int X, int Y, int Z)
+	void Generate(unsigned int id, ivec3 key)
 	{
 		auto cnk = Entity->Get<StorageChunk>(id);
 		cnk->changed = true;
 
 		for(int x = 0; x < CHUNK_X; ++x) {
-		const float i = X + (float)x / CHUNK_X;
+		const float i = key.x + (float)x / CHUNK_X;
 		for(int z = 0; z < CHUNK_Z; ++z) {
-		const float j = Z + (float)z / CHUNK_Z;
+		const float j = key.z + (float)z / CHUNK_Z;
 				double height_bias = 0.30;
 				double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
 				double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
@@ -231,20 +218,20 @@ class ComponentTerrain : public Component
 				int Tile = Clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
 
 				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
-					vec3i neigh = Shift(dim, vec3i(dir, 0, 0)) + vec3i(X, Y, Z);
+					ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-					if(Inside(neigh, vec3i(0), vec3i(CHUNK_X, CHUNK_Y, CHUNK_Z) - 1))
+					if(Inside(neigh, ivec3(0), CHUNK - 1))
 						if(cnk->blocks[neigh.x][neigh.y][neigh.z])
 							{ dir *= -1; continue; }
 
 					for(float i = 0; i <= 1; ++i)
 					for(float j = 0; j <= 1; ++j)
 					{
-						vec3 vertex = vec3(X, Y, Z) + floatify(Shift(dim, vec3i((dir+1)/2, i, j)));
+						vec3 vertex = vec3(X, Y, Z) + floatify(Shift(dim, ivec3((dir+1)/2, i, j)));
 						Vertices->push_back(vertex.x); Vertices->push_back(vertex.y); Vertices->push_back(vertex.z);
 					}
 
-					vec3 normal = normalize(floatify(Shift(dim, vec3i(dir, 0, 0))));
+					vec3 normal = normalize(floatify(Shift(dim, ivec3(dir, 0, 0))));
 					for(int i = 0; i < 4; ++i)
 					{
 						Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
@@ -338,22 +325,27 @@ class ComponentTerrain : public Component
 		return Value;
 	}
 
-	bool Inside(vec3i Position, vec3i Min, vec3i Max)
+	bool Inside(ivec3 Position, ivec3 Min, ivec3 Max)
 	{
 		if(Position.x < Min.x || Position.y < Min.y || Position.z < Min.z) return false;
 		if(Position.x > Max.x || Position.y > Max.y || Position.z > Max.z) return false;
 		return true;
 	}
 
-	inline vec3i Shift(int Dimension, vec3i Vector)
+	inline ivec3 Shift(int Dimension, ivec3 Vector)
 	{
-		if      (Dimension % 3 == 1) return vec3i(Vector.z, Vector.x, Vector.y);
-		else if (Dimension % 3 == 2) return vec3i(Vector.y, Vector.z, Vector.x);
+		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
+		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
 		else                         return Vector;
 	}
 
-	vec3 floatify(vec3i Value)
+	vec3 floatify(ivec3 Value)
 	{
 		return vec3(Value.x, Value.y, Value.z);
+	}
+
+	ivec3 intify(vec3 Value)
+	{
+		return ivec3(Value.x, Value.y, Value.z);
 	}
 };
