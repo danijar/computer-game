@@ -40,23 +40,33 @@ class ComponentTerrain : public Component
 	void Update()
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
-		auto stg = Global->Get<StorageSettings>("settings");
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
-		ivec3 Camera = intify(cam->Position / vec3(CHUNK_X, CHUNK_Y, CHUNK_Z));
-		for(int X = -Distance; X <= Distance; ++X)
-		for(int Z = -Distance; Z <= Distance; ++Z)
-		if(X * X + Z * Z <= Distance * Distance)
+		for(int X = -10 + cam->Position.x / CHUNK.x; X <= 10 + cam->Position.x  / CHUNK.x; ++X)
+		for(int Z = -10 + cam->Position.z / CHUNK.z; Z <= 10 + cam->Position.z  / CHUNK.z; ++Z)
 		{
-			addChunk(ivec3(X + Camera.x, 0, Z + Camera.z));
+			if(inRange(ivec3(X, 0, Z)))
+				addChunk(ivec3(X, 0, Z));
 		}
-		for(auto chunk : wld->chunks)
+		/*
+		for(auto i = wld->chunks.begin(); i != wld->chunks.end(); )
 		{
-			if((signed)(chunk.first - Camera).length() > Distance)
-				deleteChunk(chunk.first);
+			if(inRange(i->first))
+			{
+				Entity->Delete<StorageChunk>(i->second);
+				Entity->Delete<StorageForm>(i->second);
+				Entity->Delete<StorageTransform>(i->second);
+
+				wld->chunks.erase(i++);
+
+				Debug::Pass("chunk deleted");
+
+				// free ressources
+			}
+			else ++i;
 		}
+		*/
 
 		if(tasking)
 		{
@@ -78,6 +88,7 @@ class ComponentTerrain : public Component
 				break;
 			}
 		}
+
 	}
 
 	struct Data
@@ -122,19 +133,23 @@ class ComponentTerrain : public Component
 
 			Generate(id, key);
 
-			Global->Get<StorageTerrain>("terrain")->chunks.insert(make_pair(key, id));
+			auto wld = Global->Get<StorageTerrain>("terrain");
+			wld->chunks.insert(make_pair(key, id));
 		}
 		return id;
 	}
 
 	void deleteChunk(ivec3 key)
 	{
+		Debug::Info("inside deleteChunk()!");
+
 		unsigned int id = getChunk(key);
-		if(id < 1) return;
+		if(!id) return;
 
 		Debug::Info("Terrain delete chunk " + to_string(key.x) + " " + to_string(key.y) + " " + to_string(key.z));
 
-		Global->Get<StorageTerrain>("terrain")->chunks.erase(key);
+		auto wld = Global->Get<StorageTerrain>("terrain");
+		wld->chunks.erase(key);
 
 		auto frm = Entity->Add<StorageForm>(id);
 		glDeleteBuffers(1, &frm->Positions);
@@ -146,6 +161,21 @@ class ComponentTerrain : public Component
 		Entity->Delete<StorageChunk>(id);
 		Entity->Delete<StorageForm>(id);
 		Entity->Delete<StorageTransform>(id);
+	}
+
+	bool inRange(ivec3 key)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		auto cam = Global->Get<StorageCamera>("camera");
+
+		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
+		ivec3 Camera = ivec3(cam->Position) / CHUNK;
+
+		int X = key.x - Camera.x,
+		    Y = key.y - Camera.y,
+		    Z = key.z - Camera.z;
+
+		return (X * X + Y * Y + Z * Z <= Distance * Distance);
 	}
 
 	/*
@@ -213,9 +243,10 @@ class ComponentTerrain : public Component
 		for(int X = 0; X < CHUNK_X; ++X)
 		for(int Y = 0; Y < CHUNK_Y; ++Y)
 		for(int Z = 0; Z < CHUNK_Z; ++Z)
+		{
 			if(cnk->blocks[X][Y][Z])
 			{
-				int Tile = Clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
+				int Tile = clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
 
 				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 					ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
@@ -227,11 +258,11 @@ class ComponentTerrain : public Component
 					for(float i = 0; i <= 1; ++i)
 					for(float j = 0; j <= 1; ++j)
 					{
-						vec3 vertex = vec3(X, Y, Z) + floatify(Shift(dim, ivec3((dir+1)/2, i, j)));
+						vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir+1)/2, i, j)));
 						Vertices->push_back(vertex.x); Vertices->push_back(vertex.y); Vertices->push_back(vertex.z);
 					}
 
-					vec3 normal = normalize(floatify(Shift(dim, ivec3(dir, 0, 0))));
+					vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
 					for(int i = 0; i < 4; ++i)
 					{
 						Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
@@ -254,7 +285,7 @@ class ComponentTerrain : public Component
 
 				dir *= -1; } while(dir > 0); }
 			}
-
+		}
 		return data;
 	}
 
@@ -317,14 +348,6 @@ class ComponentTerrain : public Component
 		}
 	}
 
-	template <typename T>
-	inline T Clamp(T Value, T Min, T Max)
-	{
-		if(Value < Min) return Min;
-		if(Value > Max) return Max;
-		return Value;
-	}
-
 	bool Inside(ivec3 Position, ivec3 Min, ivec3 Max)
 	{
 		if(Position.x < Min.x || Position.y < Min.y || Position.z < Min.z) return false;
@@ -337,15 +360,5 @@ class ComponentTerrain : public Component
 		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
 		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
 		else                         return Vector;
-	}
-
-	vec3 floatify(ivec3 Value)
-	{
-		return vec3(Value.x, Value.y, Value.z);
-	}
-
-	ivec3 intify(vec3 Value)
-	{
-		return ivec3(Value.x, Value.y, Value.z);
 	}
 };
