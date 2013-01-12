@@ -33,7 +33,7 @@ class ComponentTerrain : public Component
 		auto wld = Global->Add<StorageTerrain>("terrain");
 
 		tasking = false;
-
+		
 		Texture();
 
 		Listeners();
@@ -46,7 +46,7 @@ class ComponentTerrain : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		const int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
+		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
 		for(int X = -Distance; X <= Distance; ++X)
 		for(int Z = -Distance; Z <= Distance; ++Z)
 		{
@@ -98,9 +98,9 @@ class ComponentTerrain : public Component
 	void Listeners()
 	{
 		Event->Listen("SystemInitialized", [=]{
-				auto cam = Global->Get<StorageCamera>("camera");
-				cam->Position = vec3(0, CHUNK_Y, 0);
-				cam->Angles = vec2(0.75, -0.25);
+			auto cam = Global->Get<StorageCamera>("camera");
+			cam->Position = vec3(0, CHUNK_Y, 0);
+			cam->Angles = vec2(0.75, -0.25);
 		});
 	}
 
@@ -115,17 +115,16 @@ class ComponentTerrain : public Component
 	int addChunk(int X, int Y, int Z)
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
-		auto shd = Global->Get<StorageShader>("shader");
 
 		unsigned int id = getChunk(X, Y, Z);
 		if(!id)
 		{
+			Debug::Info("Terrain add chunk " + to_string(X) + " " + to_string(Y) + " " + to_string(Z));
+
 			id = Entity->New();
 			Entity->Add<StorageChunk>(id);
-			auto frm = Entity->Add<StorageForm>(id);
 			auto tsf = Entity->Add<StorageTransform>(id);
-
-			frm->Program = shd->Program;
+			
 			tsf->Position = vec3(X * CHUNK_X, Y * CHUNK_Y, Z * CHUNK_Z);
 
 			Generate(id, X, Y, Z);
@@ -208,6 +207,7 @@ class ComponentTerrain : public Component
 	Data Mesh(Data data)
 	{
 		auto cnk = Entity->Get<StorageChunk>(data.id);
+
 		auto *Vertices = &data.Vertices, *Normals = &data.Normals, *Texcoords = &data.Texcoords;
 		auto *Elements = &data.Elements;
 
@@ -264,7 +264,10 @@ class ComponentTerrain : public Component
 
 	void Buffers(Data data)
 	{
-		auto frm = Entity->Get<StorageForm>(data.id);
+		auto shd = Global->Get<StorageShader>("shader");
+		auto frm = Entity->Add<StorageForm>(data.id);
+
+		frm->Program = shd->Program;
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
