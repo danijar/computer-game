@@ -49,16 +49,18 @@ class ComponentTerrain : public Component
 		int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
 		for(int X = -Distance; X <= Distance; ++X)
 		for(int Z = -Distance; Z <= Distance; ++Z)
+		if(X * X + Z * Z <= Distance * Distance)
 		{
 			addChunk(X + (int)cam->Position.x / CHUNK_X, 0, Z + (int)cam->Position.z / CHUNK_Z);
 		}
+		/*
 		for(auto chunk : wld->chunks)
 		{
-			auto chk = cks.find(chunk.second); // should find that for sure
-			float distance = (float)vec3(chunk.first[0] * CHUNK_X - cam->Position.x, chunk.first[1] * CHUNK_Y - cam->Position.y, chunk.first[2] * CHUNK_Z - cam->Position.z).length();
+			auto chk = cks.find(chunk.second); // should find that for sure;
 			if(distance > stg->Viewdistance)
 				deleteChunk(chunk.first[0], chunk.first[1], chunk.first[2]);
 		}
+		*/
 
 		if(tasking)
 		{
@@ -142,14 +144,21 @@ class ComponentTerrain : public Component
 		unsigned int id = getChunk(X, Y, Z);
 		if(id < 1) return;
 
+		Debug::Info("Terrain delete chunk " + to_string(X) + " " + to_string(Y) + " " + to_string(Z));
+
 		array<int, 3> key = {X, Y, Z};
 		wld->chunks.erase(key);
+
+		auto frm = Entity->Add<StorageForm>(id);
+		glDeleteBuffers(1, &frm->Positions);
+		glDeleteBuffers(1, &frm->Normals);
+		glDeleteBuffers(1, &frm->Texcoords);
+		glDeleteBuffers(1, &frm->Elements);
+		glDeleteTextures(1, &frm->Texture);
 
 		Entity->Delete<StorageChunk>(id);
 		Entity->Delete<StorageForm>(id);
 		Entity->Delete<StorageTransform>(id);
-		
-		// free buffers
 	}
 
 	/*
