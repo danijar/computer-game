@@ -61,8 +61,9 @@ class ComponentRenderer : public Component
 				Wireframe(!stg->Wireframe);
 				break;
 			case Keyboard::Key::F3:
-				stg->VerticalSync = !stg->VerticalSync;
-				Global->Get<StorageWindow>("window")->Window.setVerticalSyncEnabled(stg->VerticalSync);
+				stg->Verticalsync = !stg->Verticalsync;
+				auto wnd = &Global->Get<StorageWindow>("window")->Window;
+				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			}
 		});
 
@@ -121,7 +122,7 @@ class ComponentRenderer : public Component
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
 		
-		wnd->setVerticalSyncEnabled(stg->VerticalSync);
+		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 		
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);

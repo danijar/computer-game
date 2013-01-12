@@ -46,14 +46,12 @@ class ComponentTerrain : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		const float Distance = .5f * stg->Viewdistance / CHUNK_X / 2;
-		for(int X = -(int)Distance; X <= (int)Distance; ++X)
-		for(int Z = -(int)Distance; Z <= (int)Distance; ++Z)
-		if(X * X + Z * Z <= Distance * Distance)
+		const int Distance = (int)(.5f * stg->Viewdistance / CHUNK_X / 2);
+		for(int X = -Distance; X <= Distance; ++X)
+		for(int Z = -Distance; Z <= Distance; ++Z)
 		{
-			addChunk((int)(X + cam->Position.x / CHUNK_X), 0, (int)(Z + cam->Position.z / CHUNK_Z));
+			addChunk(X + (int)cam->Position.x / CHUNK_X, 0, Z + (int)cam->Position.z / CHUNK_Z);
 		}
-
 		for(auto chunk : wld->chunks)
 		{
 			auto chk = cks.find(chunk.second); // should find that for sure
@@ -151,6 +149,8 @@ class ComponentTerrain : public Component
 		Entity->Delete<StorageChunk>(id);
 		Entity->Delete<StorageForm>(id);
 		Entity->Delete<StorageTransform>(id);
+		
+		// free buffers
 	}
 
 	/*
@@ -226,7 +226,7 @@ class ComponentTerrain : public Component
 
 					if(Inside(neigh, vec3i(0), vec3i(CHUNK_X, CHUNK_Y, CHUNK_Z) - 1))
 						if(cnk->blocks[neigh.x][neigh.y][neigh.z])
-							goto skip;
+							{ dir *= -1; continue; }
 
 					for(float i = 0; i <= 1; ++i)
 					for(float j = 0; j <= 1; ++j)
@@ -256,7 +256,6 @@ class ComponentTerrain : public Component
 					}
 					n += 4;
 
-					skip:
 				dir *= -1; } while(dir > 0); }
 			}
 
