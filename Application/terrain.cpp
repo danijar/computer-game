@@ -46,18 +46,18 @@ class ComponentTerrain : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto cks = Entity->Get<StorageChunk>();
 
-		const float Distance = 0.5 * stg->Viewdistance / CHUNK_X / 2;
-		for(int X = -Distance; X <= Distance; ++X)
-		for(int Z = -Distance; Z <= Distance; ++Z)
+		const float Distance = .5f * stg->Viewdistance / CHUNK_X / 2;
+		for(int X = -(int)Distance; X <= (int)Distance; ++X)
+		for(int Z = -(int)Distance; Z <= (int)Distance; ++Z)
 		if(X * X + Z * Z <= Distance * Distance)
 		{
-			addChunk(X + cam->Position.x / CHUNK_X, 0, Z + cam->Position.z / CHUNK_Z);
+			addChunk((int)(X + cam->Position.x / CHUNK_X), 0, (int)(Z + cam->Position.z / CHUNK_Z));
 		}
 
 		for(auto chunk : wld->chunks)
 		{
 			auto chk = cks.find(chunk.second); // should find that for sure
-			float distance = vec3(chunk.first[0] * CHUNK_X - cam->Position.x, chunk.first[1] * CHUNK_Y - cam->Position.y, chunk.first[2] * CHUNK_Z - cam->Position.z).length();
+			float distance = (float)vec3(chunk.first[0] * CHUNK_X - cam->Position.x, chunk.first[1] * CHUNK_Y - cam->Position.y, chunk.first[2] * CHUNK_Z - cam->Position.z).length();
 			if(distance > stg->Viewdistance)
 				deleteChunk(chunk.first[0], chunk.first[1], chunk.first[2]);
 		}
