@@ -96,7 +96,7 @@ class ComponentRenderer : public Component
 		glUniformMatrix4fv(shd->UniNormal, 1, GL_FALSE, value_ptr(Normal));
 
 		glEnableVertexAttribArray(shd->AtrVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
 		glVertexAttribPointer(shd->AtrVertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(shd->AtrNormal);
