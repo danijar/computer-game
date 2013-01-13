@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdlib>
 #include <future>
+#include <atomic>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -30,19 +31,23 @@ class ComponentTerrain : public Component
 	{
 		auto wld = Global->Add<StorageTerrain>("terrain");
 
-		tasking = false;
+		active = 0;
+		meshing = false;
+
+		number = 0, number_old = 0;
 
 		Texture();
 
 		Listeners();
 	}
 
+	int number, number_old;
+
 	void Update()
 	{
 		auto wld = Global->Get<StorageTerrain>("terrain");
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto cam = Global->Get<StorageCamera>("camera");
-		auto cks = Entity->Get<StorageChunk>();
 
 		const ivec2 distance = ivec2((int)(stg->Viewdistance / CHUNK.x), (int)(stg->Viewdistance / CHUNK.z)) / 5;
 		const ivec2 camera   = ivec2((int)(cam->Position.x   / CHUNK.x), (int)(cam->Position.z   / CHUNK.z));
@@ -64,43 +69,32 @@ class ComponentTerrain : public Component
 			{
 				enableChunk(ivec3(i.x, 0, i.y));
 			}
-		} }
+		}}
 
-		if(tasking)
+		if(!meshing)
 		{
-			if(task.wait_for(chrono::milliseconds(0)) == future_status::ready)
+			if(active)
 			{
-				tasking = false;
-				Data data = task.get();
-				Buffers(data);
+				task.get();
+				Buffers(active);
+				Clear();
+				active = 0;
 			}
-		}
-		else
-		{
-			for(auto chunk : cks)
-			if(chunk.second->changed)
+			auto cks = Entity->Get<StorageChunk>();
+			for(auto i : cks) // find nearest
+			if(i.second->changed)
 			{
-				tasking = true;
-				chunk.second->changed = false;
-				task = async(launch::async, &ComponentTerrain::Mesh, this, Data(chunk.first));
+				i.second->changed = false;
+				active = i.first;
+				meshing = true;
+				task = async(launch::async, &ComponentTerrain::Meshing, this);
 				break;
 			}
 		}
 
+		if(number != number_old) Debug::Pass("number of chunks " + to_string(number));
+		number_old = number;
 	}
-
-	struct Data
-	{
-		Data() {}
-		Data(unsigned int id) : id(id) {}
-		unsigned int id;
-		vector<float> Vertices, Normals, Texcoords;
-		vector<int> Elements;
-	};
-
-	future<Data> task;
-	bool tasking;
-	Image texture;
 
 	void Listeners()
 	{
@@ -123,9 +117,10 @@ class ComponentTerrain : public Component
 		unsigned int id = getChunk(key);
 		if(!id)
 		{
-			Debug::Info("enable chunk " + vec_to_string(key));
-
 			id = Entity->New();
+
+			Debug::Info("enable chunk " + to_string(id) + " at "+ vec_to_string(key));
+
 			Entity->Add<StorageChunk>(id);
 			auto tsf = Entity->Add<StorageTransform>(id);
 			auto wld = Global->Get<StorageTerrain>("terrain");
@@ -135,6 +130,8 @@ class ComponentTerrain : public Component
 			Generate(id, key);
 
 			wld->chunks.insert(make_pair(key, id));
+
+			number++;
 		}
 		return id;
 	}
@@ -144,23 +141,37 @@ class ComponentTerrain : public Component
 		unsigned int id = getChunk(key);
 		if(id)
 		{
-			Debug::Info("disable chunk " + vec_to_string(key));
+			if(active == id)
+			{
+				Debug::Info("disable chunk " + to_string(id) + " at " + vec_to_string(key) + " kill thread");
+
+				meshing = false;
+				task.get();
+				active = 0;
+			}
+			else
+			{
+				Debug::Info("disable chunk " + to_string(id) + " at " + vec_to_string(key) + " delete form");
+
+				auto frm = Entity->Get<StorageForm>(id);
+
+				glDeleteBuffers(1, &frm->Positions);
+				glDeleteBuffers(1, &frm->Normals);
+				glDeleteBuffers(1, &frm->Texcoords);
+				glDeleteBuffers(1, &frm->Elements);
+				glDeleteTextures(1, &frm->Texture);
+
+				Entity->Delete<StorageForm>(id);
+			}
 
 			auto wld = Global->Get<StorageTerrain>("terrain");
-			auto frm = Entity->Get<StorageForm>(id);
-
-			glDeleteBuffers(1, &frm->Positions);
-			glDeleteBuffers(1, &frm->Normals);
-			glDeleteBuffers(1, &frm->Texcoords);
-			glDeleteBuffers(1, &frm->Elements);
-			glDeleteTextures(1, &frm->Texture);
-
-			// deleting those will crash parallel meshing
-			// Entity->Delete<StorageChunk>(id);
-			// Entity->Delete<StorageForm>(id);
-			// Entity->Delete<StorageTransform>(id);
+			
+			Entity->Delete<StorageChunk>(id);
+			Entity->Delete<StorageTransform>(id);
 
 			wld->chunks.erase(key);
+
+			number--;
 		}
 	}
 
@@ -215,88 +226,111 @@ class ComponentTerrain : public Component
 
 	#define TILES_U 4
 	#define TILES_V 4
+	#define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
 
-	Data Mesh(Data data)
+	future<void> task;
+	atomic_bool meshing;
+	int active;
+	vector<float> Vertices, Normals, Texcoords; vector<int> Elements;
+
+	void Meshing()
 	{
-		auto cnk = Entity->Get<StorageChunk>(data.id);
+		auto cnk = Entity->Get<StorageChunk>(active);
 
-		auto *Vertices = &data.Vertices, *Normals = &data.Normals, *Texcoords = &data.Texcoords;
-		auto *Elements = &data.Elements;
-
-		const vec2 grid(1.f / TILES_U, 1.f / TILES_V);
-
+		Clear();
 		int n = 0;
-		for(int X = 0; X < CHUNK_X; ++X)
-		for(int Y = 0; Y < CHUNK_Y; ++Y)
-		for(int Z = 0; Z < CHUNK_Z; ++Z)
-		{
-			if(cnk->blocks[X][Y][Z])
+		for(int X = 0; X < CHUNK_X; ++X) {
+		for(int Y = 0; Y < CHUNK_Y; ++Y) {
+		for(int Z = 0; Z < CHUNK_Z; ++Z) {
+			if(this->meshing)
 			{
-				int Tile = clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
+				if(cnk->blocks[X][Y][Z])
+				{
+					int Tile = clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
+					for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
+						ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-				for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
-					ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
+						if(Inside(neigh, ivec3(0), CHUNK - 1))
+							if(cnk->blocks[neigh.x][neigh.y][neigh.z])
+								goto skip;
 
-					if(Inside(neigh, ivec3(0), CHUNK - 1))
-						if(cnk->blocks[neigh.x][neigh.y][neigh.z])
-							{ dir *= -1; continue; }
+						{
+							for(float i = 0; i <= 1; ++i)
+							for(float j = 0; j <= 1; ++j)
+							{
+								vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir+1)/2, i, j)));
+								Vertices.push_back(vertex.x); Vertices.push_back(vertex.y); Vertices.push_back(vertex.z);
+							}
 
-					for(float i = 0; i <= 1; ++i)
-					for(float j = 0; j <= 1; ++j)
-					{
-						vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir+1)/2, i, j)));
-						Vertices->push_back(vertex.x); Vertices->push_back(vertex.y); Vertices->push_back(vertex.z);
-					}
+							vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
+							for(int i = 0; i < 4; ++i)
+							{
+								Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
+							}
 
-					vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
-					for(int i = 0; i < 4; ++i)
-					{
-						Normals->push_back(normal.x); Normals->push_back(normal.y); Normals->push_back(normal.z);
-					}
+							vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * GRID;
+							Texcoords.push_back(position.x);            Texcoords.push_back(position.y);
+							Texcoords.push_back(position.x + GRID.x/2); Texcoords.push_back(position.y);
+							Texcoords.push_back(position.x);            Texcoords.push_back(position.y + GRID.y/2);
+							Texcoords.push_back(position.x + GRID.x/2); Texcoords.push_back(position.y + GRID.y/2);
 
-					vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * grid;
-					Texcoords->push_back(position.x);            Texcoords->push_back(position.y);
-					Texcoords->push_back(position.x + grid.x/2); Texcoords->push_back(position.y);
-					Texcoords->push_back(position.x);            Texcoords->push_back(position.y + grid.y/2);
-					Texcoords->push_back(position.x + grid.x/2); Texcoords->push_back(position.y + grid.y/2);
+							if(dir == -1) {
+								Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
+								Elements.push_back(n+1); Elements.push_back(n+3); Elements.push_back(n+2);
+							} else {
+								Elements.push_back(n+0); Elements.push_back(n+2); Elements.push_back(n+1);
+								Elements.push_back(n+1); Elements.push_back(n+2); Elements.push_back(n+3);
+							}
+							n += 4;
+						}
 
-					if(dir == -1) {
-						Elements->push_back(n+0); Elements->push_back(n+1); Elements->push_back(n+2);
-						Elements->push_back(n+1); Elements->push_back(n+3); Elements->push_back(n+2);
-					} else {
-						Elements->push_back(n+0); Elements->push_back(n+2); Elements->push_back(n+1);
-						Elements->push_back(n+1); Elements->push_back(n+2); Elements->push_back(n+3);
-					}
-					n += 4;
-
-				dir *= -1; } while(dir > 0); }
+					skip: dir *= -1; } while(dir > 0); }
+				}
 			}
-		}
-		return data;
+			else
+			{
+				Clear();
+				Debug::Pass("thread aborted for " + to_string(active));
+				goto end;
+			}
+		}}}
+		end:
+		meshing = false;
 	}
 
-	void Buffers(Data data)
+	void Clear()
 	{
+		Vertices.clear(); Normals.clear(); Texcoords.clear(); Elements.clear();
+	}
+
+	void Buffers(unsigned int id)
+	{
+		if(Elements.size() < 1)
+		{
+			Debug::Fail("Terrain buffering chunk " + to_string(id) + " aborted");
+			return;
+		}
+
 		auto shd = Global->Get<StorageShader>("shader");
-		auto frm = Entity->Add<StorageForm>(data.id);
+		auto frm = Entity->Add<StorageForm>(id);
 
 		frm->Program = shd->Program;
 
 		glGenBuffers(1, &frm->Positions);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
-		glBufferData(GL_ARRAY_BUFFER, data.Vertices.size() * sizeof(float), &(data.Vertices[0]), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(float), &Vertices[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Normals);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glBufferData(GL_ARRAY_BUFFER, data.Normals.size() * sizeof(float), &(data.Normals[0]), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(float), &Normals[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, data.Texcoords.size() * sizeof(float), &(data.Texcoords[0]), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(float), &Texcoords[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, data.Elements.size() * sizeof(int), &data.Elements[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
 
 		glGenTextures(1, &frm->Texture);
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
@@ -308,11 +342,17 @@ class ComponentTerrain : public Component
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 
+	Image texture;
+
 	void Texture()
 	{
 		Image image;
 		bool result = image.loadFromFile("forms/textures/terrain.png");
-		if(!result){ Debug::Fail("Terrain texture loading fail"); return; }
+		if(!result)
+		{
+			Debug::Fail("Terrain texture loading fail");
+			return;
+		}
 
 		Vector2u size = Vector2u(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
 		texture.create(image.getSize().x * 2, image.getSize().y * 2, Color());

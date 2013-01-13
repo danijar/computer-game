@@ -35,5 +35,5 @@ struct StorageTerrain : public Storage
 		}
 	};
 
-	unordered_map<ivec3, int, traits, traits> chunks;
+	unordered_map<ivec3, unsigned int, traits, traits> chunks;
 };
