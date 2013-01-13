@@ -36,12 +36,8 @@ class ComponentTerrain : public Component
 
 		number = 0, number_old = 0;
 
-		Texture();
-
 		Listeners();
 	}
-
-	int number, number_old;
 
 	void Update()
 	{
@@ -96,9 +92,14 @@ class ComponentTerrain : public Component
 		number_old = number;
 	}
 
+	GLuint texture;
+	int number, number_old;
+
 	void Listeners()
 	{
 		Event->Listen("SystemInitialized", [=]{
+			texture = Texture();
+
 			auto cam = Global->Get<StorageCamera>("camera");
 			cam->Position = vec3(0, CHUNK_Y, 0);
 			cam->Angles = vec2(0.75, -0.25);
@@ -118,9 +119,6 @@ class ComponentTerrain : public Component
 		if(!id)
 		{
 			id = Entity->New();
-
-			Debug::Info("enable chunk " + to_string(id) + " at "+ vec_to_string(key));
-
 			Entity->Add<StorageChunk>(id);
 			auto tsf = Entity->Add<StorageTransform>(id);
 			auto wld = Global->Get<StorageTerrain>("terrain");
@@ -131,6 +129,7 @@ class ComponentTerrain : public Component
 
 			wld->chunks.insert(make_pair(key, id));
 
+			Debug::Info("enabled chunk " + to_string(id) + " at "+ vec_to_string(key));
 			number++;
 		}
 		return id;
@@ -143,7 +142,7 @@ class ComponentTerrain : public Component
 		{
 			if(active == id)
 			{
-				Debug::Info("disable chunk " + to_string(id) + " at " + vec_to_string(key) + " kill thread");
+				Debug::Info("Killed meshing thread to disable chunk " + to_string(id) + "!");
 
 				meshing = false;
 				task.get();
@@ -151,7 +150,7 @@ class ComponentTerrain : public Component
 			}
 			else
 			{
-				Debug::Info("disable chunk " + to_string(id) + " at " + vec_to_string(key) + " delete form");
+				
 
 				auto frm = Entity->Get<StorageForm>(id);
 
@@ -159,7 +158,6 @@ class ComponentTerrain : public Component
 				glDeleteBuffers(1, &frm->Normals);
 				glDeleteBuffers(1, &frm->Texcoords);
 				glDeleteBuffers(1, &frm->Elements);
-				glDeleteTextures(1, &frm->Texture);
 
 				Entity->Delete<StorageForm>(id);
 			}
@@ -171,6 +169,7 @@ class ComponentTerrain : public Component
 
 			wld->chunks.erase(key);
 
+			Debug::Info("disabled chunk " + to_string(id) + " at " + vec_to_string(key));
 			number--;
 		}
 	}
@@ -332,29 +331,21 @@ class ComponentTerrain : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
 
-		glGenTextures(1, &frm->Texture);
-		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
-		glGenerateMipmap(GL_TEXTURE_2D);
+		frm->Texture = texture;
 	}
 
-	Image texture;
-
-	void Texture()
+	GLuint Texture()
 	{
 		Image image;
 		bool result = image.loadFromFile("forms/textures/terrain.png");
 		if(!result)
 		{
 			Debug::Fail("Terrain texture loading fail");
-			return;
+			return 0;
 		}
 
 		Vector2u size = Vector2u(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
+		Image texture;
 		texture.create(image.getSize().x * 2, image.getSize().y * 2, Color());
 		for(int u = 0; u < TILES_U; ++u)
 		for(int v = 0; v < TILES_V; ++v)
@@ -371,6 +362,29 @@ class ComponentTerrain : public Component
 			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2    ) * size.y, IntRect(0, 0, 0, 0), true);
 			texture.copy(quarter, (u * 2    ) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
 			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
+		}
+
+		GLuint id;
+		glGenTextures(1, &id);
+		glBindTexture(GL_TEXTURE_2D, id);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		return id;
+	}
+
+	~ComponentTerrain()
+	{
+		glDeleteTextures(1, &texture);
+
+		if(meshing)
+		{
+			meshing = false;
+			task.get();
 		}
 	}
 
@@ -390,6 +404,6 @@ class ComponentTerrain : public Component
 
 	string vec_to_string(ivec3 a)
 	{
-		return (a.x >= 0 ? " " : "") + to_string(a.x) + (a.x >= 0 ? "  " : " ") + to_string(a.y) + (a.x >= 0 ? "  " : " ") + to_string(a.z);
+		return (a.x >= 0 ? " " : "") + to_string(a.x) + (a.y >= 0 ? "  " : " ") + to_string(a.y) + (a.z >= 0 ? "  " : " ") + to_string(a.z);
 	}
 };
