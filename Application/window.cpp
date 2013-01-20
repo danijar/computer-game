@@ -113,6 +113,8 @@ class ComponentWindow : public Component
 			wnd->setPosition(stg->Position);
 		}
 
+		wnd->resetGLStates();
+
 		Debug::PassFail("Window creation", wnd->isOpen());
 
 		if(Recreated) Event->Fire<bool>("WindowRecreated", Fullscreen);

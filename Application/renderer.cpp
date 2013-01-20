@@ -29,23 +29,25 @@ class ComponentRenderer : public Component
 		Global->Add<StorageShader>("shader");
 
 		Window();
-
 		Shader("shaders/basic.vert", "shaders/basic.frag");
+		Perspective();
 
 		Listeners();
 	}
 
 	void Update()
 	{
-		//auto shd = Global->Get<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
+		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
-		//for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+
+		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 	}
 
 	void Listeners()
@@ -66,6 +68,7 @@ class ComponentRenderer : public Component
 
 		Event->Listen("WindowRecreated", [=]{
 			Window();
+			Perspective();
 		});
 
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
@@ -118,10 +121,9 @@ class ComponentRenderer : public Component
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 		auto stg = Global->Get<StorageSettings>("settings");
-		
-		wnd->resetGLStates();
+	
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
-		
+	
 		glClearColor(.4f,.6f,.9f,0.f);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
@@ -129,7 +131,6 @@ class ComponentRenderer : public Component
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_TEXTURE_2D);
 
-		Perspective();
 		Wireframe();
 	}
 
@@ -144,6 +145,7 @@ class ComponentRenderer : public Component
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
+		glUseProgram(shd->Program);
 
 		glViewport(0, 0, Size.x, Size.y);
 
@@ -167,6 +169,8 @@ class ComponentRenderer : public Component
 	void Shader(string PathVertex, string PathFragment)
 	{
 		auto shd = Global->Get<StorageShader>("shader");
+
+		OpenglTest();
 
 		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
 		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());
@@ -233,5 +237,23 @@ class ComponentRenderer : public Component
 		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
 
 		return Result;
+	}
+
+	bool OpenglTest()
+	{
+		GLenum code = glGetError();
+		string message;
+
+		if (code == GL_NO_ERROR) return true;
+		else if(code == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
+		else if(code == GL_INVALID_VALUE)                     message = "GL_INVALID_VALUE";
+		else if(code == GL_INVALID_OPERATION)                 message = "GL_INVALID_OPERATION";
+		else if(code == GL_STACK_OVERFLOW)                    message = "GL_STACK_OVERFLOW";
+		else if(code == GL_STACK_UNDERFLOW)                   message = "GL_STACK_UNDERFLOW";
+		else if(code == GL_OUT_OF_MEMORY)                     message = "GL_OUT_OF_MEMORY";
+		else if(code == GL_INVALID_FRAMEBUFFER_OPERATION_EXT) message = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
+
+		Debug::Fail("OpenGL error " + message);
+		return false;
 	}
 };

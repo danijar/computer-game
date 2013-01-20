@@ -43,7 +43,6 @@ class ComponentForm : public Component
 		});
 
 		Event->Listen("SystemInitialized", [=]{
-			/*
 			const int a = 3;
 			for(float x = -3; x <= 3; ++x)
 			for(float z = -3; z <= 3; ++z)
@@ -60,7 +59,6 @@ class ComponentForm : public Component
 			const float Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
 			const int   Elements[]  = { 0,1,2, 2,3,0 };
 			Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, "forms/textures/bottom.jpg", vec3(0));
-			*/
 		});
 	}
 
