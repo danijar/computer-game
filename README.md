@@ -53,14 +53,15 @@ Upcoming Features
 
 There is a lot to do since the core development isn't finished yet.
 
-- Shadows
-- Model Loading
-- [Global illumination](http://en.wikipedia.org/wiki/Global_illumination)
-- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
 - Physics and Collision
+- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
+- Model Loading
+- Shadow mapping
+- [Fast approximate anti-aliasing](http://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing)
 
 Desired features that might be implemented in future.
 
+- [Global illumination](http://en.wikipedia.org/wiki/Global_illumination)
 - Characters
 - Animations
 - Artificial intelligence
