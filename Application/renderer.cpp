@@ -3,6 +3,8 @@
 #include "system.h"
 #include "debug.h"
 
+#include <fstream>
+using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
@@ -11,8 +13,6 @@ using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace glm;
-#include <fstream>
-using namespace std;
 
 #include "settings.h"
 #include "window.h"
@@ -26,29 +26,26 @@ class ComponentRenderer : public Component
 {
 	void Init()
 	{
-		glewExperimental = GL_TRUE;
-		int result = glewInit();
-		Debug::PassFail("Glew initialization", result ? false : true);
-		
-		Shader("shaders/basic.vert", "shaders/basic.frag");
+		Global->Add<StorageShader>("shader");
 
 		Window();
+
+		Shader("shaders/basic.vert", "shaders/basic.frag");
 
 		Listeners();
 	}
 
 	void Update()
 	{
-		auto shd = Global->Get<StorageShader>("shader");
+		//auto shd = Global->Get<StorageShader>("shader");
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
-		glClearColor(.4f,.6f,.9f,0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
+		//glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
-		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+		//for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 	}
 
 	void Listeners()
@@ -89,6 +86,7 @@ class ComponentRenderer : public Component
 		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
 		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
+
 		mat4 Vertex = Translate * Rotate * Scale;
 		glUniformMatrix4fv(shd->UniVertex, 1, GL_FALSE, value_ptr(Vertex));
 
@@ -120,17 +118,16 @@ class ComponentRenderer : public Component
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto shd = Global->Get<StorageShader>("shader");
 		
+		wnd->resetGLStates();
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 		
+		glClearColor(.4f,.6f,.9f,0.f);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_TEXTURE_2D);
-		
-		glUseProgram(shd->Program);
 
 		Perspective();
 		Wireframe();
@@ -169,7 +166,7 @@ class ComponentRenderer : public Component
 
 	void Shader(string PathVertex, string PathFragment)
 	{
-		auto shd = Global->Add<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
 
 		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
 		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());

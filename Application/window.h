@@ -2,11 +2,12 @@
 
 #include "system.h"
 
-#include <SFML/Window.hpp>
+//#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 
 
 struct StorageWindow : public Storage
 {
-	Window Window;
+	RenderWindow Window;
 };

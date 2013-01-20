@@ -43,6 +43,7 @@ class ComponentForm : public Component
 		});
 
 		Event->Listen("SystemInitialized", [=]{
+			/*
 			const int a = 3;
 			for(float x = -3; x <= 3; ++x)
 			for(float z = -3; z <= 3; ++z)
@@ -59,6 +60,7 @@ class ComponentForm : public Component
 			const float Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
 			const int   Elements[]  = { 0,1,2, 2,3,0 };
 			Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, "forms/textures/bottom.jpg", vec3(0));
+			*/
 		});
 	}
 
@@ -66,6 +68,7 @@ class ComponentForm : public Component
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 		unsigned int id = Entity->New();
+
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 
