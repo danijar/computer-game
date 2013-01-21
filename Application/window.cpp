@@ -3,7 +3,9 @@
 #include "system.h"
 #include "debug.h"
 
+#include <GLEW/glew.h>
 #include <SFML/Window.hpp>
+#include <SFML/OpenGL.hpp>
 using namespace sf;
 
 #include "window.h"
@@ -76,6 +78,7 @@ class ComponentWindow : public Component
 		Event->Listen("SystemUpdated", [=]{
 			auto wnd = &Global->Get<StorageWindow>("window")->Window;
 			wnd->display();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		});
 	}
 

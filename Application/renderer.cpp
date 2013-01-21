@@ -27,7 +27,6 @@ class ComponentRenderer : public Component
 	void Init()
 	{
 		Global->Add<StorageShader>("shader");
-
 		Shader("shaders/basic.vert", "shaders/basic.frag");
 
 		Window();
@@ -41,18 +40,12 @@ class ComponentRenderer : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
-		//for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
-		/*
-		glUseProgram(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		*/
+		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+
+		Cleanup();
 	}
 
 	void Listeners()
@@ -119,6 +112,19 @@ class ComponentRenderer : public Component
 		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	}
 
+	void Cleanup()
+	{
+		auto shd = Global->Get<StorageShader>("shader");
+		
+		glUseProgram(0);
+		glDisableVertexAttribArray(shd->AtrVertex);
+		glDisableVertexAttribArray(shd->AtrNormal);
+		glDisableVertexAttribArray(shd->AtrTexcoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
 	void Window()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
@@ -140,7 +146,6 @@ class ComponentRenderer : public Component
 	void Perspective()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
-
 		Perspective(wnd->getSize());
 	}
 
