@@ -51,14 +51,16 @@ class ComponentText : public Component
 		}
 		*/
 
-		/*
 		wnd->pushGLStates();
 
 		Text text("Hello World", font, 15);
+		text.setPosition(0, 0);
 		wnd->draw(text);
 
+		Debug::Pass("Text drawn.");
+
 		wnd->popGLStates();
-		*/
+	
 	}
 
 	Font font;

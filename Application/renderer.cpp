@@ -28,9 +28,9 @@ class ComponentRenderer : public Component
 	{
 		Global->Add<StorageShader>("shader");
 
-		Window();
 		Shader("shaders/basic.vert", "shaders/basic.frag");
-		Perspective();
+
+		Window();
 
 		Listeners();
 	}
@@ -43,11 +43,16 @@ class ComponentRenderer : public Component
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
-		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
-
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		//for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+		/*
+		glUseProgram(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		*/
 	}
 
 	void Listeners()
@@ -68,7 +73,6 @@ class ComponentRenderer : public Component
 
 		Event->Listen("WindowRecreated", [=]{
 			Window();
-			Perspective();
 		});
 
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
@@ -82,17 +86,15 @@ class ComponentRenderer : public Component
 		auto frm = Entity->Get<StorageForm>(id);
 		auto tsf = Entity->Get<StorageTransform>(id);
 
-		glUseProgram(frm->Program);
-
 		mat4 Scale      = scale(mat4(1), frm->Scale);
 		mat4 Translate  = translate(mat4(1), tsf->Position);
 		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
 		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 
+		glUseProgram(frm->Program);
 		mat4 Vertex = Translate * Rotate * Scale;
 		glUniformMatrix4fv(shd->UniVertex, 1, GL_FALSE, value_ptr(Vertex));
-
 		mat4 Normal = Rotate;
 		glUniformMatrix4fv(shd->UniNormal, 1, GL_FALSE, value_ptr(Normal));
 
@@ -132,6 +134,7 @@ class ComponentRenderer : public Component
 		glEnable(GL_TEXTURE_2D);
 
 		Wireframe();
+		Perspective();
 	}
 
 	void Perspective()
@@ -145,10 +148,10 @@ class ComponentRenderer : public Component
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto shd = Global->Get<StorageShader>("shader");
-		glUseProgram(shd->Program);
 
 		glViewport(0, 0, Size.x, Size.y);
 
+		glUseProgram(shd->Program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->UniProjection, 1, GL_FALSE, value_ptr(Projection));
 	}
@@ -169,8 +172,6 @@ class ComponentRenderer : public Component
 	void Shader(string PathVertex, string PathFragment)
 	{
 		auto shd = Global->Get<StorageShader>("shader");
-
-		OpenglTest();
 
 		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
 		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());

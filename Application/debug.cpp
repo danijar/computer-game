@@ -23,6 +23,11 @@ namespace Debug
 		else       Fail(Message + " " + MessageFail);
 	}
 
+	void Inline(string Message)
+	{
+		cout << Message;
+	}
+
 	void Wait(string Message)
 	{
 		cout << Message << endl;
