@@ -41,7 +41,7 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 10, 0));
+			unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 20, 0));
 			Entity->Add<StorageMovement>(id);
 			Entity->Add<StorageAnimation>(id);
 			auto tsf = Entity->Get<StorageTransform>(id);

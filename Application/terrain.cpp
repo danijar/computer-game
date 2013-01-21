@@ -39,7 +39,17 @@ class ComponentTerrain : public Component
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			auto cks = Entity->Get<StorageChunk>();
-			return "Chunks " + to_string(cks.size());
+			string output = "Chunks " + to_string(cks.size()) + "\n\n";
+			for(int z = -10; z <= 10; ++z)
+			{
+				output += "\n";
+				for(int x = -10; x <= 10; ++x)
+				{
+					output += (wld->chunks.find(ivec3(x, 0, z)) != wld->chunks.end()) ? "O" : "·";
+					output += " ";
+				}
+			}
+			return output;
 		};
 
 		Listeners();
@@ -51,13 +61,17 @@ class ComponentTerrain : public Component
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto cam = Global->Get<StorageCamera>("camera");
 
-		const ivec2 distance = ivec2((int)(stg->Viewdistance / CHUNK.x), (int)(stg->Viewdistance / CHUNK.z)) / 5;
+		const int distance = (unsigned int)((stg->Viewdistance / ((CHUNK.x + CHUNK.y + CHUNK.z) / 3.f)) / 5);
 		const ivec2 camera   = ivec2((int)(cam->Position.x   / CHUNK.x), (int)(cam->Position.z   / CHUNK.z));
 
 		vector<ivec3> keys;
 		for(auto i = wld->chunks.begin(); i != wld->chunks.end(); ++i)
 		{
-			if(distance.x < abs(i->first.x - camera.x) && distance.y < abs(i->first.z - camera.y))
+			const int margin = 1;
+
+			vec2 offset = vec2(camera.x, camera.y) - vec2(i->first.x, i->first.z);
+			int away = (int)sqrt(offset.x * offset.x + offset.y * offset.y);
+			if(away > distance + margin)
 			{
 				keys.push_back(i->first);
 			}
@@ -65,11 +79,11 @@ class ComponentTerrain : public Component
 		for(auto i : keys) disableChunk(i);
 
 		ivec2 i;
-		for(i.x = camera.x - distance.x; i.x < camera.x + distance.x; ++i.x) {
-		for(i.y = camera.y - distance.y; i.y < camera.y + distance.y; ++i.y) {
-			if(abs(i.x - camera.x) < distance.x && abs(i.y - camera.y) < distance.y)
+		for(i.x = -distance; i.x < distance; ++i.x) {
+		for(i.y = -distance; i.y < distance; ++i.y) {
+			if(i.x * i.x + i.y * i.y < distance * distance)
 			{
-				enableChunk(ivec3(i.x, 0, i.y));
+				enableChunk(ivec3(i.x + camera.x, 0, i.y + camera.y));
 			}
 		}}
 
@@ -128,8 +142,6 @@ class ComponentTerrain : public Component
 			Generate(id, key);
 
 			wld->chunks.insert(make_pair(key, id));
-
-			Debug::Info("enabled chunk " + to_string(id) + " at "+ vec_to_string(key));
 		}
 		return id;
 	}
@@ -165,8 +177,6 @@ class ComponentTerrain : public Component
 			Entity->Delete<StorageTransform>(id);
 
 			wld->chunks.erase(key);
-
-			Debug::Info("disabled chunk " + to_string(id) + " at " + vec_to_string(key));
 		}
 	}
 

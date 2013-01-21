@@ -57,6 +57,9 @@
     <ClCompile Include="terrain.cpp">
       <Filter>Source\components</Filter>
     </ClCompile>
+    <ClCompile Include="text.cpp">
+      <Filter>Source\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system.h">
@@ -90,6 +93,9 @@
       <Filter>Header\storages</Filter>
     </ClInclude>
     <ClInclude Include="terrain.h">
+      <Filter>Header\storages</Filter>
+    </ClInclude>
+    <ClInclude Include="text.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
   </ItemGroup>
