@@ -3,16 +3,21 @@
 #include "system.h"
 #include "debug.h"
 
+#include <GLEW/glew.h>
 #include <SFML/Window.hpp>
+#include <SFML/OpenGL.hpp>
 using namespace sf;
 
 #include "window.h"
 #include "settings.h"
+#include "text.h"
 
 
 class ComponentWindow : public Component
 {
 	unsigned int window;
+	int frames;
+	Clock clock;
 
 	void Init()
 	{
@@ -22,6 +27,11 @@ class ComponentWindow : public Component
 		VideoMode mde = VideoMode::getDesktopMode();
 		stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
 		Create(stg->Fullscreen);
+
+		frames = 0;
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{
+			return "FPS " + to_string(stg->FPS);
+		};
 
 		Listeners();
 	}
@@ -56,7 +66,13 @@ class ComponentWindow : public Component
 			}
 		}
 
-		wnd->setTitle(stg->Title + " (" + to_string(stg->FPS) + " FPS)");
+		if(clock.getElapsedTime().asMilliseconds() >= 1000)
+		{
+			clock.restart();
+			stg->FPS = frames;
+			frames = 0;
+		}
+		frames++;
 	}
 
 	void Listeners()
@@ -76,6 +92,7 @@ class ComponentWindow : public Component
 		Event->Listen("SystemUpdated", [=]{
 			auto wnd = &Global->Get<StorageWindow>("window")->Window;
 			wnd->display();
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		});
 	}
 
@@ -112,6 +129,8 @@ class ComponentWindow : public Component
 			wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
 			wnd->setPosition(stg->Position);
 		}
+
+		wnd->resetGLStates();
 
 		Debug::PassFail("Window creation", wnd->isOpen());
 

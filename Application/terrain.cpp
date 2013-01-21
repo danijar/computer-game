@@ -23,10 +23,13 @@ using namespace glm;
 #include "terrain.h"
 #include "shader.h"
 #include "movement.h"
+#include "text.h"
 
 
 class ComponentTerrain : public Component
 {
+	GLuint texture;
+
 	void Init()
 	{
 		auto wld = Global->Add<StorageTerrain>("terrain");
@@ -34,7 +37,10 @@ class ComponentTerrain : public Component
 		active = 0;
 		meshing = false;
 
-		number = 0, number_old = 0;
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{
+			auto cks = Entity->Get<StorageChunk>();
+			return "Chunks " + to_string(cks.size());
+		};
 
 		Listeners();
 	}
@@ -87,13 +93,7 @@ class ComponentTerrain : public Component
 				break;
 			}
 		}
-
-		if(number != number_old) Debug::Pass("number of chunks " + to_string(number));
-		number_old = number;
 	}
-
-	GLuint texture;
-	int number, number_old;
 
 	void Listeners()
 	{
@@ -130,7 +130,6 @@ class ComponentTerrain : public Component
 			wld->chunks.insert(make_pair(key, id));
 
 			Debug::Info("enabled chunk " + to_string(id) + " at "+ vec_to_string(key));
-			number++;
 		}
 		return id;
 	}
@@ -150,11 +149,9 @@ class ComponentTerrain : public Component
 			}
 			else
 			{
-				
-
 				auto frm = Entity->Get<StorageForm>(id);
 
-				glDeleteBuffers(1, &frm->Positions);
+				glDeleteBuffers(1, &frm->Vertices);
 				glDeleteBuffers(1, &frm->Normals);
 				glDeleteBuffers(1, &frm->Texcoords);
 				glDeleteBuffers(1, &frm->Elements);
@@ -170,7 +167,6 @@ class ComponentTerrain : public Component
 			wld->chunks.erase(key);
 
 			Debug::Info("disabled chunk " + to_string(id) + " at " + vec_to_string(key));
-			number--;
 		}
 	}
 
@@ -315,8 +311,8 @@ class ComponentTerrain : public Component
 
 		frm->Program = shd->Program;
 
-		glGenBuffers(1, &frm->Positions);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glGenBuffers(1, &frm->Vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
 		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(float), &Vertices[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Normals);

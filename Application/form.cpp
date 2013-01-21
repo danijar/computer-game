@@ -16,6 +16,7 @@ using namespace glm;
 #include "movement.h"
 #include "animation.h"
 #include "shader.h"
+#include "text.h"
 
 
 class ComponentForm : public Component
@@ -24,6 +25,11 @@ class ComponentForm : public Component
 	
 	void Init()
 	{
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{
+			auto fms = Entity->Get<StorageForm>();
+			return "Forms " + to_string(fms.size());
+		};
+
 		Listeners();
 	}
 
@@ -43,20 +49,21 @@ class ComponentForm : public Component
 		});
 
 		Event->Listen("SystemInitialized", [=]{
-			
+
 		});
 	}
 
-	int Create(const float* Positions, int PositionsN, const float* Normals, int NormalsN, const float* Texcoords, int TexcoordsN, const int* Elements, int ElementsN, string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
+	int Create(const float* Vertices, int VerticesN, const float* Normals, int NormalsN, const float* Texcoords, int TexcoordsN, const int* Elements, int ElementsN, string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
 	{
 		auto shd = Global->Get<StorageShader>("shader");
 		unsigned int id = Entity->New();
+
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 
-		glGenBuffers(1, &frm->Positions);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
-		glBufferData(GL_ARRAY_BUFFER, PositionsN * sizeof(float), Positions, GL_STATIC_DRAW);
+		glGenBuffers(1, &frm->Vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
+		glBufferData(GL_ARRAY_BUFFER, VerticesN * sizeof(float), Vertices, GL_STATIC_DRAW);
 
 		glGenBuffers(1, &frm->Normals);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
@@ -92,11 +99,11 @@ class ComponentForm : public Component
 
 	unsigned int CreateCube(string Texture, vec3 Position = vec3(0))
 	{
-		const float Positions[] = {-1.,-1.,1.,1.,-1.,1.,1.,1.,1.,-1.,1.,1.,-1.,1.,1.,1.,1.,1.,1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,-1.,-1.,-1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,1.,-1.,1.,-1.,1.,1.,-1.,-1.,1.,1.,-1.,1.,1.,1.};
+		const float Vertices[] = {-1.,-1.,1.,1.,-1.,1.,1.,1.,1.,-1.,1.,1.,-1.,1.,1.,1.,1.,1.,1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,-1.,-1.,-1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,1.,-1.,1.,-1.,1.,1.,-1.,-1.,1.,1.,-1.,1.,1.,1.};
 		const float Normals[]   = {0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,0,1,0,0,1,0,0,1,0,0,1,0,0};
 		const float Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
 		const int   Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
 
-		return Create(Positions, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position);
+		return Create(Vertices, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position);
 	}
 };

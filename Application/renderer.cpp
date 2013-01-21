@@ -3,6 +3,8 @@
 #include "system.h"
 #include "debug.h"
 
+#include <fstream>
+using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
@@ -11,8 +13,6 @@ using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace glm;
-#include <fstream>
-using namespace std;
 
 #include "settings.h"
 #include "window.h"
@@ -26,10 +26,7 @@ class ComponentRenderer : public Component
 {
 	void Init()
 	{
-		glewExperimental = GL_TRUE;
-		int result = glewInit();
-		Debug::PassFail("Glew initialization", result ? false : true);
-		
+		Global->Add<StorageShader>("shader");
 		Shader("shaders/basic.vert", "shaders/basic.frag");
 
 		Window();
@@ -43,12 +40,14 @@ class ComponentRenderer : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
-		glClearColor(.4f,.6f,.9f,0.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
+		Prepare();
+
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
+
+		Cleanup();
 	}
 
 	void Listeners()
@@ -58,7 +57,7 @@ class ComponentRenderer : public Component
 			switch(Code)
 			{
 			case Keyboard::Key::F2:
-				Wireframe(!stg->Wireframe);
+				stg->Wireframe = !stg->Wireframe;
 				break;
 			case Keyboard::Key::F3:
 				stg->Verticalsync = !stg->Verticalsync;
@@ -82,21 +81,20 @@ class ComponentRenderer : public Component
 		auto frm = Entity->Get<StorageForm>(id);
 		auto tsf = Entity->Get<StorageTransform>(id);
 
-		glUseProgram(frm->Program);
-
 		mat4 Scale      = scale(mat4(1), frm->Scale);
 		mat4 Translate  = translate(mat4(1), tsf->Position);
 		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
 		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
+
+		glUseProgram(frm->Program);
 		mat4 Vertex = Translate * Rotate * Scale;
 		glUniformMatrix4fv(shd->UniVertex, 1, GL_FALSE, value_ptr(Vertex));
-
 		mat4 Normal = Rotate;
 		glUniformMatrix4fv(shd->UniNormal, 1, GL_FALSE, value_ptr(Normal));
 
 		glEnableVertexAttribArray(shd->AtrVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
 		glVertexAttribPointer(shd->AtrVertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(shd->AtrNormal);
@@ -116,30 +114,48 @@ class ComponentRenderer : public Component
 		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	}
 
+	void Prepare()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+	}
+
+	void Cleanup()
+	{
+		auto shd = Global->Get<StorageShader>("shader");
+		
+		glUseProgram(0);
+		glDisableVertexAttribArray(shd->AtrVertex);
+		glDisableVertexAttribArray(shd->AtrNormal);
+		glDisableVertexAttribArray(shd->AtrTexcoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
 	void Window()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto shd = Global->Get<StorageShader>("shader");
-		
+	
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
-		
+	
+		glClearColor(.4f,.6f,.9f,0.f);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_TEXTURE_2D);
-		
-		glUseProgram(shd->Program);
 
 		Perspective();
-		Wireframe();
 	}
 
 	void Perspective()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
-
 		Perspective(wnd->getSize());
 	}
 
@@ -150,26 +166,14 @@ class ComponentRenderer : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
+		glUseProgram(shd->Program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->UniProjection, 1, GL_FALSE, value_ptr(Projection));
 	}
 
-	void Wireframe()
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		Wireframe(stg->Wireframe);
-	}
-
-	void Wireframe(bool State)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		stg->Wireframe = State;
-		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
-	}
-
 	void Shader(string PathVertex, string PathFragment)
 	{
-		auto shd = Global->Add<StorageShader>("shader");
+		auto shd = Global->Get<StorageShader>("shader");
 
 		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
 		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());
@@ -236,5 +240,23 @@ class ComponentRenderer : public Component
 		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
 
 		return Result;
+	}
+
+	bool OpenglTest()
+	{
+		GLenum code = glGetError();
+		string message;
+
+		if (code == GL_NO_ERROR) return true;
+		else if(code == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
+		else if(code == GL_INVALID_VALUE)                     message = "GL_INVALID_VALUE";
+		else if(code == GL_INVALID_OPERATION)                 message = "GL_INVALID_OPERATION";
+		else if(code == GL_STACK_OVERFLOW)                    message = "GL_STACK_OVERFLOW";
+		else if(code == GL_STACK_UNDERFLOW)                   message = "GL_STACK_UNDERFLOW";
+		else if(code == GL_OUT_OF_MEMORY)                     message = "GL_OUT_OF_MEMORY";
+		else if(code == GL_INVALID_FRAMEBUFFER_OPERATION_EXT) message = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
+
+		Debug::Fail("OpenGL error " + message);
+		return false;
 	}
 };
