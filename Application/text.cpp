@@ -11,35 +11,30 @@ using namespace sf;
 using namespace glm;
 
 #include "window.h"
-//#include "text.h"
+#include "text.h"
 
 
 class ComponentText : public Component
 {
+	Font font;
+
 	void Init()
 	{
 		bool result = font.loadFromFile("other/verdana.ttf");
 		Debug::PassFail("Text font loading", result);
-
-		/*
-		// testing
-		unsigned int id = Entity->New();
-		auto txt = Entity->Add<StorageText>(id);
-		txt->Text = []{ return "Hello World!"; };
-		*/
 	}
 
 	void Update()
 	{
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
-
-		/*
 		auto txs = Entity->Get<StorageText>();
+
+		wnd->pushGLStates();
 		
-		uint offset = 0;
-		const int margin = 10;
+		const int margin = 5;
 		const int textsize = 15;
 
+		uint offset = margin;
 		for(auto i : txs)
 		{
 			auto func = i.second->Text;
@@ -49,15 +44,7 @@ class ComponentText : public Component
 			wnd->draw(text);
 			offset += margin + textsize;
 		}
-		*/
-
-		wnd->pushGLStates();
-
-		Text text("Hello World", font, 15);
-		wnd->draw(text);
 
 		wnd->popGLStates();
 	}
-
-	Font font;
 };

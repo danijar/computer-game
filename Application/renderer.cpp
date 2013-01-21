@@ -43,6 +43,8 @@ class ComponentRenderer : public Component
 		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
+		Prepare();
+
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 
 		Cleanup();
@@ -55,7 +57,7 @@ class ComponentRenderer : public Component
 			switch(Code)
 			{
 			case Keyboard::Key::F2:
-				Wireframe(!stg->Wireframe);
+				stg->Wireframe = !stg->Wireframe;
 				break;
 			case Keyboard::Key::F3:
 				stg->Verticalsync = !stg->Verticalsync;
@@ -112,6 +114,13 @@ class ComponentRenderer : public Component
 		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 	}
 
+	void Prepare()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+	}
+
 	void Cleanup()
 	{
 		auto shd = Global->Get<StorageShader>("shader");
@@ -123,6 +132,8 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	void Window()
@@ -139,7 +150,6 @@ class ComponentRenderer : public Component
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_TEXTURE_2D);
 
-		Wireframe();
 		Perspective();
 	}
 
@@ -159,19 +169,6 @@ class ComponentRenderer : public Component
 		glUseProgram(shd->Program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->UniProjection, 1, GL_FALSE, value_ptr(Projection));
-	}
-
-	void Wireframe()
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		Wireframe(stg->Wireframe);
-	}
-
-	void Wireframe(bool State)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		stg->Wireframe = State;
-		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
 	}
 
 	void Shader(string PathVertex, string PathFragment)

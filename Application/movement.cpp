@@ -18,7 +18,7 @@ using namespace glm;
 class ComponentMovement : public Component
 {
 	Clock clock;
-	float duration;
+	float delta;
 
 	void Init()
 	{
@@ -27,7 +27,7 @@ class ComponentMovement : public Component
 
 	void Update()
 	{
-		duration = clock.restart().asSeconds();
+		delta = clock.restart().asSeconds();
 		auto mvs = Entity->Get<StorageMovement>();
 
 		for(auto i = mvs.begin(); i != mvs.end(); ++i)
@@ -36,7 +36,7 @@ class ComponentMovement : public Component
 
 			i->second->Direction += Randv();
 			const float speed = 1.f;
-			tsf->Position += i->second->Direction * speed * duration;
+			tsf->Position += i->second->Direction * speed * delta;
 		}
 	}
 

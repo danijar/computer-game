@@ -9,22 +9,31 @@ using namespace sf;
 #include <GLM/gtc/constants.hpp>
 using namespace glm;
 
+#include "settings.h"
 #include "window.h"
 #include "camera.h"
+#include "text.h"
+
 
 class ComponentCamera : public Component
 {
 	Clock clock;
-	float duration;
+	float delta;
 
 	void Init()
 	{
+		auto stg = Global->Get<StorageSettings>("settings");
 		auto cam = Global->Add<StorageCamera>("camera");
 		cam->Position = vec3(0, 5, -5);
+		cam->Active = !stg->Mouse;
 
 		Calculate();
 
-		Active();
+		State();
+
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{
+			return "X " + to_string((int)cam->Position.x) + " Y " + to_string((int)cam->Position.y) + " Z " + to_string((int)cam->Position.z);
+		};
 
 		Listeners();
 	}
@@ -34,15 +43,15 @@ class ComponentCamera : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		if(!cam->Active) return;
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
-		duration = clock.restart().asSeconds();
+		delta = clock.restart().asSeconds();
 		
 		Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 		Vector2i position = Mouse::getPosition(*wnd);
 		if(position != center)
 		{
 			Mouse::setPosition(center, *wnd);
-			Vector2i delta = position - center;
-			Rotate(delta);
+			Vector2i offset = position - center;
+			Rotate(offset);
 		}
 
 		vec3 move;
@@ -60,30 +69,32 @@ class ComponentCamera : public Component
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			auto cam = Global->Get<StorageCamera>("camera");
+
 			switch(Code)
 			{
 			case Keyboard::Key::F1:
-				Active(!Global->Get<StorageCamera>("camera")->Active);
+				State(!cam->Active);
 				break;
 			}
 		});
 
 		Event->Listen("WindowResize", [=]{
-			 Refresh();
+			 State();
 		});
 
 		Event->Listen("WindowRecreated", [=]{
-			 Refresh();
+			 State();
 		});
 	}
 
-	void Refresh()
+	void State()
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
-		if(cam->Active) Active();
+		State(cam->Active);
 	}
 
-	void Active(bool Active = true)
+	void State(bool Active)
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto wnd = &Global->Get<StorageWindow>("window")->Window;
@@ -99,7 +110,7 @@ class ComponentCamera : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 
 		const float speed = .08f;
-		cam->Angles += vec2(-Amount.x, -Amount.y) * speed * duration;
+		cam->Angles += vec2(-Amount.x, -Amount.y) * speed * delta;
 	}
 
 	void Move(vec3 Amount)
@@ -110,9 +121,9 @@ class ComponentCamera : public Component
 		vec3 right = vec3(-forward.z, 0, forward.x);
 
 		const float speed = 10.f;
-		cam->Position   += forward * Amount.x * speed * duration;
-		cam->Position.y +=           Amount.y * speed * duration;
-		cam->Position   += right   * Amount.z * speed * duration;
+		cam->Position   += forward * Amount.x * speed * delta;
+		cam->Position.y +=           Amount.y * speed * delta;
+		cam->Position   += right   * Amount.z * speed * delta;
 	}
 
 	void Calculate()

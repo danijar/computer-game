@@ -16,6 +16,7 @@ using namespace glm;
 #include "movement.h"
 #include "animation.h"
 #include "shader.h"
+#include "text.h"
 
 
 class ComponentForm : public Component
@@ -25,6 +26,11 @@ class ComponentForm : public Component
 	void Init()
 	{
 		Listeners();
+
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{
+			auto fms = Entity->Get<StorageForm>();
+			return "Forms " + to_string(fms.size());
+		};
 	}
 
 	void Update()
