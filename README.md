@@ -11,6 +11,7 @@ Features
 - Textures
 - Basic lighting
 - Fog fading out far distant objects
+- Basic text drawing
 
 Libraries
 ---------
