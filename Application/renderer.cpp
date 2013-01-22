@@ -35,6 +35,8 @@ class ComponentRenderer : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
+		// draw geometry into main framebuffer
+
 		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
@@ -43,6 +45,11 @@ class ComponentRenderer : public Component
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 
 		Cleanup();
+
+		// apply effects using more framebuffers
+		// Pass(shader_paths, list<string_shader_in, input_texture_id>, list<string_shader_out, ouput_texture_id*>) // use C++11 initializer lists
+
+		// draw to screen (which is the default framebuffer)
 	}
 
 	void Listeners()
@@ -103,7 +110,6 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		//glUniform1i(shd->Texture, 0);
 
 		int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
 		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
@@ -129,6 +135,57 @@ class ComponentRenderer : public Component
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+	GLuint Pass(GLuint program)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		GLuint fbo;
+		GLuint fbo_depth;
+		GLuint output;
+
+		glGenRenderbuffers(1, &fbo_depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, fbo_depth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, stg->Size.x, stg->Size.y);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glGenTextures(1, &output);
+		glBindTexture(GL_TEXTURE_2D, output);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stg->Size.x, stg->Size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		bool result = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+		Debug::PassFail("Renderer framebuffer creation", result);
+
+		glUseProgram(program);
+		glBindTexture(GL_TEXTURE_2D, output);
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		return output;
 	}
 
 	void Window()

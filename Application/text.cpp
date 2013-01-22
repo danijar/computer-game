@@ -22,6 +22,8 @@ class ComponentText : public Component
 	{
 		bool result = font.loadFromFile("other/courier.ttf");
 		Debug::PassFail("Text font loading", result);
+
+		Listeners();
 	}
 
 	void Update()
@@ -31,10 +33,10 @@ class ComponentText : public Component
 
 		wnd->pushGLStates();
 		
-		const int margin = 5;
-		const int textsize = 15;
+		const int margin = 3;
+		const int textsize = 16;
 
-		uint offset = margin;
+		uint offset = 0;
 		for(auto i : txs)
 		{
 			auto func = i.second->Text;
@@ -46,5 +48,12 @@ class ComponentText : public Component
 		}
 
 		wnd->popGLStates();
+	}
+
+	void Listeners()
+	{
+		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
+			// ...
+		});
 	}
 };
