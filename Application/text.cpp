@@ -20,7 +20,7 @@ class ComponentText : public Component
 
 	void Init()
 	{
-		bool result = font.loadFromFile("other/verdana.ttf");
+		bool result = font.loadFromFile("other/courier.ttf");
 		Debug::PassFail("Text font loading", result);
 	}
 
