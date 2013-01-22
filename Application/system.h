@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <functional> 
 #include <memory>
@@ -27,7 +28,7 @@ using namespace std;
 
 class ManagerEvent
 {
-	typedef unordered_map<string, unordered_map<int, vector<pair<void*, bool> > > > Events;
+	typedef unordered_map<string, unordered_map<int, vector<pair<void*, bool>>>> Events;
 public:
 	void Listen(string Name, function<void()> Function)
 	{
@@ -95,7 +96,6 @@ struct Storage {
 
 class ManagerEntity
 {
-	typedef unordered_map<type_index, unordered_map<int, shared_ptr<Storage> > > Entities;
 public:
 	ManagerEntity() : index(0) {}
 	int New()
@@ -179,7 +179,7 @@ public:
 	}
 private:
 	unsigned int index;
-	Entities list;
+	unordered_map<type_index, unordered_map<int, shared_ptr<Storage>>> list;
 	bool Check(type_index key)
 	{
 		if (list.find(key) == list.end()) return false;
@@ -200,7 +200,6 @@ private:
 
 class ManagerGlobal
 {
-	typedef unordered_map<string, unique_ptr<Storage>> Globals;
 public:
 	template <typename T>
 	T* Add(string Name)
@@ -236,36 +235,26 @@ public:
 		list.erase(i);
 	}
 private:
-	Globals list;
+	unordered_map<string, unique_ptr<Storage>> list;
 };
 
 
 
 // manager component
 
-enum Type{ Input, Calculation, Output };
-
 class Component
 {
 public:
-	virtual void Init(){}
-	void SetEvent(ManagerEvent* Event)
+	void Set(ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, string* Message)
 	{
 		this->Event = Event;
-	}
-	void SetEntity(ManagerEntity* Entity)
-	{
 		this->Entity = Entity;
-	}
-	void SetGlobal(ManagerGlobal* Global)
-	{
 		this->Global = Global;
-	}
-	void SetMessage(string* Message)
-	{
 		this->Message = Message;
 	}
+	virtual void Init() = 0;
 	virtual void Update() = 0;
+	virtual ~Component() {};
 protected:
 	ManagerEvent* Event;
 	ManagerEntity* Entity;
@@ -281,53 +270,44 @@ private:
 
 class ManagerComponent
 {
-	typedef unordered_map<Type, unordered_map<string, Component*>> Components;
 public:
-	ManagerComponent(string* Message)
+	ManagerComponent(string* Message) : message(Message) { }
+	void Add(int Priority, string Name, Component* Component)
 	{
-		this->message = Message;
-	}
-	void Add(string Name, Component* Component, Type Type = Calculation)
-	{
-		list[Type][Name] = Component;
+		for(auto i : list[Priority]) if (i.first == Name) return;
+		list[Priority].push_back(make_pair(Name, Component));
 	}
 	void Remove(string Name)
 	{
-		for (auto i = list.begin(); i != list.end(); i++)
+		for (auto i = list.begin(); i != list.end(); ++i)
+		for (auto j = i->second.begin(); j != i->second.end(); ++j)
 		{
-			auto list = i->second;
-			if(list.find(Name) != list.end()){
-				list.erase(Name);
-				break;
+			if(j->first == Name)
+			{
+				i->second.erase(j);
+				return;
 			}
 		}
 	}
 	void Init(ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, string* Message)
 	{
-		Type Types[] = { Input, Calculation, Output };
-		for(int i = 0; i < sizeof(Types) / sizeof(Types[0]); i++) {
-			auto list = this->list[Types[i]];
-			for (auto i = list.begin(); i != list.end(); i++) {
-				i->second->SetEvent(Event);
-				i->second->SetEntity(Entity);
-				i->second->SetGlobal(Global);
-				i->second->SetMessage(Message);
-				i->second->Init();
-			}
+		for (auto i = list.begin(); i != list.end(); ++i)
+		for (auto j = i->second.begin(); j != i->second.end(); ++j)
+		{
+			j->second->Set(Event, Entity, Global, Message);
+			j->second->Init();
 		}
 	}
 	void Update()
 	{
-		Type Types[] = { Input, Calculation, Output };
-		for(int i = 0; i < sizeof(Types) / sizeof(Types[0]); i++) {
-			auto list = this->list[Types[i]];
-			for (auto i = list.begin(); i != list.end(); i++)
-				if(*message == "")
-					i->second->Update();
+		for (auto i = list.begin(); i != list.end(); ++i)
+		for (auto j = i->second.begin(); j != i->second.end(); ++j)
+		{
+			j->second->Update();
 		}
 	}
 private:
-	Components list;
+	map<int, vector<pair<string, Component*>>> list;
 	string* message;
 };
 
@@ -346,9 +326,13 @@ public:
 		entity = new ManagerEntity();
 		global = new ManagerGlobal();
 	}
-	void Add(string Name, Component* Component, Type Type = Calculation)
+	void Add(string Name, Component* Component)
 	{
-		component->Add(Name, Component, Type);
+		component->Add(0, Name, Component);
+	}
+	void Add(int Priority, string Name, Component* Component)
+	{
+		component->Add(Priority, Name, Component);
 	}
 	void Remove(string Name)
 	{
