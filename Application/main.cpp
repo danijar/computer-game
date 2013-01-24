@@ -11,6 +11,7 @@
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
+#include "shader.cpp"
 #include "renderer.cpp"
 #include "text.cpp"
 
@@ -19,16 +20,17 @@ int main()
 {
 	System World;
 
-	World.Add("settings",  new ComponentSettings(),  Input);
-	World.Add("window",    new ComponentWindow(),    Input);
-	World.Add("input",     new ComponentInput(),     Input);
-	World.Add("form",      new ComponentForm(),      Calculation);
-	World.Add("terrain",	new ComponentTerrain(),		Calculation);
-	World.Add("movement",  new ComponentMovement(),  Calculation);
-	World.Add("animation", new ComponentAnimation(), Calculation);
-	World.Add("camera",    new ComponentCamera(),    Output);
-	World.Add("renderer",  new ComponentRenderer(),  Output);
-	World.Add("text",      new ComponentText(),      Output);
+	World.Add(0, "settings",  new ComponentSettings());
+	World.Add(1, "window",    new ComponentWindow());
+	World.Add(1, "input",     new ComponentInput());
+	World.Add(2, "shader",    new ComponentShader());
+	World.Add(3, "form",      new ComponentForm());
+	World.Add(3, "terrain",   new ComponentTerrain());
+	World.Add(3, "movement",  new ComponentMovement());
+	World.Add(3, "animation", new ComponentAnimation());
+	World.Add(3, "camera",    new ComponentCamera());
+	World.Add(4, "renderer",  new ComponentRenderer());
+	World.Add(4, "text",      new ComponentText());
 
 	World.Init();
 

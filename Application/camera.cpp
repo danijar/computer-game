@@ -19,6 +19,7 @@ class ComponentCamera : public Component
 {
 	Clock clock;
 	float delta;
+	float speed;
 
 	void Init()
 	{
@@ -34,6 +35,8 @@ class ComponentCamera : public Component
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			return "X " + to_string((int)cam->Position.x) + " Y " + to_string((int)cam->Position.y) + " Z " + to_string((int)cam->Position.z);
 		};
+
+		speed = 10.f;
 
 		Listeners();
 	}
@@ -55,13 +58,13 @@ class ComponentCamera : public Component
 		}
 
 		vec3 move;
-		if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
-		if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
-		if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z++;
-		if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z--;
-		if (Keyboard::isKeyPressed(Keyboard::PageUp  ) || Keyboard::isKeyPressed(Keyboard::Q)) move.y++;
-		if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move.y--;
-		Move(move);
+		if (KeyDown(Key::Up      ) || KeyDown(Key::W)) move.x++;
+		if (KeyDown(Key::Down    ) || KeyDown(Key::S)) move.x--;
+		if (KeyDown(Key::Right   ) || KeyDown(Key::D)) move.z++;
+		if (KeyDown(Key::Left    ) || KeyDown(Key::A)) move.z--;
+		if (KeyDown(Key::PageUp  ) || KeyDown(Key::Q)) move.y++;
+		if (KeyDown(Key::PageDown) || KeyDown(Key::E)) move.y--;
+		Move(move, speed * (KeyDown(Key::LShift) ? 10 : 1));
 
 		Calculate();
 	}
@@ -109,18 +112,17 @@ class ComponentCamera : public Component
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 
-		const float speed = .08f;
-		cam->Angles += vec2(-Amount.x, -Amount.y) * speed * delta;
+		const float speed_rotate = .08f;
+		cam->Angles += vec2(-Amount.x, -Amount.y) * speed_rotate * delta;
 	}
 
-	void Move(vec3 Amount)
+	void Move(vec3 Amount, float speed = 10.f)
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 
 		vec3 forward = vec3(sinf(cam->Angles.x), 0, cosf(cam->Angles.x));
 		vec3 right = vec3(-forward.z, 0, forward.x);
 
-		const float speed = 10.f;
 		cam->Position   += forward * Amount.x * speed * delta;
 		cam->Position.y +=           Amount.y * speed * delta;
 		cam->Position   += right   * Amount.z * speed * delta;
@@ -147,4 +149,6 @@ class ComponentCamera : public Component
 		cam->View = lookAt(cam->Position, cam->Position + lookat, vec3(0, 1, 0));
 	}
 
+	typedef Keyboard::Key Key;
+	bool KeyDown(Keyboard::Key key) { return Keyboard::isKeyPressed(key); }
 };

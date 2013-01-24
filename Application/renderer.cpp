@@ -3,8 +3,6 @@
 #include "system.h"
 #include "debug.h"
 
-#include <fstream>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
@@ -26,9 +24,6 @@ class ComponentRenderer : public Component
 {
 	void Init()
 	{
-		Global->Add<StorageShader>("shader");
-		Shader("shaders/basic.vert", "shaders/basic.frag");
-
 		Window();
 
 		Listeners();
@@ -40,6 +35,8 @@ class ComponentRenderer : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
+		// draw geometry into main framebuffer
+
 		glUseProgram(shd->Program);
 		glUniformMatrix4fv(shd->UniView, 1, GL_FALSE, value_ptr(cam->View));
 
@@ -48,6 +45,11 @@ class ComponentRenderer : public Component
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first);
 
 		Cleanup();
+
+		// apply effects using more framebuffers
+		// Pass(shader_paths, list<string_shader_in, input_texture_id>, list<string_shader_out, ouput_texture_id*>) // use C++11 initializer lists
+
+		// draw to screen (which is the default framebuffer)
 	}
 
 	void Listeners()
@@ -108,7 +110,6 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
 		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		//glUniform1i(shd->Texture, 0);
 
 		int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
 		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
@@ -134,6 +135,57 @@ class ComponentRenderer : public Component
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+	GLuint Pass(GLuint program)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		GLuint fbo;
+		GLuint fbo_depth;
+		GLuint output;
+
+		glGenRenderbuffers(1, &fbo_depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, fbo_depth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, stg->Size.x, stg->Size.y);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+		glGenTextures(1, &output);
+		glBindTexture(GL_TEXTURE_2D, output);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stg->Size.x, stg->Size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glGenFramebuffers(1, &fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		bool result = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
+		Debug::PassFail("Renderer framebuffer creation", result);
+
+		glUseProgram(program);
+		glBindTexture(GL_TEXTURE_2D, output);
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0.0f, 0.0f);
+		glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
+		glTexCoord2f(0.0f, 1.0f);
+		glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
+		glTexCoord2f(1.0f, 1.0f);
+		glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
+		glTexCoord2f(1.0f, 0.0f);
+		glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
+
+		glEnd();
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		return output;
 	}
 
 	void Window()
@@ -169,77 +221,6 @@ class ComponentRenderer : public Component
 		glUseProgram(shd->Program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(shd->UniProjection, 1, GL_FALSE, value_ptr(Projection));
-	}
-
-	void Shader(string PathVertex, string PathFragment)
-	{
-		auto shd = Global->Get<StorageShader>("shader");
-
-		shd->Vertex = glCreateShader(GL_VERTEX_SHADER);
-		string VertexString((istreambuf_iterator<char>(ifstream(PathVertex))), istreambuf_iterator<char>());
-		const GLchar* VertexChars = VertexString.c_str();
-		glShaderSource(shd->Vertex, 1, &VertexChars, NULL);
-		glCompileShader(shd->Vertex);
-
-		shd->Fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		string FragmentString((istreambuf_iterator<char>(ifstream(PathFragment))), istreambuf_iterator<char>());
-		const GLchar* FragmentChars = FragmentString.c_str();
-		glShaderSource(shd->Fragment, 1, &FragmentChars, NULL);
-		glCompileShader(shd->Fragment);
-
-		shd->Program = glCreateProgram();
-		glAttachShader(shd->Program, shd->Vertex);
-		glAttachShader(shd->Program, shd->Fragment);
-		glLinkProgram(shd->Program);
-
-		Debug::PassFail("Shader creation", ShaderTest(shd->Vertex) && ShaderTest(shd->Fragment) && ProgramTest(shd->Program));
-
-		glDeleteShader(shd->Vertex);
-		glDeleteShader(shd->Fragment);
-
-		Attributes();
-	}
-
-	void Attributes()
-	{
-		auto shd = Global->Get<StorageShader>("shader");
-
-		shd->UniView       = glGetUniformLocation(shd->Program, "view_mat"  );
-		shd->UniProjection = glGetUniformLocation(shd->Program, "proj_mat"  );
-		shd->UniVertex     = glGetUniformLocation(shd->Program, "vertex_mat");
-		shd->UniNormal     = glGetUniformLocation(shd->Program, "normal_mat");
-		shd->UniTexture    = glGetUniformLocation(shd->Program, "tex"       );
-		shd->AtrVertex     = glGetAttribLocation (shd->Program, "vertex"    );
-		shd->AtrNormal     = glGetAttribLocation (shd->Program, "normal"    );
-		shd->AtrTexcoord   = glGetAttribLocation (shd->Program, "texcoord"  );
-	}
-
-	bool ProgramTest(int Id, bool Output = false)
-	{
-		GLint Success;
-		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
-		bool Result = (Success == GL_TRUE);
-
-		GLchar Log[513];
-		GLsizei Length;
-		glGetProgramInfoLog(Id, 512, &Length, Log);
-		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-
-		return Result;
-	}
-
-	bool ShaderTest(int Id, bool Output = false)
-	{
-		GLint Success;
-		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
-		bool Result = (Success == GL_TRUE);
-
-		GLchar Log[513];
-		GLsizei Length;
-		glGetShaderInfoLog(Id, 512, &Length, Log);
-		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-
-		return Result;
 	}
 
 	bool OpenglTest()
