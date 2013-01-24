@@ -39,6 +39,7 @@ There is a precompiled executable for Windows. To use it, download the content o
 - `F11` Toggle between fullscreen and windowed mode.
 - `Tab` Insert new cube at the center.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
+- Hold `Left Shift` to move faster.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
 - `Space` Let the inserted cubes jump.
 

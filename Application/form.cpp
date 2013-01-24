@@ -2,6 +2,8 @@
 
 #include "system.h"
 
+#include <unordered_map>
+using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/System/Clock.hpp>
@@ -22,6 +24,7 @@ using namespace glm;
 class ComponentForm : public Component
 {
 	Clock clock;
+	unordered_map<string, GLuint> textures;
 	
 	void Init()
 	{
@@ -92,17 +95,23 @@ class ComponentForm : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementsN * sizeof(int), Elements, GL_STATIC_DRAW);
 
-		Image image;
-		bool result = image.loadFromFile(Texture);
-		auto size = image.getSize();
-		glGenTextures(1, &frm->Texture);
-		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		auto i = textures.find(Texture);
+		if(i == textures.end())
+		{
+			Image image;
+			bool result = image.loadFromFile(Texture);
+			auto size = image.getSize();
+			glGenTextures(1, &frm->Texture);
+			glBindTexture(GL_TEXTURE_2D, frm->Texture);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			textures.insert(make_pair(Texture, frm->Texture));
+		}
+		else frm->Texture = i->second;
 
 		frm->Program = shd->Program;
 		frm->Scale = Scale;
