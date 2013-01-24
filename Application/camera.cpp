@@ -41,9 +41,6 @@ class ComponentCamera : public Component
 		Listeners();
 	}
 
-	typedef Keyboard::Key Key;
-	bool KeyDown(Keyboard::Key key) { return Keyboard::isKeyPressed(key); }
-
 	void Update()
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
@@ -152,4 +149,6 @@ class ComponentCamera : public Component
 		cam->View = lookAt(cam->Position, cam->Position + lookat, vec3(0, 1, 0));
 	}
 
+	typedef Keyboard::Key Key;
+	bool KeyDown(Keyboard::Key key) { return Keyboard::isKeyPressed(key); }
 };

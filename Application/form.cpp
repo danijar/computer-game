@@ -44,11 +44,15 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 4, 0));
-			Entity->Add<StorageMovement>(id);
-			Entity->Add<StorageAnimation>(id);
-			auto tsf = Entity->Get<StorageTransform>(id);
-			tsf->Rotation += vec3(.5, 0, .5);
+			int number = KeyDown(Key::LShift) ? 500 : 1;
+			for(int i = 0; i < number; ++i)
+			{
+				unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 4, 0));
+				Entity->Add<StorageMovement>(id);
+				Entity->Add<StorageAnimation>(id);
+				auto tsf = Entity->Get<StorageTransform>(id);
+				tsf->Rotation += vec3(.5, 0, .5);
+			}
 		});
 
 		Event->Listen("SystemInitialized", [=]{
@@ -130,4 +134,7 @@ class ComponentForm : public Component
 
 		return Create(Vertices, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position);
 	}
+
+	typedef Keyboard::Key Key;
+	bool KeyDown(Keyboard::Key key) { return Keyboard::isKeyPressed(key); }
 };
