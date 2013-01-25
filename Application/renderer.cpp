@@ -10,6 +10,7 @@ using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -17,8 +18,6 @@ using namespace sf;
 using namespace glm;
 
 #include "settings.h"
-#include "window.h"
-#include "shader.h"
 #include "form.h"
 #include "transform.h"
 #include "camera.h"
@@ -28,8 +27,8 @@ class ComponentRenderer : public Component
 {
 	void Init()
 	{
-		auto shd = Global->Add<StorageShader>("shader");
-		shd->Program = Shader("shaders/basic.vert", "shaders/basic.frag");
+		auto shd = Global->Add<GLuint>("shader");
+		*shd = Shader("shaders/basic.vert", "shaders/basic.frag");
 
 		Window();
 
@@ -38,22 +37,22 @@ class ComponentRenderer : public Component
 
 	void Update()
 	{
-		auto shd = Global->Get<StorageShader>("shader");
+		GLuint shd = *Global->Get<GLuint>("shader");
 		auto cam = Global->Get<StorageCamera>("camera");
 		auto fms = Entity->Get<StorageForm>();
 
 		// draw geometry into main framebuffer
 
-		glUseProgram(shd->Program);
-		glUniformMatrix4fv(glGetUniformLocation(shd->Program, "view_mat"), 1, GL_FALSE, value_ptr(cam->View));
+		glUseProgram(shd);
+		glUniformMatrix4fv(glGetUniformLocation(shd, "view_mat"), 1, GL_FALSE, value_ptr(cam->View));
 
 		Prepare();
 
-		GLuint vertex_mat = glGetUniformLocation(shd->Program, "vertex_mat"),
-		       normal_mat = glGetUniformLocation(shd->Program, "normal_mat"),
-			   vertex     = glGetAttribLocation (shd->Program, "vertex"),
-		       normal     = glGetAttribLocation (shd->Program, "normal"),
-		       texcoord   = glGetAttribLocation (shd->Program, "texcoord");
+		GLuint vertex_mat = glGetUniformLocation(shd, "vertex_mat"),
+		       normal_mat = glGetUniformLocation(shd, "normal_mat"),
+			   vertex     = glGetAttribLocation (shd, "vertex"),
+		       normal     = glGetAttribLocation (shd, "normal"),
+		       texcoord   = glGetAttribLocation (shd, "texcoord");
 
 		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first, vertex_mat, normal_mat, vertex, normal, texcoord);
 
@@ -76,7 +75,7 @@ class ComponentRenderer : public Component
 				break;
 			case Keyboard::Key::F3:
 				stg->Verticalsync = !stg->Verticalsync;
-				auto wnd = &Global->Get<StorageWindow>("window")->Window;
+				auto wnd = Global->Get<RenderWindow>("window");
 				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			}
 		});
@@ -92,7 +91,6 @@ class ComponentRenderer : public Component
 
 	void Draw(unsigned int id, GLuint vertex_mat, GLuint normal_mat, GLuint vertex, GLuint normal, GLuint texcoord)
 	{
-		auto shd = Global->Get<StorageShader>("shader");
 		auto frm = Entity->Get<StorageForm>(id);
 		auto tsf = Entity->Get<StorageTransform>(id);
 
@@ -102,7 +100,7 @@ class ComponentRenderer : public Component
 		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 
-		glUseProgram(shd->Program);
+		glUseProgram(*Global->Get<GLuint>("shader"));
 		mat4 Vertex = Translate * Rotate * Scale;
 		glUniformMatrix4fv(vertex_mat, 1, GL_FALSE, value_ptr(Vertex));
 		mat4 Normal = Rotate;
@@ -130,15 +128,11 @@ class ComponentRenderer : public Component
 
 	void Prepare()
 	{
-		auto stg = Global->Get<StorageSettings>("settings");
-
-		glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 	}
 
 	void Cleanup(GLuint vertex, GLuint normal, GLuint texcoord)
 	{
-		auto shd = Global->Get<StorageShader>("shader");
-		
 		glUseProgram(0);
 		glDisableVertexAttribArray(vertex);
 		glDisableVertexAttribArray(normal);
@@ -205,10 +199,9 @@ class ComponentRenderer : public Component
 
 	void Window()
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
 		auto stg = Global->Get<StorageSettings>("settings");
 	
-		wnd->setVerticalSyncEnabled(stg->Verticalsync);
+		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Verticalsync);
 	
 		glClearColor(.4f,.6f,.9f,0.f);
 		glEnable(GL_DEPTH_TEST);
@@ -222,20 +215,19 @@ class ComponentRenderer : public Component
 
 	void Perspective()
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
-		Perspective(wnd->getSize());
+		Perspective(Global->Get<RenderWindow>("window")->getSize());
 	}
 
 	void Perspective(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto shd = Global->Get<StorageShader>("shader");
+		auto shd = *Global->Get<GLuint>("shader");
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		glUseProgram(shd->Program);
+		glUseProgram(shd);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(shd->Program, "proj_mat"), 1, GL_FALSE, value_ptr(Projection));
+		glUniformMatrix4fv(glGetUniformLocation(shd, "proj_mat"), 1, GL_FALSE, value_ptr(Projection));
 	}
 
 	GLuint Shader(string vertex_path, string fragment_path)

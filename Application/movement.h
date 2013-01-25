@@ -6,7 +6,7 @@
 using namespace glm;
 
 
-struct StorageMovement  : public Storage
+struct StorageMovement
 {
 	vec3 Direction;
 };

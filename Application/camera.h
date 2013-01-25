@@ -7,7 +7,7 @@
 using namespace glm;
 
 
-struct StorageCamera : public Storage
+struct StorageCamera
 {
 	StorageCamera() : Active(false)
 	{

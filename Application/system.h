@@ -90,10 +90,6 @@ private:
 
 // manager entity
 
-struct Storage {
-	virtual ~Storage() {}
-};
-
 class ManagerEntity
 {
 public:
@@ -110,11 +106,11 @@ public:
 
 		if (list.find(key) == list.end())
 		{
-			auto value = new unordered_map<int, shared_ptr<Storage> >();
+			auto value = new unordered_map<int, shared_ptr<void> >();
 			list.insert(make_pair(key, *value));
 		}
 		T* t = new T();
-		auto result = list[key].insert(make_pair(id, shared_ptr<Storage>(t)));
+		auto result = list[key].insert(make_pair(id, shared_ptr<void>(t)));
 		if (!result.second)
 		{
 			Warning("Could not add " + to_string(id) + " to " + string(key.name()) + " because it already exists.");
@@ -179,7 +175,7 @@ public:
 	}
 private:
 	unsigned int index;
-	unordered_map<type_index, unordered_map<int, shared_ptr<Storage>>> list;
+	unordered_map<type_index, unordered_map<int, shared_ptr<void>>> list;
 	bool Check(type_index key)
 	{
 		if (list.find(key) == list.end()) return false;
@@ -205,7 +201,7 @@ public:
 	T* Add(string Name)
 	{
 		T* t = new T();
-		auto result = list.insert(make_pair(Name, unique_ptr<Storage>(t)));
+		auto result = list.insert(make_pair(Name, shared_ptr<void>(t)));
 		if (!result.second)
 		{
 			Warning("Cannot add " + Name + " because it already exists.");
@@ -235,7 +231,7 @@ public:
 		list.erase(i);
 	}
 private:
-	unordered_map<string, unique_ptr<Storage>> list;
+	unordered_map<string, shared_ptr<void>> list;
 };
 
 

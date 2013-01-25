@@ -6,11 +6,11 @@
 #include <functional>
 using namespace std;
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 using namespace glm;
 
-#include "window.h"
 #include "text.h"
 
 
@@ -28,7 +28,7 @@ class ComponentText : public Component
 
 	void Update()
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		auto txs = Entity->Get<StorageText>();
 
 		wnd->pushGLStates();
@@ -53,8 +53,7 @@ class ComponentText : public Component
 	void Listeners()
 	{
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-			auto wnd = &Global->Get<StorageWindow>("window")->Window;
-			wnd->setView(View(FloatRect(0, 0, (float)Size.x, (float)Size.y)));
+			Global->Get<RenderWindow>("window")->setView(View(FloatRect(0, 0, (float)Size.x, (float)Size.y)));
 		});
 	}
 };

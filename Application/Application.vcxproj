@@ -31,7 +31,6 @@
     <ClInclude Include="movement.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="system.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="window.h" />

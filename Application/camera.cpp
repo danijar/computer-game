@@ -3,6 +3,7 @@
 #include "system.h"
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -10,7 +11,6 @@ using namespace sf;
 using namespace glm;
 
 #include "settings.h"
-#include "window.h"
 #include "camera.h"
 #include "text.h"
 
@@ -45,7 +45,7 @@ class ComponentCamera : public Component
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 		if(!cam->Active) return;
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		delta = clock.restart().asSeconds();
 		
 		Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
@@ -100,7 +100,7 @@ class ComponentCamera : public Component
 	void State(bool Active)
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 
 		cam->Active = Active;
 		wnd->setMouseCursorVisible(!Active);

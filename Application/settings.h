@@ -8,7 +8,7 @@ using namespace std;
 using namespace sf;
 
 
-struct StorageSettings : public Storage
+struct StorageSettings
 {
 	StorageSettings() : Fullscreen(false), Mouse(true), Size(640, 480), Title(""), FPS(0), Fieldofview(45.f), Viewdistance(100.f), Wireframe(false), Verticalsync(true) {}
 

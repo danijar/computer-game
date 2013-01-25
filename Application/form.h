@@ -6,7 +6,7 @@
 using namespace glm;
 
 
-struct StorageForm : public Storage
+struct StorageForm
 {
 	unsigned int Vertices, Normals, Texcoords, Elements, Texture;
 	vec3 Scale;

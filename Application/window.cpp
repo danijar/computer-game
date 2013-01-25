@@ -5,10 +5,10 @@
 
 #include <GLEW/glew.h>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/OpenGL.hpp>
 using namespace sf;
 
-#include "window.h"
 #include "settings.h"
 #include "text.h"
 
@@ -21,7 +21,7 @@ class ComponentWindow : public Component
 
 	void Init()
 	{
-		Global->Add<StorageWindow>("window");
+		Global->Add<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 
 		VideoMode mde = VideoMode::getDesktopMode();
@@ -38,7 +38,7 @@ class ComponentWindow : public Component
 
 	void Update()
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 		
 		if(wnd->isOpen())
@@ -90,7 +90,7 @@ class ComponentWindow : public Component
 		});
 
 		Event->Listen("SystemUpdated", [=]{
-			auto wnd = &Global->Get<StorageWindow>("window")->Window;
+			auto wnd = Global->Get<RenderWindow>("window");
 			wnd->display();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		});
@@ -104,7 +104,7 @@ class ComponentWindow : public Component
 
 	void Create(bool Fullscreen)
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 
 		stg->Fullscreen = Fullscreen;
@@ -140,7 +140,7 @@ class ComponentWindow : public Component
 	void Close()
 	{
 		Event->Fire("WindowClose");
-		(&Global->Get<StorageWindow>("window")->Window)->close();
+		Global->Get<RenderWindow>("window")->close();
 		Exit("The window was closed.");
 	}
 

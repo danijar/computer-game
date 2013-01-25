@@ -6,7 +6,7 @@
 using namespace glm;
 
 
-struct StorageTransform : public Storage
+struct StorageTransform
 {
 	vec3 Position, Rotation;
 };

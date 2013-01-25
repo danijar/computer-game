@@ -74,9 +74,6 @@
     <ClInclude Include="form.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
     <ClInclude Include="transform.h">
       <Filter>Header\storages</Filter>
     </ClInclude>
