@@ -17,7 +17,6 @@ using namespace glm;
 #include "transform.h"
 #include "movement.h"
 #include "animation.h"
-#include "shader.h"
 #include "text.h"
 
 
@@ -77,7 +76,6 @@ class ComponentForm : public Component
 
 	int Create(const float* Vertices, int VerticesN, const float* Normals, int NormalsN, const float* Texcoords, int TexcoordsN, const int* Elements, int ElementsN, string Texture, vec3 Position, vec3 Rotation = vec3(0), vec3 Scale = vec3(1))
 	{
-		auto shd = Global->Get<StorageShader>("shader");
 		unsigned int id = Entity->New();
 
 		auto frm = Entity->Add<StorageForm>(id);
@@ -117,7 +115,6 @@ class ComponentForm : public Component
 		}
 		else frm->Texture = i->second;
 
-		frm->Program = shd->Program;
 		frm->Scale = Scale;
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;

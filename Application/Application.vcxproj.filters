@@ -57,9 +57,6 @@
     <ClCompile Include="text.cpp">
       <Filter>Source\components</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="system.h">
