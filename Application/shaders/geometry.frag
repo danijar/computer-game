@@ -6,13 +6,13 @@ in vec3 fposition;
 in vec3 fnormal;
 in vec2 ftexcoord;
 
-out vec3 position;
-out vec3 normal;
-out vec3 albedo;
+out vec4 position;
+out vec4 normal;
+out vec4 albedo;
 
 void main()
 {
-	position   = fposition;
-	normal.xyz = normalize(fnormal.xyz);
-	albedo.rgb = vec3(texture(tex, ftexcoord));
+	position    = vec4(fposition, 0.5);
+	normal.xyz  = normalize(fnormal);
+	albedo.rgba = texture(tex, ftexcoord);
 }

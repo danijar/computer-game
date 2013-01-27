@@ -32,7 +32,8 @@ class ComponentRenderer : public Component
 	GLuint shd_forms, shd_screen;
 	GLuint tex_position, tex_normal, tex_albedo;
 	GLuint framebuffer;
-	map<string, GLuint> uniforms;
+	unordered_map<string, GLuint> targets;
+	unordered_map<string, GLuint> uniforms;
 
 	GLuint deferred_positions, deferred_texcoords;
 
@@ -57,7 +58,6 @@ class ComponentRenderer : public Component
 		tex_normal   = Target();
 		tex_albedo   = Target();
 
-		unordered_map<string, GLuint> targets;
 		targets.insert(make_pair("position", tex_position));
 		targets.insert(make_pair("normal",   tex_normal  ));
 		targets.insert(make_pair("albedo",   tex_albedo  ));
@@ -78,8 +78,11 @@ class ComponentRenderer : public Component
 
 	void Update()
 	{
-		Draw(shd_forms, framebuffer);
+		Draw(shd_forms, framebuffer, targets.size());
+
 		Draw(shd_screen, uniforms);
+
+		testOpengl();
 	}
 
 	void Listeners()
@@ -116,9 +119,11 @@ class ComponentRenderer : public Component
 		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(Global->Get<StorageSettings>("settings")->Verticalsync);
 	
 		glClearColor(.4f,.6f,.9f,0.f);
+		/*
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		*/
 		glEnable(GL_TEXTURE_2D);
 
 		Perspective();
@@ -178,17 +183,22 @@ class ComponentRenderer : public Component
 		return framebuffer;
 	}
 
-	void Draw(GLuint shader, GLuint framebuffer)
+	void Draw(GLuint shader, GLuint framebuffer, int targets)
 	{
-		glUseProgram(shader);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		vector<GLenum> buffers;
+		for(int i = 0; i < targets; ++i)
+		{
+			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
+		}
+		glDrawBuffers(targets, &buffers[0]);
 
 		Forms(shader);
 	}
 
-	void Draw(GLuint shader, map<string, GLuint> uniforms, GLuint framebuffer, int targets)
+	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms, GLuint framebuffer, int targets)
 	{
-		glUseProgram(shader);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
 
 		vector<GLenum> buffers;
@@ -201,16 +211,18 @@ class ComponentRenderer : public Component
 		Quad(shader, uniforms);
 	}
 
-	void Draw(GLuint shader, map<string, GLuint> uniforms)
+	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms)
 	{
-		glUseProgram(shader);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+		glDrawBuffer(GL_FRONT);
 
 		Quad(shader, uniforms);
 	}
 
-	void Quad(GLuint shader, map<string, GLuint> uniforms)
+	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
 	{
+		glUseProgram(shader);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		int n = 0; for(auto i : uniforms)
@@ -231,7 +243,7 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
 		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 
 		glDisableVertexAttribArray(deferred_positions);
 		glDisableVertexAttribArray(deferred_texcoords);
@@ -245,9 +257,9 @@ class ComponentRenderer : public Component
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto fms = Entity->Get<StorageForm>();
 		
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		glUseProgram(shader);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
 		GLuint model     = glGetUniformLocation(shader, "model"   ),
 			   position  = glGetAttribLocation (shader, "position"),
@@ -324,7 +336,7 @@ class ComponentRenderer : public Component
 		glLinkProgram(program);
 
 		bool result = (testShader(vertex) && testShader(fragment) && testProgram(program));
-		if(!result) Debug::Pass("Shader \"" + vertex_path + "\" and \"" + fragment_path + "\".");
+		if(!result) Debug::Pass("... in shader \"" + vertex_path + "\" and \"" + fragment_path + "\".");
 		Debug::PassFail("Shader creation", result);
 
 		glDeleteShader(vertex);
