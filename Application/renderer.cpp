@@ -116,7 +116,6 @@ class ComponentRenderer : public Component
 		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(Global->Get<StorageSettings>("settings")->Verticalsync);
 	
 		glClearColor(.4f,.6f,.9f,0.f);
-		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -230,8 +229,8 @@ class ComponentRenderer : public Component
 	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
 	{
 		glUseProgram(shader);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glClear(GL_COLOR_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
 		int n = 0; for(auto i : uniforms)
 		{
@@ -276,6 +275,8 @@ class ComponentRenderer : public Component
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
 		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
 			auto frm = Entity->Get<StorageForm>(i->first);
@@ -308,7 +309,7 @@ class ComponentRenderer : public Component
 			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
 			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		}
-		//glDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glDisableVertexAttribArray(position);

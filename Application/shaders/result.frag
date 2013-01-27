@@ -12,6 +12,9 @@ void main()
 {
 	float depth = texture(position_tex, ftexcoord).z;
 
-	vec3 color = texture(normal_tex, ftexcoord).xyz;
+	vec3 position = texture(position_tex, ftexcoord).xyz;
+	vec3 normal = texture(normal_tex, ftexcoord).xyz;
+	vec3 color = texture(albedo_tex, ftexcoord).rgb;
+
     frag_color = vec4(color, 1.0);
 }
