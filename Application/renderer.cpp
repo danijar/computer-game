@@ -32,6 +32,7 @@ class ComponentRenderer : public Component
 	GLuint shd_forms, shd_screen;
 	GLuint tex_position, tex_normal, tex_albedo;
 	GLuint framebuffer;
+	GLuint depth;
 	unordered_map<string, GLuint> targets;
 	unordered_map<string, GLuint> uniforms;
 
@@ -40,8 +41,8 @@ class ComponentRenderer : public Component
 	void Init()
 	{
 		// init quad
-		const float POSITIONS[] = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f };
-		const float TEXCOORDS[] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f };
+		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
+		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
 
 		glGenBuffers(1, &deferred_positions);
 		glBindBuffer(GL_ARRAY_BUFFER, deferred_positions);
@@ -53,23 +54,19 @@ class ComponentRenderer : public Component
 
 		// pipeline
 		shd_forms = Shader("shaders/geometry.vert", "shaders/geometry.frag");
-
 		tex_position = Target();
 		tex_normal   = Target();
 		tex_albedo   = Target();
-
 		targets.insert(make_pair("position", tex_position));
 		targets.insert(make_pair("normal",   tex_normal  ));
 		targets.insert(make_pair("albedo",   tex_albedo  ));
-
-		framebuffer = Framebuffer(shd_forms, targets);
+		depth = Depth();
+		framebuffer = Framebuffer(shd_forms, targets, depth);
 
 		shd_screen = Shader("shaders/deferred.vert", "shaders/result.frag");
-
 		uniforms.insert(make_pair("position_tex", tex_position));
 		uniforms.insert(make_pair("normal_tex",   tex_normal  ));
 		uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
-
 
 		Window();
 
@@ -119,11 +116,10 @@ class ComponentRenderer : public Component
 		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(Global->Get<StorageSettings>("settings")->Verticalsync);
 	
 		glClearColor(.4f,.6f,.9f,0.f);
-		/*
+		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		*/
 		glEnable(GL_TEXTURE_2D);
 
 		Perspective();
@@ -163,7 +159,19 @@ class ComponentRenderer : public Component
 		return target;
 	}
 
-	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
+	GLuint Depth()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		GLuint target;
+		glGenRenderbuffers(1, &target);
+		glBindRenderbuffer(GL_RENDERBUFFER, target);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, stg->Size.x, stg->Size.y);
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		return target;
+	}
+
+	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets, GLuint depth)
 	{
 		GLuint framebuffer;
 		glGenFramebuffers(1, &framebuffer);
@@ -175,6 +183,7 @@ class ComponentRenderer : public Component
 			glBindFragDataLocation(shader, n, i.first.c_str());
 			n++;
 		}
+		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
 
 		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 		glLinkProgram(shader);
@@ -215,15 +224,14 @@ class ComponentRenderer : public Component
 	{
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-		glDrawBuffer(GL_FRONT);
-
 		Quad(shader, uniforms);
 	}
 
 	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
 	{
 		glUseProgram(shader);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT);
 
 		int n = 0; for(auto i : uniforms)
 		{
@@ -243,7 +251,7 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
 		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 		glDisableVertexAttribArray(deferred_positions);
 		glDisableVertexAttribArray(deferred_texcoords);
@@ -300,7 +308,7 @@ class ComponentRenderer : public Component
 			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
 			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		}
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		glDisableVertexAttribArray(position);

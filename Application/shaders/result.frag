@@ -10,5 +10,8 @@ out vec4 frag_color;
 
 void main()
 {
-    frag_color = vec4(texture(albedo_tex, ftexcoord).rgb, 0.6);
+	float depth = texture(position_tex, ftexcoord).z;
+
+	vec3 color = texture(normal_tex, ftexcoord).xyz;
+    frag_color = vec4(color, 1.0);
 }

@@ -12,7 +12,7 @@ out vec4 albedo;
 
 void main()
 {
-	position    = vec4(fposition, 0.5);
-	normal.xyz  = normalize(fnormal);
-	albedo.rgba = texture(tex, ftexcoord);
+	position.xyz = fposition;
+	normal.xyz   = normalize(fnormal);
+	albedo.rgba  = texture(tex, ftexcoord);
 }
