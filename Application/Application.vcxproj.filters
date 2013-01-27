@@ -91,10 +91,19 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\basic.frag">
+    <None Include="shaders\geometry.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\basic.vert">
+    <None Include="shaders\geometry.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\deferred.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\lighting.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\result.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

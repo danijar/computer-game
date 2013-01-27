@@ -25,10 +25,51 @@ using namespace glm;
 
 class ComponentRenderer : public Component
 {
+	////////////////////////////////////////////////////////////
+	// Component
+	////////////////////////////////////////////////////////////
+
+	GLuint shd_forms, shd_screen;
+	GLuint tex_position, tex_normal, tex_albedo;
+	GLuint framebuffer;
+	map<string, GLuint> uniforms;
+
+	GLuint deferred_positions, deferred_texcoords;
+
 	void Init()
 	{
-		auto shd = Global->Add<GLuint>("shader");
-		*shd = Shader("shaders/basic.vert", "shaders/basic.frag");
+		// init quad
+		const float POSITIONS[] = { -1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f };
+		const float TEXCOORDS[] = { 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f };
+
+		glGenBuffers(1, &deferred_positions);
+		glBindBuffer(GL_ARRAY_BUFFER, deferred_positions);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(POSITIONS), POSITIONS, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &deferred_texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(TEXCOORDS), TEXCOORDS, GL_STATIC_DRAW);
+
+		// pipeline
+		shd_forms = Shader("shaders/geometry.vert", "shaders/geometry.frag");
+
+		tex_position = Target();
+		tex_normal   = Target();
+		tex_albedo   = Target();
+
+		unordered_map<string, GLuint> targets;
+		targets.insert(make_pair("position", tex_position));
+		targets.insert(make_pair("normal",   tex_normal  ));
+		targets.insert(make_pair("albedo",   tex_albedo  ));
+
+		framebuffer = Framebuffer(shd_forms, targets);
+
+		shd_screen = Shader("shaders/deferred.vert", "shaders/result.frag");
+
+		uniforms.insert(make_pair("position_tex", tex_position));
+		uniforms.insert(make_pair("normal_tex",   tex_normal  ));
+		uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
+
 
 		Window();
 
@@ -37,31 +78,8 @@ class ComponentRenderer : public Component
 
 	void Update()
 	{
-		GLuint shd = *Global->Get<GLuint>("shader");
-		auto cam = Global->Get<StorageCamera>("camera");
-		auto fms = Entity->Get<StorageForm>();
-
-		// draw geometry into main framebuffer
-
-		glUseProgram(shd);
-		glUniformMatrix4fv(glGetUniformLocation(shd, "view_mat"), 1, GL_FALSE, value_ptr(cam->View));
-
-		Prepare();
-
-		GLuint vertex_mat = glGetUniformLocation(shd, "vertex_mat"),
-		       normal_mat = glGetUniformLocation(shd, "normal_mat"),
-			   vertex     = glGetAttribLocation (shd, "vertex"),
-		       normal     = glGetAttribLocation (shd, "normal"),
-		       texcoord   = glGetAttribLocation (shd, "texcoord");
-
-		for(auto i = fms.begin(); i != fms.end(); ++i) Draw(i->first, vertex_mat, normal_mat, vertex, normal, texcoord);
-
-		Cleanup(vertex, normal, texcoord);
-
-		// apply effects using more framebuffers
-		// Pass(shader_paths, list<string_shader_in, input_texture_id>, list<string_shader_out, ouput_texture_id*>) // use C++11 initializer lists
-
-		// draw to screen (which is the default framebuffer)
+		Draw(shd_forms, framebuffer);
+		Draw(shd_screen, uniforms);
 	}
 
 	void Listeners()
@@ -89,122 +107,15 @@ class ComponentRenderer : public Component
 		});
 	}
 
-	void Draw(unsigned int id, GLuint vertex_mat, GLuint normal_mat, GLuint vertex, GLuint normal, GLuint texcoord)
-	{
-		auto frm = Entity->Get<StorageForm>(id);
-		auto tsf = Entity->Get<StorageTransform>(id);
-
-		mat4 Scale      = scale(mat4(1), frm->Scale);
-		mat4 Translate  = translate(mat4(1), tsf->Position);
-		mat4 Rotate     = rotate(mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
-		                * rotate(mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
-		                * rotate(mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
-
-		glUseProgram(*Global->Get<GLuint>("shader"));
-		mat4 Vertex = Translate * Rotate * Scale;
-		glUniformMatrix4fv(vertex_mat, 1, GL_FALSE, value_ptr(Vertex));
-		mat4 Normal = Rotate;
-		glUniformMatrix4fv(normal_mat, 1, GL_FALSE, value_ptr(Normal));
-		
-		glEnableVertexAttribArray(vertex);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-		glVertexAttribPointer(vertex, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glEnableVertexAttribArray(normal);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-		
-		glEnableVertexAttribArray(texcoord);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-
-		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-
-		int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
-		glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
-	}
-
-	void Prepare()
-	{
-		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
-	}
-
-	void Cleanup(GLuint vertex, GLuint normal, GLuint texcoord)
-	{
-		glUseProgram(0);
-		glDisableVertexAttribArray(vertex);
-		glDisableVertexAttribArray(normal);
-		glDisableVertexAttribArray(texcoord);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	}
-
-	/*
-	unordered_map<string, GLuint> Pass(string fragment, unordered_map<string, void*> uniforms, vector<string> targets)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-
-		GLuint fbo;
-		GLuint fbo_depth;
-		GLuint output;
-
-		glGenRenderbuffers(1, &fbo_depth);
-		glBindRenderbuffer(GL_RENDERBUFFER, fbo_depth);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, stg->Size.x, stg->Size.y);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-		glGenTextures(1, &output);
-		glBindTexture(GL_TEXTURE_2D, output);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, stg->Size.x, stg->Size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		glGenFramebuffers(1, &fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, output, 0);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo_depth);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		bool result = glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE;
-		Debug::PassFail("Renderer framebuffer creation", result);
-
-		glUseProgram(program);
-		glBindTexture(GL_TEXTURE_2D, output);
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(0.0f, 0.0f);
-		glVertex3f(-1.0f, -1.0f, 0.0f); // The bottom left corner
-		glTexCoord2f(0.0f, 1.0f);
-		glVertex3f(-1.0f, 1.0f, 0.0f); // The top left corner
-		glTexCoord2f(1.0f, 1.0f);
-		glVertex3f(1.0f, 1.0f, 0.0f); // The top right corner
-		glTexCoord2f(1.0f, 0.0f);
-		glVertex3f(1.0f, -1.0f, 0.0f); // The bottom right corner
-
-		glEnd();
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		return output;
-	}
-	*/
+	////////////////////////////////////////////////////////////
+	// Window
+	////////////////////////////////////////////////////////////
 
 	void Window()
 	{
-		auto stg = Global->Get<StorageSettings>("settings");
-	
-		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Verticalsync);
+		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(Global->Get<StorageSettings>("settings")->Verticalsync);
 	
 		glClearColor(.4f,.6f,.9f,0.f);
-		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -221,14 +132,177 @@ class ComponentRenderer : public Component
 	void Perspective(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto shd = *Global->Get<GLuint>("shader");
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		glUseProgram(shd);
+		glUseProgram(shd_forms);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(shd, "proj_mat"), 1, GL_FALSE, value_ptr(Projection));
+		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
 	}
+
+	////////////////////////////////////////////////////////////
+	// Draw
+	////////////////////////////////////////////////////////////
+
+	GLuint Target()
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		GLuint target;
+		glGenTextures(1, &target);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, stg->Size.x, stg->Size.y, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		return target;
+	}
+
+	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
+	{
+		GLuint framebuffer;
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		int n = 0; for(auto i : targets)
+		{
+			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
+			glBindFragDataLocation(shader, n, i.first.c_str());
+			n++;
+		}
+
+		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+		glLinkProgram(shader);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		return framebuffer;
+	}
+
+	void Draw(GLuint shader, GLuint framebuffer)
+	{
+		glUseProgram(shader);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		Forms(shader);
+	}
+
+	void Draw(GLuint shader, map<string, GLuint> uniforms, GLuint framebuffer, int targets)
+	{
+		glUseProgram(shader);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		vector<GLenum> buffers;
+		for(int i = 0; i < targets; ++i)
+		{
+			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
+		}
+		glDrawBuffers(targets, &buffers[0]);
+
+		Quad(shader, uniforms);
+	}
+
+	void Draw(GLuint shader, map<string, GLuint> uniforms)
+	{
+		glUseProgram(shader);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+		Quad(shader, uniforms);
+	}
+
+	void Quad(GLuint shader, map<string, GLuint> uniforms)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		int n = 0; for(auto i : uniforms)
+		{
+			glActiveTexture(GL_TEXTURE0 + n);
+			glBindTexture(GL_TEXTURE_2D, i.second);
+			glUniform1i(glGetUniformLocation(shader, i.first.c_str()), n);
+			n++;
+		}
+
+		GLuint position = glGetAttribLocation(shader, "position");
+		glEnableVertexAttribArray(position);
+		glBindBuffer(GL_ARRAY_BUFFER, deferred_positions);
+		glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+		GLuint texcoord = glGetAttribLocation(shader, "texcoord");
+		glEnableVertexAttribArray(texcoord);
+		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
+		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		glDisableVertexAttribArray(deferred_positions);
+		glDisableVertexAttribArray(deferred_texcoords);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glUseProgram(0);
+	}
+
+	void Forms(GLuint shader)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		auto fms = Entity->Get<StorageForm>();
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUseProgram(shader);
+		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
+		GLuint model     = glGetUniformLocation(shader, "model"   ),
+			   position  = glGetAttribLocation (shader, "position"),
+		       normal    = glGetAttribLocation (shader, "normal"  ),
+		       texcoord  = glGetAttribLocation (shader, "texcoord");
+
+		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
+		glEnable(GL_DEPTH_TEST);
+		for(auto i = fms.begin(); i != fms.end(); ++i)
+		{
+			auto frm = Entity->Get<StorageForm>(i->first);
+			auto tsf = Entity->Get<StorageTransform>(i->first);
+
+			mat4 Scale      = scale    (mat4(1), frm->Scale);
+			mat4 Translate  = translate(mat4(1), tsf->Position);
+			mat4 Rotate     = rotate   (mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
+							* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
+							* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
+			mat4 Model = Translate * Rotate * Scale;
+			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(Model));
+
+			glEnableVertexAttribArray(position);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
+			glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glEnableVertexAttribArray(normal);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+			glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glEnableVertexAttribArray(texcoord);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+
+			glBindTexture(GL_TEXTURE_2D, frm->Texture);
+
+			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
+			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+		}
+		glDisable(GL_DEPTH_TEST);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glDisableVertexAttribArray(position);
+		glDisableVertexAttribArray(normal);
+		glDisableVertexAttribArray(texcoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Shaders
+	////////////////////////////////////////////////////////////
 
 	GLuint Shader(string vertex_path, string fragment_path)
 	{
@@ -249,7 +323,9 @@ class ComponentRenderer : public Component
 		glAttachShader(program, fragment);
 		glLinkProgram(program);
 
-		Debug::PassFail("Shader creation", ShaderTest(vertex) && ShaderTest(fragment) && ProgramTest(program));
+		bool result = (testShader(vertex) && testShader(fragment) && testProgram(program));
+		if(!result) Debug::Pass("Shader \"" + vertex_path + "\" and \"" + fragment_path + "\".");
+		Debug::PassFail("Shader creation", result);
 
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
@@ -257,7 +333,7 @@ class ComponentRenderer : public Component
 		return program;
 	}
 
-	bool ProgramTest(int Id, bool Output = false)
+	bool testProgram(int Id, bool Output = false)
 	{
 		GLint Success;
 		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
@@ -271,7 +347,7 @@ class ComponentRenderer : public Component
 		return Result;
 	}
 
-	bool ShaderTest(int Id, bool Output = false)
+	bool testShader(int Id, bool Output = false)
 	{
 		GLint Success;
 		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
@@ -285,7 +361,11 @@ class ComponentRenderer : public Component
 		return Result;
 	}
 
-	bool OpenglTest()
+	////////////////////////////////////////////////////////////
+	// Others
+	////////////////////////////////////////////////////////////
+
+	bool testOpengl()
 	{
 		GLenum code = glGetError();
 		string message;

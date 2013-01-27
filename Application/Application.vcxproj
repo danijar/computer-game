@@ -36,8 +36,11 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\basic.frag" />
-    <None Include="shaders\basic.vert" />
+    <None Include="shaders\deferred.vert" />
+    <None Include="shaders\geometry.frag" />
+    <None Include="shaders\geometry.vert" />
+    <None Include="shaders\lighting.frag" />
+    <None Include="shaders\result.frag" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{618FA48E-BA22-4EB0-B2CB-9705A438936D}</ProjectGuid>
