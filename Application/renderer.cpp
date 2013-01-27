@@ -138,6 +138,11 @@ class ComponentRenderer : public Component
 		glUseProgram(shd_forms);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
+
+		resizeTarget(tex_position, Size);
+		resizeTarget(tex_normal,   Size);
+		resizeTarget(tex_albedo,   Size);
+		resizeDepth (depth,        Size);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -146,12 +151,12 @@ class ComponentRenderer : public Component
 
 	GLuint Target()
 	{
-		auto stg = Global->Get<StorageSettings>("settings");
+		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		GLuint target;
 		glGenTextures(1, &target);
 		glBindTexture(GL_TEXTURE_2D, target);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, stg->Size.x, stg->Size.y, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -160,14 +165,26 @@ class ComponentRenderer : public Component
 
 	GLuint Depth()
 	{
-		auto stg = Global->Get<StorageSettings>("settings");
+		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		GLuint target;
 		glGenRenderbuffers(1, &target);
 		glBindRenderbuffer(GL_RENDERBUFFER, target);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, stg->Size.x, stg->Size.y);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 		return target;
+	}
+
+	void resizeTarget(GLuint target, Vector2u size)
+	{
+		glBindTexture(GL_TEXTURE_2D, target);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, NULL);
+	}
+	
+	void resizeDepth(GLuint target, Vector2u size)
+	{
+		glBindRenderbuffer(GL_RENDERBUFFER, target);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
 	}
 
 	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets, GLuint depth)
@@ -229,7 +246,6 @@ class ComponentRenderer : public Component
 	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
 	{
 		glUseProgram(shader);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		int n = 0; for(auto i : uniforms)
@@ -254,6 +270,7 @@ class ComponentRenderer : public Component
 
 		glDisableVertexAttribArray(deferred_positions);
 		glDisableVertexAttribArray(deferred_texcoords);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glUseProgram(0);
