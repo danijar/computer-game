@@ -268,11 +268,11 @@ class ComponentRenderer : public Component
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glDisableVertexAttribArray(deferred_positions);
-		glDisableVertexAttribArray(deferred_texcoords);
+		glDisableVertexAttribArray(position);
+		glDisableVertexAttribArray(texcoord);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);		
 		glUseProgram(0);
 	}
 
