@@ -18,21 +18,19 @@ vec3 light_pos = vec3(0.5, 1.0, 1.5);
 float light_amount = 0.5;
 
 // fog
-vec4 fog_color = vec4(0.4, 0.6, 0.9, 1.0);
-int fog_distance = 200;
+vec3 fog_color = vec3(0.4, 0.6, 0.9);
+int fog_distance = 100;
 
 void main()
 {
 	if(texture(albedo_tex, ftexcoord).a == 0.0) discard;
 
 	vec3 pixel = vec3(0);
-
 	vec3 position = texture(position_tex, ftexcoord).xyz;
 	vec3 normal = texture(normal_tex, ftexcoord).xyz;
 	vec3 albedo = texture(albedo_tex, ftexcoord).rgb;
 
-	float depth = position.z / 25;
-	
+	float depth = position.z / 50;
 
 	// texture
 	pixel += albedo;
@@ -42,13 +40,13 @@ void main()
 
 	// lighting
 	vec3 light = vec3(max(0.0, dot(normalize(normal), normalize(light_pos))));
-    pixel *= light_amount/2 + light;
+	pixel *= light_amount/2 + light;
 
 	// fog
-	// float fog_amount = clamp(pow(depth / fog_distance, 3), 0, 1);
-	// pixel = mix(pixel, fog_color, fog_amount);
+	float fog_amount = 2 * pow(depth, 2) / fog_distance;
+	pixel = mix(pixel, fog_color, min(1, fog_amount));
 
-    gl_FragColor = vec4(pixel, 1.0);
-
-	// gl_FragColor = vec4(vec3(1 - depth), 1.0); // display depth
+	gl_FragColor = vec4(pixel, 1.0);             // default
+	//gl_FragColor = vec4(normal, 1.0);          // normals
+	//gl_FragColor = vec4(vec3(1 - depth), 1.0); // depth
 }
