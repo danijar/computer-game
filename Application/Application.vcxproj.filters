@@ -103,13 +103,13 @@
     <None Include="shaders\light.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\pass.frag">
-      <Filter>Shader</Filter>
-    </None>
     <None Include="shaders\quad.vert">
       <Filter>Shader</Filter>
     </None>
     <None Include="shaders\ssao.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\screen.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

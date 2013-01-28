@@ -40,8 +40,8 @@
     <None Include="shaders\forms.vert" />
     <None Include="shaders\fxaa.frag" />
     <None Include="shaders\light.frag" />
-    <None Include="shaders\pass.frag" />
     <None Include="shaders\quad.vert" />
+    <None Include="shaders\screen.frag" />
     <None Include="shaders\ssao.frag" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

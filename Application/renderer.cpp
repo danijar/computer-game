@@ -29,11 +29,11 @@ class ComponentRenderer : public Component
 	// Component
 	////////////////////////////////////////////////////////////
 
-	GLuint shd_forms, shd_light, shd_pass;
-	GLuint tex_position, tex_normal, tex_albedo, tex_light;
-	GLuint fbo_forms, fbo_light;
+	GLuint shd_forms, shd_light, shd_fxaa, shd_screen;
+	GLuint tex_position, tex_normal, tex_albedo, tex_light, tex_fxaa;
+	GLuint fbo_forms, fbo_light, fbo_fxaa;
 	GLuint forms_depth;
-	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, pass_uniforms;
+	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, fxaa_uniforms, fxaa_targets, screen_uniforms;
 
 	GLuint quad_positions, quad_texcoords;
 
@@ -68,8 +68,14 @@ class ComponentRenderer : public Component
 		light_targets.insert(make_pair("image", tex_light));
 		fbo_light = Framebuffer(shd_light, light_targets);
 
-		shd_pass = Shader("shaders/quad.vert", "shaders/pass.frag");
-		pass_uniforms.insert(make_pair("image_tex", tex_light));
+		shd_fxaa = Shader("shaders/quad.vert", "shaders/fxaa.frag");
+		fxaa_uniforms.insert(make_pair("image_tex", tex_light));
+		tex_fxaa = Target();
+		fxaa_targets.insert(make_pair("image", tex_fxaa));
+		fbo_fxaa = Framebuffer(shd_fxaa, fxaa_targets);
+
+		shd_screen = Shader("shaders/quad.vert", "shaders/screen.frag");
+		screen_uniforms.insert(make_pair("image_tex", tex_fxaa));
 
 		Window();
 
@@ -80,7 +86,8 @@ class ComponentRenderer : public Component
 	{
 		Draw(shd_forms, fbo_forms, forms_targets.size());
 		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
-		Draw(shd_pass, pass_uniforms);
+		Draw(shd_fxaa, fxaa_uniforms, fbo_fxaa, fxaa_targets.size());
+		Draw(shd_screen, screen_uniforms);
 
 		testOpengl();
 	}
@@ -146,6 +153,7 @@ class ComponentRenderer : public Component
 		resizeTarget(tex_normal,   Size);
 		resizeTarget(tex_albedo,   Size);
 		resizeTarget(tex_light,    Size);
+		resizeTarget(tex_fxaa,     Size);
 		resizeDepth (forms_depth,  Size);
 	}
 
