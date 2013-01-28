@@ -91,19 +91,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\geometry.frag">
+    <None Include="shaders\forms.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\geometry.vert">
+    <None Include="shaders\forms.vert">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\deferred.vert">
+    <None Include="shaders\fxaa.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\lighting.frag">
+    <None Include="shaders\light.frag">
       <Filter>Shader</Filter>
     </None>
-    <None Include="shaders\result.frag">
+    <None Include="shaders\pass.frag">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\quad.vert">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="shaders\ssao.frag">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

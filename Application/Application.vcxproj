@@ -36,11 +36,13 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\deferred.vert" />
-    <None Include="shaders\geometry.frag" />
-    <None Include="shaders\geometry.vert" />
-    <None Include="shaders\lighting.frag" />
-    <None Include="shaders\result.frag" />
+    <None Include="shaders\forms.frag" />
+    <None Include="shaders\forms.vert" />
+    <None Include="shaders\fxaa.frag" />
+    <None Include="shaders\light.frag" />
+    <None Include="shaders\pass.frag" />
+    <None Include="shaders\quad.vert" />
+    <None Include="shaders\ssao.frag" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{618FA48E-BA22-4EB0-B2CB-9705A438936D}</ProjectGuid>

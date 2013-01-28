@@ -29,14 +29,13 @@ class ComponentRenderer : public Component
 	// Component
 	////////////////////////////////////////////////////////////
 
-	GLuint shd_forms, shd_screen;
-	GLuint tex_position, tex_normal, tex_albedo;
-	GLuint framebuffer;
-	GLuint depth;
-	unordered_map<string, GLuint> targets;
-	unordered_map<string, GLuint> uniforms;
+	GLuint shd_forms, shd_light, shd_pass;
+	GLuint tex_position, tex_normal, tex_albedo, tex_light;
+	GLuint fbo_forms, fbo_light;
+	GLuint forms_depth;
+	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, pass_uniforms;
 
-	GLuint deferred_positions, deferred_texcoords;
+	GLuint quad_positions, quad_texcoords;
 
 	void Init()
 	{
@@ -44,29 +43,33 @@ class ComponentRenderer : public Component
 		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
 		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
 
-		glGenBuffers(1, &deferred_positions);
-		glBindBuffer(GL_ARRAY_BUFFER, deferred_positions);
+		glGenBuffers(1, &quad_positions);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(POSITIONS), POSITIONS, GL_STATIC_DRAW);
 
-		glGenBuffers(1, &deferred_texcoords);
-		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
+		glGenBuffers(1, &quad_texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(TEXCOORDS), TEXCOORDS, GL_STATIC_DRAW);
 
 		// pipeline
-		shd_forms = Shader("shaders/geometry.vert", "shaders/geometry.frag");
-		tex_position = Target();
-		tex_normal   = Target();
-		tex_albedo   = Target();
-		targets.insert(make_pair("position", tex_position));
-		targets.insert(make_pair("normal",   tex_normal  ));
-		targets.insert(make_pair("albedo",   tex_albedo  ));
-		depth = Depth();
-		framebuffer = Framebuffer(shd_forms, targets, depth);
+		shd_forms = Shader("shaders/forms.vert", "shaders/forms.frag");
+		tex_position = Target(); tex_normal = Target(); tex_albedo = Target();
+		forms_targets.insert(make_pair("position", tex_position));
+		forms_targets.insert(make_pair("normal",   tex_normal  ));
+		forms_targets.insert(make_pair("albedo",   tex_albedo  ));
+		forms_depth = Depth();
+		fbo_forms = Framebuffer(shd_forms, forms_targets, forms_depth);
 
-		shd_screen = Shader("shaders/deferred.vert", "shaders/result.frag");
-		uniforms.insert(make_pair("position_tex", tex_position));
-		uniforms.insert(make_pair("normal_tex",   tex_normal  ));
-		uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
+		shd_light = Shader("shaders/quad.vert", "shaders/light.frag");
+		light_uniforms.insert(make_pair("position_tex", tex_position));
+		light_uniforms.insert(make_pair("normal_tex",   tex_normal  ));
+		light_uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
+		tex_light = Target();
+		light_targets.insert(make_pair("image", tex_light));
+		fbo_light = Framebuffer(shd_light, light_targets);
+
+		shd_pass = Shader("shaders/quad.vert", "shaders/pass.frag");
+		pass_uniforms.insert(make_pair("image_tex", tex_light));
 
 		Window();
 
@@ -75,9 +78,9 @@ class ComponentRenderer : public Component
 
 	void Update()
 	{
-		Draw(shd_forms, framebuffer, targets.size());
-
-		Draw(shd_screen, uniforms);
+		Draw(shd_forms, fbo_forms, forms_targets.size());
+		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
+		Draw(shd_pass, pass_uniforms);
 
 		testOpengl();
 	}
@@ -142,7 +145,8 @@ class ComponentRenderer : public Component
 		resizeTarget(tex_position, Size);
 		resizeTarget(tex_normal,   Size);
 		resizeTarget(tex_albedo,   Size);
-		resizeDepth (depth,        Size);
+		resizeTarget(tex_light,    Size);
+		resizeDepth (forms_depth,  Size);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -185,6 +189,26 @@ class ComponentRenderer : public Component
 	{
 		glBindRenderbuffer(GL_RENDERBUFFER, target);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
+	}
+
+	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
+	{
+		GLuint framebuffer;
+		glGenFramebuffers(1, &framebuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		int n = 0; for(auto i : targets)
+		{
+			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
+			glBindFragDataLocation(shader, n, i.first.c_str());
+			n++;
+		}
+
+		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+		glLinkProgram(shader);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		return framebuffer;
 	}
 
 	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets, GLuint depth)
@@ -258,12 +282,12 @@ class ComponentRenderer : public Component
 
 		GLuint position = glGetAttribLocation(shader, "position");
 		glEnableVertexAttribArray(position);
-		glBindBuffer(GL_ARRAY_BUFFER, deferred_positions);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
 		glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		GLuint texcoord = glGetAttribLocation(shader, "texcoord");
 		glEnableVertexAttribArray(texcoord);
-		glBindBuffer(GL_ARRAY_BUFFER, deferred_texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
 		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

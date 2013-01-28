@@ -6,7 +6,7 @@ uniform sampler2D albedo_tex;
 
 in vec2 ftexcoord;
 
-out vec4 frag_color;
+out vec4 image;
 
 
 // ambient
@@ -46,7 +46,7 @@ void main()
 	float fog_amount = 2 * pow(depth, 2) / fog_distance;
 	pixel = mix(pixel, fog_color, min(1, fog_amount));
 
-	gl_FragColor = vec4(pixel, 1.0);             // default
-	//gl_FragColor = vec4(normal, 1.0);          // normals
-	//gl_FragColor = vec4(vec3(1 - depth), 1.0); // depth
+	image = vec4(pixel, 1.0);             // default
+	//image = vec4(normal, 1.0);          // normals
+	//image = vec4(vec3(1 - depth), 1.0); // depth
 }
