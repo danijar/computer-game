@@ -3,6 +3,7 @@
 #include "system.h"
 
 #include <unordered_map>
+#include <cstdlib>
 using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
@@ -50,7 +51,7 @@ class ComponentForm : public Component
 				Entity->Add<StorageMovement>(id);
 				Entity->Add<StorageAnimation>(id);
 				auto tsf = Entity->Get<StorageTransform>(id);
-				tsf->Rotation += vec3(.5, 0, .5);
+				tsf->Rotation = vec3(random(), random(), random());
 			}
 		});
 
@@ -134,4 +135,5 @@ class ComponentForm : public Component
 
 	typedef Keyboard::Key Key;
 	bool KeyDown(Keyboard::Key key) { return Keyboard::isKeyPressed(key); }
+	float random(int precision = 10){ return (float)(rand() % (360 * precision)) / (float)precision; }
 };

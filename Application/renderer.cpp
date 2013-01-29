@@ -113,6 +113,7 @@ class ComponentRenderer : public Component
 		});
 
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
+			Resize(Size);
 			Perspective(Size);
 		});
 	}
@@ -148,13 +149,6 @@ class ComponentRenderer : public Component
 		glUseProgram(shd_forms);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
-
-		resizeTarget(tex_position, Size);
-		resizeTarget(tex_normal,   Size);
-		resizeTarget(tex_albedo,   Size);
-		resizeTarget(tex_light,    Size);
-		resizeTarget(tex_fxaa,     Size);
-		resizeDepth (forms_depth,  Size);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -368,6 +362,21 @@ class ComponentRenderer : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
+	}
+
+	void Resize(Vector2u Size)
+	{
+		// framebuffer targets
+		resizeTarget(tex_position, Size);
+		resizeTarget(tex_normal,   Size);
+		resizeTarget(tex_albedo,   Size);
+		resizeTarget(tex_light,    Size);
+		resizeTarget(tex_fxaa,     Size);
+		resizeDepth (forms_depth,  Size);
+
+		// shader uniforms
+		// screen width, height
+		// view distance
 	}
 
 	////////////////////////////////////////////////////////////
