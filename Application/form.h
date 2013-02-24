@@ -9,6 +9,4 @@ using namespace glm;
 struct StorageForm
 {
 	unsigned int Vertices, Normals, Texcoords, Elements, Texture;
-	vec3 Scale;
-	StorageForm() : Scale(1) {}
 };

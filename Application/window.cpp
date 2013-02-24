@@ -78,11 +78,17 @@ class ComponentWindow : public Component
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			auto wnd = Global->Get<RenderWindow>("window");
+			auto stg = Global->Get<StorageSettings>("settings");
+
 			switch(Code)
 			{
 			case Keyboard::Key::Escape:
 				Close();
 				break;
+			case Keyboard::Key::F3:
+				stg->Verticalsync = !stg->Verticalsync;
+				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			case Keyboard::Key::F11:
 				Create();
 				break;
@@ -90,9 +96,7 @@ class ComponentWindow : public Component
 		});
 
 		Event->Listen("SystemUpdated", [=]{
-			auto wnd = Global->Get<RenderWindow>("window");
-			wnd->display();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Global->Get<RenderWindow>("window")->display();
 		});
 	}
 
@@ -117,7 +121,7 @@ class ComponentWindow : public Component
 		cts.stencilBits       =  8;
 		cts.antialiasingLevel =  4;
 		cts.majorVersion      =  3;
-		cts.minorVersion      =  0;
+		cts.minorVersion      =  3;
 
 		if(Fullscreen)
 		{
@@ -130,7 +134,8 @@ class ComponentWindow : public Component
 			wnd->setPosition(stg->Position);
 		}
 
-		wnd->resetGLStates();
+		wnd->resetGLStates(); // necessary?
+		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 
 		Debug::PassFail("Window creation", wnd->isOpen());
 

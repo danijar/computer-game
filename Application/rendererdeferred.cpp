@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #include "system.h"
 #include "debug.h"
 
@@ -13,7 +14,6 @@ using namespace std;
 #include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace glm;
 
@@ -23,7 +23,7 @@ using namespace glm;
 #include "camera.h"
 
 
-class ComponentRenderer : public Component
+class ComponentRendererDeferred : public Component
 {
 	////////////////////////////////////////////////////////////
 	// Component
@@ -34,12 +34,15 @@ class ComponentRenderer : public Component
 	GLuint fbo_forms, fbo_light, fbo_fxaa;
 	GLuint forms_depth;
 	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, fxaa_uniforms, fxaa_targets, screen_uniforms;
-
 	GLuint quad_positions, quad_texcoords;
 
 	void Init()
 	{
-		// init quad
+		// glew
+		auto result = glewInit();
+		Debug::PassFail("Glew initialization",  result == GLEW_OK);
+
+		// quad
 		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
 		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
 
@@ -77,6 +80,7 @@ class ComponentRenderer : public Component
 		shd_screen = Shader("shaders/quad.vert", "shaders/screen.frag");
 		screen_uniforms.insert(make_pair("image_tex", tex_fxaa));
 
+		// component
 		Window();
 
 		Listeners();
@@ -88,8 +92,6 @@ class ComponentRenderer : public Component
 		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
 		Draw(shd_fxaa, fxaa_uniforms, fbo_fxaa, fxaa_targets.size());
 		Draw(shd_screen, screen_uniforms);
-
-		testOpengl();
 	}
 
 	void Listeners()
@@ -101,10 +103,6 @@ class ComponentRenderer : public Component
 			case Keyboard::Key::F2:
 				stg->Wireframe = !stg->Wireframe;
 				break;
-			case Keyboard::Key::F3:
-				stg->Verticalsync = !stg->Verticalsync;
-				auto wnd = Global->Get<RenderWindow>("window");
-				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			}
 		});
 
@@ -124,8 +122,6 @@ class ComponentRenderer : public Component
 
 	void Window()
 	{
-		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(Global->Get<StorageSettings>("settings")->Verticalsync);
-	
 		glClearColor(.4f,.6f,.9f,0.f);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_BLEND);
@@ -236,7 +232,13 @@ class ComponentRenderer : public Component
 
 	void Draw(GLuint shader, GLuint framebuffer, int targets)
 	{
+		//////////////////////////////////////
+		Debug::Inline("beg "); testOpengl(); Debug::Info("");
+
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
+
+		//////////////////////////////////////
+		Debug::Inline("mid "); testOpengl();  Debug::Info("");
 
 		vector<GLenum> buffers;
 		for(int i = 0; i < targets; ++i)
@@ -244,6 +246,9 @@ class ComponentRenderer : public Component
 			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
 		}
 		glDrawBuffers(targets, &buffers[0]);
+
+		//////////////////////////////////////
+		Debug::Inline("end "); testOpengl();  Debug::Info("");
 
 		Forms(shader);
 	}
@@ -308,13 +313,19 @@ class ComponentRenderer : public Component
 		auto fms = Entity->Get<StorageForm>();
 		
 		glUseProgram(shader);
+		glFlush();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		mat4 Projection = perspective(stg->Fieldofview, (float)stg->Size.x / (float)stg->Size.y, 1.0f, stg->Viewdistance);
+		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
 		
-		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
 		GLuint model     = glGetUniformLocation(shader, "model"   ),
+			   view      = glGetUniformLocation(shader, "view"    ),
+			   projection= glGetUniformLocation(shader, "projection"),
 			   position  = glGetAttribLocation (shader, "position"),
 		       normal    = glGetAttribLocation (shader, "normal"  ),
 		       texcoord  = glGetAttribLocation (shader, "texcoord");
+		glUniformMatrix4fv(view, 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 		glEnable(GL_DEPTH_TEST);
@@ -322,16 +333,13 @@ class ComponentRenderer : public Component
 		glActiveTexture(GL_TEXTURE0);
 		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
+			auto result = glewInit();
+			if(result != GLEW_OK) Debug::Fail("Glew initialization failed.");
+
 			auto frm = Entity->Get<StorageForm>(i->first);
 			auto tsf = Entity->Get<StorageTransform>(i->first);
 
-			mat4 Scale      = scale    (mat4(1), frm->Scale);
-			mat4 Translate  = translate(mat4(1), tsf->Position);
-			mat4 Rotate     = rotate   (mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
-							* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
-							* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
-			mat4 Model = Translate * Rotate * Scale;
-			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(Model));
+			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(tsf->Matrix));
 
 			glEnableVertexAttribArray(position);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
@@ -345,11 +353,14 @@ class ComponentRenderer : public Component
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-
 			glBindTexture(GL_TEXTURE_2D, frm->Texture);
 
-			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+			
+			int count = 0;
+			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
+			Debug::Info("There are " + to_string(count) + " elements to draw.");
+
 			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		}
 		glDisable(GL_DEPTH_TEST);
@@ -378,87 +389,5 @@ class ComponentRenderer : public Component
 		// screen width, height
 		// view distance
 	}
-
-	////////////////////////////////////////////////////////////
-	// Shaders
-	////////////////////////////////////////////////////////////
-
-	GLuint Shader(string vertex_path, string fragment_path)
-	{
-		GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-		string vertex_string((istreambuf_iterator<char>(ifstream(vertex_path))), istreambuf_iterator<char>());
-		const GLchar* vertex_chars = vertex_string.c_str();
-		glShaderSource(vertex, 1, &vertex_chars, NULL);
-		glCompileShader(vertex);
-
-		GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		string fragment_string((istreambuf_iterator<char>(ifstream(fragment_path))), istreambuf_iterator<char>());
-		const GLchar* fragment_chars = fragment_string.c_str();
-		glShaderSource(fragment, 1, &fragment_chars, NULL);
-		glCompileShader(fragment);
-
-		GLuint program = glCreateProgram();
-		glAttachShader(program, vertex);
-		glAttachShader(program, fragment);
-		glLinkProgram(program);
-
-		bool result = (testShader(vertex) && testShader(fragment) && testProgram(program));
-		if(!result) Debug::Pass("... in shader \"" + vertex_path + "\" and \"" + fragment_path + "\".");
-		Debug::PassFail("Shader creation", result);
-
-		glDeleteShader(vertex);
-		glDeleteShader(fragment);
-
-		return program;
-	}
-
-	bool testProgram(int Id, bool Output = false)
-	{
-		GLint Success;
-		glGetProgramiv(Id, GL_LINK_STATUS, &Success);
-		bool Result = (Success == GL_TRUE);
-
-		GLchar Log[513];
-		GLsizei Length;
-		glGetProgramInfoLog(Id, 512, &Length, Log);
-		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-
-		return Result;
-	}
-
-	bool testShader(int Id, bool Output = false)
-	{
-		GLint Success;
-		glGetShaderiv(Id, GL_COMPILE_STATUS, &Success);
-		bool Result = (Success == GL_TRUE);
-
-		GLchar Log[513];
-		GLsizei Length;
-		glGetShaderInfoLog(Id, 512, &Length, Log);
-		if(Length > 0 && (Output || !Result)) Debug::PassFail(Log, Result, "", "");
-
-		return Result;
-	}
-
-	////////////////////////////////////////////////////////////
-	// Others
-	////////////////////////////////////////////////////////////
-
-	bool testOpengl()
-	{
-		GLenum code = glGetError();
-		string message;
-
-		if (code == GL_NO_ERROR) return true;
-		else if(code == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
-		else if(code == GL_INVALID_VALUE)                     message = "GL_INVALID_VALUE";
-		else if(code == GL_INVALID_OPERATION)                 message = "GL_INVALID_OPERATION";
-		else if(code == GL_STACK_OVERFLOW)                    message = "GL_STACK_OVERFLOW";
-		else if(code == GL_STACK_UNDERFLOW)                   message = "GL_STACK_UNDERFLOW";
-		else if(code == GL_OUT_OF_MEMORY)                     message = "GL_OUT_OF_MEMORY";
-		else if(code == GL_INVALID_FRAMEBUFFER_OPERATION_EXT) message = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
-
-		Debug::Fail("OpenGL error " + message);
-		return false;
-	}
 };
+*/

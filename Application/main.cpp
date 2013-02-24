@@ -10,7 +10,8 @@
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
-#include "renderer.cpp"
+#include "rendererforward.cpp"
+#include "rendererdeferred.cpp"
 #include "text.cpp"
 
 
@@ -25,8 +26,9 @@ int main()
 	World.Add(2, "movement",  new ComponentMovement());
 	World.Add(2, "animation", new ComponentAnimation());
 	World.Add(2, "camera",    new ComponentCamera());
-	World.Add(3, "renderer",  new ComponentRenderer());
-	World.Add(3, "text",      new ComponentText());
+	World.Add(3, "renderer",  new ComponentRendererForward());
+	//World.Add(3, "renderer",  new ComponentRendererDeferred());
+	//World.Add(3, "text",      new ComponentText());
 
 	World.Init();
 

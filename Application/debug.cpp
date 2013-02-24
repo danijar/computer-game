@@ -1,5 +1,6 @@
 #include "debug.h"
 
+
 namespace Debug
 {
 	void Info(string Message)
