@@ -10,6 +10,7 @@
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
 
 #include "settings.h"
@@ -24,9 +25,7 @@ class ComponentRendererForward : public Component
 
 	void Init()
 	{
-		Opengl::InitGlew(); // necessary?
-
-		glClearColor(.4f,.6f,.9f,0.f);
+		Opengl::InitGlew(); 
 
 		shader = Shaders::Create("shaders/basic.vert", "shaders/basic.frag");
 		Resize();
@@ -41,12 +40,18 @@ class ComponentRendererForward : public Component
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto fms = Entity->Get<StorageForm>();
 
+		Opengl::Test();
+
 		glFlush(); // necessary?
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		Opengl::Test();
-
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_INDEX_ARRAY);
 		glUseProgram(shader);
+
+		Opengl::Test();
 		
 		GLuint model   = glGetUniformLocation(shader, "model"),
 			   view    = glGetUniformLocation(shader, "view" ),
@@ -63,15 +68,12 @@ class ComponentRendererForward : public Component
 
 		Opengl::Test();
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
+		for(auto i : fms)
 		{
-			auto frm = Entity->Get<StorageForm>(i->first);
-			auto tsf = Entity->Get<StorageTransform>(i->first);
+			auto frm = Entity->Get<StorageForm>(i.first);
+			auto tsf = Entity->Get<StorageTransform>(i.first);
 
 			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(tsf->Matrix));
-
-			glBindTexture(GL_TEXTURE_2D, frm->Texture);
-			glUniform1i(texture, 0);
 
 			glEnableVertexAttribArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
@@ -85,14 +87,14 @@ class ComponentRendererForward : public Component
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
+			glBindTexture(GL_TEXTURE_2D, frm->Texture);
+			glUniform1i(texture, 0);
+
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 			
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-			GLsizei count = size / sizeof(GLuint);
-			Debug::Info("There are " + to_string(count) + " elements to draw.");
-
-			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, (void*)0);
+			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
 		}
 
 		Opengl::Test();
@@ -101,19 +103,12 @@ class ComponentRendererForward : public Component
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
 
-		Opengl::Test();
-
-		/*
 		glDisable(GL_DEPTH_TEST);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDisableVertexAttribArray(position);
-		glDisableVertexAttribArray(normal);
-		glDisableVertexAttribArray(texcoord);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
-		*/
 	}
 
 	void Listeners()
@@ -142,14 +137,17 @@ class ComponentRendererForward : public Component
 		Resize(Global->Get<RenderWindow>("window")->getSize());
 	}
 
+	mat4 Projection;
 	void Resize(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
 
+		glClearColor(.4f,.6f,.9f,0.f);
+
 		glViewport(0, 0, Size.x, Size.y);
 
 		glUseProgram(shader);
-		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
+		Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, value_ptr(Projection));
 	}
 };

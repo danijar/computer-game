@@ -133,8 +133,6 @@ class ComponentWindow : public Component
 			wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
 			wnd->setPosition(stg->Position);
 		}
-
-		wnd->resetGLStates(); // necessary?
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 
 		Debug::PassFail("Window creation", wnd->isOpen());

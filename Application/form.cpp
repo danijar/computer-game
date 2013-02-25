@@ -17,7 +17,7 @@ using namespace glm;
 #include "movement.h"
 #include "animation.h"
 #include "text.h"
-//#include "keyboard.h"
+#include "keyboard.h"
 
 
 class ComponentForm : public Component
@@ -47,8 +47,6 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
-			CreateCube("forms/textures/magic.jpg", vec3(0), true);
-			/*
 			int number = KeyDown(Key::LShift) ? 500 : 1;
 			for(int i = 0; i < number; ++i)
 			{
@@ -57,10 +55,8 @@ class ComponentForm : public Component
 				auto tsf = Entity->Get<StorageTransform>(id);
 				tsf->Rotation = vec3(random(), random(), random());
 			}
-			*/
 		});
 
-		/*
 		Event->Listen("SystemInitialized", [=]{
 			const int a = 3;
 			for(float x = -3; x <= 3; ++x)
@@ -71,18 +67,12 @@ class ComponentForm : public Component
 			for(float z = -3; z <= 3; z+=3)
 				if(x == 0 && z == 0) continue;
 				else CreateCube("forms/textures/grass.jpg", vec3(a*x, a+1, a*z));
-
-			const float l = 30.f;
-			const float Vertices[] = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
-			const float Normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
-			const float Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
-			const int   Elements[]  = { 0,1,2, 2,3,0 };
-			Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, "forms/textures/bottom.jpg", vec3(0));
+	
+			CreatePlane("forms/textures/bottom.jpg", 20);
 		});
-		*/
 	}
 
-	int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = true)
+	int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -145,6 +135,16 @@ class ComponentForm : public Component
 		return Create(Vertices, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position, vec3(0), vec3(1), Movable);
 	}
 
+	unsigned int CreatePlane(string Texture, float length, vec3 Position = vec3(0))
+	{
+		const float l = length;
+		const GLfloat Vertices[]  = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
+		const GLfloat Normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
+		const GLfloat Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
+		const GLuint  Elements[]  = { 0,1,2, 2,3,0 };
+		return Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, Texture, Position);
+	}
+
 	void Matrix(unsigned int id)
 	{
 		auto tsf = Entity->Get<StorageTransform>(id);
@@ -154,7 +154,6 @@ class ComponentForm : public Component
 		mat4 Rotate     = rotate   (mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
 						* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 						* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
-
 		tsf->Matrix = Translate * Rotate * Scale;
 	}
 
