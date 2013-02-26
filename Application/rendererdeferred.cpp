@@ -1,20 +1,16 @@
 #pragma once
 
-/*
 #include "system.h"
 #include "debug.h"
+#include "opengl.h"
+#include "shaders.h"
 
-#include <vector>
-#include <unordered_map>
-#include <fstream>
-using namespace std;
-#include <GLEW/glew.h>
-#include <SFML/OpenGL.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
 
 #include "settings.h"
@@ -25,73 +21,37 @@ using namespace glm;
 
 class ComponentRendererDeferred : public Component
 {
-	////////////////////////////////////////////////////////////
-	// Component
-	////////////////////////////////////////////////////////////
-
+	GLuint shader;
+	/*
 	GLuint shd_forms, shd_light, shd_fxaa, shd_screen;
 	GLuint tex_position, tex_normal, tex_albedo, tex_light, tex_fxaa;
 	GLuint fbo_forms, fbo_light, fbo_fxaa;
 	GLuint forms_depth;
 	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, fxaa_uniforms, fxaa_targets, screen_uniforms;
 	GLuint quad_positions, quad_texcoords;
+	*/
 
 	void Init()
 	{
-		// glew
-		auto result = glewInit();
-		Debug::PassFail("Glew initialization",  result == GLEW_OK);
+		Opengl::InitGlew(); 
 
-		// quad
-		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
-		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
+		Pipeline();
 
-		glGenBuffers(1, &quad_positions);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(POSITIONS), POSITIONS, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &quad_texcoords);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(TEXCOORDS), TEXCOORDS, GL_STATIC_DRAW);
-
-		// pipeline
-		shd_forms = Shader("shaders/forms.vert", "shaders/forms.frag");
-		tex_position = Target(); tex_normal = Target(); tex_albedo = Target();
-		forms_targets.insert(make_pair("position", tex_position));
-		forms_targets.insert(make_pair("normal",   tex_normal  ));
-		forms_targets.insert(make_pair("albedo",   tex_albedo  ));
-		forms_depth = Depth();
-		fbo_forms = Framebuffer(shd_forms, forms_targets, forms_depth);
-
-		shd_light = Shader("shaders/quad.vert", "shaders/light.frag");
-		light_uniforms.insert(make_pair("position_tex", tex_position));
-		light_uniforms.insert(make_pair("normal_tex",   tex_normal  ));
-		light_uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
-		tex_light = Target();
-		light_targets.insert(make_pair("image", tex_light));
-		fbo_light = Framebuffer(shd_light, light_targets);
-
-		shd_fxaa = Shader("shaders/quad.vert", "shaders/fxaa.frag");
-		fxaa_uniforms.insert(make_pair("image_tex", tex_light));
-		tex_fxaa = Target();
-		fxaa_targets.insert(make_pair("image", tex_fxaa));
-		fbo_fxaa = Framebuffer(shd_fxaa, fxaa_targets);
-
-		shd_screen = Shader("shaders/quad.vert", "shaders/screen.frag");
-		screen_uniforms.insert(make_pair("image_tex", tex_fxaa));
-
-		// component
-		Window();
-
+		Resize();
+		
 		Listeners();
 	}
 
 	void Update()
 	{
+		Forms();
+
+		/*
 		Draw(shd_forms, fbo_forms, forms_targets.size());
 		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
 		Draw(shd_fxaa, fxaa_uniforms, fbo_fxaa, fxaa_targets.size());
 		Draw(shd_screen, screen_uniforms);
+		*/
 	}
 
 	void Listeners()
@@ -107,50 +67,163 @@ class ComponentRendererDeferred : public Component
 		});
 
 		Event->Listen("WindowRecreated", [=]{
-			Window();
+			Resize();
 		});
 
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
 			Resize(Size);
-			Perspective(Size);
 		});
 	}
 
-	////////////////////////////////////////////////////////////
-	// Window
-	////////////////////////////////////////////////////////////
-
-	void Window()
+	void Pipeline()
 	{
-		glClearColor(.4f,.6f,.9f,0.f);
+		shader = Shaders::Create("shaders/basic.vert", "shaders/basic.frag");
+
+		/*
+		// quad
+		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
+		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
+
+		glGenBuffers(1, &quad_positions);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(POSITIONS), POSITIONS, GL_STATIC_DRAW);
+
+		glGenBuffers(1, &quad_texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(TEXCOORDS), TEXCOORDS, GL_STATIC_DRAW);
+
+		// pipeline
+		shd_forms = Shaders::Create("shaders/forms.vert", "shaders/forms.frag");
+		tex_position = Target(); tex_normal = Target(); tex_albedo = Target();
+		forms_targets.insert(make_pair("position", tex_position));
+		forms_targets.insert(make_pair("normal",   tex_normal  ));
+		forms_targets.insert(make_pair("albedo",   tex_albedo  ));
+		forms_depth = Depth();
+		fbo_forms = Framebuffer(shd_forms, forms_targets, forms_depth);
+
+		shd_light = Shaders::Create("shaders/quad.vert", "shaders/light.frag");
+		light_uniforms.insert(make_pair("position_tex", tex_position));
+		light_uniforms.insert(make_pair("normal_tex",   tex_normal  ));
+		light_uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
+		tex_light = Target();
+		light_targets.insert(make_pair("image", tex_light));
+		fbo_light = Framebuffer(shd_light, light_targets);
+
+		shd_fxaa = Shaders::Create("shaders/quad.vert", "shaders/fxaa.frag");
+		fxaa_uniforms.insert(make_pair("image_tex", tex_light));
+		tex_fxaa = Target();
+		fxaa_targets.insert(make_pair("image", tex_fxaa));
+		fbo_fxaa = Framebuffer(shd_fxaa, fxaa_targets);
+
+		shd_screen = Shaders::Create("shaders/quad.vert", "shaders/screen.frag");
+		screen_uniforms.insert(make_pair("image_tex", tex_fxaa));
+		*/
+	}
+
+	void Forms() // parameter GLuint shader
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		auto fms = Entity->Get<StorageForm>();
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_INDEX_ARRAY);
+		glUseProgram(shader);
+		
+		GLuint model   = glGetUniformLocation(shader, "model"),
+			   view    = glGetUniformLocation(shader, "view" ),
+			   texture = glGetUniformLocation(shader, "tex"  );
+
+		glUniformMatrix4fv(view, 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
+
+		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
 		glEnable(GL_CULL_FACE);
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		/*
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_TEXTURE_2D);
+		*/
 
-		Perspective();
+		for(auto i : fms)
+		{
+			auto frm = Entity->Get<StorageForm>(i.first);
+			auto tsf = Entity->Get<StorageTransform>(i.first);
+
+			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(tsf->Matrix));
+
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glEnableVertexAttribArray(1);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glEnableVertexAttribArray(2);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+
+			glBindTexture(GL_TEXTURE_2D, frm->Texture);
+			glUniform1i(texture, 0);
+
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+			
+			GLint size = 0;
+			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
+		}
+
+		glDisable(GL_DEPTH_TEST);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
+
+		Opengl::Test();
 	}
 
-	void Perspective()
+	void Resize()
 	{
-		Perspective(Global->Get<RenderWindow>("window")->getSize());
+		Resize(Global->Get<RenderWindow>("window")->getSize());
 	}
 
-	void Perspective(Vector2u Size)
+	mat4 Projection;
+	void Resize(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
 
+		glClearColor(.4f,.6f,.9f,0.f);
+
 		glViewport(0, 0, Size.x, Size.y);
 
-		glUseProgram(shd_forms);
-		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
+		glUseProgram(shader);
+		Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
+		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, value_ptr(Projection));
+
+		/*
+		// framebuffer targets
+		resizeTarget(tex_position, Size);
+		resizeTarget(tex_normal,   Size);
+		resizeTarget(tex_albedo,   Size);
+		resizeTarget(tex_light,    Size);
+		resizeTarget(tex_fxaa,     Size);
+		resizeDepth (forms_depth,  Size);
+		// shader uniforms
+		// screen width, height
+		*/
 	}
 
-	////////////////////////////////////////////////////////////
-	// Draw
-	////////////////////////////////////////////////////////////
-
+	/*
 	GLuint Target()
 	{
 		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -232,13 +305,7 @@ class ComponentRendererDeferred : public Component
 
 	void Draw(GLuint shader, GLuint framebuffer, int targets)
 	{
-		//////////////////////////////////////
-		Debug::Inline("beg "); testOpengl(); Debug::Info("");
-
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		//////////////////////////////////////
-		Debug::Inline("mid "); testOpengl();  Debug::Info("");
 
 		vector<GLenum> buffers;
 		for(int i = 0; i < targets; ++i)
@@ -247,10 +314,7 @@ class ComponentRendererDeferred : public Component
 		}
 		glDrawBuffers(targets, &buffers[0]);
 
-		//////////////////////////////////////
-		Debug::Inline("end "); testOpengl();  Debug::Info("");
-
-		Forms(shader);
+		Forms();
 	}
 
 	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms, GLuint framebuffer, int targets)
@@ -306,88 +370,5 @@ class ComponentRendererDeferred : public Component
 		glBindTexture(GL_TEXTURE_2D, 0);		
 		glUseProgram(0);
 	}
-
-	void Forms(GLuint shader)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-		auto fms = Entity->Get<StorageForm>();
-		
-		glUseProgram(shader);
-		glFlush();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		mat4 Projection = perspective(stg->Fieldofview, (float)stg->Size.x / (float)stg->Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(shd_forms, "projection"), 1, GL_FALSE, value_ptr(Projection));
-		
-		GLuint model     = glGetUniformLocation(shader, "model"   ),
-			   view      = glGetUniformLocation(shader, "view"    ),
-			   projection= glGetUniformLocation(shader, "projection"),
-			   position  = glGetAttribLocation (shader, "position"),
-		       normal    = glGetAttribLocation (shader, "normal"  ),
-		       texcoord  = glGetAttribLocation (shader, "texcoord");
-		glUniformMatrix4fv(view, 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
-
-		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-		for(auto i = fms.begin(); i != fms.end(); ++i)
-		{
-			auto result = glewInit();
-			if(result != GLEW_OK) Debug::Fail("Glew initialization failed.");
-
-			auto frm = Entity->Get<StorageForm>(i->first);
-			auto tsf = Entity->Get<StorageTransform>(i->first);
-
-			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(tsf->Matrix));
-
-			glEnableVertexAttribArray(position);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-			glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-			glEnableVertexAttribArray(normal);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-			glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
-
-			glEnableVertexAttribArray(texcoord);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-			glBindTexture(GL_TEXTURE_2D, frm->Texture);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-			
-			int count = 0;
-			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
-			Debug::Info("There are " + to_string(count) + " elements to draw.");
-
-			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
-		}
-		glDisable(GL_DEPTH_TEST);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glDisableVertexAttribArray(position);
-		glDisableVertexAttribArray(normal);
-		glDisableVertexAttribArray(texcoord);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glUseProgram(0);
-	}
-
-	void Resize(Vector2u Size)
-	{
-		// framebuffer targets
-		resizeTarget(tex_position, Size);
-		resizeTarget(tex_normal,   Size);
-		resizeTarget(tex_albedo,   Size);
-		resizeTarget(tex_light,    Size);
-		resizeTarget(tex_fxaa,     Size);
-		resizeDepth (forms_depth,  Size);
-
-		// shader uniforms
-		// screen width, height
-		// view distance
-	}
+	*/
 };
-*/

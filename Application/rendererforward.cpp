@@ -40,18 +40,9 @@ class ComponentRendererForward : public Component
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto fms = Entity->Get<StorageForm>();
 
-		Opengl::Test();
-
-		glFlush(); // necessary?
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_INDEX_ARRAY);
 		glUseProgram(shader);
-
-		Opengl::Test();
 		
 		GLuint model   = glGetUniformLocation(shader, "model"),
 			   view    = glGetUniformLocation(shader, "view" ),
@@ -65,8 +56,6 @@ class ComponentRendererForward : public Component
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
-
-		Opengl::Test();
 
 		for(auto i : fms)
 		{
@@ -95,9 +84,9 @@ class ComponentRendererForward : public Component
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
-		}
 
-		Opengl::Test();
+			Opengl::Test();
+		}
 
 		glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

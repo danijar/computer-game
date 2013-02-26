@@ -26,8 +26,8 @@ int main()
 	World.Add(2, "movement",  new ComponentMovement());
 	World.Add(2, "animation", new ComponentAnimation());
 	World.Add(2, "camera",    new ComponentCamera());
-	World.Add(3, "renderer",  new ComponentRendererForward());
-	//World.Add(3, "renderer",  new ComponentRendererDeferred());
+	//World.Add(3, "renderer",  new ComponentRendererForward());
+	World.Add(3, "renderer",  new ComponentRendererDeferred());
 	World.Add(3, "text",      new ComponentText());
 
 	World.Init();
