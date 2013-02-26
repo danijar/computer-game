@@ -21,15 +21,10 @@ using namespace glm;
 
 class ComponentRendererDeferred : public Component
 {
-	GLuint shader;
-	/*
-	GLuint shd_forms, shd_light, shd_fxaa, shd_screen;
-	GLuint tex_position, tex_normal, tex_albedo, tex_light, tex_fxaa;
-	GLuint fbo_forms, fbo_light, fbo_fxaa;
-	GLuint forms_depth;
-	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, fxaa_uniforms, fxaa_targets, screen_uniforms;
-	GLuint quad_positions, quad_texcoords;
-	*/
+	unordered_map<string, pair<GLuint, pair<GLenum, GLenum>>> Textures;             // name, texture id, type, internal type
+	vector<pair<GLuint, pair<GLuint, unordered_map<string, GLuint>>>> Framebuffers; // framebuffer id, shader id, uniform name, uniform id
+
+	GLuint shaderforms;
 
 	void Init()
 	{
@@ -44,14 +39,25 @@ class ComponentRendererDeferred : public Component
 
 	void Update()
 	{
-		Forms();
+		unsigned int i = 0;
 
-		/*
-		Draw(shd_forms, fbo_forms, forms_targets.size());
-		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
-		Draw(shd_fxaa, fxaa_uniforms, fbo_fxaa, fxaa_targets.size());
-		Draw(shd_screen, screen_uniforms);
-		*/
+		// forms
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Framebuffers[i].first);
+		Forms(Framebuffers[i].second.first, Framebuffers[i].second.second);
+		i++;
+
+		// deferred
+		while(i < Framebuffers.size() - 1)
+		{
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Framebuffers[i].first);
+			Quad(Framebuffers[i].second.first, Framebuffers[i].second.second);
+			i++;
+		}
+
+		// screen
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		Quad(Framebuffers[i].second.first, Framebuffers[i].second.second);
+		i++;
 	}
 
 	void Listeners()
@@ -75,67 +81,128 @@ class ComponentRendererDeferred : public Component
 		});
 	}
 
-	void Pipeline()
+	void Resize()
 	{
-		shader = Shaders::Create("shaders/basic.vert", "shaders/basic.frag");
-
-		/*
-		// quad
-		const float POSITIONS[] = {-1.f,-1.f, 1.f,-1.f,-1.f, 1.f, 1.f, 1.f };
-		const float TEXCOORDS[] = { 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 1.f, 1.f };
-
-		glGenBuffers(1, &quad_positions);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(POSITIONS), POSITIONS, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &quad_texcoords);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(TEXCOORDS), TEXCOORDS, GL_STATIC_DRAW);
-
-		// pipeline
-		shd_forms = Shaders::Create("shaders/forms.vert", "shaders/forms.frag");
-		tex_position = Target(); tex_normal = Target(); tex_albedo = Target();
-		forms_targets.insert(make_pair("position", tex_position));
-		forms_targets.insert(make_pair("normal",   tex_normal  ));
-		forms_targets.insert(make_pair("albedo",   tex_albedo  ));
-		forms_depth = Depth();
-		fbo_forms = Framebuffer(shd_forms, forms_targets, forms_depth);
-
-		shd_light = Shaders::Create("shaders/quad.vert", "shaders/light.frag");
-		light_uniforms.insert(make_pair("position_tex", tex_position));
-		light_uniforms.insert(make_pair("normal_tex",   tex_normal  ));
-		light_uniforms.insert(make_pair("albedo_tex",   tex_albedo  ));
-		tex_light = Target();
-		light_targets.insert(make_pair("image", tex_light));
-		fbo_light = Framebuffer(shd_light, light_targets);
-
-		shd_fxaa = Shaders::Create("shaders/quad.vert", "shaders/fxaa.frag");
-		fxaa_uniforms.insert(make_pair("image_tex", tex_light));
-		tex_fxaa = Target();
-		fxaa_targets.insert(make_pair("image", tex_fxaa));
-		fbo_fxaa = Framebuffer(shd_fxaa, fxaa_targets);
-
-		shd_screen = Shaders::Create("shaders/quad.vert", "shaders/screen.frag");
-		screen_uniforms.insert(make_pair("image_tex", tex_fxaa));
-		*/
+		Resize(Global->Get<RenderWindow>("window")->getSize());
 	}
 
-	void Forms() // parameter GLuint shader
+	void Resize(Vector2u Size)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+
+		glClearColor(.4f,.6f,.9f,0.f);
+		glViewport(0, 0, Size.x, Size.y);
+
+		glUseProgram(shaderforms); // necessary?
+		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
+		glUniformMatrix4fv(glGetUniformLocation(shaderforms, "projection"), 1, GL_FALSE, value_ptr(Projection));
+
+		for(auto i : Textures)
+		{
+			resizeTexture(i.second.first, i.second.second, Size);
+		}
+	}
+
+	void Pipeline()
+	{
+		unordered_map<string, pair<GLenum, GLenum>> gbuffer;
+		gbuffer.insert(make_pair("position", make_pair(GL_RGBA32F, GL_RGBA)));
+		gbuffer.insert(make_pair("normal",   make_pair(GL_RGBA32F, GL_RGBA)));
+		gbuffer.insert(make_pair("albedo",   make_pair(GL_RGBA32F, GL_RGBA)));
+		gbuffer.insert(make_pair("depth",    make_pair(GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT)));
+		auto framebuffer = createFramebuffer(make_pair("shaders/basic.vert", "shaders/basic.frag"), gbuffer);
+		shaderforms = framebuffer.second;
+
+		unordered_map<string, GLuint> uniforms;
+		uniforms.insert(make_pair("position_tex", Textures["position"].second.first));
+		uniforms.insert(make_pair("normal_tex",   Textures["normal"].second.first));
+		uniforms.insert(make_pair("albedo_tex",   Textures["albedo"].second.first));
+		createFramebuffer(make_pair("shaders/quad.vert", "shaders/light.frag"), "result", uniforms);
+	}
+
+	GLuint createTexture(string Name, pair<GLenum, GLenum> Type)
+	{
+		GLuint Id;
+		auto i = Textures.find(Name);
+		if(i != Textures.end())
+		{
+			Id = i->second.first;
+		}
+		else
+		{
+			glGenTextures(1, &Id);
+			glBindTexture(GL_TEXTURE_2D, Id);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glBindTexture(GL_TEXTURE_2D, 0);
+			resizeTexture(Id, Type, Global->Get<RenderWindow>("window")->getSize());
+
+			Textures.insert(make_pair(Name, make_pair(Id, Type)));
+		}
+		return Id;
+	}
+
+	void resizeTexture(GLuint Id, pair<GLenum, GLenum> Type, Vector2u Size)
+	{
+		glBindTexture(GL_TEXTURE_2D, Id);
+		glTexImage2D(GL_TEXTURE_2D, 0, Type.first, Size.x, Size.y, 0, Type.second, GL_FLOAT, NULL); // take care of depth textures
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	pair<GLuint, GLuint> createFramebuffer(pair<string, string> Shaderpath, string Target, unordered_map<string, GLuint> Uniforms)
+	{
+		unordered_map<string, pair<GLenum, GLenum>> Targets;
+		Targets.insert(make_pair(Target, make_pair(GL_RGBA32F, GL_RGBA)));
+		return createFramebuffer(Shaderpath, Targets, Uniforms);
+	}
+
+	pair<GLuint, GLuint> createFramebuffer(pair<string, string> Shaderpath, unordered_map<string, pair<GLenum, GLenum>> Targets, unordered_map<string, GLuint> Uniforms = unordered_map<string, GLuint>())
+	{
+		GLuint Program = Shaders::Create(Shaderpath.first, Shaderpath.second);
+
+		GLuint Id;
+		glGenFramebuffers(1, &Id);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, Id);
+
+		vector<GLenum> buffers;
+		int n = 0; for(auto i : Targets)
+		{
+			switch(i.second.second)
+			{
+			case GL_RGBA:
+				glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, createTexture(i.first, i.second), 0);
+				glBindFragDataLocation(Program, n, i.first.c_str());
+				buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
+				n++;
+				break;
+			case GL_DEPTH_COMPONENT:
+				glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, createTexture(i.first, i.second), 0);
+				break;
+			}
+		}
+		glDrawBuffers(buffers.size(), &buffers[0]);
+		glLinkProgram(Program);
+
+		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		Framebuffers.push_back(make_pair(Id, make_pair(Program, Uniforms)));
+		return make_pair(Id, Program);
+	}
+
+	void Forms(GLuint Shader, unordered_map<string, GLuint> Uniforms)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto fms = Entity->Get<StorageForm>();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		if(Uniforms.size() > 0) Debug::Fail("Uniforms of the geometry pass are ignored.");
 
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_NORMAL_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_INDEX_ARRAY);
-		glUseProgram(shader);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(Shader);
 		
-		GLuint model   = glGetUniformLocation(shader, "model"),
-			   view    = glGetUniformLocation(shader, "view" ),
-			   texture = glGetUniformLocation(shader, "tex"  );
+		GLuint model   = glGetUniformLocation(Shader, "model"),
+			   view    = glGetUniformLocation(Shader, "view" ),
+			   texture = glGetUniformLocation(Shader, "tex"  );
 
 		glUniformMatrix4fv(view, 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
 
@@ -192,183 +259,29 @@ class ComponentRendererDeferred : public Component
 		Opengl::Test();
 	}
 
-	void Resize()
+	void Quad(GLuint Shader, unordered_map<string, GLuint> Uniforms)
 	{
-		Resize(Global->Get<RenderWindow>("window")->getSize());
-	}
-
-	mat4 Projection;
-	void Resize(Vector2u Size)
-	{
-		auto stg = Global->Get<StorageSettings>("settings");
-
-		glClearColor(.4f,.6f,.9f,0.f);
-
-		glViewport(0, 0, Size.x, Size.y);
-
-		glUseProgram(shader);
-		Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, value_ptr(Projection));
-
-		/*
-		// framebuffer targets
-		resizeTarget(tex_position, Size);
-		resizeTarget(tex_normal,   Size);
-		resizeTarget(tex_albedo,   Size);
-		resizeTarget(tex_light,    Size);
-		resizeTarget(tex_fxaa,     Size);
-		resizeDepth (forms_depth,  Size);
-		// shader uniforms
-		// screen width, height
-		*/
-	}
-
-	/*
-	GLuint Target()
-	{
-		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-
-		GLuint target;
-		glGenTextures(1, &target);
-		glBindTexture(GL_TEXTURE_2D, target);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		return target;
-	}
-
-	GLuint Depth()
-	{
-		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-
-		GLuint target;
-		glGenRenderbuffers(1, &target);
-		glBindRenderbuffer(GL_RENDERBUFFER, target);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-		return target;
-	}
-
-	void resizeTarget(GLuint target, Vector2u size)
-	{
-		glBindTexture(GL_TEXTURE_2D, target);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, NULL);
-	}
-	
-	void resizeDepth(GLuint target, Vector2u size)
-	{
-		glBindRenderbuffer(GL_RENDERBUFFER, target);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
-	}
-
-	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
-	{
-		GLuint framebuffer;
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		int n = 0; for(auto i : targets)
-		{
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
-			glBindFragDataLocation(shader, n, i.first.c_str());
-			n++;
-		}
-
-		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
-		glLinkProgram(shader);
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		return framebuffer;
-	}
-
-	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets, GLuint depth)
-	{
-		GLuint framebuffer;
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		int n = 0; for(auto i : targets)
-		{
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
-			glBindFragDataLocation(shader, n, i.first.c_str());
-			n++;
-		}
-		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
-
-		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
-		glLinkProgram(shader);
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		return framebuffer;
-	}
-
-	void Draw(GLuint shader, GLuint framebuffer, int targets)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(int i = 0; i < targets; ++i)
-		{
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-		}
-		glDrawBuffers(targets, &buffers[0]);
-
-		Forms();
-	}
-
-	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms, GLuint framebuffer, int targets)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(int i = 0; i < targets; ++i)
-		{
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-		}
-		glDrawBuffers(targets, &buffers[0]);
-
-		Quad(shader, uniforms);
-	}
-
-	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-		Quad(shader, uniforms);
-	}
-
-	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
-	{
-		glUseProgram(shader);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(Shader);
 
-		int n = 0; for(auto i : uniforms)
+		int n = 0; for(auto i : Uniforms)
 		{
 			glActiveTexture(GL_TEXTURE0 + n);
 			glBindTexture(GL_TEXTURE_2D, i.second);
-			glUniform1i(glGetUniformLocation(shader, i.first.c_str()), n);
+			glUniform1i(glGetUniformLocation(Shader, i.first.c_str()), n);
 			n++;
 		}
 
-		GLuint position = glGetAttribLocation(shader, "position");
-		glEnableVertexAttribArray(position);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_positions);
-		glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glBegin(GL_QUADS);
+			glVertex2f(0.f, 0.f);
+			glVertex2f(1.f, 0.f);
+			glVertex2f(1.f, 1.f);
+			glVertex2f(0.f, 1.f);
+		glEnd();
 
-		GLuint texcoord = glGetAttribLocation(shader, "texcoord");
-		glEnableVertexAttribArray(texcoord);
-		glBindBuffer(GL_ARRAY_BUFFER, quad_texcoords);
-		glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		glDisableVertexAttribArray(position);
-		glDisableVertexAttribArray(texcoord);
 		glActiveTexture(GL_TEXTURE0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);		
 		glUseProgram(0);
 	}
-	*/
 };

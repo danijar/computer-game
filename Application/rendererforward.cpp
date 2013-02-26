@@ -126,7 +126,6 @@ class ComponentRendererForward : public Component
 		Resize(Global->Get<RenderWindow>("window")->getSize());
 	}
 
-	mat4 Projection;
 	void Resize(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
@@ -136,7 +135,7 @@ class ComponentRendererForward : public Component
 		glViewport(0, 0, Size.x, Size.y);
 
 		glUseProgram(shader);
-		Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
+		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(shader, "projection"), 1, GL_FALSE, value_ptr(Projection));
 	}
 };
