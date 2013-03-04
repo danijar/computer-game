@@ -1,11 +1,9 @@
-#version 150
+#version 330
 
-uniform sampler2D image_tex;
-
-in vec2 ftexcoord;
-
+in vec2 coord;
 out vec4 image;
 
+uniform sampler2D image_tex;
 
 void main()
 {
@@ -15,11 +13,11 @@ void main()
     float FXAA_REDUCE_MUL = 1.0/8.0;
     float FXAA_REDUCE_MIN = 1.0/128.0;
 
-    vec3 rgbNW=texture2D(image_tex,ftexcoord+(vec2(-1.0,-1.0)/frameBufSize)).xyz;
-    vec3 rgbNE=texture2D(image_tex,ftexcoord+(vec2(1.0,-1.0)/frameBufSize)).xyz;
-    vec3 rgbSW=texture2D(image_tex,ftexcoord+(vec2(-1.0,1.0)/frameBufSize)).xyz;
-    vec3 rgbSE=texture2D(image_tex,ftexcoord+(vec2(1.0,1.0)/frameBufSize)).xyz;
-    vec3 rgbM=texture2D(image_tex,ftexcoord).xyz;
+    vec3 rgbNW=texture2D(image_tex,coord+(vec2(-1.0,-1.0)/frameBufSize)).xyz;
+    vec3 rgbNE=texture2D(image_tex,coord+(vec2(1.0,-1.0)/frameBufSize)).xyz;
+    vec3 rgbSW=texture2D(image_tex,coord+(vec2(-1.0,1.0)/frameBufSize)).xyz;
+    vec3 rgbSE=texture2D(image_tex,coord+(vec2(1.0,1.0)/frameBufSize)).xyz;
+    vec3 rgbM=texture2D(image_tex,coord).xyz;
 
     vec3 luma=vec3(0.299, 0.587, 0.114);
     float lumaNW = dot(rgbNW, luma);
@@ -46,11 +44,11 @@ void main()
           dir * rcpDirMin)) / frameBufSize;
 
     vec3 rgbA = (1.0/2.0) * (
-        texture2D(image_tex, ftexcoord.xy + dir * (1.0/3.0 - 0.5)).xyz +
-        texture2D(image_tex, ftexcoord.xy + dir * (2.0/3.0 - 0.5)).xyz);
+        texture2D(image_tex, coord.xy + dir * (1.0/3.0 - 0.5)).xyz +
+        texture2D(image_tex, coord.xy + dir * (2.0/3.0 - 0.5)).xyz);
     vec3 rgbB = rgbA * (1.0/2.0) + (1.0/4.0) * (
-        texture2D(image_tex, ftexcoord.xy + dir * (0.0/3.0 - 0.5)).xyz +
-        texture2D(image_tex, ftexcoord.xy + dir * (3.0/3.0 - 0.5)).xyz);
+        texture2D(image_tex, coord.xy + dir * (0.0/3.0 - 0.5)).xyz +
+        texture2D(image_tex, coord.xy + dir * (3.0/3.0 - 0.5)).xyz);
     float lumaB = dot(rgbB, luma);
 
     image = vec4(1.0);

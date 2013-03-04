@@ -1,15 +1,13 @@
-#version 150
+#version 330
+
+in vec2 coord;
+out vec4 image;
 
 uniform sampler2D image_tex;
 
-in vec2 ftexcoord;
-
-out vec4 frag_color;
-
-
 void main()
 {
-	vec3 pixel = texture(image_tex, ftexcoord).rgb;
+	vec3 pixel = texture(image_tex, coord).rgb;
 
-	gl_FragColor = vec4(pixel, 1.0);
+	image = vec4(pixel, 1.0);
 }
