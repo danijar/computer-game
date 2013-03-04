@@ -51,9 +51,6 @@ class ComponentRendererForward : public Component
 		glUniformMatrix4fv(view, 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-		glEnable(GL_CULL_FACE);
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
 

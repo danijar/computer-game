@@ -117,16 +117,13 @@
     <None Include="shaders\quad.vert">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\screen.frag">
-      <Filter>4. Shaders</Filter>
-    </None>
-    <None Include="shaders\ssao.frag">
-      <Filter>4. Shaders</Filter>
-    </None>
     <None Include="shaders\basic.frag">
       <Filter>4. Shaders</Filter>
     </None>
     <None Include="shaders\basic.vert">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\screen.frag">
       <Filter>4. Shaders</Filter>
     </None>
   </ItemGroup>

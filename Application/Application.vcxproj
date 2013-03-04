@@ -110,7 +110,6 @@
     <None Include="shaders\light.frag" />
     <None Include="shaders\quad.vert" />
     <None Include="shaders\screen.frag" />
-    <None Include="shaders\ssao.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

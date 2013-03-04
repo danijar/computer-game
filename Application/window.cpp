@@ -89,6 +89,7 @@ class ComponentWindow : public Component
 			case Keyboard::Key::F3:
 				stg->Verticalsync = !stg->Verticalsync;
 				wnd->setVerticalSyncEnabled(stg->Verticalsync);
+				break;
 			case Keyboard::Key::F11:
 				Create();
 				break;
