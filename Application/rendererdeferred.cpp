@@ -176,10 +176,12 @@ class ComponentRendererDeferred : public Component
 		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		GLuint target;
-		glGenRenderbuffers(1, &target);
-		glBindRenderbuffer(GL_RENDERBUFFER, target);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
+		glGenTextures(1, &target);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, size.x, size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		return target;
 	}
 
@@ -187,12 +189,14 @@ class ComponentRendererDeferred : public Component
 	{
 		glBindTexture(GL_TEXTURE_2D, target);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, size.x, size.y, 0, GL_RGBA, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	
 	void resizeDepth(GLuint target, Vector2u size)
 	{
-		glBindRenderbuffer(GL_RENDERBUFFER, target);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size.x, size.y);
+		glBindTexture(GL_TEXTURE_2D, target);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, size.x, size.y, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
@@ -232,7 +236,7 @@ class ComponentRendererDeferred : public Component
 			buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
 			glBindFragDataLocation(shader, n, i.first.c_str());
 		}
-		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
 		glDrawBuffers(targets.size(), &buffers[0]);
 
 		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
