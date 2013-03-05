@@ -57,10 +57,17 @@ class ComponentRendererDeferred : public Component
 
 	void Update()
 	{
-		Draw(shd_forms, fbo_forms, forms_targets.size());
-		Draw(shd_light, light_uniforms, fbo_light, light_targets.size());
-		Draw(shd_fxaa, fxaa_uniforms, fbo_fxaa, fxaa_targets.size());
-		Draw(shd_screen, screen_uniforms);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_forms);
+		Forms(shd_forms);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_light);
+		Quad(shd_light, light_uniforms);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_fxaa);
+		Quad(shd_fxaa, fxaa_uniforms);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		Quad(shd_screen, screen_uniforms);
 
 		Opengl::Test();
 	}
@@ -194,12 +201,15 @@ class ComponentRendererDeferred : public Component
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
 
-		int n = 0; for(auto i : targets)
+		vector<GLenum> buffers;
+		for(auto i : targets)
 		{
+			int n = buffers.size();
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
+			buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
 			glBindFragDataLocation(shader, n, i.first.c_str());
-			n++;
 		}
+		glDrawBuffers(targets.size(), &buffers[0]);
 
 		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 		glLinkProgram(shader);
@@ -214,54 +224,22 @@ class ComponentRendererDeferred : public Component
 		glGenFramebuffers(1, &framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
 
-		int n = 0; for(auto i : targets)
+		vector<GLenum> buffers;
+		for(auto i : targets)
 		{
+			int n = buffers.size();
 			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
+			buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
 			glBindFragDataLocation(shader, n, i.first.c_str());
-			n++;
 		}
 		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth);
+		glDrawBuffers(targets.size(), &buffers[0]);
 
 		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 		glLinkProgram(shader);
 
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		return framebuffer;
-	}
-
-	void Draw(GLuint shader, GLuint framebuffer, int targets)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(int i = 0; i < targets; ++i)
-		{
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-		}
-		glDrawBuffers(targets, &buffers[0]);
-
-		Forms(shader);
-	}
-
-	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms, GLuint framebuffer, int targets)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(int i = 0; i < targets; ++i)
-		{
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-		}
-		glDrawBuffers(targets, &buffers[0]);
-
-		Quad(shader, uniforms);
-	}
-
-	void Draw(GLuint shader, unordered_map<string, GLuint> uniforms)
-	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-		Quad(shader, uniforms);
 	}
 
 	void Quad(GLuint shader, unordered_map<string, GLuint> uniforms)
@@ -278,10 +256,10 @@ class ComponentRendererDeferred : public Component
 		}
 
 		glBegin(GL_QUADS);
-			glVertex2f(0.0f, 0.0f);
-			glVertex2f(1.0f, 0.0f);
-			glVertex2f(1.0f, 1.0f);
-			glVertex2f(0.0f, 1.0f);
+			glVertex2i(0, 0);
+			glVertex2i(1, 0);
+			glVertex2i(1, 1);
+			glVertex2i(0, 1);
 		glEnd();
 
 		glActiveTexture(GL_TEXTURE0);
@@ -299,15 +277,12 @@ class ComponentRendererDeferred : public Component
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
-		GLuint model     = glGetUniformLocation(shader, "model"   ),
-			   position  = glGetAttribLocation (shader, "position"),
-		       normal    = glGetAttribLocation (shader, "normal"  ),
-		       texcoord  = glGetAttribLocation (shader, "texcoord");
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
+
 		for(auto i = fms.begin(); i != fms.end(); ++i)
 		{
 			auto frm = Entity->Get<StorageForm>(i->first);
@@ -319,19 +294,19 @@ class ComponentRendererDeferred : public Component
 							* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 							* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 			mat4 Model = Translate * Rotate * Scale;
-			glUniformMatrix4fv(model, 1, GL_FALSE, value_ptr(Model));
+			glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, value_ptr(Model));
 
-			glEnableVertexAttribArray(position);
+			glEnableVertexAttribArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-			glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glEnableVertexAttribArray(normal);
+			glEnableVertexAttribArray(1);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-			glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glEnableVertexAttribArray(texcoord);
+			glEnableVertexAttribArray(2);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-			glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, 0, 0);
+			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
@@ -340,12 +315,12 @@ class ComponentRendererDeferred : public Component
 			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
 			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
 		}
+
 		glDisable(GL_DEPTH_TEST);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glDisableVertexAttribArray(position);
-		glDisableVertexAttribArray(normal);
-		glDisableVertexAttribArray(texcoord);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
