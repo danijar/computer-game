@@ -25,16 +25,8 @@ using namespace glm;
 
 class ComponentRendererDeferred : public Component
 {
-	////////////////////////////////////////////////////////////
-	// Component
-	////////////////////////////////////////////////////////////
-
-	GLuint shd_forms, shd_light, shd_fxaa, shd_screen;
-	GLuint fbo_forms, fbo_light, fbo_fxaa;
-	unordered_map<string, GLuint> forms_targets, light_uniforms, light_targets, fxaa_uniforms, fxaa_targets, screen_uniforms;
-
 	struct Texture { GLuint Id; GLenum Type, InternalType, Format; };
-	struct Pass { GLuint Framebuffer; GLuint Program; vector<GLuint> Textures; };
+	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; };
 
 	void Init()
 	{
@@ -49,17 +41,23 @@ class ComponentRendererDeferred : public Component
 
 	void Update()
 	{
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_forms);
-		Forms(shd_forms);
+		uint i = 0;
+		Pass pass;
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_light);
-		Quad(shd_light, light_uniforms);
+		pass = Passes[i++].second;
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
+		Forms(pass.Program);
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo_fxaa);
-		Quad(shd_fxaa, fxaa_uniforms);
+		while(i < Passes.size() - 1)
+		{
+			pass = Passes[i++].second;
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
+			Quad(pass.Program, pass.Textures);
+		}
 
+		pass = Passes[i++].second;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		Quad(shd_screen, screen_uniforms);
+		Quad(pass.Program, pass.Textures);
 
 		Opengl::Test();
 	}
@@ -92,27 +90,33 @@ class ComponentRendererDeferred : public Component
 
 	void Pipeline()
 	{
-		shd_forms = Shaders::Create("shaders/forms.vert", "shaders/forms.frag");
-		forms_targets.insert(make_pair("position", create_texture("position", GL_RGBA32F).Id));
-		forms_targets.insert(make_pair("normal",   create_texture("normal",   GL_RGBA32F).Id));
-		forms_targets.insert(make_pair("albedo",   create_texture("albedo",   GL_RGBA32F).Id));
-		fbo_forms = Framebuffer(shd_forms, forms_targets, create_texture("depth", GL_DEPTH_COMPONENT32F).Id);
+		create_texture("position", GL_RGBA32F);
+		create_texture("normal",   GL_RGBA32F);
+		create_texture("albedo",   GL_RGBA32F);
+		create_texture("depth",    GL_DEPTH_COMPONENT32F);
+		vector<string> forms_targets;
+		forms_targets.push_back("position");
+		forms_targets.push_back("normal");
+		forms_targets.push_back("albedo");
+		forms_targets.push_back("depth");
+		create_pass("forms", make_pair("shaders/forms.vert", "shaders/forms.frag"), forms_targets);
 
-		shd_light = Shaders::Create("shaders/quad.vert", "shaders/light.frag");
-		light_uniforms.insert(make_pair("position_tex", get_texture("position").Id));
-		light_uniforms.insert(make_pair("normal_tex",   get_texture("normal"  ).Id));
-		light_uniforms.insert(make_pair("albedo_tex",   get_texture("albedo"  ).Id));
+		create_texture("light", GL_RGBA32F);
+		unordered_map<string, string> light_uniforms;
+		light_uniforms.insert(make_pair("position_tex", "position"));
+		light_uniforms.insert(make_pair("normal_tex",   "normal"));
+		light_uniforms.insert(make_pair("albedo_tex",   "albedo"));
+		create_pass("light", "shaders/light.frag", "light", light_uniforms);
 
-		light_targets.insert(make_pair("image", create_texture("light", GL_RGBA32F).Id));
-		fbo_light = Framebuffer(shd_light, light_targets);
+		create_texture("fxaa", GL_RGBA32F);
+		unordered_map<string, string> fxaa_uniforms;
+		fxaa_uniforms.insert(make_pair("image_tex", "light"));
+		create_pass("fxaa", "shaders/fxaa.frag", "fxaa", fxaa_uniforms);
 
-		shd_fxaa = Shaders::Create("shaders/quad.vert", "shaders/fxaa.frag");
-		fxaa_uniforms.insert(make_pair("image_tex", get_texture("light").Id));
-		fxaa_targets.insert(make_pair("image", create_texture("fxaa", GL_RGBA32F).Id));
-		fbo_fxaa = Framebuffer(shd_fxaa, fxaa_targets);
-
-		shd_screen = Shaders::Create("shaders/quad.vert", "shaders/screen.frag");
-		screen_uniforms.insert(make_pair("image_tex", get_texture("fxaa").Id));
+		create_texture("screen", GL_RGBA32F);
+		unordered_map<string, string> screen_uniforms;
+		screen_uniforms.insert(make_pair("image_tex", "fxaa"));
+		create_pass("screen", "shaders/screen.frag", "screen", screen_uniforms);
 	}
 
 	void Resize()
@@ -126,7 +130,7 @@ class ComponentRendererDeferred : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		GLuint program /**/ = shd_forms;
+		GLuint program = get_pass("forms").Program;
 		glUseProgram(program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, value_ptr(Projection));
@@ -136,70 +140,8 @@ class ComponentRendererDeferred : public Component
 	}
 
 	////////////////////////////////////////////////////////////
-	// Old Pass Functions
+	// Passes Functions
 	////////////////////////////////////////////////////////////
-
-	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets)
-	{
-		GLuint framebuffer;
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(auto i : targets)
-		{
-			int n = buffers.size();
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
-		}
-		glDrawBuffers(targets.size(), &buffers[0]);
-
-		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		return framebuffer;
-	}
-
-	GLuint Framebuffer(GLuint shader, unordered_map<string, GLuint> targets, GLuint depth)
-	{
-		GLuint framebuffer;
-		glGenFramebuffers(1, &framebuffer);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer);
-
-		vector<GLenum> buffers;
-		for(auto i : targets)
-		{
-			int n = buffers.size();
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + n, GL_TEXTURE_2D, i.second, 0);
-			buffers.push_back(GL_COLOR_ATTACHMENT0 + n);
-		}
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depth, 0);
-		glDrawBuffers(targets.size(), &buffers[0]);
-
-		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		return framebuffer;
-	}
-
-	////////////////////////////////////////////////////////////
-	// New Passes Functions
-	////////////////////////////////////////////////////////////
-
-	vector<pair<string, Pass>> Passes;
-	Pass get_pass(string name)
-	{
-		for(auto i : Passes)
-			if(i.first == name)
-				return i.second;
-		throw std::out_of_range("There is no pass with the name (" + name + ").");
-	}
-	Pass get_pass(uint index)
-	{
-		if(index < Passes.size())
-			return Passes[index].second;
-		throw std::out_of_range("There is no pass with the index (" + to_string(index) + ").");
-	}
 
 	unordered_map<string, Texture> Textures;
 	Texture get_texture(string name)
@@ -216,7 +158,6 @@ class ComponentRendererDeferred : public Component
 			return i->second;
 		return create_texture(name, internal_type);
 	}
-
 	Texture create_texture(string name, GLenum internal_type)
 	{
 		auto i = Textures.find(name);
@@ -271,7 +212,7 @@ class ComponentRendererDeferred : public Component
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	GLuint create_framebuffer(vector<string> targets, bool depth = false)
+	GLuint create_framebuffer(vector<string> targets)
 	{
 		GLuint id;
 		glGenFramebuffers(1, &id);
@@ -302,19 +243,33 @@ class ComponentRendererDeferred : public Component
 		return id;
 	}
 
-	Pass create_pass(string name, string fragmentpath, string target, vector<string> textures)
+	vector<pair<string, Pass>> Passes;
+	Pass get_pass(string name)
+	{
+		for(auto i : Passes)
+			if(i.first == name)
+				return i.second;
+		throw std::out_of_range("There is no pass with the name (" + name + ").");
+	}
+	Pass get_pass(uint index)
+	{
+		if(index < Passes.size())
+			return Passes[index].second;
+		throw std::out_of_range("There is no pass with the index (" + to_string(index) + ").");
+	}
+	Pass create_pass(string name, string fragmentpath, string target, unordered_map<string, string> textures)
 	{
 		vector<string> targets; targets.push_back(target);
 		pair<string, string> shaderpaths("shaders/quad.vert", fragmentpath);
 		return create_pass(name, shaderpaths, targets, textures);
 	}
-	Pass create_pass(string name, pair<string, string> shaderpaths, vector<string> targets, vector<string> textures = vector<string>())
+	Pass create_pass(string name, pair<string, string> shaderpaths, vector<string> targets, unordered_map<string, string> textures = unordered_map<string, string>())
 	{
 		Pass pass;
 		pass.Program = Shaders::Create(shaderpaths.first, shaderpaths.second);
 		pass.Framebuffer = create_framebuffer(targets);
 		for(auto i : textures)
-			pass.Textures.push_back(get_texture(i).Id);
+			pass.Textures.insert(make_pair(i.first, get_texture(i.second).Id));
 		Passes.push_back(make_pair(name, pass));
 		return pass;
 	}
