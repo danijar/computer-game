@@ -118,9 +118,9 @@ class ComponentWindow : public Component
 		VideoMode mde = VideoMode::getDesktopMode();
 
 		ContextSettings cts;
-		cts.depthBits         = 24;
-		cts.stencilBits       =  8;
-		cts.antialiasingLevel =  4;
+		cts.depthBits         = 32;
+		cts.stencilBits       =  0;
+		cts.antialiasingLevel =  0;
 		cts.majorVersion      =  3;
 		cts.minorVersion      =  3;
 

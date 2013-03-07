@@ -71,10 +71,6 @@ class ComponentRendererDeferred : public Component
 			case Keyboard::Key::F2:
 				stg->Wireframe = !stg->Wireframe;
 				break;
-			case Keyboard::Key::F3:
-				stg->Verticalsync = !stg->Verticalsync;
-				auto wnd = Global->Get<RenderWindow>("window");
-				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 			}
 		});
 
@@ -123,7 +119,6 @@ class ComponentRendererDeferred : public Component
 	{
 		Resize(Global->Get<RenderWindow>("window")->getSize());
 	}
-
 	void Resize(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
@@ -134,6 +129,7 @@ class ComponentRendererDeferred : public Component
 		glUseProgram(program);
 		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 		glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, value_ptr(Projection));
+		glUseProgram(0);
 
 		for(auto i : Textures)
 			resize_texture(i.first, Size);
