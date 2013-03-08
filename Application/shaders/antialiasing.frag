@@ -6,51 +6,62 @@ out vec4 image;
 uniform sampler2D image_tex;
 uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
-uniform vec2 frameBufSize = vec2(800, 600);
+uniform vec2 frameBufSize;
+
+void depth(out float value, in vec2 offset)
+{
+    value = texture2D(position_tex, coord + offset / frameBufSize).z / 1000.0f;
+}
+
+void normal(out vec3 value, in vec2 offset)
+{
+    value = texture2D(normal_tex, coord + offset / frameBufSize).xyz;
+}
 
 void main()
 {
-	if(texture2D(image_tex, coord).a == 0.0) discard;
+    // depth
 
-	vec2 step = 1.0 / frameBufSize;
+    float dc, dn, ds, de, dw;
+    depth(dc, vec2( 0,  0));
+    depth(dn, vec2( 0, +1));
+    depth(ds, vec2( 0, -1));
+    depth(de, vec2(+1,  0));
+    depth(dw, vec2(-1,  0));
+    
+    float dvertical   = abs(dc - ((dn + ds) / 2));
+    float dhorizontal = abs(dc - ((de + dw) / 2));
+    float damount = 1000 * (dvertical + dhorizontal);
 
-	float dc = texture2D(position_tex, coord).z;
-	float dd[9];
+    // normals
 
-	vec3 nc = texture2D(normal_tex, coord).xyz;
-	float nd[9];
+    vec3 nc, nn, ns, ne, nw;
+    normal(nc, vec2( 0,  0));
+    normal(nn, vec2( 0, +1));
+    normal(ns, vec2( 0, -1));
+    normal(ne, vec2(+1,  0));
+    normal(nw, vec2(-1,  0));
 
-	int i = 0;
-	for(int u = -1; u <= +1; ++u)
-	for(int v = -1; v <= +1; ++v)
-	{
-		dd[i] =     abs(    dc - texture2D(position_tex, coord + vec2(u, v) * step).z   );
-	    nd[i] = 1 - abs(dot(nc,  texture2D(normal_tex,   coord + vec2(u, v) * step).xyz));
-		i++;
-	}
+    float nvertical   = dot(vec3(1), abs(nc - ((nn + ns) / 2.0)));
+    float nhorizontal = dot(vec3(1), abs(nc - ((ne + nw) / 2.0)));
+    float namount = 50 * (nvertical + nhorizontal);
 
-	float da = 0, na = 0;
-	for(int j = 0; j < i; ++j)
-	{
-		da += dd[j];
-		na += nd[j];
-	}
-	da /= i;
-	na /= i;
+    // blur
 
-	float amount = 2 * mix(da, na, 0.8);
+    const int radius = 1;
+    vec3 blur = vec3(0);
+    int n = 0;
+    for(float u = -radius; u <= +radius; ++u)
+    for(float v = -radius; v <= +radius; ++v)
+    {
+        blur += texture2D(image_tex, coord + vec2(u, v) / frameBufSize).rgb;
+        n++;
+    }
+    blur /= n;
 
-	const int radius = 1;
-	vec3 blur = vec3(0);
-	int n = 0;
-	for(float u = -radius; u <= +radius; ++u)
-	for(float v = -radius; v <= +radius; ++v)
-	{
-		blur += texture2D(image_tex, coord + vec2(u, v) * step).rgb;
-		n++;
-	}
-	blur /= n;
+    // result
 
-	vec3 color = texture2D(image_tex, coord).rgb;
-	image = vec4(mix(color, blur, min(amount, 1)), 1.0);
+    float amount = mix(damount, namount, 0.5);
+    vec3 color = texture2D(image_tex, coord).rgb;
+    image = vec4(mix(color, blur, min(amount, 0.75)), 1.0);
 }
