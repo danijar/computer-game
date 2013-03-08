@@ -125,11 +125,8 @@ class ComponentRendererDeferred : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		GLuint program = get_pass("forms").Program;
-		glUseProgram(program);
-		mat4 Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
-		glUniformMatrix4fv(glGetUniformLocation(program, "projection"), 1, GL_FALSE, value_ptr(Projection));
-		glUseProgram(0);
+		Shaders::Uniform(get_pass("forms").Program, "projection", perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance));
+		Shaders::Uniform(get_pass("fxaa").Program, "frameBufSize", vec2(Size.x, Size.y));
 
 		for(auto i : Textures)
 			resize_texture(i.first, Size);
@@ -253,13 +250,19 @@ class ComponentRendererDeferred : public Component
 			return Passes[index].second;
 		throw std::out_of_range("There is no pass with the index (" + to_string(index) + ").");
 	}
-	Pass create_pass(string name, string fragmentpath, string target, unordered_map<string, string> textures)
+	Pass create_pass(string name, string fragmentpath, string target, pair<string, string> texture)
+	{
+		unordered_map<string, string> textures;
+		textures.insert(texture);
+		return create_pass(name, fragmentpath, target, textures);
+	}
+	Pass create_pass(string name, string fragmentpath, string target, unordered_map<string, string> textures, unordered_map<string, void*> values = unordered_map<string, void*>())
 	{
 		vector<string> targets; targets.push_back(target);
 		pair<string, string> shaderpaths("shaders/quad.vert", fragmentpath);
 		return create_pass(name, shaderpaths, targets, textures);
 	}
-	Pass create_pass(string name, pair<string, string> shaderpaths, vector<string> targets, unordered_map<string, string> textures = unordered_map<string, string>())
+	Pass create_pass(string name, pair<string, string> shaderpaths, vector<string> targets, unordered_map<string, string> textures = unordered_map<string, string>()/*, unordered_map<string, void*> values = unordered_map<string, void*>()*/)
 	{
 		Pass pass;
 		pass.Program = Shaders::Create(shaderpaths.first, shaderpaths.second);
@@ -312,6 +315,7 @@ class ComponentRendererDeferred : public Component
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
 
