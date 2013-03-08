@@ -26,7 +26,7 @@ using namespace glm;
 class ComponentRendererDeferred : public Component
 {
 	struct Texture { GLuint Id; GLenum Type, InternalType, Format; };
-	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; };
+	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; bool Active; };
 
 	void Init()
 	{
@@ -51,8 +51,11 @@ class ComponentRendererDeferred : public Component
 		while(i < Passes.size() - 1)
 		{
 			pass = Passes[i++].second;
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
-			Quad(pass.Program, pass.Textures);
+			if(pass.Active)
+			{
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
+				Quad(pass.Program, pass.Textures);
+			}
 		}
 
 		pass = Passes[i++].second;
@@ -68,8 +71,11 @@ class ComponentRendererDeferred : public Component
 			auto stg = Global->Get<StorageSettings>("settings");
 			switch(Code)
 			{
-			case Keyboard::Key::F2:
+			case Keyboard::Key::F3:
 				stg->Wireframe = !stg->Wireframe;
+				break;
+			case Keyboard::Key::F4:
+				get_pass("antialiasing")->Active = !get_pass("antialiasing")->Active;
 				break;
 			}
 		});
@@ -104,14 +110,16 @@ class ComponentRendererDeferred : public Component
 		light_uniforms.insert(make_pair("albedo_tex",   "albedo"));
 		create_pass("light", "shaders/light.frag", "light", light_uniforms);
 
-		create_texture("fxaa", GL_RGBA32F);
+		create_texture("antialiasing", GL_RGBA32F);
 		unordered_map<string, string> fxaa_uniforms;
-		fxaa_uniforms.insert(make_pair("image_tex", "light"));
-		create_pass("fxaa", "shaders/fxaa.frag", "fxaa", fxaa_uniforms);
+		fxaa_uniforms.insert(make_pair("image_tex",    "light"));
+		fxaa_uniforms.insert(make_pair("position_tex", "position"));
+		fxaa_uniforms.insert(make_pair("normal_tex",   "normal"));
+		create_pass("antialiasing", "shaders/antialiasing.frag", "antialiasing", fxaa_uniforms);
 
 		create_texture("screen", GL_RGBA32F);
 		unordered_map<string, string> screen_uniforms;
-		screen_uniforms.insert(make_pair("image_tex", "fxaa"));
+		screen_uniforms.insert(make_pair("image_tex", "antialiasing"));
 		create_pass("screen", "shaders/screen.frag", "screen", screen_uniforms);
 	}
 
@@ -125,8 +133,8 @@ class ComponentRendererDeferred : public Component
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		Shaders::Uniform(get_pass("forms").Program, "projection", perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance));
-		Shaders::Uniform(get_pass("fxaa").Program, "frameBufSize", vec2(Size.x, Size.y));
+		Shaders::Uniform(get_pass("forms")->Program, "projection", perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance));
+		Shaders::Uniform(get_pass("antialiasing")->Program, "frameBufSize", vec2(Size.x, Size.y));
 
 		for(auto i : Textures)
 			resize_texture(i.first, Size);
@@ -237,17 +245,17 @@ class ComponentRendererDeferred : public Component
 	}
 
 	vector<pair<string, Pass>> Passes;
-	Pass get_pass(string name)
+	Pass* get_pass(string name)
 	{
-		for(auto i : Passes)
-			if(i.first == name)
-				return i.second;
+		for(auto i = Passes.begin(); i != Passes.end(); ++i)
+			if(i->first == name)
+				return &i->second;
 		throw std::out_of_range("There is no pass with the name (" + name + ").");
 	}
-	Pass get_pass(uint index)
+	Pass* get_pass(uint index)
 	{
 		if(index < Passes.size())
-			return Passes[index].second;
+			return &Passes[index].second;
 		throw std::out_of_range("There is no pass with the index (" + to_string(index) + ").");
 	}
 	Pass create_pass(string name, string fragmentpath, string target, pair<string, string> texture)
@@ -269,6 +277,7 @@ class ComponentRendererDeferred : public Component
 		pass.Framebuffer = create_framebuffer(targets);
 		for(auto i : textures)
 			pass.Textures.insert(make_pair(i.first, get_texture(i.second).Id));
+		pass.Active = true;
 		Passes.push_back(make_pair(name, pass));
 		return pass;
 	}

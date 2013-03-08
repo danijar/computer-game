@@ -108,9 +108,6 @@
     <None Include="shaders\forms.vert">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\fxaa.frag">
-      <Filter>4. Shaders</Filter>
-    </None>
     <None Include="shaders\light.frag">
       <Filter>4. Shaders</Filter>
     </None>
@@ -124,6 +121,9 @@
       <Filter>4. Shaders</Filter>
     </None>
     <None Include="shaders\screen.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\antialiasing.frag">
       <Filter>4. Shaders</Filter>
     </None>
   </ItemGroup>

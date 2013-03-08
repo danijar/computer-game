@@ -106,7 +106,7 @@
     <None Include="shaders\basic.vert" />
     <None Include="shaders\forms.frag" />
     <None Include="shaders\forms.vert" />
-    <None Include="shaders\fxaa.frag" />
+    <None Include="shaders\antialiasing.frag" />
     <None Include="shaders\light.frag" />
     <None Include="shaders\quad.vert" />
     <None Include="shaders\screen.frag" />

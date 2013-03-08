@@ -103,7 +103,7 @@ class ComponentRendererForward : public Component
 			auto stg = Global->Get<StorageSettings>("settings");
 			switch(Code)
 			{
-			case Keyboard::Key::F2:
+			case Keyboard::Key::F3:
 				stg->Wireframe = !stg->Wireframe;
 				break;
 			}

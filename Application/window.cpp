@@ -86,7 +86,7 @@ class ComponentWindow : public Component
 			case Keyboard::Key::Escape:
 				Close();
 				break;
-			case Keyboard::Key::F3:
+			case Keyboard::Key::F2:
 				stg->Verticalsync = !stg->Verticalsync;
 				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 				break;

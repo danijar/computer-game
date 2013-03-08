@@ -34,14 +34,16 @@ There is a precompiled executable for Windows. To use it, download the content o
 
 - `Esc` Exit the application.
 - `F1` Toggle mouse capture for camera movement.
-- `F2` Toggle wire frame mode.
-- `F3` Toggle vertical sync.
+- `F2` Toggle vertical sync.
+- `F3` Toggle wire frame mode.
+- `F4` Toggle antialiasing.
 - `F11` Toggle between fullscreen and windowed mode.
 - `Tab` Insert new cube at the center.
+- `Left Shift` + `Tab` Insert 500 new cubes.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
-- Hold `Left Shift` to move faster.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
-- `Space` Let the inserted cubes jump.
+- Hold `Left Shift` to move faster.
+- `Space` Let the inserted cubes perform a little jump.
 
 Branches
 --------
