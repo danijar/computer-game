@@ -35,6 +35,7 @@ class ComponentTerrain : public Component
 		active = 0;
 		meshing = false;
 
+		/*
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			auto cks = Entity->Get<StorageChunk>();
 			string output = "Chunks " + to_string(cks.size()) + "\n\n";
@@ -49,6 +50,7 @@ class ComponentTerrain : public Component
 			}
 			return output;
 		};
+		*/
 
 		Listeners();
 	}
@@ -230,6 +232,7 @@ class ComponentTerrain : public Component
 	#define TILES_U 4
 	#define TILES_V 4
 	#define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
+	#define GAP float(0.0001)
 
 	future<void> task;
 	atomic_bool meshing;
@@ -271,11 +274,12 @@ class ComponentTerrain : public Component
 								Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
 							}
 
-							vec2 position = (vec2(Tile % TILES_U, Tile / TILES_U) + .25f) * GRID;
-							Texcoords.push_back(position.x);            Texcoords.push_back(position.y);
-							Texcoords.push_back(position.x + GRID.x/2); Texcoords.push_back(position.y);
-							Texcoords.push_back(position.x);            Texcoords.push_back(position.y + GRID.y/2);
-							Texcoords.push_back(position.x + GRID.x/2); Texcoords.push_back(position.y + GRID.y/2);
+							vec2 coords(Tile % TILES_U, Tile / TILES_U);
+							vec2 position = coords * GRID;
+							Texcoords.push_back(position.x          + GAP); Texcoords.push_back(position.y          + GAP);
+							Texcoords.push_back(position.x + GRID.x - GAP); Texcoords.push_back(position.y          + GAP);
+							Texcoords.push_back(position.x          + GAP); Texcoords.push_back(position.y + GRID.y - GAP);
+							Texcoords.push_back(position.x + GRID.x - GAP); Texcoords.push_back(position.y + GRID.y - GAP);
 
 							if(dir == -1) {
 								Elements.push_back(n+0); Elements.push_back(n+1); Elements.push_back(n+2);
@@ -345,34 +349,14 @@ class ComponentTerrain : public Component
 			return 0;
 		}
 
-		Vector2u size = Vector2u(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
-		Image texture;
-		texture.create(image.getSize().x * 2, image.getSize().y * 2, Color());
-		for(int u = 0; u < TILES_U; ++u)
-		for(int v = 0; v < TILES_V; ++v)
-		{
-			Image tile, quarter;
-			tile.create(size.x, size.y, Color());
-			tile.copy(image, 0, 0, IntRect(size.x * u, size.y * v, size.x, size.y), true);
-			quarter.create(size.x, size.y, Color());
-			quarter.copy(tile, 0,          0,          IntRect(size.x / 2, size.y / 2, size.x / 2, size.y / 2), true);
-			quarter.copy(tile, size.x / 2, 0,          IntRect(0,          size.y / 2, size.x / 2, size.y / 2), true);
-			quarter.copy(tile, 0,          size.y / 2, IntRect(size.x / 2, 0,          size.x / 2, size.y / 2), true);
-			quarter.copy(tile, size.x / 2, size.y / 2, IntRect(0,          0,          size.x / 2, size.y / 2), true);
-			texture.copy(quarter, (u * 2    ) * size.x, (v * 2    ) * size.y, IntRect(0, 0, 0, 0), true);
-			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2    ) * size.y, IntRect(0, 0, 0, 0), true);
-			texture.copy(quarter, (u * 2    ) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
-			texture.copy(quarter, (u * 2 + 1) * size.x, (v * 2 + 1) * size.y, IntRect(0, 0, 0, 0), true);
-		}
-
 		GLuint id;
 		glGenTextures(1, &id);
 		glBindTexture(GL_TEXTURE_2D, id);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.getSize().x, texture.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, texture.getPixelsPtr());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		return id;
