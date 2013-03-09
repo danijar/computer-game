@@ -208,6 +208,8 @@ class ComponentRendererDeferred : public Component
 		Texture texture = get_texture(name);
 		glBindTexture(GL_TEXTURE_2D, texture.Id);
 		glTexImage2D(GL_TEXTURE_2D, 0, texture.InternalType, size.x, size.y, 0, texture.Type, texture.Format, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);

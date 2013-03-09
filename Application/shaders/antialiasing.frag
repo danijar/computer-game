@@ -10,7 +10,7 @@ uniform vec2 frameBufSize;
 
 void depth(out float value, in vec2 offset)
 {
-    value = texture2D(position_tex, coord + offset / frameBufSize).z / 1000.0f;
+    value = texture2D(position_tex, coord + offset / frameBufSize).z;
 }
 
 void normal(out vec3 value, in vec2 offset)
@@ -31,7 +31,7 @@ void main()
     
     float dvertical   = abs(dc - ((dn + ds) / 2));
     float dhorizontal = abs(dc - ((de + dw) / 2));
-    float damount = 1000 * (dvertical + dhorizontal);
+    float damount = (dvertical + dhorizontal) / 2;
 
     // normals
 
@@ -44,7 +44,7 @@ void main()
 
     float nvertical   = dot(vec3(1), abs(nc - ((nn + ns) / 2.0)));
     float nhorizontal = dot(vec3(1), abs(nc - ((ne + nw) / 2.0)));
-    float namount = 50 * (nvertical + nhorizontal);
+    float namount = (nvertical + nhorizontal) / 2;
 
     // blur
 
@@ -61,7 +61,7 @@ void main()
 
     // result
 
-    float amount = mix(damount, namount, 0.5);
+    float amount = (damount + namount) / 2;
     vec3 color = texture2D(image_tex, coord).rgb;
     image = vec4(mix(color, blur, min(amount, 0.75)), 1.0);
 }
