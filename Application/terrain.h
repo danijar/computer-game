@@ -13,7 +13,7 @@ using namespace glm;
 #define CHUNK_Z 32
 #define CHUNK ivec3(CHUNK_X, CHUNK_Y, CHUNK_Z)
 
-struct StorageChunk : public Storage
+struct StorageChunk
 {
 	StorageChunk() : changed(true)
 	{
@@ -24,7 +24,7 @@ struct StorageChunk : public Storage
 	bool changed;
 };
 
-struct StorageTerrain : public Storage
+struct StorageTerrain
 {
 	struct traits {
 		size_t operator()(const ivec3& k)const {

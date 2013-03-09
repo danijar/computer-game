@@ -8,7 +8,7 @@ using namespace std;
 using namespace glm;
 
 
-struct StorageText : public Storage
+struct StorageText
 {
 	StorageText() : Text([]{ return ""; }) {}
 

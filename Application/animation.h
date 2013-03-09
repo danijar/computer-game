@@ -6,7 +6,7 @@
 using namespace sf;
 
 
-struct StorageAnimation  : public Storage
+struct StorageAnimation
 {
 	StorageAnimation() : Active(false), Lastheight(0.f) {}
 	Clock Starttime;

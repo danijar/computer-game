@@ -2,14 +2,13 @@
 
 #include "system.h"
 #include "debug.h"
+#include "opengl.h"
 
 #include <vector>
 #include <cstdlib>
 #include <future>
 #include <atomic>
 using namespace std;
-#include <GLEW/glew.h>
-#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Image.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
@@ -21,7 +20,6 @@ using namespace glm;
 #include "form.h"
 #include "transform.h"
 #include "terrain.h"
-#include "shader.h"
 #include "movement.h"
 #include "text.h"
 
@@ -316,10 +314,7 @@ class ComponentTerrain : public Component
 			return;
 		}
 
-		auto shd = Global->Get<StorageShader>("shader");
 		auto frm = Entity->Add<StorageForm>(id);
-
-		frm->Program = shd->Program;
 
 		glGenBuffers(1, &frm->Vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);

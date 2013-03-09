@@ -5,10 +5,10 @@
 
 #include <GLEW/glew.h>
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/OpenGL.hpp>
 using namespace sf;
 
-#include "window.h"
 #include "settings.h"
 #include "text.h"
 
@@ -21,7 +21,7 @@ class ComponentWindow : public Component
 
 	void Init()
 	{
-		Global->Add<StorageWindow>("window");
+		Global->Add<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 
 		VideoMode mde = VideoMode::getDesktopMode();
@@ -38,7 +38,7 @@ class ComponentWindow : public Component
 
 	void Update()
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 		
 		if(wnd->isOpen())
@@ -78,10 +78,17 @@ class ComponentWindow : public Component
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+			auto wnd = Global->Get<RenderWindow>("window");
+			auto stg = Global->Get<StorageSettings>("settings");
+
 			switch(Code)
 			{
 			case Keyboard::Key::Escape:
 				Close();
+				break;
+			case Keyboard::Key::F2:
+				stg->Verticalsync = !stg->Verticalsync;
+				wnd->setVerticalSyncEnabled(stg->Verticalsync);
 				break;
 			case Keyboard::Key::F11:
 				Create();
@@ -90,9 +97,7 @@ class ComponentWindow : public Component
 		});
 
 		Event->Listen("SystemUpdated", [=]{
-			auto wnd = &Global->Get<StorageWindow>("window")->Window;
-			wnd->display();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Global->Get<RenderWindow>("window")->display();
 		});
 	}
 
@@ -104,7 +109,7 @@ class ComponentWindow : public Component
 
 	void Create(bool Fullscreen)
 	{
-		auto wnd = &Global->Get<StorageWindow>("window")->Window;
+		auto wnd = Global->Get<RenderWindow>("window");
 		auto stg = Global->Get<StorageSettings>("settings");
 
 		stg->Fullscreen = Fullscreen;
@@ -113,11 +118,11 @@ class ComponentWindow : public Component
 		VideoMode mde = VideoMode::getDesktopMode();
 
 		ContextSettings cts;
-		cts.depthBits         = 24;
-		cts.stencilBits       =  8;
-		cts.antialiasingLevel =  4;
+		cts.depthBits         = 32;
+		cts.stencilBits       =  0;
+		cts.antialiasingLevel =  0;
 		cts.majorVersion      =  3;
-		cts.minorVersion      =  0;
+		cts.minorVersion      =  3;
 
 		if(Fullscreen)
 		{
@@ -129,8 +134,7 @@ class ComponentWindow : public Component
 			wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
 			wnd->setPosition(stg->Position);
 		}
-
-		wnd->resetGLStates();
+		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 
 		Debug::PassFail("Window creation", wnd->isOpen());
 
@@ -140,7 +144,7 @@ class ComponentWindow : public Component
 	void Close()
 	{
 		Event->Fire("WindowClose");
-		(&Global->Get<StorageWindow>("window")->Window)->close();
+		Global->Get<RenderWindow>("window")->close();
 		Exit("The window was closed.");
 	}
 

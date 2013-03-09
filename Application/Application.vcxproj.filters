@@ -1,113 +1,136 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Header">
+    <Filter Include="2. Storages">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header\storages">
-      <UniqueIdentifier>{44a469fa-0e4a-4925-96ee-3521aee36e49}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source">
+    <Filter Include="3. Components">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Source\components">
-      <UniqueIdentifier>{5f900003-d8d0-4cd5-b775-19002200d61c}</UniqueIdentifier>
+    <Filter Include="4. Shaders">
+      <UniqueIdentifier>{f0b6eb3d-9818-440f-b3de-0b1d4410eaba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{a2c16395-030b-469c-bce1-b7f5ef01867b}</UniqueIdentifier>
+    <Filter Include="0. Headers">
+      <UniqueIdentifier>{00cf05d5-bcb5-45e0-bf62-2d6c3f2bb360}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="1. Sources">
+      <UniqueIdentifier>{37784a7b-ddb6-4e46-9f5e-01d403f12919}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
-    <ClCompile Include="renderer.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
-    <ClCompile Include="settings.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
-    <ClCompile Include="window.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
-    <ClCompile Include="debug.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="form.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
     <ClCompile Include="animation.cpp">
-      <Filter>Source\components</Filter>
-    </ClCompile>
-    <ClCompile Include="movement.cpp">
-      <Filter>Source\components</Filter>
+      <Filter>3. Components</Filter>
     </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source\components</Filter>
+      <Filter>3. Components</Filter>
     </ClCompile>
-    <ClCompile Include="terrain.cpp">
-      <Filter>Source\components</Filter>
+    <ClCompile Include="form.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="movement.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>3. Components</Filter>
     </ClCompile>
     <ClCompile Include="text.cpp">
-      <Filter>Source\components</Filter>
+      <Filter>3. Components</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source\components</Filter>
+    <ClCompile Include="window.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="rendererforward.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>1. Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl.cpp">
+      <Filter>1. Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>1. Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="shaders.cpp">
+      <Filter>1. Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="rendererdeferred.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>3. Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="system.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="settings.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="window.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="debug.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="form.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="transform.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
-    <ClInclude Include="movement.h">
-      <Filter>Header\storages</Filter>
-    </ClInclude>
     <ClInclude Include="animation.h">
-      <Filter>Header\storages</Filter>
+      <Filter>2. Storages</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Header\storages</Filter>
+      <Filter>2. Storages</Filter>
     </ClInclude>
-    <ClInclude Include="terrain.h">
-      <Filter>Header\storages</Filter>
+    <ClInclude Include="form.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="movement.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="settings.h">
+      <Filter>2. Storages</Filter>
     </ClInclude>
     <ClInclude Include="text.h">
-      <Filter>Header\storages</Filter>
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="transform.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="system.h">
+      <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl.h">
+      <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders.h">
+      <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="keyboard.h">
+      <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain.h">
+      <Filter>2. Storages</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\forms.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\forms.vert">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\light.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\quad.vert">
+      <Filter>4. Shaders</Filter>
+    </None>
     <None Include="shaders\basic.frag">
-      <Filter>Shader</Filter>
+      <Filter>4. Shaders</Filter>
     </None>
     <None Include="shaders\basic.vert">
-      <Filter>Shader</Filter>
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\screen.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shaders\antialiasing.frag">
+      <Filter>4. Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
