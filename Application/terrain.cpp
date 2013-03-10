@@ -354,13 +354,41 @@ class ComponentTerrain : public Component
 		glBindTexture(GL_TEXTURE_2D, id);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
-		glGenerateMipmap(GL_TEXTURE_2D);
 
+		// cut tiles
+		const Vector2u TILESIZE(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
+		Image tiles[TILES_U][TILES_V];
+		for(uint u = 0; u < TILES_U; ++u)
+		for(uint v = 0; v < TILES_V; ++v)
+		{
+			tiles[u][v].create(TILESIZE.x, TILESIZE.y);
+			tiles[u][v].copy(image, 0, 0, IntRect(u * TILESIZE.x, v * TILESIZE.y, (u+1) * TILESIZE.x, (v+1) * TILESIZE.y), true);
+		}
+
+		// generate mipmaps
+		Vector2u size = Vector2u(TILESIZE.x / 2, TILESIZE.y / 2);
+		int level = 1;
+		for(level; size.x > 1; size.x /= 2, size.y /= 2, ++level)
+		{
+			Image mipmap;
+			mipmap.create(size.x * TILES_U, size.y * TILES_V);
+			for(int u = 0; u < TILES_U; ++u)
+			for(int v = 0; v < TILES_V; ++v)
+			{
+				shrink(tiles[u][v]);
+				mipmap.copy(tiles[u][v], u * size.x, v * size.y); // later on copy alpha too
+			}
+			glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, mipmap.getSize().x, mipmap.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mipmap.getPixelsPtr());
+		}
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, level-1);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
 		return id;
 	}
+
 
 	~ComponentTerrain()
 	{
@@ -390,5 +418,31 @@ class ComponentTerrain : public Component
 	string vec_to_string(ivec3 a)
 	{
 		return (a.x >= 0 ? " " : "") + to_string(a.x) + (a.y >= 0 ? "  " : " ") + to_string(a.y) + (a.z >= 0 ? "  " : " ") + to_string(a.z);
+	}
+
+	void shrink(Image &image)
+	{
+		Vector2u size(image.getSize().x / 2, image.getSize().y / 2);
+
+		Image half;
+		half.create(size.x, size.y);
+		for(uint x = 0; x < size.x; ++x)
+		for(uint y = 0; y < size.y; ++y)
+		{
+			Color input[4];
+			input[0] = image.getPixel(2*x + 0, 2*y + 0);
+			input[1] = image.getPixel(2*x + 1, 2*y + 0);
+			input[2] = image.getPixel(2*x + 0, 2*y + 1);
+			input[3] = image.getPixel(2*x + 1, 2*y + 1);
+			// average over them
+			Color output = avg(input[0], input[1], input[2], input[3]);
+			// store result in new pixel
+			half.setPixel(x, y, output);
+		}
+		image = half;
+	}
+	Color avg(Color a, Color b, Color c, Color d)
+	{
+		return Color(((a.r+b.r+c.r+d.r)/4), ((a.g+b.g+c.g+d.g)/4), ((a.b+b.b+c.b+d.b)/4), ((a.a+b.a+c.a+d.a)/4));
 	}
 };
