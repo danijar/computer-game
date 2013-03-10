@@ -35,23 +35,6 @@ class ComponentTerrain : public Component
 		active = 0;
 		meshing = false;
 
-		/*
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{
-			auto cks = Entity->Get<StorageChunk>();
-			string output = "Chunks " + to_string(cks.size()) + "\n\n";
-			for(int z = -10; z <= 10; ++z)
-			{
-				output += "\n";
-				for(int x = -10; x <= 10; ++x)
-				{
-					output += (wld->chunks.find(ivec3(x, 0, z)) != wld->chunks.end()) ? "O" : "·";
-					output += " ";
-				}
-			}
-			return output;
-		};
-		*/
-
 		Listeners();
 	}
 
@@ -106,6 +89,17 @@ class ComponentTerrain : public Component
 				task = async(launch::async, &ComponentTerrain::Meshing, this);
 				break;
 			}
+		}
+	}
+
+	~ComponentTerrain()
+	{
+		glDeleteTextures(1, &texture);
+
+		if(meshing)
+		{
+			meshing = false;
+			task.get();
 		}
 	}
 
@@ -254,9 +248,9 @@ class ComponentTerrain : public Component
 				{
 					int Tile = clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
 					for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
-						ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
+						ivec3 neigh = shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-						if(Inside(neigh, ivec3(0), CHUNK - 1))
+						if(inside(neigh, ivec3(0), CHUNK - 1))
 							if(cnk->blocks[neigh.x][neigh.y][neigh.z])
 								goto skip;
 
@@ -264,11 +258,11 @@ class ComponentTerrain : public Component
 							for(float i = 0; i <= 1; ++i)
 							for(float j = 0; j <= 1; ++j)
 							{
-								vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir+1)/2, i, j)));
+								vec3 vertex = vec3(X, Y, Z) + vec3(shift(dim, ivec3((dir+1)/2, i, j)));
 								Vertices.push_back(vertex.x); Vertices.push_back(vertex.y); Vertices.push_back(vertex.z);
 							}
 
-							vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
+							vec3 normal = normalize(vec3(shift(dim, ivec3(dir, 0, 0))));
 							for(int i = 0; i < 4; ++i)
 							{
 								Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
@@ -349,6 +343,7 @@ class ComponentTerrain : public Component
 			return 0;
 		}
 
+		// generate texture
 		GLuint id;
 		glGenTextures(1, &id);
 		glBindTexture(GL_TEXTURE_2D, id);
@@ -370,45 +365,35 @@ class ComponentTerrain : public Component
 
 		// generate mipmaps
 		Vector2u size = Vector2u(TILESIZE.x / 2, TILESIZE.y / 2);
-		int level = 1;
-		for(level; size.x > 1; size.x /= 2, size.y /= 2, ++level)
+		int level;
+		for(level = 0; size.x > 1 && size.y > 1; size.x /= 2, size.y /= 2)
 		{
+			level++;
+
 			Image mipmap;
 			mipmap.create(size.x * TILES_U, size.y * TILES_V);
 			for(int u = 0; u < TILES_U; ++u)
 			for(int v = 0; v < TILES_V; ++v)
 			{
 				shrink(tiles[u][v]);
-				mipmap.copy(tiles[u][v], u * size.x, v * size.y); // later on copy alpha too
+				mipmap.copy(tiles[u][v], u * size.x, v * size.y, IntRect(0, 0, 0, 0), true);
 			}
 			glTexImage2D(GL_TEXTURE_2D, level, GL_RGBA, mipmap.getSize().x, mipmap.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, mipmap.getPixelsPtr());
 		}
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, level-1);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, level);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 		return id;
 	}
 
-
-	~ComponentTerrain()
-	{
-		glDeleteTextures(1, &texture);
-
-		if(meshing)
-		{
-			meshing = false;
-			task.get();
-		}
-	}
-
-	bool Inside(ivec3 Position, ivec3 Min, ivec3 Max)
+	bool inside(ivec3 Position, ivec3 Min, ivec3 Max)
 	{
 		if(Position.x < Min.x || Position.y < Min.y || Position.z < Min.z) return false;
 		if(Position.x > Max.x || Position.y > Max.y || Position.z > Max.z) return false;
 		return true;
 	}
 
-	inline ivec3 Shift(int Dimension, ivec3 Vector)
+	inline ivec3 shift(int Dimension, ivec3 Vector)
 	{
 		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
 		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
@@ -434,13 +419,11 @@ class ComponentTerrain : public Component
 			input[1] = image.getPixel(2*x + 1, 2*y + 0);
 			input[2] = image.getPixel(2*x + 0, 2*y + 1);
 			input[3] = image.getPixel(2*x + 1, 2*y + 1);
-			// average over them
-			Color output = avg(input[0], input[1], input[2], input[3]);
-			// store result in new pixel
-			half.setPixel(x, y, output);
+			half.setPixel(x, y, avg(input[0], input[1], input[2], input[3]));
 		}
 		image = half;
 	}
+
 	Color avg(Color a, Color b, Color c, Color d)
 	{
 		return Color(((a.r+b.r+c.r+d.r)/4), ((a.g+b.g+c.g+d.g)/4), ((a.b+b.b+c.b+d.b)/4), ((a.a+b.a+c.a+d.a)/4));
