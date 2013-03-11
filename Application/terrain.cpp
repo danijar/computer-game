@@ -32,7 +32,6 @@ class ComponentTerrain : public Component
 	uint8_t focus;
 	float distance;
 	GLuint marker;
-	ivec3 origin;
 	ivec3 destination;
 
 	void Init()
@@ -45,13 +44,6 @@ class ComponentTerrain : public Component
 		focus = 0;
 		distance = 0.f;
 
-		Entity->Add<StorageText>(Entity->New())->Text = [=]
-		{
-			vec3 pos = Global->Get<StorageCamera>("camera")->Position;
-			return "Chunk: " + vec_to_string(pos_chunk(ivec3(floor(pos.x), floor(pos.y), floor(pos.z))));
-		};
-
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "origin:      " + vec_to_string(origin);      };
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "destination: " + vec_to_string(destination); };
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "distance:    " + to_string(distance);        };
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "material:    " + to_string(focus);           };
@@ -203,10 +195,10 @@ class ComponentTerrain : public Component
 
 	uint8_t getBlock(ivec3 pos)
 	{
-		ivec3 block = pos_block(pos);
 		unsigned int chunk = getChunk(pos_chunk(pos));
-		if(chunk) return Entity->Get<StorageChunk>(chunk)->blocks[block.x][block.y][block.z];
-		else      return 0;
+		if(chunk == 0) return 0;
+		ivec3 block = pos_block(pos);
+		return Entity->Get<StorageChunk>(chunk)->blocks[block.x][block.y][block.z];
 	}
 	/*
 	void setBlock(ivec3 pos, uint8_t type) {
@@ -224,17 +216,17 @@ class ComponentTerrain : public Component
 	ivec3 pos_chunk(ivec3 pos)
 	{
 		ivec3 chunk;
-		chunk.x = (int)floor((float)pos.x / CHUNK_X);
-		chunk.y = (int)floor((float)pos.y / CHUNK_Y);
-		chunk.z = (int)floor((float)pos.z / CHUNK_Z);
+		chunk.x = pos.x / CHUNK_X; if (chunk.x < 0) chunk.x--;
+		chunk.y = pos.y / CHUNK_Y; if (chunk.y < 0) chunk.y--;
+		chunk.z = pos.z / CHUNK_Z; if (chunk.z < 0) chunk.z--;
 		return chunk;
 	}
 	ivec3 pos_block(ivec3 pos)
 	{
 		ivec3 block = pos;
-		block.x %= CHUNK_X;
-		block.y %= CHUNK_Y;
-		block.z %= CHUNK_Z;
+		block.x = pos.x % CHUNK_X; if (block.x < 0) block.x += CHUNK_X;
+		block.y = pos.y % CHUNK_Y; if (block.y < 0) block.y += CHUNK_Y;
+		block.z = pos.z % CHUNK_Z; if (block.z < 0) block.z += CHUNK_Z;
 		return block;
 	}
 
@@ -270,7 +262,7 @@ class ComponentTerrain : public Component
 
 	future<void> task;
 	atomic_bool meshing;
-	int active;
+	atomic_int active;
 	vector<float> Vertices, Normals, Texcoords; vector<int> Elements;
 
 	void Meshing()
@@ -490,7 +482,7 @@ class ComponentTerrain : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-		vec3 origin = cam->Position;
+		vec3 origin = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y)); //cam->Position;
 		vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 
 		float reach = 1000.f;
@@ -552,7 +544,6 @@ class ComponentTerrain : public Component
 			material = getBlock(ivec3(x, y, z));
 		}
 
-		this->origin = origin;
 		this->destination = vec3(x, y, z);
 		this->distance = length(vec3(x, y, z) - origin);
 		this->focus = material;
@@ -596,7 +587,7 @@ class ComponentTerrain : public Component
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 
-		const GLfloat Vertices[]  = {-.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1,1.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,-.1,-.1,1.1,-.1,1.1,-.1,-.1,-.1,-.1,-.1,-.1,1.1,-.1,1.1,1.1,-.1,-.1,-.1,-.1,1.1,-.1,-.1,1.1,-.1,1.1,-.1,-.1,1.1,-.1,-.1,-.1,-.1,-.1,1.1,-.1,1.1,1.1,-.1,1.1,-.1,1.1,-.1,1.1,1.1,-.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1};
+		const GLfloat Vertices[]  = {-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f};
 		glGenBuffers(1, &frm->Vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
 		glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
