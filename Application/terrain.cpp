@@ -10,6 +10,7 @@
 #include <atomic>
 using namespace std;
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
@@ -34,6 +35,8 @@ class ComponentTerrain : public Component
 
 		active = 0;
 		meshing = false;
+
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Destination: " + vec_to_string(destination); };
 
 		Listeners();
 	}
@@ -90,6 +93,8 @@ class ComponentTerrain : public Component
 				break;
 			}
 		}
+
+		Selection();
 	}
 
 	~ComponentTerrain()
@@ -113,6 +118,10 @@ class ComponentTerrain : public Component
 			cam->Angles = vec2(0.75, -0.25);
 		});
 	}
+
+	////////////////////////////////////////////////////////////
+	// Chunks
+	////////////////////////////////////////////////////////////
 
 	unsigned int getChunk(ivec3 key)
 	{
@@ -168,47 +177,51 @@ class ComponentTerrain : public Component
 		}
 	}
 
+	////////////////////////////////////////////////////////////
+	// Blocks
+	////////////////////////////////////////////////////////////
+
 	/*
-	bool getBlock(vec3 pos)
+	uint8_t getBlock(ivec3 pos)
 	{
-		return getBlock((int)pos.x, (int)pos.y, (int)pos.z);
+		ivec3 chunk = pos_chunk(pos);
+		ivec3 block = pos_block(pos);
+		auto cnk = Entity->Get<StorageChunk>(getChunk(chunk.x, chunk.y, chunk.z));
+		return cnk->blocks[block.x][block.y][block.z];
 	}
-
-	uint8_t getBlock(int x, int y, int z) {
-		int X = x / CHUNK_X; x %= CHUNK_X;
-		int Y = y / CHUNK_Y; y %= CHUNK_Y;
-		int Z = z / CHUNK_Z; z %= CHUNK_Z;
-		if(x < 0 || y < 0 || z < 0 || x > CHUNK_X-1 || y > CHUNK_Y-1 || z > CHUNK_Z-1) return false;
-
-		auto cnk = Entity->Get<StorageChunk>(getChunk(X, Y, Z));
-		return cnk->blocks[x][y][z];
-	}
-
-	void removeBlock(int x, int y, int z)
-	{
-		setBlock(x, y, z, 0);
-	}
-
-	void setBlock(int x, int y, int z, uint8_t type) {
-		int X = x / CHUNK_X; x %= CHUNK_X;
-		int Y = y / CHUNK_Y; y %= CHUNK_Y;
-		int Z = z / CHUNK_Z; z %= CHUNK_Z;
-		setBlock(X, Y, Z, x, y, z, type);
-	}
-
-	void removeBlock(int X, int Y, int Z, int x, int y, int z)
-	{
-		setBlock(X, Y, Z, x, y, z, 0);
-	}
-
-	void setBlock(int X, int Y, int Z, int x, int y, int z, uint8_t type) {
-		if(x < 0 || y < 0 || z < 0 || x > CHUNK_X-1 || y > CHUNK_Y-1 || z > CHUNK_Z-1) return;
-
-		auto cnk = Entity->Get<StorageChunk>(getChunk(X, Y, Z));
-		cnk->blocks[x][y][z] = type;
+	void setBlock(ivec3 pos, uint8_t type) {
+		ivec3 chunk = pos_chunk(pos);
+		ivec3 block = pos_block(pos);
+		auto cnk = Entity->Get<StorageChunk>(getChunk(chunk.x, chunk.y, chunk.z));
+		cnk->blocks[block.x][block.y][block.z] = type;
 		cnk->changed = true;
 	}
+	void removeBlock(ivec3 pos)
+	{
+		setBlock(pos, 0);
+	}
+
+	ivec3 pos_chunk(ivec3 pos)
+	{
+		ivec3 chunk;
+		chunk.x = pos.x / CHUNK_X;
+		chunk.y = pos.y / CHUNK_Y;
+		chunk.z = pos.z / CHUNK_Z;
+		return chunk;
+	}
+	ivec3 pos_block(ivec3 pos)
+	{
+		ivec3 block;
+		block.x %= CHUNK_X;
+		block.y %= CHUNK_Y;
+		block.z %= CHUNK_Z;
+		return block;
+	}
 	*/
+
+	////////////////////////////////////////////////////////////
+	// Generator (candidate for other component)
+	////////////////////////////////////////////////////////////
 
 	void Generate(unsigned int id, ivec3 key)
 	{
@@ -226,6 +239,10 @@ class ComponentTerrain : public Component
 				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = rand() % 2 + 1;
 		} }
 	}
+
+	////////////////////////////////////////////////////////////
+	// Meshing
+	////////////////////////////////////////////////////////////
 
 	#define TILES_U 4
 	#define TILES_V 4
@@ -350,6 +367,24 @@ class ComponentTerrain : public Component
 		tsf->Matrix = Translate * Rotate * Scale;
 	}
 
+	bool inside(ivec3 Position, ivec3 Min, ivec3 Max)
+	{
+		if(Position.x < Min.x || Position.y < Min.y || Position.z < Min.z) return false;
+		if(Position.x > Max.x || Position.y > Max.y || Position.z > Max.z) return false;
+		return true;
+	}
+
+	inline ivec3 shift(int Dimension, ivec3 Vector)
+	{
+		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
+		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
+		else                         return Vector;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Texture
+	////////////////////////////////////////////////////////////
+
 	GLuint Texture()
 	{
 		Image image;
@@ -403,25 +438,6 @@ class ComponentTerrain : public Component
 		return id;
 	}
 
-	bool inside(ivec3 Position, ivec3 Min, ivec3 Max)
-	{
-		if(Position.x < Min.x || Position.y < Min.y || Position.z < Min.z) return false;
-		if(Position.x > Max.x || Position.y > Max.y || Position.z > Max.z) return false;
-		return true;
-	}
-
-	inline ivec3 shift(int Dimension, ivec3 Vector)
-	{
-		if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
-		else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
-		else                         return Vector;
-	}
-
-	string vec_to_string(ivec3 a)
-	{
-		return (a.x >= 0 ? " " : "") + to_string(a.x) + (a.y >= 0 ? "  " : " ") + to_string(a.y) + (a.z >= 0 ? "  " : " ") + to_string(a.z);
-	}
-
 	void shrink(Image &image)
 	{
 		Vector2u size(image.getSize().x / 2, image.getSize().y / 2);
@@ -444,5 +460,27 @@ class ComponentTerrain : public Component
 	Color avg(Color a, Color b, Color c, Color d)
 	{
 		return Color(((a.r+b.r+c.r+d.r)/4), ((a.g+b.g+c.g+d.g)/4), ((a.b+b.b+c.b+d.b)/4), ((a.a+b.a+c.a+d.a)/4));
+	}
+
+	////////////////////////////////////////////////////////////
+	// Selection
+	////////////////////////////////////////////////////////////
+
+	vec3 destination;
+	ivec3 Selection()
+	{
+		auto cam = Global->Get<StorageCamera>("camera");
+		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+
+		vec3 origin      = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
+		vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
+		this->destination = destination;
+
+		return ivec3(0);
+	}
+
+	string vec_to_string(vec3 a)
+	{
+		return "X " + to_string(a.x) + " Y " + to_string(a.y) + " Z " + to_string(a.z);
 	}
 };
