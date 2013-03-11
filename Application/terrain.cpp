@@ -32,6 +32,8 @@ class ComponentTerrain : public Component
 	uint8_t focus;
 	float distance;
 	GLuint marker;
+	ivec3 origin;
+	ivec3 destination;
 
 	void Init()
 	{
@@ -49,8 +51,10 @@ class ComponentTerrain : public Component
 			return "Chunk: " + vec_to_string(pos_chunk(ivec3(floor(pos.x), floor(pos.y), floor(pos.z))));
 		};
 
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Focus: " + to_string(focus); };
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Distance: " + to_string(distance); };
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "origin:      " + vec_to_string(origin);      };
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "destination: " + vec_to_string(destination); };
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "distance:    " + to_string(distance);        };
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "material:    " + to_string(focus);           };
 
 		Listeners();
 	}
@@ -220,14 +224,14 @@ class ComponentTerrain : public Component
 	ivec3 pos_chunk(ivec3 pos)
 	{
 		ivec3 chunk;
-		chunk.x = pos.x / CHUNK_X;
-		chunk.y = pos.y / CHUNK_Y;
-		chunk.z = pos.z / CHUNK_Z;
+		chunk.x = (int)floor((float)pos.x / CHUNK_X);
+		chunk.y = (int)floor((float)pos.y / CHUNK_Y);
+		chunk.z = (int)floor((float)pos.z / CHUNK_Z);
 		return chunk;
 	}
 	ivec3 pos_block(ivec3 pos)
 	{
-		ivec3 block;
+		ivec3 block = pos;
 		block.x %= CHUNK_X;
 		block.y %= CHUNK_Y;
 		block.z %= CHUNK_Z;
@@ -253,9 +257,6 @@ class ComponentTerrain : public Component
 				int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
 				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = rand() % 2 + 1;
 		} }
-
-		// mark origin of the world
-		if(key.x == 0 && key.y == 0 && key.z == 0) for(int y = 0; y < CHUNK_Y; ++y) cnk->blocks[0][y][0] = 1;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -484,17 +485,15 @@ class ComponentTerrain : public Component
 	// Selection
 	////////////////////////////////////////////////////////////
 
-	vec3 destination;
 	pair<ivec3, uint8_t> Selection()
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		vec3 origin = cam->Position;
-		//vec3 origin      = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 		vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 
-		const float reach = 32.f;
+		float reach = 1000.f;
 
 		int x = (int)floor(origin.x);
 		int y = (int)floor(origin.y);
@@ -515,6 +514,8 @@ class ComponentTerrain : public Component
 		float tDeltaX = stepX/dx;
 		float tDeltaY = stepY/dy;
 		float tDeltaZ = stepZ/dz;
+
+		reach /= length(vec3(dx, dy, dz));
 
 		uint8_t material = 0;
 		while(!material)
@@ -551,8 +552,10 @@ class ComponentTerrain : public Component
 			material = getBlock(ivec3(x, y, z));
 		}
 
+		this->origin = origin;
+		this->destination = vec3(x, y, z);
+		this->distance = length(vec3(x, y, z) - origin);
 		this->focus = material;
-		this->distance = glm::length2(vec3(x, y, z) - origin);
 
 		auto tsf = Entity->Get<StorageTransform>(marker);
 		tsf->Position = vec3(x, y, z);
@@ -593,7 +596,7 @@ class ComponentTerrain : public Component
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 
-		const GLfloat Vertices[]  = {0.,0.,1.,1.,0.,1.,1.,1.,1.,0.,1.,1.,0.,1.,1.,1.,1.,1.,1.,1.,0.,0.,1.,0.,1.,0.,0.,0.,0.,0.,0.,1.,0.,1.,1.,0.,0.,0.,0.,1.,0.,0.,1.,0.,1.,0.,0.,1.,0.,0.,0.,0.,0.,1.,0.,1.,1.,0.,1.,0.,1.,0.,1.,1.,0.,0.,1.,1.,0.,1.,1.,1.};
+		const GLfloat Vertices[]  = {-.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1,1.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,-.1,-.1,1.1,-.1,1.1,-.1,-.1,-.1,-.1,-.1,-.1,1.1,-.1,1.1,1.1,-.1,-.1,-.1,-.1,1.1,-.1,-.1,1.1,-.1,1.1,-.1,-.1,1.1,-.1,-.1,-.1,-.1,-.1,1.1,-.1,1.1,1.1,-.1,1.1,-.1,1.1,-.1,1.1,1.1,-.1,-.1,1.1,1.1,-.1,1.1,1.1,1.1};
 		glGenBuffers(1, &frm->Vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
 		glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
@@ -627,7 +630,6 @@ class ComponentTerrain : public Component
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		tsf->Scale = vec3(1.0, 1.0, 1.0);
 		Matrix(id);
 
 		return id;

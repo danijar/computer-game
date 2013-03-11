@@ -11,7 +11,5 @@ using namespace glm;
 struct StorageText
 {
 	StorageText() : Text([]{ return ""; }) {}
-
 	function<string(void)> Text;
-	uvec2 Position;
 };
