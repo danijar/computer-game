@@ -33,7 +33,7 @@ class ComponentCamera : public Component
 		Projection();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
-			return "X " + to_string((int)cam->Position.x) + " Y " + to_string((int)cam->Position.y) + " Z " + to_string((int)cam->Position.z);
+			return "X " + to_string((int)floor(cam->Position.x)) + " Y " + to_string((int)floor(cam->Position.y)) + " Z " + to_string((int)floor(cam->Position.z));
 		};
 
 		speed = 10.f;
@@ -150,7 +150,7 @@ class ComponentCamera : public Component
 		if		(cam->Angles.x < -pi)	cam->Angles.x += pi*2;
 		else if	(cam->Angles.x >  pi)	cam->Angles.x -= pi*2;
  
-		const float margin = .2f;
+		const float margin = 0.2f;
 		if		(cam->Angles.y < -pi/2+margin)	cam->Angles.y = -pi/2+margin;
 		else if	(cam->Angles.y >  pi/2-margin)	cam->Angles.y =  pi/2-margin;
 

@@ -14,6 +14,7 @@ using namespace std;
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
+#include <GLM/gtx/norm.hpp>
 using namespace glm;
 
 #include "settings.h"
@@ -28,6 +29,9 @@ using namespace glm;
 class ComponentTerrain : public Component
 {
 	GLuint texture;
+	uint8_t focus;
+	float distance;
+	GLuint marker;
 
 	void Init()
 	{
@@ -36,7 +40,17 @@ class ComponentTerrain : public Component
 		active = 0;
 		meshing = false;
 
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Destination: " + vec_to_string(destination); };
+		focus = 0;
+		distance = 0.f;
+
+		Entity->Add<StorageText>(Entity->New())->Text = [=]
+		{
+			vec3 pos = Global->Get<StorageCamera>("camera")->Position;
+			return "Chunk: " + vec_to_string(pos_chunk(ivec3(floor(pos.x), floor(pos.y), floor(pos.z))));
+		};
+
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Focus: " + to_string(focus); };
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Distance: " + to_string(distance); };
 
 		Listeners();
 	}
@@ -48,7 +62,7 @@ class ComponentTerrain : public Component
 		auto cam = Global->Get<StorageCamera>("camera");
 
 		const int distance = (unsigned int)((stg->Viewdistance / ((CHUNK.x + CHUNK.y + CHUNK.z) / 3.f)) / 5);
-		const ivec2 camera   = ivec2((int)(cam->Position.x   / CHUNK.x), (int)(cam->Position.z   / CHUNK.z));
+		const ivec2 camera   = ivec2(floor(cam->Position.x / CHUNK.x), floor(cam->Position.z / CHUNK.z));
 
 		vector<ivec3> keys;
 		for(auto i = wld->chunks.begin(); i != wld->chunks.end(); ++i)
@@ -116,6 +130,8 @@ class ComponentTerrain : public Component
 			auto cam = Global->Get<StorageCamera>("camera");
 			cam->Position = vec3(0, CHUNK_Y, 0);
 			cam->Angles = vec2(0.75, -0.25);
+
+			marker = Marker();
 		});
 	}
 
@@ -181,14 +197,14 @@ class ComponentTerrain : public Component
 	// Blocks
 	////////////////////////////////////////////////////////////
 
-	/*
 	uint8_t getBlock(ivec3 pos)
 	{
-		ivec3 chunk = pos_chunk(pos);
 		ivec3 block = pos_block(pos);
-		auto cnk = Entity->Get<StorageChunk>(getChunk(chunk.x, chunk.y, chunk.z));
-		return cnk->blocks[block.x][block.y][block.z];
+		unsigned int chunk = getChunk(pos_chunk(pos));
+		if(chunk) return Entity->Get<StorageChunk>(chunk)->blocks[block.x][block.y][block.z];
+		else      return 0;
 	}
+	/*
 	void setBlock(ivec3 pos, uint8_t type) {
 		ivec3 chunk = pos_chunk(pos);
 		ivec3 block = pos_block(pos);
@@ -200,7 +216,7 @@ class ComponentTerrain : public Component
 	{
 		setBlock(pos, 0);
 	}
-
+	*/
 	ivec3 pos_chunk(ivec3 pos)
 	{
 		ivec3 chunk;
@@ -217,7 +233,6 @@ class ComponentTerrain : public Component
 		block.z %= CHUNK_Z;
 		return block;
 	}
-	*/
 
 	////////////////////////////////////////////////////////////
 	// Generator (candidate for other component)
@@ -238,6 +253,9 @@ class ComponentTerrain : public Component
 				int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
 				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = rand() % 2 + 1;
 		} }
+
+		// mark origin of the world
+		if(key.x == 0 && key.y == 0 && key.z == 0) for(int y = 0; y < CHUNK_Y; ++y) cnk->blocks[0][y][0] = 1;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -267,7 +285,7 @@ class ComponentTerrain : public Component
 			{
 				if(cnk->blocks[X][Y][Z])
 				{
-					int tile = clamp((int)cnk->blocks[X][Y][Z], 0, TILES_U * TILES_V - 1);
+					uint8_t tile = clamp((int)cnk->blocks[X][Y][Z], 0, TILES_U * TILES_V - 1);
 					for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 						ivec3 neigh = shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
@@ -467,20 +485,151 @@ class ComponentTerrain : public Component
 	////////////////////////////////////////////////////////////
 
 	vec3 destination;
-	ivec3 Selection()
+	pair<ivec3, uint8_t> Selection()
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
 		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-		vec3 origin      = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
+		vec3 origin = cam->Position;
+		//vec3 origin      = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 		vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
-		this->destination = destination;
 
-		return ivec3(0);
+		const float reach = 32.f;
+
+		int x = (int)floor(origin.x);
+		int y = (int)floor(origin.y);
+		int z = (int)floor(origin.z);
+
+		float dx = destination.x - origin.x;
+		float dy = destination.y - origin.y;
+		float dz = destination.z - origin.z;
+
+		int stepX = signum(dx);
+		int stepY = signum(dy);
+		int stepZ = signum(dz);
+
+		float tMaxX = intbound(origin.x, dx);
+		float tMaxY = intbound(origin.y, dy);
+		float tMaxZ = intbound(origin.z, dz);
+
+		float tDeltaX = stepX/dx;
+		float tDeltaY = stepY/dy;
+		float tDeltaZ = stepZ/dz;
+
+		uint8_t material = 0;
+		while(!material)
+		{
+			if (tMaxX < tMaxY)
+			{
+				if (tMaxX < tMaxZ)
+				{
+					if (tMaxX > reach) break;
+					x += stepX;
+					tMaxX += tDeltaX;
+				}
+				else
+				{
+					z += stepZ;
+					tMaxZ += tDeltaZ;
+				}
+			}
+			else
+			{
+				if (tMaxY < tMaxZ)
+				{
+					if (tMaxY > reach) break;
+					y += stepY;
+					tMaxY += tDeltaY;
+				}
+				else
+				{
+					if (tMaxZ > reach) break;
+					z += stepZ;
+					tMaxZ += tDeltaZ;
+				}
+			}
+			material = getBlock(ivec3(x, y, z));
+		}
+
+		this->focus = material;
+		this->distance = glm::length2(vec3(x, y, z) - origin);
+
+		auto tsf = Entity->Get<StorageTransform>(marker);
+		tsf->Position = vec3(x, y, z);
+		Matrix(marker);
+
+		return make_pair(ivec3(x, y, z), material);
 	}
+
+	// Find the smallest positive t such that s+t*ds is an integer.
+	float intbound(float s, float ds)
+	{
+		if (ds < 0) {
+			return intbound(-s, -ds);
+		} else {
+			s = mod(s, 1.f);
+			return (1-s) / ds;
+		}
+	}
+
+	int signum(float x)
+	{
+		return x > 0 ? 1 : x < 0 ? -1 : 0;
+	}
+
 
 	string vec_to_string(vec3 a)
 	{
 		return "X " + to_string(a.x) + " Y " + to_string(a.y) + " Z " + to_string(a.z);
+	}
+	string vec_to_string(ivec3 a)
+	{
+		return "X " + to_string(a.x) + " Y " + to_string(a.y) + " Z " + to_string(a.z);
+	}
+
+	unsigned int Marker()
+	{
+		unsigned int id = Entity->New();
+		auto frm = Entity->Add<StorageForm>(id);
+		auto tsf = Entity->Add<StorageTransform>(id);
+
+		const GLfloat Vertices[]  = {0.,0.,1.,1.,0.,1.,1.,1.,1.,0.,1.,1.,0.,1.,1.,1.,1.,1.,1.,1.,0.,0.,1.,0.,1.,0.,0.,0.,0.,0.,0.,1.,0.,1.,1.,0.,0.,0.,0.,1.,0.,0.,1.,0.,1.,0.,0.,1.,0.,0.,0.,0.,0.,1.,0.,1.,1.,0.,1.,0.,1.,0.,1.,1.,0.,0.,1.,1.,0.,1.,1.,1.};
+		glGenBuffers(1, &frm->Vertices);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
+		glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		const GLfloat Normals[]   = {0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,0,1,0,0,1,0,0,1,0,0,1,0,0};
+		glGenBuffers(1, &frm->Normals);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+		glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Normals, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		const GLfloat Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
+		glGenBuffers(1, &frm->Texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+		glBufferData(GL_ARRAY_BUFFER, 48 * sizeof(GLfloat), Texcoords, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		const GLuint  Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
+		glGenBuffers(1, &frm->Elements);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Elements, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		Image image;
+		bool result = image.loadFromFile("forms/textures/magic.jpg");
+		auto size = image.getSize();
+		glGenTextures(1, &frm->Texture);
+		glBindTexture(GL_TEXTURE_2D, frm->Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		tsf->Scale = vec3(1.0, 1.0, 1.0);
+		Matrix(id);
+
+		return id;
 	}
 };
