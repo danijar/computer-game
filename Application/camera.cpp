@@ -29,8 +29,8 @@ class ComponentCamera : public Component
 		cam->Active = !stg->Mouse;
 
 		Calculate();
-
 		State();
+		Projection();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			return "X " + to_string((int)cam->Position.x) + " Y " + to_string((int)cam->Position.y) + " Z " + to_string((int)cam->Position.z);
@@ -82,12 +82,14 @@ class ComponentCamera : public Component
 			}
 		});
 
-		Event->Listen("WindowResize", [=]{
-			 State();
-		});
-
 		Event->Listen("WindowRecreated", [=]{
 			 State();
+			 Projection();
+		});
+
+		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
+			State();
+			Projection(Size);
 		});
 	}
 
@@ -106,6 +108,18 @@ class ComponentCamera : public Component
 		wnd->setMouseCursorVisible(!Active);
 
 		Mouse::setPosition(Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
+	}
+
+	void Projection()
+	{
+		Projection(Global->Get<RenderWindow>("window")->getSize());
+	}
+	void Projection(Vector2u Size)
+	{
+		auto stg = Global->Get<StorageSettings>("settings");
+		auto cam = Global->Get<StorageCamera>("camera");
+
+		cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 	}
 
 	void Rotate(Vector2i Amount)

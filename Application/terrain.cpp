@@ -148,7 +148,6 @@ class ComponentTerrain : public Component
 			if(active == id)
 			{
 				Debug::Info("Killed meshing thread to disable chunk " + to_string(id) + "!");
-
 				meshing = false;
 				task.get();
 				active = 0;
@@ -156,20 +155,15 @@ class ComponentTerrain : public Component
 			else
 			{
 				auto frm = Entity->Get<StorageForm>(id);
-
 				glDeleteBuffers(1, &frm->Vertices);
 				glDeleteBuffers(1, &frm->Normals);
 				glDeleteBuffers(1, &frm->Texcoords);
 				glDeleteBuffers(1, &frm->Elements);
-
 				Entity->Delete<StorageForm>(id);
 			}
-
 			auto wld = Global->Get<StorageTerrain>("terrain");
-			
 			Entity->Delete<StorageChunk>(id);
 			Entity->Delete<StorageTransform>(id);
-
 			wld->chunks.erase(key);
 		}
 	}
@@ -180,7 +174,7 @@ class ComponentTerrain : public Component
 		return getBlock((int)pos.x, (int)pos.y, (int)pos.z);
 	}
 
-	bool getBlock(int x, int y, int z) {
+	uint8_t getBlock(int x, int y, int z) {
 		int X = x / CHUNK_X; x %= CHUNK_X;
 		int Y = y / CHUNK_Y; y %= CHUNK_Y;
 		int Z = z / CHUNK_Z; z %= CHUNK_Z;
@@ -190,18 +184,28 @@ class ComponentTerrain : public Component
 		return cnk->blocks[x][y][z];
 	}
 
-	void setBlock(int x, int y, int z, bool enabled) {
+	void removeBlock(int x, int y, int z)
+	{
+		setBlock(x, y, z, 0);
+	}
+
+	void setBlock(int x, int y, int z, uint8_t type) {
 		int X = x / CHUNK_X; x %= CHUNK_X;
 		int Y = y / CHUNK_Y; y %= CHUNK_Y;
 		int Z = z / CHUNK_Z; z %= CHUNK_Z;
-		setBlock(X, Y, Z, x, y, z, enabled);
+		setBlock(X, Y, Z, x, y, z, type);
 	}
 
-	void setBlock(int X, int Y, int Z, int x, int y, int z, bool enabled) {
+	void removeBlock(int X, int Y, int Z, int x, int y, int z)
+	{
+		setBlock(X, Y, Z, x, y, z, 0);
+	}
+
+	void setBlock(int X, int Y, int Z, int x, int y, int z, uint8_t type) {
 		if(x < 0 || y < 0 || z < 0 || x > CHUNK_X-1 || y > CHUNK_Y-1 || z > CHUNK_Z-1) return;
 
 		auto cnk = Entity->Get<StorageChunk>(getChunk(X, Y, Z));
-		cnk->blocks[x][y][z] = enabled;
+		cnk->blocks[x][y][z] = type;
 		cnk->changed = true;
 	}
 	*/
@@ -219,7 +223,7 @@ class ComponentTerrain : public Component
 				double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
 				double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
 				int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
-				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = true;
+				for(int y = 0; y < height; ++y) cnk->blocks[x][y][z] = rand() % 2 + 1;
 		} }
 	}
 
@@ -246,7 +250,7 @@ class ComponentTerrain : public Component
 			{
 				if(cnk->blocks[X][Y][Z])
 				{
-					int Tile = clamp(rand() % 2 + 1, 0, TILES_U * TILES_V - 1);
+					int tile = clamp((int)cnk->blocks[X][Y][Z], 0, TILES_U * TILES_V - 1);
 					for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 						ivec3 neigh = shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
@@ -268,7 +272,7 @@ class ComponentTerrain : public Component
 								Normals.push_back(normal.x); Normals.push_back(normal.y); Normals.push_back(normal.z);
 							}
 
-							vec2 coords(Tile % TILES_U, Tile / TILES_U);
+							vec2 coords(tile % TILES_U, tile / TILES_U);
 							vec2 position = coords * GRID;
 							Texcoords.push_back(position.x          + GAP); Texcoords.push_back(position.y          + GAP);
 							Texcoords.push_back(position.x + GRID.x - GAP); Texcoords.push_back(position.y          + GAP);
@@ -331,6 +335,19 @@ class ComponentTerrain : public Component
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(int), &Elements[0], GL_STATIC_DRAW);
 
 		frm->Texture = texture;
+		Matrix(id);
+	}
+
+	void Matrix(unsigned int id)
+	{
+		auto tsf = Entity->Get<StorageTransform>(id);
+
+		mat4 Scale      = scale    (mat4(1), tsf->Scale);
+		mat4 Translate  = translate(mat4(1), tsf->Position);
+		mat4 Rotate     = rotate   (mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
+						* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
+						* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
+		tsf->Matrix = Translate * Rotate * Scale;
 	}
 
 	GLuint Texture()

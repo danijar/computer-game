@@ -17,10 +17,10 @@ struct StorageChunk
 {
 	StorageChunk() : changed(true)
 	{
-		memset(blocks, false, sizeof blocks);
+		memset(blocks, 0, sizeof blocks);
 	}
 
-	bool blocks[CHUNK_X][CHUNK_Y][CHUNK_Z];
+	uint8_t blocks[CHUNK_X][CHUNK_Y][CHUNK_Z];
 	bool changed;
 };
 
