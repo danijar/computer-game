@@ -54,6 +54,8 @@ class ComponentWindow : public Component
 				case Event::KeyReleased:
 					Event->Fire<Keyboard::Key>("InputKeyReleased", evt.key.code);
 					break;
+				case Event::MouseButtonPressed:
+					Event->Fire<Event::MouseButtonEvent>("InputMouseClick", evt.mouseButton);
 				case Event::Closed:
 					Close();
 					break;

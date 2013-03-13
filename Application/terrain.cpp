@@ -11,6 +11,7 @@
 using namespace std;
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
@@ -29,10 +30,8 @@ using namespace glm;
 class ComponentTerrain : public Component
 {
 	GLuint texture;
-	uint8_t focus;
-	float distance;
 	GLuint marker;
-	ivec3 destination;
+	ivec3 focus;
 
 	void Init()
 	{
@@ -40,13 +39,6 @@ class ComponentTerrain : public Component
 
 		active = 0;
 		meshing = false;
-
-		focus = 0;
-		distance = 0.f;
-
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "destination: " + vec_to_string(destination); };
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "distance:    " + to_string(distance);        };
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "material:    " + to_string(focus);           };
 
 		Listeners();
 	}
@@ -104,7 +96,10 @@ class ComponentTerrain : public Component
 			}
 		}
 
-		Selection();
+		auto sel = Selection();
+		auto tsf = Entity->Get<StorageTransform>(marker);
+		tsf->Position = vec3(sel.first);
+		Matrix(marker);
 	}
 
 	~ComponentTerrain()
@@ -128,6 +123,16 @@ class ComponentTerrain : public Component
 			cam->Angles = vec2(0.75, -0.25);
 
 			marker = Marker();
+		});
+
+		Event->Listen<Event::MouseButtonEvent>("InputMouseClick", [=](Event::MouseButtonEvent evt){
+			if(evt.button == Mouse::Left)
+			{
+				auto sel = Selection();
+				ivec3 pos = sel.first + ivec3(0, 1, 0);
+				setBlock(pos, 1);
+				Debug::Pass("Placed block at " + vec_to_string(pos));
+			}
 		});
 	}
 
@@ -197,37 +202,40 @@ class ComponentTerrain : public Component
 	{
 		unsigned int chunk = getChunk(pos_chunk(pos));
 		if(chunk == 0) return 0;
-		ivec3 block = pos_block(pos);
+		ivec3 block = pos_local(pos);
 		return Entity->Get<StorageChunk>(chunk)->blocks[block.x][block.y][block.z];
 	}
-	/*
-	void setBlock(ivec3 pos, uint8_t type) {
-		ivec3 chunk = pos_chunk(pos);
-		ivec3 block = pos_block(pos);
-		auto cnk = Entity->Get<StorageChunk>(getChunk(chunk.x, chunk.y, chunk.z));
+	void setBlock(ivec3 pos, uint8_t type)
+	{
+		unsigned int chunk = getChunk(pos_chunk(pos));
+		if(chunk == 0) return;
+		ivec3 block = pos_local(pos);
+		auto cnk = Entity->Get<StorageChunk>(chunk);
 		cnk->blocks[block.x][block.y][block.z] = type;
-		cnk->changed = true;
+		cnk->changed = true; // check this state elsewhere to remesh them
 	}
 	void removeBlock(ivec3 pos)
 	{
 		setBlock(pos, 0);
 	}
-	*/
-	ivec3 pos_chunk(ivec3 pos)
+
+	ivec3 pos_chunk(ivec3 global)
 	{
-		ivec3 chunk;
-		chunk.x = pos.x / CHUNK_X; if (chunk.x < 0) chunk.x--;
-		chunk.y = pos.y / CHUNK_Y; if (chunk.y < 0) chunk.y--;
-		chunk.z = pos.z / CHUNK_Z; if (chunk.z < 0) chunk.z--;
+		ivec3 chunk = global / ivec3(CHUNK_X, CHUNK_Y, CHUNK_Z);
+		ivec3 local = global % ivec3(CHUNK_X, CHUNK_Y, CHUNK_Z);
+		if (local.x < 0) { chunk.x--; local.x += CHUNK_X; }
+		if (local.y < 0) { chunk.y--; local.y += CHUNK_Y; }
+		if (local.z < 0) { chunk.z--; local.z += CHUNK_Z; }
 		return chunk;
 	}
-	ivec3 pos_block(ivec3 pos)
+	ivec3 pos_local(ivec3 global)
 	{
-		ivec3 block = pos;
-		block.x = pos.x % CHUNK_X; if (block.x < 0) block.x += CHUNK_X;
-		block.y = pos.y % CHUNK_Y; if (block.y < 0) block.y += CHUNK_Y;
-		block.z = pos.z % CHUNK_Z; if (block.z < 0) block.z += CHUNK_Z;
-		return block;
+		ivec3 chunk = global / ivec3(CHUNK_X, CHUNK_Y, CHUNK_Z);
+		ivec3 local = global % ivec3(CHUNK_X, CHUNK_Y, CHUNK_Z);
+		if (local.x < 0) { chunk.x--; local.x += CHUNK_X; }
+		if (local.y < 0) { chunk.y--; local.y += CHUNK_Y; }
+		if (local.z < 0) { chunk.z--; local.z += CHUNK_Z; }
+		return local;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -544,24 +552,17 @@ class ComponentTerrain : public Component
 			material = getBlock(ivec3(x, y, z));
 		}
 
-		this->destination = vec3(x, y, z);
-		this->distance = length(vec3(x, y, z) - origin);
-		this->focus = material;
-
-		auto tsf = Entity->Get<StorageTransform>(marker);
-		tsf->Position = vec3(x, y, z);
-		Matrix(marker);
-
 		return make_pair(ivec3(x, y, z), material);
 	}
 
+	#include <cmath>
 	// Find the smallest positive t such that s+t*ds is an integer.
 	float intbound(float s, float ds)
 	{
 		if (ds < 0) {
 			return intbound(-s, -ds);
 		} else {
-			s = mod(s, 1.f);
+			s = fmod((fmod(s, 1) + 1), 1);
 			return (1-s) / ds;
 		}
 	}
