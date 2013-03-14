@@ -19,7 +19,6 @@ using namespace glm;
 #include "text.h"
 #include "keyboard.h"
 
-
 class ComponentForm : public Component
 {
 	unordered_map<string, GLuint> textures;
@@ -111,7 +110,7 @@ class ComponentForm : public Component
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			textures.insert(make_pair(Texture, frm->Texture));
 		}

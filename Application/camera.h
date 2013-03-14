@@ -20,5 +20,5 @@ struct StorageCamera
 	bool Active;
 	vec3 Position;
 	vec2 Angles;
-	mat4 View;
+	mat4 View, Projection;
 };

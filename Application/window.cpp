@@ -12,7 +12,6 @@ using namespace sf;
 #include "settings.h"
 #include "text.h"
 
-
 class ComponentWindow : public Component
 {
 	unsigned int window;

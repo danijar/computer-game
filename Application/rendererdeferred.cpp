@@ -61,8 +61,6 @@ class ComponentRendererDeferred : public Component
 		pass = Passes[i++].second;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		Quad(pass.Program, pass.Textures);
-
-		Opengl::Test();
 	}
 
 	void Listeners()
@@ -129,11 +127,11 @@ class ComponentRendererDeferred : public Component
 	}
 	void Resize(Vector2u Size)
 	{
-		auto stg = Global->Get<StorageSettings>("settings");
+		Debug::Info("Resize renderer to " + to_string(Size.x) + "x" + to_string(Size.y));
 
 		glViewport(0, 0, Size.x, Size.y);
 
-		Shaders::Uniform(get_pass("forms")->Program, "projection", perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance));
+		Shaders::Uniform(get_pass("forms")->Program, "projection", Global->Get<StorageCamera>("camera")->Projection);
 		Shaders::Uniform(get_pass("antialiasing")->Program, "frameBufSize", vec2(Size.x, Size.y));
 
 		for(auto i : Textures)
@@ -315,10 +313,10 @@ class ComponentRendererDeferred : public Component
 	}
 
 	void Forms(GLuint shader)
-	{
+	{	
 		auto stg = Global->Get<StorageSettings>("settings");
 		auto fms = Entity->Get<StorageForm>();
-		
+
 		glUseProgram(shader);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
@@ -330,18 +328,12 @@ class ComponentRendererDeferred : public Component
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
 
-		for(auto i = fms.begin(); i != fms.end(); ++i)
+		for(auto i : fms)
 		{
-			auto frm = Entity->Get<StorageForm>(i->first);
-			auto tsf = Entity->Get<StorageTransform>(i->first);
+			auto frm = Entity->Get<StorageForm>(i.first);
+			auto tsf = Entity->Get<StorageTransform>(i.first);
 
-			mat4 Scale      = scale    (mat4(1), tsf->Scale);
-			mat4 Translate  = translate(mat4(1), tsf->Position);
-			mat4 Rotate     = rotate   (mat4(1), tsf->Rotation.x, vec3(1, 0 ,0))
-							* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
-							* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
-			mat4 Model = Translate * Rotate * Scale;
-			glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, value_ptr(Model));
+			glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 
 			glEnableVertexAttribArray(0);
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
@@ -355,12 +347,15 @@ class ComponentRendererDeferred : public Component
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-
 			glBindTexture(GL_TEXTURE_2D, frm->Texture);
 
-			int count; glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &count);
-			glDrawElements(GL_TRIANGLES, count/sizeof(GLuint), GL_UNSIGNED_INT, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+
+			GLint size = 0;
+			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
+
+			Opengl::Test();
 		}
 
 		glDisable(GL_DEPTH_TEST);
