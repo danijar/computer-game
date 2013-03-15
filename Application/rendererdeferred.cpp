@@ -45,7 +45,7 @@ class ComponentRendererDeferred : public Component
 		Pass pass;
 
 		pass = Passes[i++].second;
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
 		Forms(pass.Program);
 
 		while(i < Passes.size() - 1)
@@ -53,14 +53,16 @@ class ComponentRendererDeferred : public Component
 			pass = Passes[i++].second;
 			if(pass.Active)
 			{
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pass.Framebuffer);
+				glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
 				Quad(pass.Program, pass.Textures);
 			}
 		}
 
 		pass = Passes[i++].second;
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Quad(pass.Program, pass.Textures);
+
+		Opengl::Test();
 	}
 
 	void Listeners()
@@ -79,7 +81,9 @@ class ComponentRendererDeferred : public Component
 		});
 
 		Event->Listen("WindowRecreated", [=]{
-			glClearColor(.4f,.6f,.9f,0.f);
+			Passes.clear();
+			Pipeline();
+
 			Resize();
 		});
 
@@ -90,10 +94,10 @@ class ComponentRendererDeferred : public Component
 
 	void Pipeline()
 	{
-		create_texture("position", GL_RGBA32F);
-		create_texture("normal",   GL_RGBA32F);
-		create_texture("albedo",   GL_RGBA32F);
-		create_texture("depth",    GL_DEPTH_COMPONENT32F);
+		get_or_create_texture("position", GL_RGBA32F);
+		get_or_create_texture("normal",   GL_RGBA32F);
+		get_or_create_texture("albedo",   GL_RGBA32F);
+		get_or_create_texture("depth",    GL_DEPTH_COMPONENT32F);
 		vector<string> forms_targets;
 		forms_targets.push_back("position");
 		forms_targets.push_back("normal");
@@ -101,21 +105,21 @@ class ComponentRendererDeferred : public Component
 		forms_targets.push_back("depth");
 		create_pass("forms", make_pair("shaders/forms.vert", "shaders/forms.frag"), forms_targets);
 
-		create_texture("light", GL_RGBA32F);
+		get_or_create_texture("light", GL_RGBA32F);
 		unordered_map<string, string> light_uniforms;
 		light_uniforms.insert(make_pair("position_tex", "position"));
 		light_uniforms.insert(make_pair("normal_tex",   "normal"));
 		light_uniforms.insert(make_pair("albedo_tex",   "albedo"));
 		create_pass("light", "shaders/light.frag", "light", light_uniforms);
 
-		create_texture("antialiasing", GL_RGBA32F);
+		get_or_create_texture("antialiasing", GL_RGBA32F);
 		unordered_map<string, string> fxaa_uniforms;
 		fxaa_uniforms.insert(make_pair("image_tex",    "light"));
 		fxaa_uniforms.insert(make_pair("position_tex", "position"));
 		fxaa_uniforms.insert(make_pair("normal_tex",   "normal"));
 		create_pass("antialiasing", "shaders/antialiasing.frag", "antialiasing", fxaa_uniforms);
 
-		create_texture("screen", GL_RGBA32F);
+		get_or_create_texture("screen", GL_RGBA32F);
 		unordered_map<string, string> screen_uniforms;
 		screen_uniforms.insert(make_pair("image_tex", "antialiasing"));
 		create_pass("screen", "shaders/screen.frag", "screen", screen_uniforms);
@@ -127,8 +131,6 @@ class ComponentRendererDeferred : public Component
 	}
 	void Resize(Vector2u Size)
 	{
-		Debug::Info("Resize renderer to " + to_string(Size.x) + "x" + to_string(Size.y));
-
 		glViewport(0, 0, Size.x, Size.y);
 
 		Shaders::Uniform(get_pass("forms")->Program, "projection", Global->Get<StorageCamera>("camera")->Projection);
@@ -217,7 +219,12 @@ class ComponentRendererDeferred : public Component
 	{
 		GLuint id;
 		glGenFramebuffers(1, &id);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, id);
+		setup_framebuffer(id, targets);
+		return id;
+	}
+	void setup_framebuffer(GLuint id, vector<string> targets)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, id);
 
 		vector<GLenum> buffers;
 		for(auto i : targets)
@@ -235,13 +242,12 @@ class ComponentRendererDeferred : public Component
 				attachment = GL_DEPTH_ATTACHMENT;
 				break;
 			}
-			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.Id, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, texture.Id, 0);
 		}
 		glDrawBuffers(buffers.size(), &buffers[0]);
 
-		Debug::PassFail("Renderer framebuffer creation", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		return id;
+		Debug::PassFail("Renderer framebuffer setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	vector<pair<string, Pass>> Passes;
@@ -354,8 +360,6 @@ class ComponentRendererDeferred : public Component
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
-
-			Opengl::Test();
 		}
 
 		glDisable(GL_DEPTH_TEST);
