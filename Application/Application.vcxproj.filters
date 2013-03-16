@@ -62,6 +62,15 @@
     <ClCompile Include="rendererdeferred.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="framebuffer.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -99,6 +108,15 @@
     </ClInclude>
     <ClInclude Include="keyboard.h">
       <Filter>0. Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="shader.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="framebuffer.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>2. Storages</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

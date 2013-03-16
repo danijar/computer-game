@@ -20,6 +20,7 @@ using namespace glm;
 #include "settings.h"
 #include "form.h"
 #include "transform.h"
+#include "texture.h"
 #include "camera.h"
 
 

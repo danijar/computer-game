@@ -7,6 +7,7 @@
 #include "window.cpp"
 #include "input.cpp"
 #include "form.cpp"
+#include "texture.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
@@ -23,6 +24,7 @@ int main()
 	World.Add(1, "window",    new ComponentWindow());
 	World.Add(1, "input",     new ComponentInput());
 	World.Add(2, "form",      new ComponentForm());
+	World.Add(2, "texture",   new ComponentTexture());
 	World.Add(2, "movement",  new ComponentMovement());
 	World.Add(2, "animation", new ComponentAnimation());
 	World.Add(2, "camera",    new ComponentCamera());

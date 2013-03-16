@@ -2,11 +2,13 @@
 
 #include "system.h"
 
+#include <GLEW/glew.h>
 #include <GLM/glm.hpp>
 using namespace glm;
 
 
 struct StorageForm
 {
-	unsigned int Vertices, Normals, Texcoords, Elements, Texture;
+	StorageForm() : Texture(0) {}
+	GLuint Vertices, Normals, Texcoords, Elements, Texture;
 };

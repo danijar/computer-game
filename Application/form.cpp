@@ -14,6 +14,7 @@ using namespace glm;
 
 #include "form.h"
 #include "transform.h"
+#include "texture.h"
 #include "movement.h"
 #include "animation.h"
 #include "text.h"
@@ -98,23 +99,22 @@ class ComponentForm : public Component
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementsN * sizeof(GLuint), Elements, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		auto i = textures.find(Texture);
-		if(i == textures.end())
+		auto txs = Entity->Get<StorageTexture>();
+		for(auto i : txs)
 		{
-			Image image;
-			bool result = image.loadFromFile(Texture);
-			auto size = image.getSize();
-			glGenTextures(1, &frm->Texture);
-			glBindTexture(GL_TEXTURE_2D, frm->Texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glGenerateMipmap(GL_TEXTURE_2D);
-			textures.insert(make_pair(Texture, frm->Texture));
+			if(i.second->Path == Texture)
+			{
+				frm->Texture = i.second->Id;
+				break;
+			}
 		}
-		else frm->Texture = i->second;
+		if(!frm->Texture)
+		{
+			unsigned int id = Entity->New();
+			auto tex = Entity->Add<StorageTexture>(id);
+			tex->Path = Texture;
+			frm->Texture = tex->Id;
+		}
 
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;

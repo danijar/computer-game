@@ -57,9 +57,12 @@ class ComponentWindow : public Component
 					Close();
 					break;
 				case Event::Resized:
-					Vector2u Size(evt.size.width, evt.size.height);
+				  { Vector2u Size(evt.size.width, evt.size.height);
 					stg->Size = Size;
 					Event->Fire<Vector2u>("WindowResize", Size);
+					break; }
+				case Event::GainedFocus:
+					Event->Fire("WindowFocusGained");
 					break;
 				}
 			}
