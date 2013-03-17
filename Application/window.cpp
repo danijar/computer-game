@@ -12,7 +12,7 @@ using namespace sf;
 #include "settings.h"
 #include "text.h"
 
-class ComponentWindow : public Component
+class ModuleWindow : public Module
 {
 	unsigned int window;
 	int frames;

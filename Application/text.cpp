@@ -14,13 +14,13 @@ using namespace glm;
 #include "text.h"
 
 
-class ComponentText : public Component
+class ModuleText : public Module
 {
 	Font font;
 
 	void Init()
 	{
-		bool result = font.loadFromFile("other/source.ttf");
+		bool result = font.loadFromFile(Name() + "/source.ttf");
 		Debug::PassFail("Text font loading", result);
 
 		Listeners();

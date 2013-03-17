@@ -24,7 +24,7 @@ using namespace glm;
 #include "camera.h"
 
 
-class ComponentRendererDeferred : public Component
+class ModuleRendererDeferred : public Module
 {
 	struct Texture { GLuint Id; GLenum Type, InternalType, Format; };
 	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; bool Active; };

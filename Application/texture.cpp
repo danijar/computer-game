@@ -2,6 +2,8 @@
 
 #include "system.h"
 
+#include <string>
+using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/Graphics.hpp>
 using namespace sf;
@@ -9,7 +11,7 @@ using namespace sf;
 #include "texture.h"
 
 
-class ComponentTexture : public Component
+class ModuleTexture : public Module
 {
 	void Init()
 	{
@@ -24,7 +26,7 @@ class ComponentTexture : public Component
 			if(i->second->Changed)
 			{
 				glBindTexture(GL_TEXTURE_2D, i->second->Id);
-				Load(i->second->Path);
+				Load(Name() + "/" + i->second->Path);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

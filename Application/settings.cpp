@@ -8,7 +8,7 @@ using namespace sf;
 #include "settings.h"
 
 
-class ComponentSettings : public Component
+class ModuleSettings : public Module
 {
 	void Init()
 	{

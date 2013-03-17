@@ -19,7 +19,7 @@ using namespace glm;
 #include "camera.h"
 
 
-class ComponentRendererForward : public Component
+class ModuleRendererForward : public Module
 {
 	GLuint shader;
 

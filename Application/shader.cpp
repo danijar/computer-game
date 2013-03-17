@@ -13,7 +13,7 @@ using namespace std;
 #include "shader.h"
 
 
-class ComponentShader : public Component
+class ModuleShader : public Module
 {
 	void Init()
 	{

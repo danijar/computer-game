@@ -79,6 +79,7 @@
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mods.cpp" />
     <ClCompile Include="movement.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="rendererdeferred.cpp" />

@@ -20,7 +20,7 @@ using namespace glm;
 #include "text.h"
 #include "keyboard.h"
 
-class ComponentForm : public Component
+class ModuleForm : public Module
 {
 	unordered_map<string, GLuint> textures;
 	
@@ -50,7 +50,7 @@ class ComponentForm : public Component
 			int number = KeyDown(Key::LShift) ? 500 : 1;
 			for(int i = 0; i < number; ++i)
 			{
-				unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 4, 0), true);
+				unsigned int id = CreateCube("magic.jpg", vec3(0, 4, 0), true);
 				Entity->Add<StorageAnimation>(id);
 				auto tsf = Entity->Get<StorageTransform>(id);
 				tsf->Rotation = vec3(random(), random(), random());
@@ -61,14 +61,14 @@ class ComponentForm : public Component
 			const int a = 3;
 			for(float x = -3; x <= 3; ++x)
 			for(float z = -3; z <= 3; ++z)
-				CreateCube("forms/textures/dirt.jpg", vec3(a*x, 1, a*z));
+				CreateCube("dirt.jpg", vec3(a*x, 1, a*z));
 
 			for(float x = -3; x <= 3; x+=3)
 			for(float z = -3; z <= 3; z+=3)
 				if(x == 0 && z == 0) continue;
-				else CreateCube("forms/textures/grass.jpg", vec3(a*x, a+1, a*z));
+				else CreateCube("grass.jpg", vec3(a*x, a+1, a*z));
 	
-			CreatePlane("forms/textures/bottom.jpg", 20);
+			CreatePlane("bottom.jpg", 20);
 		});
 	}
 

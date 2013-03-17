@@ -71,6 +71,9 @@
     <ClCompile Include="texture.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
+    <ClCompile Include="mods.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">

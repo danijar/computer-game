@@ -3,6 +3,9 @@
 #include "system.h"
 #include "debug.h"
 
+#include <string>
+using namespace std;
+
 #include "settings.cpp"
 #include "window.cpp"
 #include "input.cpp"
@@ -20,21 +23,21 @@ int main()
 {
 	System World;
 
-	World.Add(0, "settings",  new ComponentSettings());
-	World.Add(1, "window",    new ComponentWindow());
-	World.Add(1, "input",     new ComponentInput());
-	World.Add(2, "form",      new ComponentForm());
-	World.Add(2, "texture",   new ComponentTexture());
-	World.Add(2, "movement",  new ComponentMovement());
-	World.Add(2, "animation", new ComponentAnimation());
-	World.Add(2, "camera",    new ComponentCamera());
-	//World.Add(3, "renderer",  new ComponentRendererForward());
-	World.Add(3, "renderer",  new ComponentRendererDeferred());
-	World.Add(4, "text",      new ComponentText());
+	World.Add(0, "settings",  new ModuleSettings());
+	World.Add(1, "window",    new ModuleWindow());
+	World.Add(1, "input",     new ModuleInput());
+	World.Add(2, "form",      new ModuleForm());
+	World.Add(2, "texture",   new ModuleTexture());
+	World.Add(2, "movement",  new ModuleMovement());
+	World.Add(2, "animation", new ModuleAnimation());
+	World.Add(2, "camera",    new ModuleCamera());
+	//World.Add(3, "renderer",  new ModuleRendererForward());
+	World.Add(3, "renderer",  new ModuleRendererDeferred());
+	World.Add(4, "text",      new ModuleText());
 
 	World.Init();
 
-	string Message = World.UpdateWhile();
+	string Message = World.UpdateLoop();
 	cout << "System exited with message: " << Message << endl;
 
 	// cin.get();

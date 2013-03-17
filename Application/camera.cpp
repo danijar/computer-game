@@ -15,7 +15,7 @@ using namespace glm;
 #include "text.h"
 
 
-class ComponentCamera : public Component
+class ModuleCamera : public Module
 {
 	Clock clock;
 	float delta;

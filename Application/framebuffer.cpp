@@ -3,7 +3,7 @@
 #include "system.h"
 
 
-class ComponentFramebuffer : public Component
+class ModuleFramebuffer : public Module
 {
 	void Init()
 	{
