@@ -27,7 +27,7 @@ using namespace glm;
 class ModuleRendererDeferred : public Module
 {
 	struct Texture { GLuint Id; GLenum Type, InternalType, Format; };
-	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; bool Active; };
+	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; };
 
 	void Init()
 	{
@@ -42,9 +42,24 @@ class ModuleRendererDeferred : public Module
 
 	void Update()
 	{
+		/*
 		uint i = 0;
 		Pass pass;
-
+		*/
+		uint n = 0;
+		for(auto i : Passes)
+		{
+			if(n < Passes.size() - 1)
+				glBindFramebuffer(GL_FRAMEBUFFER, i.second.Framebuffer);
+			else
+				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			if(n > 0)
+				Quad(i.second.Program, i.second.Textures);
+			else
+				Forms(i.second.Program);
+			n++;
+		}
+		/*
 		pass = Passes[i++].second;
 		glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
 		Forms(pass.Program);
@@ -62,7 +77,7 @@ class ModuleRendererDeferred : public Module
 		pass = Passes[i++].second;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		Quad(pass.Program, pass.Textures);
-
+		*/
 		Opengl::Test();
 	}
 
@@ -74,9 +89,6 @@ class ModuleRendererDeferred : public Module
 			{
 			case Keyboard::Key::F3:
 				stg->Wireframe = !stg->Wireframe;
-				break;
-			case Keyboard::Key::F4:
-				get_pass("antialiasing")->Active = !get_pass("antialiasing")->Active;
 				break;
 			}
 		});
@@ -284,7 +296,6 @@ class ModuleRendererDeferred : public Module
 		pass.Framebuffer = create_framebuffer(targets);
 		for(auto i : textures)
 			pass.Textures.insert(make_pair(i.first, get_texture(i.second).Id));
-		pass.Active = true;
 		Passes.push_back(make_pair(name, pass));
 		return pass;
 	}

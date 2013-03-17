@@ -22,8 +22,6 @@ using namespace glm;
 
 class ModuleForm : public Module
 {
-	unordered_map<string, GLuint> textures;
-	
 	void Init()
 	{
 		Listeners();
@@ -47,6 +45,7 @@ class ModuleForm : public Module
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
+			// move this into a script
 			int number = KeyDown(Key::LShift) ? 500 : 1;
 			for(int i = 0; i < number; ++i)
 			{
@@ -58,16 +57,15 @@ class ModuleForm : public Module
 		});
 
 		Event->Listen("SystemInitialized", [=]{
+			// move this into the script init.js and run that from here
 			const int a = 3;
 			for(float x = -3; x <= 3; ++x)
 			for(float z = -3; z <= 3; ++z)
 				CreateCube("dirt.jpg", vec3(a*x, 1, a*z));
-
 			for(float x = -3; x <= 3; x+=3)
 			for(float z = -3; z <= 3; z+=3)
 				if(x == 0 && z == 0) continue;
 				else CreateCube("grass.jpg", vec3(a*x, a+1, a*z));
-	
 			CreatePlane("bottom.jpg", 20);
 		});
 	}

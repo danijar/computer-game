@@ -31,7 +31,16 @@ class ModuleShader : public Module
 
 	void Update()
 	{
+		auto shs = Entity->Get<StorageShader>();
+		for(auto i = shs.begin(); i != shs.end(); ++i)
+		{
+			if(i->second->Changed)
+			{
 
+
+				i->second->Changed = false;
+			}
+		}
 	}
 
 	void Listeners()
