@@ -109,14 +109,14 @@
     <ClInclude Include="transform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\basic.frag" />
-    <None Include="shaders\basic.vert" />
-    <None Include="shaders\forms.frag" />
-    <None Include="shaders\forms.vert" />
-    <None Include="shaders\antialiasing.frag" />
-    <None Include="shaders\light.frag" />
-    <None Include="shaders\quad.vert" />
-    <None Include="shaders\screen.frag" />
+    <None Include="shader\antialiasing.frag" />
+    <None Include="shader\basic.frag" />
+    <None Include="shader\basic.vert" />
+    <None Include="shader\forms.frag" />
+    <None Include="shader\forms.vert" />
+    <None Include="shader\light.frag" />
+    <None Include="shader\quad.vert" />
+    <None Include="shader\screen.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

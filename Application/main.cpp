@@ -14,28 +14,30 @@ using namespace std;
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
+#include "shader.cpp"
+#include "framebuffer.cpp"
 #include "rendererforward.cpp"
 #include "rendererdeferred.cpp"
 #include "text.cpp"
-#include "shader.cpp"
-
 
 int main()
 {
 	System World;
 
-	World.Add(0, "settings",  new ModuleSettings());
-	World.Add(1, "window",    new ModuleWindow());
-	World.Add(1, "input",     new ModuleInput());
-	World.Add(2, "form",      new ModuleForm());
-	World.Add(2, "texture",   new ModuleTexture());
-	World.Add(2, "movement",  new ModuleMovement());
-	World.Add(2, "animation", new ModuleAnimation());
-	World.Add(2, "camera",    new ModuleCamera());
+	World.Add(0, "settings",    new ModuleSettings());
+	World.Add(1, "window",      new ModuleWindow());
+	World.Add(1, "input",       new ModuleInput());
+	World.Add(2, "form",        new ModuleForm());
+	World.Add(2, "texture",     new ModuleTexture());
+	World.Add(2, "movement",    new ModuleMovement());
+	World.Add(2, "animation",   new ModuleAnimation());
+	World.Add(2, "camera",      new ModuleCamera());
+	World.Add(3, "shader",      new ModuleShader());
+	World.Add(3, "framebuffer", new ModuleFramebuffer());
 	//World.Add(3, "renderer",  new ModuleRendererForward());
-	World.Add(3, "renderer",  new ModuleRendererDeferred());
-	World.Add(4, "text",      new ModuleText());
-	World.Add(4, "shader",    new ModuleShader());
+	World.Add(3, "renderer",    new ModuleRendererDeferred());
+	World.Add(4, "text",        new ModuleText());
+	
 
 	World.Init();
 

@@ -123,28 +123,28 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\forms.frag">
+    <None Include="shader\antialiasing.frag">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\forms.vert">
+    <None Include="shader\basic.frag">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\light.frag">
+    <None Include="shader\basic.vert">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\quad.vert">
+    <None Include="shader\forms.frag">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\basic.frag">
+    <None Include="shader\forms.vert">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\basic.vert">
+    <None Include="shader\light.frag">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\screen.frag">
+    <None Include="shader\quad.vert">
       <Filter>4. Shaders</Filter>
     </None>
-    <None Include="shaders\antialiasing.frag">
+    <None Include="shader\screen.frag">
       <Filter>4. Shaders</Filter>
     </None>
   </ItemGroup>

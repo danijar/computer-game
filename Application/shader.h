@@ -3,6 +3,7 @@
 #include "system.h"
 
 #include <string>
+#include <unordered_map>
 #include <SFML/OpenGL.hpp>
 
 struct StorageShader
@@ -12,6 +13,6 @@ struct StorageShader
 	GLuint Program;
 	GLuint ShaderVertex, ShaderFragment;
 	std::string PathVertex, PathFragment; // required
-	map<std::string, unsigned int> Samplers;
+	unordered_map<std::string, GLuint> Samplers;
 	//map<GLenum, void*> Uniforms; // how to represent that correctly?
 };

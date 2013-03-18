@@ -9,7 +9,7 @@ uniform sampler2D albedo_tex;
 
 void main()
 {
-	if(texture(albedo_tex, coord).a == 0.0) discard;
+	//if(texture(albedo_tex, coord).a == 0.0) discard;
 
 	vec3 pixel = vec3(0);
 	vec3 position = texture(position_tex, coord).xyz;

@@ -22,6 +22,8 @@ class ModuleShader : public Module
 
 	void Init()
 	{
+		Opengl::InitGlew();
+
 		Listeners();
 	}
 
