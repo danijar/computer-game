@@ -2,7 +2,6 @@
 
 #include "system.h"
 #include "debug.h"
-#include "shaders.h"
 #include "opengl.h"
 
 #include <vector>
@@ -22,12 +21,12 @@ using namespace glm;
 #include "transform.h"
 #include "texture.h"
 #include "camera.h"
-
+#include "shader.h"
 
 class ModuleRendererDeferred : public Module
 {
 	struct Texture { GLuint Id; GLenum Type, InternalType, Format; };
-	struct Pass { GLuint Framebuffer; GLuint Program; unordered_map<string, GLuint> Textures; };
+	struct Pass { GLuint Framebuffer; unsigned int Shader; unordered_map<string, GLuint> Textures; };
 
 	void Init()
 	{
@@ -42,10 +41,8 @@ class ModuleRendererDeferred : public Module
 
 	void Update()
 	{
-		/*
-		uint i = 0;
-		Pass pass;
-		*/
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		uint n = 0;
 		for(auto i : Passes)
 		{
@@ -53,31 +50,18 @@ class ModuleRendererDeferred : public Module
 				glBindFramebuffer(GL_FRAMEBUFFER, i.second.Framebuffer);
 			else
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			if(n > 0)
-				Quad(i.second.Program, i.second.Textures);
-			else
-				Forms(i.second.Program);
+
+			GLuint shader = Entity->Get<StorageShader>(i.second.Shader)->Program;
+			if(shader)
+			{
+				if(n > 0)
+					Quad(shader, i.second.Textures);
+				else
+					Forms(shader);
+			}
 			n++;
 		}
-		/*
-		pass = Passes[i++].second;
-		glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
-		Forms(pass.Program);
 
-		while(i < Passes.size() - 1)
-		{
-			pass = Passes[i++].second;
-			if(pass.Active)
-			{
-				glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
-				Quad(pass.Program, pass.Textures);
-			}
-		}
-
-		pass = Passes[i++].second;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		Quad(pass.Program, pass.Textures);
-		*/
 		Opengl::Test();
 	}
 
@@ -103,6 +87,10 @@ class ModuleRendererDeferred : public Module
 		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
 			Resize(Size);
 		});
+
+		Event->Listen("ShaderUpdated", [=]{
+			Uniforms();
+		});
 	}
 
 	void Pipeline()
@@ -116,26 +104,26 @@ class ModuleRendererDeferred : public Module
 		forms_targets.push_back("normal");
 		forms_targets.push_back("albedo");
 		forms_targets.push_back("depth");
-		create_pass("forms", make_pair("shaders/forms.vert", "shaders/forms.frag"), forms_targets);
+		create_pass("forms", make_pair("forms.vert", "forms.frag"), forms_targets);
 
 		get_or_create_texture("light", GL_RGBA32F);
 		unordered_map<string, string> light_uniforms;
 		light_uniforms.insert(make_pair("position_tex", "position"));
 		light_uniforms.insert(make_pair("normal_tex",   "normal"));
 		light_uniforms.insert(make_pair("albedo_tex",   "albedo"));
-		create_pass("light", "shaders/light.frag", "light", light_uniforms);
+		create_pass("light", "light.frag", "light", light_uniforms);
 
 		get_or_create_texture("antialiasing", GL_RGBA32F);
 		unordered_map<string, string> fxaa_uniforms;
 		fxaa_uniforms.insert(make_pair("image_tex",    "light"));
 		fxaa_uniforms.insert(make_pair("position_tex", "position"));
 		fxaa_uniforms.insert(make_pair("normal_tex",   "normal"));
-		create_pass("antialiasing", "shaders/antialiasing.frag", "antialiasing", fxaa_uniforms);
+		create_pass("antialiasing", "antialiasing.frag", "antialiasing", fxaa_uniforms);
 
 		get_or_create_texture("screen", GL_RGBA32F);
 		unordered_map<string, string> screen_uniforms;
 		screen_uniforms.insert(make_pair("image_tex", "antialiasing"));
-		create_pass("screen", "shaders/screen.frag", "screen", screen_uniforms);
+		create_pass("screen", "screen.frag", "screen", screen_uniforms);
 	}
 
 	void Resize()
@@ -145,12 +133,17 @@ class ModuleRendererDeferred : public Module
 	void Resize(Vector2u Size)
 	{
 		glViewport(0, 0, Size.x, Size.y);
-
-		Shaders::Uniform(get_pass("forms")->Program, "projection", Global->Get<StorageCamera>("camera")->Projection);
-		Shaders::Uniform(get_pass("antialiasing")->Program, "frameBufSize", vec2(Size.x, Size.y));
-
+		
 		for(auto i : Textures)
 			resize_texture(i.first, Size);
+
+		Uniforms();
+	}
+	void Uniforms()
+	{
+		Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
+		if(get_shader("forms")) Uniform(get_shader("forms"), "projection", Global->Get<StorageCamera>("camera")->Projection);
+		if(get_shader("antialiasing")) Uniform(get_shader("antialiasing"), "frameBufSize", vec2(Size.x, Size.y));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -286,18 +279,26 @@ class ModuleRendererDeferred : public Module
 	Pass create_pass(string name, string fragmentpath, string target, unordered_map<string, string> textures, unordered_map<string, void*> values = unordered_map<string, void*>())
 	{
 		vector<string> targets; targets.push_back(target);
-		pair<string, string> shaderpaths("shaders/quad.vert", fragmentpath);
+		pair<string, string> shaderpaths("quad.vert", fragmentpath);
 		return create_pass(name, shaderpaths, targets, textures);
 	}
 	Pass create_pass(string name, pair<string, string> shaderpaths, vector<string> targets, unordered_map<string, string> textures = unordered_map<string, string>()/*, unordered_map<string, void*> values = unordered_map<string, void*>()*/)
 	{
+		unsigned int id = Entity->New();
+		auto shd = Entity->Add<StorageShader>(id);
+		shd->PathVertex   = shaderpaths.first;
+		shd->PathFragment = shaderpaths.second;
 		Pass pass;
-		pass.Program = Shaders::Create(shaderpaths.first, shaderpaths.second);
+		pass.Shader = id;
 		pass.Framebuffer = create_framebuffer(targets);
 		for(auto i : textures)
 			pass.Textures.insert(make_pair(i.first, get_texture(i.second).Id));
 		Passes.push_back(make_pair(name, pass));
 		return pass;
+	}
+	GLuint get_shader(string pass)
+	{
+		return Entity->Get<StorageShader>(get_pass(pass)->Shader)->Program;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -382,6 +383,31 @@ class ModuleRendererDeferred : public Module
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		glUseProgram(0);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Uniforms
+	////////////////////////////////////////////////////////////
+
+	void Uniform(GLuint Program, string Name, float Value)
+	{
+		glUseProgram(Program);
+		glUniform1f(glGetUniformLocation(Program, Name.c_str()), Value);
+		glUseProgram(0);
+	}
+
+	void Uniform(GLuint Program, string Name, mat4 Value)
+	{
+		glUseProgram(Program);
+		glUniformMatrix4fv(glGetUniformLocation(Program, Name.c_str()), 1, GL_FALSE, value_ptr(Value));
+		glUseProgram(0);
+	}
+
+	void Uniform(GLuint Program, string Name, vec2 Value)
+	{
+		glUseProgram(Program);
+		glUniform2fv(glGetUniformLocation(Program, Name.c_str()), 1, value_ptr(Value));
 		glUseProgram(0);
 	}
 };

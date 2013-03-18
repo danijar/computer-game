@@ -2,6 +2,7 @@
 
 #include "system.h"
 #include "debug.h"
+#include "opengl.h"
 
 #include <GLEW/glew.h>
 #include <GLM/glm.hpp>
@@ -15,56 +16,75 @@ using namespace std;
 
 class ModuleShader : public Module
 {
+	/*
+	 * How to pass uniform changes from other modules?
+	 */
+
 	void Init()
 	{
-		/*
-		 * where to get the needed shaders?
-		 *
-		 * How guarantee that shaders are valid soon enough to not crash the renderer?
-		 * Ideas: - let components create shaders by sending events
-		 *        - use store a changed flag in the storage and update all with the flag set every frame
-		          - when doing so, how to distinct whether the source or simply an uniform changed?
-		 */
-
 		Listeners();
 	}
 
 	void Update()
 	{
 		auto shs = Entity->Get<StorageShader>();
+		int Count = 0;
 		for(auto i = shs.begin(); i != shs.end(); ++i)
 		{
-			if(i->second->Changed)
+			if(!i->second->Program)
 			{
-
-
-				i->second->Changed = false;
+				i->second->Program = Create(i->second->PathVertex, i->second->PathFragment);
+				Count++;
 			}
 		}
+		if(Count > 0) Event->Fire("ShaderUpdated");
 	}
 
 	void Listeners()
 	{
-		// on window get focus, look for modified source files
+		Event->Listen("WindowFocusGained", [=]{
+			auto shs = Entity->Get<StorageShader>();
+			int Count = 0;
+			for(auto i = shs.begin(); i != shs.end(); ++i)
+			{
+				bool Changed = true;  // check if the file actually changed
+				if(Changed)
+				{
+					i->second->Program = Create(i->second->PathVertex, i->second->PathFragment);
+					Count++;
+				}
+			}
+			if(Count > 0)
+			{
+				Debug::Info("Shader reloaded " + to_string(Count) + " programs");
+				this->Event->Fire("ShaderUpdated");
+			}
+		});
 	}
 
 	////////////////////////////////////////////////////////////
 	// Creation
 	////////////////////////////////////////////////////////////
 
-	GLuint Create(string VertexPath, string FragmentPath)
+	GLuint Create(string PathVertex, string PathFragment)
 	{
-		GLuint vertex   = CreateShader(VertexPath,   GL_VERTEX_SHADER  );
-		GLuint fragment = CreateShader(FragmentPath, GL_FRAGMENT_SHADER);
+		GLuint vertex   = CreateShader(PathVertex,   GL_VERTEX_SHADER  );
+		GLuint fragment = CreateShader(PathFragment, GL_FRAGMENT_SHADER);
 
 		GLuint program = glCreateProgram();
 		glAttachShader(program, vertex  );
 		glAttachShader(program, fragment);
 		glLinkProgram(program);
 
-		Debug::PassFail("Shader creation", TestProgram(program));
+		if(!TestProgram(program))
+		{
+			Debug::Fail("Shader program creation fail");
+			return 0;
+		}
 
-		glDeleteShader(vertex);
+		glDetachShader(program, vertex  );
+		glDetachShader(program, fragment);
+		glDeleteShader(vertex  );
 		glDeleteShader(fragment);
 		return program;
 	}
@@ -72,11 +92,11 @@ class ModuleShader : public Module
 	GLuint CreateShader(string Path, GLenum Type)
 	{
 		GLuint id = glCreateShader(Type);
-		string source = string((istreambuf_iterator<char>(ifstream(Path))), istreambuf_iterator<char>());
+		string source = string((istreambuf_iterator<char>(ifstream(Name() + "/" + Path))), istreambuf_iterator<char>());
 		const GLchar* chars = source.c_str();
 		glShaderSource(id, 1, &chars, NULL);
 		glCompileShader(id);
-		if(!TestShader(id)) Debug::Info("... in (" + Path + ")");
+		if(!TestShader(id)) Debug::Fail("... in (" + Path + ")");
 		return id;
 	}
 

@@ -17,6 +17,7 @@ using namespace std;
 #include "rendererforward.cpp"
 #include "rendererdeferred.cpp"
 #include "text.cpp"
+#include "shader.cpp"
 
 
 int main()
@@ -34,6 +35,7 @@ int main()
 	//World.Add(3, "renderer",  new ModuleRendererForward());
 	World.Add(3, "renderer",  new ModuleRendererDeferred());
 	World.Add(4, "text",      new ModuleText());
+	World.Add(4, "shader",    new ModuleShader());
 
 	World.Init();
 
