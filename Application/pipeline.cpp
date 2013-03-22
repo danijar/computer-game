@@ -14,13 +14,14 @@ using namespace glm;
 #include "shader.h"
 #include "framebuffer.h"
 #include "camera.h"
+#include "texture.h"
 
 
 class ModulePipeline : public Module
 {
 	unordered_map<string, GLuint> Textures;
 
-	GLuint forms, antialiasing;
+	GLuint forms, occlusion, antialiasing;
 
 	void Init()
 	{
@@ -67,9 +68,19 @@ class ModulePipeline : public Module
 		light_samplers.insert(make_pair("normal_tex",   "normal"));
 		light_samplers.insert(make_pair("albedo_tex",   "albedo"));
 		CreatePass("light.frag", "light", light_samplers);
+		
+		unordered_map<string, string> occlusion_samplers;
+		occlusion_samplers.insert(make_pair("image_tex",    "light"));
+		occlusion_samplers.insert(make_pair("position_tex", "position"));
+		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
+		occlusion = CreatePass("occlusion.frag", "occlusion", occlusion_samplers);
+		unsigned int id = Entity->New();
+		auto tex = Entity->Add<StorageTexture>(id);
+		tex->Path = "noise.png";
+		Entity->Get<StorageShader>(occlusion)->Samplers.insert(make_pair("noise_tex", tex->Id));
 
 		unordered_map<string, string> antialiasing_samplers;
-		antialiasing_samplers.insert(make_pair("image_tex",    "light"));
+		antialiasing_samplers.insert(make_pair("image_tex",    "occlusion"));
 		antialiasing_samplers.insert(make_pair("position_tex", "position"));
 		antialiasing_samplers.insert(make_pair("normal_tex",   "normal"));
 		antialiasing = CreatePass("antialiasing.frag", "antialiasing", antialiasing_samplers);

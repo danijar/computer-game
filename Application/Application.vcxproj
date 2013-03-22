@@ -116,6 +116,7 @@
     <None Include="shader\forms.frag" />
     <None Include="shader\forms.vert" />
     <None Include="shader\light.frag" />
+    <None Include="shader\occlusion.frag" />
     <None Include="shader\quad.vert" />
     <None Include="shader\screen.frag" />
   </ItemGroup>
