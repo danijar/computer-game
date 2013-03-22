@@ -194,7 +194,7 @@ class ModuleForm : public Module
 		string texture = string(model->materials[0]->texture1_map.name);
 		texture = texture.substr(0, texture.size() - 1) + ".jpg"; // remove the last character because whyever it's a dot
 
-		Debug::Pass("Loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices, " + to_string(normals.size()) + " normals and " + to_string(texcoords.size()) + " texcoords and texture (" + texture + ").");
+		Debug::Pass("Loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices, " + to_string(normals.size()) + " normals, " + to_string(texcoords.size()) + " texcoords and texture (" + texture + ").");
 		
 		return Create(&vertices[0], vertices.size(), &normals[0], normals.size(), &texcoords[0], texcoords.size(), &elements[0], elements.size(), texture, Position, Rotation, Scale, Movable);
 	}

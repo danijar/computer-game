@@ -19,10 +19,13 @@
     along with  this program; If not, see <http://www.gnu.org/licenses/>. 
  */
 
+/** @file lib3ds.h 
+    Header file for public API defined by lib3ds */
+
 #include <stddef.h>
 
 #ifndef LIB3DSAPI
-    #ifdef _MSC_VER
+    #if defined(_MSC_VER) && !defined(LIB3DS_STATIC)
         #ifdef LIB3DS_EXPORTS
             #define LIB3DSAPI __declspec(dllexport)
         #else               
@@ -37,7 +40,8 @@
 extern "C" {
 #endif
 
-/** @defgroup api API */
+/** @defgroup api API 
+    lib3ds public API. */
 /** @{ */
 
 typedef enum Lib3dsIoSeek {
@@ -99,13 +103,13 @@ typedef struct Lib3dsBackground {
     float       gradient_bottom[3];
 } Lib3dsBackground;
 
-/* Shadow settings */
+/** Shadow settings */
 typedef struct Lib3dsShadow {
-    short       map_size;           /* Global shadow map size that ranges from 10 to 4096 */
-    float       low_bias;           /* Global shadow low bias */
-    float       hi_bias;            /* Global shadow hi bias */
-    float       filter;             /* Global shadow filter that ranges from 1 (lowest) to 10 (highest) */
-    float       ray_bias;           /* Global raytraced shadow bias */
+    short       map_size;           /**< Global shadow map size that ranges from 10 to 4096 */
+    float       low_bias;           /**< Global shadow low bias */
+    float       hi_bias;            /**< Global shadow hi bias */
+    float       filter;             /**< Global shadow filter that ranges from 1 (lowest) to 10 (highest) */
+    float       ray_bias;           /**< Global raytraced shadow bias */
 } Lib3dsShadow;
 
 /* Layout view types */
