@@ -82,7 +82,8 @@
     <ClCompile Include="mods.cpp" />
     <ClCompile Include="movement.cpp" />
     <ClCompile Include="opengl.cpp" />
-    <ClCompile Include="rendererdeferred.cpp" />
+    <ClCompile Include="pipeline.cpp" />
+    <ClCompile Include="renderer.cpp" />
     <ClCompile Include="rendererforward.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="shader.cpp" />

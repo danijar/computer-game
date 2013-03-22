@@ -59,9 +59,6 @@
     <ClCompile Include="shaders.cpp">
       <Filter>1. Sources</Filter>
     </ClCompile>
-    <ClCompile Include="rendererdeferred.cpp">
-      <Filter>3. Components</Filter>
-    </ClCompile>
     <ClCompile Include="shader.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
       <Filter>3. Components</Filter>
     </ClCompile>
     <ClCompile Include="mods.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="renderer.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
+    <ClCompile Include="pipeline.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
   </ItemGroup>
