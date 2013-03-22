@@ -113,6 +113,7 @@
     <None Include="shader\antialiasing.frag" />
     <None Include="shader\basic.frag" />
     <None Include="shader\basic.vert" />
+    <None Include="shader\combine.frag" />
     <None Include="shader\forms.frag" />
     <None Include="shader\forms.vert" />
     <None Include="shader\light.frag" />

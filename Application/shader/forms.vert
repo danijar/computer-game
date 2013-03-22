@@ -17,7 +17,7 @@ void main()
 	mat4 mvp = projection * view * model;
 
 	fposition = vec3(mvp * vec4(position, 1.0));
-	fnormal = vec3(normalize(model * vec4(normal, 0.0)));
+	fnormal = vec3(normalize(mvp * vec4(normal, 0.0)));
 	ftexcoord = texcoord;
 	gl_Position = mvp * vec4(position, 1.0);
 }

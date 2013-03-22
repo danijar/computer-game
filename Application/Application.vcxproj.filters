@@ -153,5 +153,8 @@
     <None Include="shader\occlusion.frag">
       <Filter>4. Shaders</Filter>
     </None>
+    <None Include="shader\combine.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

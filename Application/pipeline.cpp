@@ -21,7 +21,7 @@ class ModulePipeline : public Module
 {
 	unordered_map<string, GLuint> Textures;
 
-	GLuint forms, occlusion, antialiasing;
+	GLuint forms, occlusion, combine, antialiasing;
 
 	void Init()
 	{
@@ -70,7 +70,6 @@ class ModulePipeline : public Module
 		CreatePass("light.frag", "light", light_samplers);
 		
 		unordered_map<string, string> occlusion_samplers;
-		occlusion_samplers.insert(make_pair("image_tex",    "light"));
 		occlusion_samplers.insert(make_pair("position_tex", "position"));
 		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
 		occlusion = CreatePass("occlusion.frag", "occlusion", occlusion_samplers);
@@ -79,8 +78,13 @@ class ModulePipeline : public Module
 		tex->Path = "noise.png";
 		Entity->Get<StorageShader>(occlusion)->Samplers.insert(make_pair("noise_tex", tex->Id));
 
+		unordered_map<string, string> blur_samplers;
+		blur_samplers.insert(make_pair("image_tex",  "light"));
+		blur_samplers.insert(make_pair("effect_tex", "occlusion"));
+		combine = CreatePass("combine.frag", "result", blur_samplers);
+
 		unordered_map<string, string> antialiasing_samplers;
-		antialiasing_samplers.insert(make_pair("image_tex",    "occlusion"));
+		antialiasing_samplers.insert(make_pair("image_tex",    "result"));
 		antialiasing_samplers.insert(make_pair("position_tex", "position"));
 		antialiasing_samplers.insert(make_pair("normal_tex",   "normal"));
 		antialiasing = CreatePass("antialiasing.frag", "antialiasing", antialiasing_samplers);
@@ -98,6 +102,14 @@ class ModulePipeline : public Module
 		}
 
 		if(GLuint id = Entity->Get<StorageShader>(antialiasing)->Program)
+		{
+			Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
+			glUseProgram(id);
+			glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+			glUseProgram(0);
+		}
+
+		if(GLuint id = Entity->Get<StorageShader>(combine)->Program)
 		{
 			Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 			glUseProgram(id);
