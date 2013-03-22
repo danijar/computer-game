@@ -77,9 +77,11 @@ class ModuleForm : public Module
 		});
 	}
 
-	// creation
+	////////////////////////////////////////////////////////////
+	// Buffer Creation
+	////////////////////////////////////////////////////////////
 
-	unsigned int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	unsigned int Create(vector<GLfloat> Vertices, vector<GLfloat> Normals, vector<GLfloat> Texcoords, vector<GLuint> Elements, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -88,22 +90,22 @@ class ModuleForm : public Module
 
 		glGenBuffers(1, &frm->Vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-		glBufferData(GL_ARRAY_BUFFER, VerticesN * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(GLfloat), &Vertices[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Normals);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glBufferData(GL_ARRAY_BUFFER, NormalsN * sizeof(GLfloat), Normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(GLfloat), &Normals[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, TexcoordsN * sizeof(GLfloat), Texcoords, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(GLfloat), &Texcoords[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementsN * sizeof(GLuint), Elements, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(GLuint), &Elements[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 		auto txs = Entity->Get<StorageTexture>();
@@ -138,7 +140,7 @@ class ModuleForm : public Module
 		const GLfloat Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
 		const GLuint  Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
 
-		return Create(Vertices, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position, vec3(0), vec3(1), Movable);
+		return Create(vec(Vertices, 72), vec(Normals, 72), vec(Texcoords, 48), vec(Elements, 36), Texture, Position, vec3(0), vec3(1), Movable);
 	}
 
 	unsigned int CreatePlane(string Texture, float length, vec3 Position = vec3(0))
@@ -148,17 +150,19 @@ class ModuleForm : public Module
 		const GLfloat Normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
 		const GLfloat Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
 		const GLuint  Elements[]  = { 0,1,2, 2,3,0 };
-		return Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, Texture, Position);
+		return Create(vec(Vertices, 12), vec(Normals, 12), vec(Texcoords, 8), vec(Elements, 6), Texture, Position);
 	}
 
-	// model loading
+	////////////////////////////////////////////////////////////
+	// Model Loading
+	////////////////////////////////////////////////////////////
 
 	unsigned int Load(string Path, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		Lib3dsFile* model = lib3ds_file_open((Name() + "/" + Path).c_str());
 		if(model == false)
 		{
-			Debug::Fail("Form loading of (" + Path + ") failed.");
+			Debug::Fail("Form loading (" + Path + ") failed.");
 			return 0;
 		}
 
@@ -178,10 +182,8 @@ class ModuleForm : public Module
 					vertices.push_back(mesh->vertices[face->index[k]][0]);
 					vertices.push_back(mesh->vertices[face->index[k]][1]);
 					vertices.push_back(mesh->vertices[face->index[k]][2]);
-
 					texcoords.push_back(mesh->texcos[face->index[k]][0]);
 					texcoords.push_back(mesh->texcos[face->index[k]][1]);
-
 					elements.push_back(element++);
 				}
 			}
@@ -194,12 +196,14 @@ class ModuleForm : public Module
 		string texture = string(model->materials[0]->texture1_map.name);
 		texture = texture.substr(0, texture.size() - 1) + ".jpg"; // remove the last character because whyever it's a dot
 
-		Debug::Pass("Loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices, " + to_string(normals.size()) + " normals, " + to_string(texcoords.size()) + " texcoords and texture (" + texture + ").");
+		Debug::Pass("Form loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices and texture " + texture);
 		
-		return Create(&vertices[0], vertices.size(), &normals[0], normals.size(), &texcoords[0], texcoords.size(), &elements[0], elements.size(), texture, Position, Rotation, Scale, Movable);
+		return Create(vertices, normals, texcoords, elements, texture, Position, Rotation, Scale, Movable);
 	}
 
-	// helpers
+	////////////////////////////////////////////////////////////
+	// Helpers
+	////////////////////////////////////////////////////////////
 
 	void Matrix(unsigned int id)
 	{
@@ -212,6 +216,9 @@ class ModuleForm : public Module
 						* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 		tsf->Matrix = Translate * Rotate * Scale;
 	}
+
+	inline vector<GLfloat> vec(const GLfloat array[], uint length) { return vector<GLfloat>(array, array + length); }
+	inline vector<GLuint> vec(const GLuint array[], uint length) { return vector<GLuint>(array, array + length); }
 
 	inline float random(int precision = 10){ return (float)(rand() % (360 * precision)) / (float)precision; }
 };
