@@ -12,7 +12,9 @@ uniform sampler2D tex;
 
 void main()
 {
+	vec2 texcoord = vec2(ftexcoord.x, 1.0 - ftexcoord.y); // flip texcoords
+
 	position.xyz = fposition;
 	normal.xyz   = normalize(fnormal);
-	albedo.rgba  = texture2D(tex, ftexcoord);
+	albedo.rgba  = texture2D(tex, texcoord);
 }

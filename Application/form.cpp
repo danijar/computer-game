@@ -36,7 +36,7 @@ class ModuleForm : public Module
 			return "Forms " + to_string(fms.size());
 		};
 
-		Load("barrel.3ds", vec3(16, 5.8, 8), vec3(90, 0, 0), vec3(5));
+		Load("barrel.3ds", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(5));
 	}
 
 	void Update()
