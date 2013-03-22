@@ -1,6 +1,8 @@
 #pragma once
 
 #include "system.h"
+#include "debug.h"
+#include "opengl.h"
 
 #include <unordered_map>
 #include <cstdlib>
@@ -11,6 +13,7 @@ using namespace std;
 using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
+#include <LIB3DS/lib3ds.h>
 
 #include "form.h"
 #include "transform.h"
@@ -24,12 +27,16 @@ class ModuleForm : public Module
 {
 	void Init()
 	{
+		Opengl::InitGlew();
+
 		Listeners();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			auto fms = Entity->Get<StorageForm>();
 			return "Forms " + to_string(fms.size());
 		};
+
+		Load("barrel.3ds", vec3(16, 5.8, 8), vec3(90, 0, 0), vec3(5));
 	}
 
 	void Update()
@@ -70,7 +77,9 @@ class ModuleForm : public Module
 		});
 	}
 
-	int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	// creation
+
+	unsigned int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -141,6 +150,56 @@ class ModuleForm : public Module
 		const GLuint  Elements[]  = { 0,1,2, 2,3,0 };
 		return Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, Texture, Position);
 	}
+
+	// model loading
+
+	unsigned int Load(string Path, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	{
+		Lib3dsFile* model = lib3ds_file_open((Name() + "/" + Path).c_str());
+		if(model == false)
+		{
+			Debug::Fail("Form loading of (" + Path + ") failed.");
+			return 0;
+		}
+
+		vector<GLfloat> vertices, normals, texcoords;
+		vector<GLuint> elements;
+
+		GLuint element = 0;
+		for (int i = 0; i < model->nmeshes; ++i)
+		{
+			Lib3dsMesh *mesh = model->meshes[i];
+
+			for(unsigned int j = 0; j < mesh->nfaces; ++j)
+			{
+				Lib3dsFace *face = &mesh->faces[j];
+				for(int k = 0; k < 3; ++k)
+				{
+					vertices.push_back(mesh->vertices[face->index[k]][0]);
+					vertices.push_back(mesh->vertices[face->index[k]][1]);
+					vertices.push_back(mesh->vertices[face->index[k]][2]);
+
+					texcoords.push_back(mesh->texcos[face->index[k]][0]);
+					texcoords.push_back(mesh->texcos[face->index[k]][1]);
+
+					elements.push_back(element++);
+				}
+			}
+
+			int last = normals.size();
+			normals.resize(vertices.size());
+			lib3ds_mesh_calculate_vertex_normals(mesh, (float(*)[3])(&normals[last]));
+		}
+
+		string texture = string(model->materials[0]->texture1_map.name);
+		texture = texture.substr(0, texture.size() - 1) + ".jpg"; // remove the last character because whyever it's a dot
+
+		Debug::Pass("Loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices, " + to_string(normals.size()) + " normals and " + to_string(texcoords.size()) + " texcoords and texture (" + texture + ").");
+		
+		return Create(&vertices[0], vertices.size(), &normals[0], normals.size(), &texcoords[0], texcoords.size(), &elements[0], elements.size(), texture, Position, Rotation, Scale, Movable);
+	}
+
+	// helpers
 
 	void Matrix(unsigned int id)
 	{
