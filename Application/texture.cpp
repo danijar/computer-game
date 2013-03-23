@@ -1,6 +1,7 @@
 #pragma once
 
 #include "system.h"
+#include "debug.h"
 
 #include <string>
 using namespace std;
@@ -26,7 +27,7 @@ class ModuleTexture : public Module
 			if(i->second->Changed)
 			{
 				glBindTexture(GL_TEXTURE_2D, i->second->Id);
-				Load(Name() + "/" + i->second->Path);
+				Load(i->second->Path);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -58,7 +59,13 @@ class ModuleTexture : public Module
 	void Load(string Path)
 	{
 		Image image;
-		bool result = image.loadFromFile(Path);
+		bool result = image.loadFromFile(Name() + "/" + Path);
+		if(!result)
+		{
+			Debug::Fail("Texture loading (" + Path + ") fail");
+			return;
+		}
+		image.flipVertically();
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
 	}
 };
