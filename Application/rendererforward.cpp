@@ -19,7 +19,7 @@ using namespace glm;
 #include "camera.h"
 
 
-class ComponentRendererForward : public Component
+class ModuleRendererForward : public Module
 {
 	GLuint shader;
 
@@ -31,8 +31,6 @@ class ComponentRendererForward : public Component
 		Resize();
 		
 		Listeners();
-
-		Opengl::Test();
 	}
 
 	void Update()
@@ -81,8 +79,6 @@ class ComponentRendererForward : public Component
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 			glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
-
-			Opengl::Test();
 		}
 
 		glDisable(GL_DEPTH_TEST);
@@ -94,6 +90,8 @@ class ComponentRendererForward : public Component
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
+
+		Opengl::Test();
 	}
 
 	void Listeners()

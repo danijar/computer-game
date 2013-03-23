@@ -15,7 +15,7 @@ using namespace glm;
 #include "text.h"
 
 
-class ComponentCamera : public Component
+class ModuleCamera : public Module
 {
 	Clock clock;
 	float delta;
@@ -44,9 +44,10 @@ class ComponentCamera : public Component
 	void Update()
 	{
 		auto cam = Global->Get<StorageCamera>("camera");
-		if(!cam->Active) return;
 		auto wnd = Global->Get<RenderWindow>("window");
 		delta = clock.restart().asSeconds();
+
+		if(!cam->Active) return;
 		
 		Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 		Vector2i position = Mouse::getPosition(*wnd);
@@ -107,13 +108,14 @@ class ComponentCamera : public Component
 		cam->Active = Active;
 		wnd->setMouseCursorVisible(!Active);
 
-		Mouse::setPosition(Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
+		if(Active) Mouse::setPosition(Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
 	}
 
 	void Projection()
 	{
 		Projection(Global->Get<RenderWindow>("window")->getSize());
 	}
+
 	void Projection(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");

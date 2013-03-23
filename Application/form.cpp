@@ -1,6 +1,8 @@
 #pragma once
 
 #include "system.h"
+#include "debug.h"
+#include "opengl.h"
 
 #include <unordered_map>
 #include <cstdlib>
@@ -11,21 +13,22 @@ using namespace std;
 using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
+#include <LIB3DS/lib3ds.h>
 
 #include "form.h"
 #include "transform.h"
+#include "texture.h"
 #include "movement.h"
 #include "animation.h"
 #include "text.h"
 #include "keyboard.h"
 
-
-class ComponentForm : public Component
+class ModuleForm : public Module
 {
-	unordered_map<string, GLuint> textures;
-	
 	void Init()
 	{
+		Opengl::InitGlew();
+
 		Listeners();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
@@ -47,10 +50,11 @@ class ComponentForm : public Component
 	void Listeners()
 	{
 		Event->Listen("InputBindCreate", [=]{
+			// move this into a script
 			int number = KeyDown(Key::LShift) ? 500 : 1;
 			for(int i = 0; i < number; ++i)
 			{
-				unsigned int id = CreateCube("forms/textures/magic.jpg", vec3(0, 4, 0), true);
+				unsigned int id = CreateCube("magic.jpg", vec3(0, 4, 0), true);
 				Entity->Add<StorageAnimation>(id);
 				auto tsf = Entity->Get<StorageTransform>(id);
 				tsf->Rotation = vec3(random(), random(), random());
@@ -62,7 +66,11 @@ class ComponentForm : public Component
 		});
 	}
 
-	int Create(const GLfloat* Vertices, int VerticesN, const GLfloat* Normals, int NormalsN, const GLfloat* Texcoords, int TexcoordsN, const GLuint* Elements, int ElementsN, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	////////////////////////////////////////////////////////////
+	// Buffer Creation
+	////////////////////////////////////////////////////////////
+
+	unsigned int Create(vector<GLfloat> Vertices, vector<GLfloat> Normals, vector<GLfloat> Texcoords, vector<GLuint> Elements, string Texture, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
@@ -71,41 +79,40 @@ class ComponentForm : public Component
 
 		glGenBuffers(1, &frm->Vertices);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-		glBufferData(GL_ARRAY_BUFFER, VerticesN * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(GLfloat), &Vertices[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Normals);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glBufferData(GL_ARRAY_BUFFER, NormalsN * sizeof(GLfloat), Normals, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(GLfloat), &Normals[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Texcoords);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, TexcoordsN * sizeof(GLfloat), Texcoords, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(GLfloat), &Texcoords[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		glGenBuffers(1, &frm->Elements);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, ElementsN * sizeof(GLuint), Elements, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(GLuint), &Elements[0], GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		auto i = textures.find(Texture);
-		if(i == textures.end())
+		auto txs = Entity->Get<StorageTexture>();
+		for(auto i : txs)
 		{
-			Image image;
-			bool result = image.loadFromFile(Texture);
-			auto size = image.getSize();
-			glGenTextures(1, &frm->Texture);
-			glBindTexture(GL_TEXTURE_2D, frm->Texture);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glGenerateMipmap(GL_TEXTURE_2D);
-			textures.insert(make_pair(Texture, frm->Texture));
+			if(i.second->Path == Texture)
+			{
+				frm->Texture = i.second->Id;
+				break;
+			}
 		}
-		else frm->Texture = i->second;
+		if(!frm->Texture)
+		{
+			unsigned int id = Entity->New();
+			auto tex = Entity->Add<StorageTexture>(id);
+			tex->Path = Texture;
+			frm->Texture = tex->Id;
+		}
 
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
@@ -122,7 +129,7 @@ class ComponentForm : public Component
 		const GLfloat Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
 		const GLuint  Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
 
-		return Create(Vertices, 72, Normals, 72, Texcoords, 48, Elements, 36, Texture, Position, vec3(0), vec3(1), Movable);
+		return Create(vec(Vertices, 72), vec(Normals, 72), vec(Texcoords, 48), vec(Elements, 36), Texture, Position, vec3(0), vec3(1), Movable);
 	}
 
 	unsigned int CreatePlane(string Texture, float length, vec3 Position = vec3(0))
@@ -132,8 +139,60 @@ class ComponentForm : public Component
 		const GLfloat Normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
 		const GLfloat Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
 		const GLuint  Elements[]  = { 0,1,2, 2,3,0 };
-		return Create(Vertices, 12, Normals, 12, Texcoords, 8, Elements, 6, Texture, Position);
+		return Create(vec(Vertices, 12), vec(Normals, 12), vec(Texcoords, 8), vec(Elements, 6), Texture, Position);
 	}
+
+	////////////////////////////////////////////////////////////
+	// Model Loading
+	////////////////////////////////////////////////////////////
+
+	unsigned int Load(string Path, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	{
+		Lib3dsFile* model = lib3ds_file_open((Name() + "/" + Path).c_str());
+		if(model == false)
+		{
+			Debug::Fail("Form loading (" + Path + ") failed.");
+			return 0;
+		}
+
+		vector<GLfloat> vertices, normals, texcoords;
+		vector<GLuint> elements;
+
+		GLuint element = 0;
+		for (int i = 0; i < model->nmeshes; ++i)
+		{
+			Lib3dsMesh *mesh = model->meshes[i];
+
+			for(unsigned int j = 0; j < mesh->nfaces; ++j)
+			{
+				Lib3dsFace *face = &mesh->faces[j];
+				for(int k = 0; k < 3; ++k)
+				{
+					vertices.push_back(mesh->vertices[face->index[k]][0]);
+					vertices.push_back(mesh->vertices[face->index[k]][1]);
+					vertices.push_back(mesh->vertices[face->index[k]][2]);
+					texcoords.push_back(mesh->texcos[face->index[k]][0]);
+					texcoords.push_back(mesh->texcos[face->index[k]][1]);
+					elements.push_back(element++);
+				}
+			}
+
+			int last = normals.size();
+			normals.resize(vertices.size());
+			lib3ds_mesh_calculate_vertex_normals(mesh, (float(*)[3])(&normals[last]));
+		}
+
+		string texture = string(model->materials[0]->texture1_map.name);
+		texture = texture.substr(0, texture.size() - 1) + ".jpg"; // remove the last character because whyever it's a dot
+
+		Debug::Pass("Form loaded (" + Path + ") with " + to_string(vertices.size()) + " vertices and texture " + texture);
+		
+		return Create(vertices, normals, texcoords, elements, texture, Position, Rotation, Scale, Movable);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Helpers
+	////////////////////////////////////////////////////////////
 
 	void Matrix(unsigned int id)
 	{
@@ -146,6 +205,9 @@ class ComponentForm : public Component
 						* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 		tsf->Matrix = Translate * Rotate * Scale;
 	}
+
+	inline vector<GLfloat> vec(const GLfloat array[], uint length) { return vector<GLfloat>(array, array + length); }
+	inline vector<GLuint> vec(const GLuint array[], uint length) { return vector<GLuint>(array, array + length); }
 
 	inline float random(int precision = 10){ return (float)(rand() % (360 * precision)) / (float)precision; }
 };

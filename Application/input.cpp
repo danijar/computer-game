@@ -6,7 +6,7 @@
 using namespace sf;
 
 
-class ComponentInput : public Component
+class ModuleInput : public Module
 {
 
 	void Init()

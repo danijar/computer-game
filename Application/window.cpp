@@ -12,8 +12,7 @@ using namespace sf;
 #include "settings.h"
 #include "text.h"
 
-
-class ComponentWindow : public Component
+class ModuleWindow : public Module
 {
 	unsigned int window;
 	int frames;
@@ -60,9 +59,12 @@ class ComponentWindow : public Component
 					Close();
 					break;
 				case Event::Resized:
-					Vector2u Size(evt.size.width, evt.size.height);
+				  { Vector2u Size(evt.size.width, evt.size.height);
 					stg->Size = Size;
 					Event->Fire<Vector2u>("WindowResize", Size);
+					break; }
+				case Event::GainedFocus:
+					Event->Fire("WindowFocusGained");
 					break;
 				}
 			}

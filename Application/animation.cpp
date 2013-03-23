@@ -10,7 +10,7 @@ using namespace sf;
 #include "transform.h"
 
 
-class ComponentAnimation : public Component
+class ModuleAnimation : public Module
 {
 	Clock clock;
 

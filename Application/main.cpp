@@ -3,16 +3,22 @@
 #include "system.h"
 #include "debug.h"
 
+#include <string>
+using namespace std;
+
 #include "settings.cpp"
 #include "window.cpp"
 #include "input.cpp"
 #include "form.cpp"
 #include "terrain.cpp"
+#include "texture.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
-#include "rendererforward.cpp"
-#include "rendererdeferred.cpp"
+#include "shader.cpp"
+#include "framebuffer.cpp"
+#include "pipeline.cpp"
+#include "renderer.cpp"
 #include "text.cpp"
 
 
@@ -20,21 +26,24 @@ int main()
 {
 	System World;
 
-	World.Add(0, "settings",  new ComponentSettings());
-	World.Add(1, "window",    new ComponentWindow());
-	World.Add(1, "input",     new ComponentInput());
-	World.Add(2, "form",      new ComponentForm());
-	World.Add(2, "terrain",   new ComponentTerrain());
-	World.Add(2, "movement",  new ComponentMovement());
-	World.Add(2, "animation", new ComponentAnimation());
-	World.Add(2, "camera",    new ComponentCamera());
-	//World.Add(3, "renderer",  new ComponentRendererForward());
-	World.Add(3, "renderer",  new ComponentRendererDeferred());
-	World.Add(4, "text",      new ComponentText());
+	World.Add(0, "settings",    new ModuleSettings());
+	World.Add(1, "window",      new ModuleWindow());
+	World.Add(2, "input",       new ModuleInput());
+	World.Add(2, "form",        new ModuleForm());
+	World.Add(2, "terrain",     new ModuleTerrain());
+	World.Add(2, "texture",     new ModuleTexture());
+	World.Add(2, "camera",      new ModuleCamera());
+	World.Add(3, "movement",    new ModuleMovement());
+	World.Add(3, "animation",   new ModuleAnimation());
+	World.Add(3, "shader",      new ModuleShader());
+	World.Add(3, "framebuffer", new ModuleFramebuffer());
+	World.Add(4, "pipeline",    new ModulePipeline());
+	World.Add(5, "renderer",    new ModuleRenderer());
+	World.Add(6, "text",        new ModuleText());
 
 	World.Init();
 
-	string Message = World.UpdateWhile();
+	string Message = World.UpdateLoop();
 	cout << "System exited with message: " << Message << endl;
 
 	// cin.get();

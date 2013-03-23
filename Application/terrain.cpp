@@ -25,9 +25,10 @@ using namespace glm;
 #include "terrain.h"
 #include "movement.h"
 #include "text.h"
+#include "texture.h"
 
 
-class ComponentTerrain : public Component
+class ModuleTerrain : public Module
 {
 	GLuint texture;
 	GLuint marker;
@@ -36,6 +37,9 @@ class ComponentTerrain : public Component
 	void Init()
 	{
 		auto wld = Global->Add<StorageTerrain>("terrain");
+
+		Opengl::InitGlew();
+		texture = Texture();
 
 		active = 0;
 		meshing = false;
@@ -91,7 +95,7 @@ class ComponentTerrain : public Component
 				i.second->changed = false;
 				active = i.first;
 				meshing = true;
-				task = async(launch::async, &ComponentTerrain::Meshing, this);
+				task = async(launch::async, &ModuleTerrain::Meshing, this);
 				break;
 			}
 		}
@@ -102,7 +106,7 @@ class ComponentTerrain : public Component
 		Matrix(marker);
 	}
 
-	~ComponentTerrain()
+	~ModuleTerrain()
 	{
 		glDeleteTextures(1, &texture);
 
@@ -116,8 +120,6 @@ class ComponentTerrain : public Component
 	void Listeners()
 	{
 		Event->Listen("SystemInitialized", [=]{
-			texture = Texture();
-
 			auto cam = Global->Get<StorageCamera>("camera");
 			cam->Position = vec3(0, CHUNK_Y, 0);
 			cam->Angles = vec2(0.75, -0.25);
@@ -407,7 +409,7 @@ class ComponentTerrain : public Component
 	GLuint Texture()
 	{
 		Image image;
-		bool result = image.loadFromFile("forms/textures/terrain.png");
+		bool result = image.loadFromFile(Name() + "/" + "terrain.png");
 		if(!result)
 		{
 			Debug::Fail("Terrain texture loading fail");
@@ -609,18 +611,24 @@ class ComponentTerrain : public Component
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Elements, GL_STATIC_DRAW);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-		Image image;
-		bool result = image.loadFromFile("forms/textures/magic.jpg");
-		auto size = image.getSize();
-		glGenTextures(1, &frm->Texture);
-		glBindTexture(GL_TEXTURE_2D, frm->Texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, result ? size.x : 1, result ? size.y : 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, result ? image.getPixelsPtr() : nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		// copied this code from the form module
+		string texture = "magic.jpg";
+		auto txs = Entity->Get<StorageTexture>();
+		for(auto i : txs)
+		{
+			if(i.second->Path == texture)
+			{
+				frm->Texture = i.second->Id;
+				break;
+			}
+		}
+		if(!frm->Texture)
+		{
+			unsigned int id = Entity->New();
+			auto tex = Entity->Add<StorageTexture>(id);
+			tex->Path = texture;
+			frm->Texture = tex->Id;
+		}
 
 		Matrix(id);
 
