@@ -6,66 +6,34 @@ out vec4 image;
 uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
 uniform sampler2D noise_tex;
+uniform vec3      unKernel[16] = vec3[](vec3(0.53812504, 0.18565957, -0.43192),vec3(0.13790712, 0.24864247, 0.44301823),vec3(0.33715037, 0.56794053, -0.005789503),vec3(-0.6999805, -0.04511441, -0.0019965635),vec3(0.06896307, -0.15983082, -0.85477847),vec3(0.056099437, 0.006954967, -0.1843352),vec3(-0.014653638, 0.14027752, 0.0762037),vec3(0.010019933, -0.1924225, -0.034443386),vec3(-0.35775623, -0.5301969, -0.43581226),vec3(-0.3169221, 0.106360726, 0.015860917),vec3(0.010350345, -0.58698344, 0.0046293875),vec3(-0.08972908, -0.49408212, 0.3287904),vec3(0.7119986, -0.0154690035, -0.09183723),vec3(-0.053382345, 0.059675813, -0.5411899),vec3(0.035267662, -0.063188605, 0.54602677),vec3(-0.47761092, 0.2847911, -0.0271716));
 
-uniform float totStrength = 0.8;
-uniform float strength = 0.05;
-uniform float offset = 10.0;
-uniform float falloff = 0.005;
-uniform float rad = 0.001;
-#define SAMPLES 8
-const float invSamples = - 1.0 / 8;
+
+vec3 orientate(in vec3 value, in vec3 compare)
+{
+	return (dot(value, compare) < 0) ? -value : value;
+}
+
+float ssao()
+{
+	float z   = texture2D(position_tex, coord).z;       // read eye linear z
+	vec3  nor = texture2D(normal_tex, coord).xyz;       // read normal
+	vec3  ref = texture2D(noise_tex, coord * 30.0).xyz; // read dithering vector
+
+	float bl = 0.0;
+	for(int i = 0; i < 16; ++i)
+	{
+		vec3  of = orientate(reflect(unKernel[i], ref), nor);
+		float sz = texture2D(position_tex, coord + 0.03 * of.xy).z;
+		float zd = (sz - z) * 0.2;
+		bl += clamp(zd * 10.0, 0.1, 1.0) * (1.0 - clamp((zd - 1.0) / 5.0, 0.0, 1.0));
+	}
+
+	return 1.0 - 1.0 * bl / 16.0;
+}
 
 void main()
 {
-	const vec3 pSphere[8] = vec3[](vec3(0.24710192, 0.6445882, 0.033550154),vec3(0.00991752, -0.21947019, 0.7196721),vec3(0.25109035, -0.1787317, -0.011580509),vec3(-0.08781511, 0.44514698, 0.56647956),vec3(-0.011737816, -0.0643377, 0.16030222),vec3(0.035941467, 0.04990871, -0.46533614),vec3(-0.058801126, 0.7347013, -0.25399926),vec3(-0.24799341, -0.022052078, -0.13399573));
+	image = vec4(vec3(ssao()), 1.0);
+}
 
-	vec3 fres = normalize((texture2D(noise_tex, coord*offset).xyz*2.0) - vec3(1.0));
- 
-	vec4 currentPixelSample = texture2D(normal_tex, coord);
- 
-	float currentPixelDepth = (texture2D(position_tex, coord).z + 5.0 )/ 1000.0f;
- 
-	// current fragment coords in screen space
-	vec3 ep = vec3(coord.xy,currentPixelDepth);
-	// get the normal of current fragment
-	vec3 norm = currentPixelSample.xyz;
- 
-	float bl = 0.0;
-	// adjust for the depth ( not shure if this is good..)
-	float radD = rad/currentPixelDepth;
- 
-	vec3 ray, se, occNorm;
-	float occluderDepth, depthDifference, normDiff;
- 
-	for(int i=0; i<SAMPLES;++i)
-	{
-		// get a vector (randomized inside of a sphere with radius 1.0) from a texture and reflect it
-		ray = radD*reflect(pSphere[i],fres);
- 
-		// if the ray is outside the hemisphere then change direction
-		se = ep + sign(dot(ray,norm) )*ray;
- 
-		// get the depth of the occluder fragment
-		vec4 occluderFragment = texture2D(normal_tex, se.xy);
-		occluderFragment.a = texture2D(position_tex, se.xy).z / 1000.0f;
- 
-		// get the normal of the occluder fragment
-		occNorm = occluderFragment.xyz;
- 
-		// if depthDifference is negative = occluder is behind current fragment
-		depthDifference = currentPixelDepth-occluderFragment.a;
- 
-		// calculate the difference between the normals as a weight
- 
-		normDiff = (1.0-dot(occNorm,norm));
-		// the falloff equation, starts at falloff and is kind of 1/x^2 falling
-		bl += step(falloff,depthDifference)*normDiff*(1.0-smoothstep(falloff,strength,depthDifference));
-	}
- 
-	// output the result
-	float ao = totStrength*bl*invSamples + 1;
-
-	image = vec4(vec3(ao), 1.0);
-	//image = vec4(texture2D(image_tex, coord).xyz * ao, 1.0);
-	//image = texture2D(image_tex, coord);
- }
