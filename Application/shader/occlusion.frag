@@ -7,11 +7,11 @@ uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
 uniform sampler2D noise_tex;
 
-uniform float totStrength = 0.7;
-uniform float strength = 0.1;
-uniform float offset = 18.0;
-uniform float falloff = 0.0002;
-uniform float rad = 0.0015;
+uniform float totStrength = 0.8;
+uniform float strength = 0.05;
+uniform float offset = 10.0;
+uniform float falloff = 0.005;
+uniform float rad = 0.001;
 #define SAMPLES 8
 const float invSamples = - 1.0 / 8;
 

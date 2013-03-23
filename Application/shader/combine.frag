@@ -16,7 +16,7 @@ float avg(vec3 value)
 
 void main()
 {
-    const int radius = 1;
+    const int radius = 2;
     float blur = 0;
     int n = 0;
     for(float u = -radius; u <= +radius; ++u)

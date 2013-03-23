@@ -28,14 +28,13 @@ class ModuleRenderer : public Module
 	{
 		Opengl::InitGlew();
 
-		Resize();
-
 		Listeners();
 	}
 
 	void Update()
 	{
 		auto fbs = Entity->Get<StorageFramebuffer>();
+		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -46,6 +45,8 @@ class ModuleRenderer : public Module
 			auto shd = Entity->Get<StorageShader>(i.first);
 			if(fbr->Id && shd->Program)
 			{
+				glViewport(0, 0, (int)(size.x * fbr->Size), (int)(size.y * fbr->Size));
+
 				if(n < fbs.size() - 1)
 					glBindFramebuffer(GL_FRAMEBUFFER, fbr->Id);
 				else
@@ -73,24 +74,6 @@ class ModuleRenderer : public Module
 				break;
 			}
 		});
-
-		Event->Listen("WindowRecreated", [=]{
-			Resize();
-		});
-
-		Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-			Resize(Size);
-		});
-
-	}
-
-	void Resize()
-	{
-		Resize(Global->Get<RenderWindow>("window")->getSize());
-	}
-	void Resize(Vector2u Size)
-	{
-		glViewport(0, 0, Size.x, Size.y);
 	}
 
 	void Quad(GLuint Shader, unordered_map<string, GLuint> Samplers)

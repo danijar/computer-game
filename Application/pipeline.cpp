@@ -72,7 +72,7 @@ class ModulePipeline : public Module
 		unordered_map<string, string> occlusion_samplers;
 		occlusion_samplers.insert(make_pair("position_tex", "position"));
 		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
-		occlusion = CreatePass("occlusion.frag", "occlusion", occlusion_samplers);
+		occlusion = CreatePass("occlusion.frag", "occlusion", occlusion_samplers, 0.5);
 		unsigned int id = Entity->New();
 		auto tex = Entity->Add<StorageTexture>(id);
 		tex->Path = "noise.png";
@@ -118,21 +118,21 @@ class ModulePipeline : public Module
 		}
 	}
 
-	unsigned int CreatePass(string PathFragment, string Target, pair<string, string> Sampler)
+	unsigned int CreatePass(string PathFragment, string Target, pair<string, string> Sampler, float Size = 1.0)
 	{
 		unordered_map<string, string> samplers;
 		samplers.insert(Sampler);
-		return CreatePass(PathFragment, Target, samplers);
+		return CreatePass(PathFragment, Target, samplers, Size);
 	}
 
-	unsigned int CreatePass(string PathFragment, string Target, unordered_map<string, string> Samplers = unordered_map<string, string>())
+	unsigned int CreatePass(string PathFragment, string Target, unordered_map<string, string> Samplers = unordered_map<string, string>(), float Size = 1.0)
 	{
 		unordered_map<GLenum, pair<string, GLenum>> targets;
 		targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair(Target, GL_RGBA32F)));
-		return CreatePass("quad.vert", PathFragment, targets, Samplers);
+		return CreatePass("quad.vert", PathFragment, targets, Samplers, Size);
 	}
 
-	unsigned int CreatePass(string PathVertex, string PathFragment, unordered_map<GLenum, pair<string, GLenum>> Targets, unordered_map<string, string> Samplers = unordered_map<string, string>())
+	unsigned int CreatePass(string PathVertex, string PathFragment, unordered_map<GLenum, pair<string, GLenum>> Targets, unordered_map<string, string> Samplers = unordered_map<string, string>(), float Size = 1.0)
 	{
 		unsigned int id = Entity->New();
 		auto shd = Entity->Add<StorageShader>(id);
@@ -140,15 +140,15 @@ class ModulePipeline : public Module
 
 		shd->PathVertex   = PathVertex;
 		shd->PathFragment = PathFragment;
+		for(auto i : Samplers)
+			shd->Samplers.insert(make_pair(i.first, Textures[i.second]));
 		
+		frb->Size = Size;
 		for(auto i : Targets)
 		{
 			GLuint id = frb->AddTarget(i.first, i.second.second);
 			Textures.insert(make_pair(i.second.first, id));
 		}
-
-		for(auto i : Samplers)
-			shd->Samplers.insert(make_pair(i.first, Textures[i.second]));
 
 		return id;
 	}

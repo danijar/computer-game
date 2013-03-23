@@ -8,8 +8,9 @@
 
 struct StorageFramebuffer
 {
-	StorageFramebuffer() : Id(0) {}
+	StorageFramebuffer() : Id(0), Size(1.0) {}
 	GLuint Id;
+	float Size;
 	std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets; // attachment point, texture id, internal type
 
 	GLuint AddTarget(GLenum Attachment, GLenum Type)

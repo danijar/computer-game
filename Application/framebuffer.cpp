@@ -87,7 +87,7 @@ class ModuleFramebuffer : public Module
 		auto fbs = Entity->Get<StorageFramebuffer>();
 		for(auto i : fbs)
 			for(auto j : i.second->Targets)
-				TextureResize(j.second.first, j.second.second, Size);
+				TextureResize(j.second.first, j.second.second, Vector2u(Vector2f(Size) * i.second->Size));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -97,13 +97,14 @@ class ModuleFramebuffer : public Module
 	void Setup(unsigned int Id)
 	{
 		auto frb = Entity->Get<StorageFramebuffer>(Id);
+		Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, frb->Id);
 
 		vector<GLenum> buffers;
 		for(auto i = frb->Targets.begin(); i != frb->Targets.end(); ++i)
 		{
-			TextureResize(i->second.first, i->second.second);
+			TextureResize(i->second.first, i->second.second, Vector2u(Vector2f(size) * frb->Size));
 			glFramebufferTexture2D(GL_FRAMEBUFFER, i->first, GL_TEXTURE_2D, i->second.first, 0);
 			if(i->first != GL_DEPTH_ATTACHMENT) buffers.push_back(i->first); // check for color attachment instead
 		}
