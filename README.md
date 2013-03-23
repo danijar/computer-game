@@ -7,11 +7,11 @@ Features
 --------
 
 - First person camera
-- Movement
-- Textures
-- Basic lighting
-- Fog fading out far distant objects
+- Deferred Shading
 - Basic text drawing
+- [Fast approximate anti-aliasing](http://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing)
+- Model Loading
+- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
 
 Libraries
 ---------
@@ -19,6 +19,7 @@ Libraries
 - [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
 - [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
+- [lib3ds](http://code.google.com/p/lib3ds/) Free library for `.3ds` model loading (2.0.0 RC1)
 
 Screenshot
 ----------
@@ -58,10 +59,7 @@ Upcoming Features
 There is a lot to do since the core development isn't finished yet.
 
 - Physics and Collision
-- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
-- Model Loading
 - Shadow mapping
-- [Fast approximate anti-aliasing](http://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing)
 
 Desired features that might be implemented in future.
 
