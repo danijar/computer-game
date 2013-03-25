@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <SFML/System/Clock.hpp>
 using namespace sf;
 

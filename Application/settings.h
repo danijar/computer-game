@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <string>
 using namespace std;
 #include <SFML/System/Vector2.hpp>

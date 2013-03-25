@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <string>
 #include <unordered_map>
 #include <SFML/OpenGL.hpp>

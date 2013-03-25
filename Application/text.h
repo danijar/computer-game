@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <functional>
 using namespace std;
 #include <GLM/glm.hpp>

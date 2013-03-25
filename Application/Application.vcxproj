@@ -79,12 +79,13 @@
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="material.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mods.cpp" />
     <ClCompile Include="movement.cpp" />
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
-    <ClCompile Include="rendererforward.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaders.cpp" />
@@ -99,6 +100,8 @@
     <ClInclude Include="form.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="keyboard.h" />
+    <ClInclude Include="material.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="movement.h" />
     <ClInclude Include="opengl.h" />
     <ClInclude Include="settings.h" />
@@ -111,8 +114,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\antialiasing.frag" />
-    <None Include="shader\basic.frag" />
-    <None Include="shader\basic.vert" />
     <None Include="shader\combine.frag" />
     <None Include="shader\forms.frag" />
     <None Include="shader\forms.vert" />

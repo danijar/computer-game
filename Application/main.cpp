@@ -10,6 +10,7 @@ using namespace std;
 #include "window.cpp"
 #include "input.cpp"
 #include "form.cpp"
+#include "material.cpp"
 #include "texture.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
@@ -25,10 +26,12 @@ int main()
 {
 	System World;
 
+	// maybe get rid of priority numbers, would be a proof for multi thread ability
 	World.Add(0, "settings",    new ModuleSettings());
 	World.Add(1, "window",      new ModuleWindow());
 	World.Add(2, "input",       new ModuleInput());
 	World.Add(2, "form",        new ModuleForm());
+	World.Add(2, "material",    new ModuleMaterial());
 	World.Add(2, "texture",     new ModuleTexture());
 	World.Add(2, "camera",      new ModuleCamera());
 	World.Add(3, "movement",    new ModuleMovement());

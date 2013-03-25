@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <unordered_map>
 #include <GLEW/glew.h>
 

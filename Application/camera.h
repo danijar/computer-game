@@ -1,7 +1,5 @@
 #pragma once
 
-#include "system.h"
-
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;

@@ -20,6 +20,8 @@ using namespace glm;
 #include "camera.h"
 #include "shader.h"
 #include "framebuffer.h"
+#include "texture.h"
+#include "material.h"
 
 
 class ModuleRenderer : public Module
@@ -120,8 +122,11 @@ class ModuleRenderer : public Module
 
 		for(auto i : fms)
 		{
-			auto frm = Entity->Get<StorageForm>(i.first);
+			auto frm = i.second;
 			auto tsf = Entity->Get<StorageTransform>(i.first);
+
+			auto mat = Entity->Get<StorageMaterial>(frm->Material);
+			if(!mat->Diffuse) continue;
 
 			glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 
@@ -137,7 +142,7 @@ class ModuleRenderer : public Module
 			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glBindTexture(GL_TEXTURE_2D, frm->Texture);
+			glBindTexture(GL_TEXTURE_2D, Entity->Get<StorageTexture>(mat->Diffuse)->Id);
 
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
