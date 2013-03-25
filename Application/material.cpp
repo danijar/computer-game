@@ -8,8 +8,6 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
-#include "GLM/glm.hpp"
-using namespace glm;
 
 #include "material.h"
 #include "texture.h"
@@ -17,14 +15,6 @@ using namespace glm;
 
 class ModuleMaterial : public Module
 {
-	struct Material
-	{
-		Material() : Name(""), Diffuse(""), Normal(""), Specular("") {}
-		string Name;
-		string Diffuse, Normal, Specular;
-		vec3 Color;
-	};
-
 	void Init()
 	{
 		Listeners();
@@ -37,12 +27,7 @@ class ModuleMaterial : public Module
 		{
 			if(i->second->Changed)
 			{
-				Material material = Parse(i->second->Path);
-
-				if(material.Diffuse  != "") i->second->Diffuse  = Texture(material.Diffuse );
-				if(material.Normal   != "") i->second->Normal   = Texture(material.Normal  );
-				if(material.Specular != "") i->second->Specular = Texture(material.Specular);
-
+				Load(i->first);
 				i->second->Changed = false;
 			}
 		}
@@ -52,24 +37,35 @@ class ModuleMaterial : public Module
 	{
 		Event->Listen("WindowFocusGained", [=]{
 			auto mts = Entity->Get<StorageMaterial>();
+			int Count = 0;
 			for(auto i = mts.begin(); i != mts.end(); ++i)
 			{
 				bool Changed = true; // check if the file actually changed
-				i->second->Changed = Changed;
+				if(Changed)
+				{
+					i->second->Changed = true;
+					Count++;
+				}
+			}
+			if(Count > 0)
+			{
+				Debug::Info("Materials reloaded " + to_string(Count));
 			}
 		});
 	}
 
-	Material Parse(string Path)
+	void Load(unsigned int Id)
 	{
-		Material material;
+		auto mat = Entity->Get<StorageMaterial>(Id);
 
-		ifstream stream(Name() + "/" + Path);
+		ifstream stream(Name() + "/" + mat->Path);
 		if(!stream.is_open())
 		{
-			Debug::Fail("Material (" + Path + ") cannot be loaded.");
-			return material;
+			Debug::Fail("Material (" + mat->Path + ") cannot be loaded.");
+			return;
 		}
+
+		string Name, Diffuse, Normal, Specular;
 
 		string line;
 		while(getline(stream, line))
@@ -84,15 +80,15 @@ class ModuleMaterial : public Module
 			while(input >> value) values.push_back(value);
 			
 			if(key == "") continue;
-			else if(key == "newmtl"  ) material.Name     = value;
-			else if(key == "Kd"      ) material.Color    = vec3(stof(values[0]), stof(values[1]), stof(values[2]));
-			else if(key == "map_Kd"  ) material.Diffuse  = value;
-			else if(key == "map_Bump") material.Normal   = value;
-			else if(key == "map_Ns"  ) material.Specular = value;
+			else if(key == "newmtl"  ) Name     = value;
+			else if(key == "map_Kd"  ) Diffuse  = value;
+			else if(key == "map_Bump") Normal   = value;
+			else if(key == "map_Ns"  ) Specular = value;
 		}
 
-		Debug::Pass("Material load success");		
-		return material;
+		if(Diffuse  != "") mat->Diffuse  = Texture(Diffuse );
+		if(Normal   != "") mat->Normal   = Texture(Normal  );
+		if(Specular != "") mat->Specular = Texture(Specular);
 	}
 
 	unsigned int Texture(string Path)

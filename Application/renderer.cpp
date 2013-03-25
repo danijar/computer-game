@@ -22,6 +22,7 @@ using namespace glm;
 #include "framebuffer.h"
 #include "texture.h"
 #include "material.h"
+#include "mesh.h"
 
 
 class ModuleRenderer : public Module
@@ -126,25 +127,25 @@ class ModuleRenderer : public Module
 			auto tsf = Entity->Get<StorageTransform>(i.first);
 
 			auto mat = Entity->Get<StorageMaterial>(frm->Material);
-			if(!mat->Diffuse) continue;
+			auto msh = Entity->Get<StorageMesh>(frm->Mesh);
 
 			glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 
 			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
+			glBindBuffer(GL_ARRAY_BUFFER, msh->Positions);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+			glBindBuffer(GL_ARRAY_BUFFER, msh->Normals);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+			glBindBuffer(GL_ARRAY_BUFFER, msh->Texcoords);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glBindTexture(GL_TEXTURE_2D, Entity->Get<StorageTexture>(mat->Diffuse)->Id);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->Elements);
 
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);

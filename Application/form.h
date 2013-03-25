@@ -7,9 +7,5 @@ using namespace glm;
 
 struct StorageForm
 {
-	GLuint Vertices, Normals, Texcoords, Elements;
-	unsigned int Material;
-
-	// instead just store...
-	// unsigned int Mesh, Material;
+	unsigned int Mesh, Material;
 };

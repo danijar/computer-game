@@ -58,7 +58,7 @@ class ModuleShader : public Module
 			}
 			if(Count > 0)
 			{
-				Debug::Info("Shader reloaded " + to_string(Count) + " programs");
+				Debug::Info("Shaders reloaded " + to_string(Count));
 				this->Event->Fire("ShaderUpdated");
 			}
 		});

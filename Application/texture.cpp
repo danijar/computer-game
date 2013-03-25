@@ -26,22 +26,7 @@ class ModuleTexture : public Module
 		{
 			if(i->second->Changed)
 			{
-				glBindTexture(GL_TEXTURE_2D, i->second->Id);
-				Load(i->second->Path);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				if(i->second->Mipmapping)
-				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glGenerateMipmap(GL_TEXTURE_2D);
-				}
-				else
-				{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				}
-
+				Load(i->first);
 				i->second->Changed = false;
 			}
 		}
@@ -52,25 +37,51 @@ class ModuleTexture : public Module
 	{
 		Event->Listen("WindowFocusGained", [=]{
 			auto txs = Entity->Get<StorageTexture>();
+			int Count = 0;
 			for(auto i = txs.begin(); i != txs.end(); ++i)
 			{
 				bool Changed = true; // check if the file actually changed
-				i->second->Changed = Changed;
+				if(Changed)
+				{
+					i->second->Changed = true;
+					Count++;
+				}
 			}
 			glBindTexture(GL_TEXTURE_2D, 0);
+			if(Count > 0)
+			{
+				Debug::Info("Textures reloaded " + to_string(Count));
+			}
 		});
 	}
 
-	void Load(string Path)
+	void Load(unsigned int Id)
 	{
+		auto tex = Entity->Get<StorageTexture>(Id);
+
 		Image image;
-		bool result = image.loadFromFile(Name() + "/" + Path);
+		bool result = image.loadFromFile(Name() + "/" + tex->Path);
 		if(!result)
 		{
-			Debug::Fail("Texture loading (" + Path + ") fail");
+			Debug::Fail("Texture (" + tex->Path + ") cannot be loaded.");
 			return;
 		}
 		image.flipVertically();
+
+		glBindTexture(GL_TEXTURE_2D, tex->Id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		if(tex->Mipmapping)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
 	}
 };

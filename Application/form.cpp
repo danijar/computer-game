@@ -17,12 +17,12 @@ using namespace glm;
 
 #include "form.h"
 #include "transform.h"
-#include "texture.h"
 #include "movement.h"
 #include "animation.h"
 #include "text.h"
 #include "keyboard.h"
 #include "material.h"
+#include "mesh.h"
 
 
 class ModuleForm : public Module
@@ -30,6 +30,20 @@ class ModuleForm : public Module
 	void Init()
 	{
 		Opengl::InitGlew();
+		
+		// init the scene, this will be done in an initialization script later on
+		const int a = 3;
+		for(float x = -3; x <= 3; ++x)
+		for(float z = -3; z <= 3; ++z)
+			Create("PrimitiveQube", "dirt.mtl", vec3(a*x, 1, a*z));
+		for(float x = -3; x <= 3; x+=3)
+		for(float z = -3; z <= 3; z+=3)
+			if(x == 0 && z == 0) continue;
+			else Create("PrimitiveQube", "grass.mtl", vec3(a*x, a+1, a*z));
+		Create("PrimitivePlane", "chess.mtl");
+
+		Create("barrel.3ds", "barrel.mtl", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(4));
+		Create("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
 
 		Listeners();
 
@@ -37,9 +51,6 @@ class ModuleForm : public Module
 			auto fms = Entity->Get<StorageForm>();
 			return "Forms " + to_string(fms.size());
 		};
-
-		Load("barrel.3ds", "barrel.mtl", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(4));
-		Load("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
 	}
 
 	void Update()
@@ -59,59 +70,23 @@ class ModuleForm : public Module
 			int number = KeyDown(Key::LShift) ? 500 : 1;
 			for(int i = 0; i < number; ++i)
 			{
-				unsigned int id = CreateCube("magic.mtl", vec3(0, 4, 0), true);
+				unsigned int id = Create("PrimitiveQube", "magic.mtl", vec3(0, 4, 0), vec3(0), vec3(1), true);
 				Entity->Add<StorageAnimation>(id);
 				auto tsf = Entity->Get<StorageTransform>(id);
 				tsf->Rotation = vec3(random(), random(), random());
 			}
 		});
-
-		Event->Listen("SystemInitialized", [=]{
-			// move this into the script init.js and run that from here
-			const int a = 3;
-			for(float x = -3; x <= 3; ++x)
-			for(float z = -3; z <= 3; ++z)
-				CreateCube("dirt.mtl", vec3(a*x, 1, a*z));
-			for(float x = -3; x <= 3; x+=3)
-			for(float z = -3; z <= 3; z+=3)
-				if(x == 0 && z == 0) continue;
-				else CreateCube("grass.mtl", vec3(a*x, a+1, a*z));
-			CreatePlane("chess.mtl", 100);
-		});
 	}
 
-	////////////////////////////////////////////////////////////
-	// Buffer Creation
-	////////////////////////////////////////////////////////////
-
-	unsigned int Create(vector<GLfloat> Vertices, vector<GLfloat> Normals, vector<GLfloat> Texcoords, vector<GLuint> Elements, GLuint Material, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
+	unsigned int Create(string Mesh, string Material, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
 	{
 		unsigned int id = Entity->New();
 		auto frm = Entity->Add<StorageForm>(id);
 		auto tsf = Entity->Add<StorageTransform>(id);
 		if(Movable) Entity->Add<StorageMovement>(id);
 
-		glGenBuffers(1, &frm->Vertices);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Vertices);
-		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(GLfloat), &Vertices[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glGenBuffers(1, &frm->Normals);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
-		glBufferData(GL_ARRAY_BUFFER, Normals.size() * sizeof(GLfloat), &Normals[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glGenBuffers(1, &frm->Texcoords);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, Texcoords.size() * sizeof(GLfloat), &Texcoords[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		glGenBuffers(1, &frm->Elements);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, Elements.size() * sizeof(GLuint), &Elements[0], GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-		frm->Material = Material;
+		frm->Mesh     = this->Mesh(Mesh);
+		frm->Material = this->Material(Material);
 		tsf->Position = Position;
 		tsf->Rotation = Rotation;
 		tsf->Scale = Scale;
@@ -119,74 +94,6 @@ class ModuleForm : public Module
 
 		return id;
 	}
-
-	unsigned int CreateCube(string Material, vec3 Position, bool Movable = false)
-	{
-		const GLfloat Vertices[]  = {-1.,-1.,1.,1.,-1.,1.,1.,1.,1.,-1.,1.,1.,-1.,1.,1.,1.,1.,1.,1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,-1.,-1.,-1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,1.,-1.,1.,-1.,1.,1.,-1.,-1.,1.,1.,-1.,1.,1.,1.};
-		const GLfloat Normals[]   = {0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,0,1,0,0,1,0,0,1,0,0,1,0,0};
-		const GLfloat Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
-		const GLuint  Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
-
-		return Create(vec(Vertices, 72), vec(Normals, 72), vec(Texcoords, 48), vec(Elements, 36), this->Material(Material), Position, vec3(0), vec3(1), Movable);
-	}
-
-	unsigned int CreatePlane(string Material, float length, vec3 Position = vec3(0))
-	{
-		const float l = length;
-		const GLfloat Vertices[]  = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
-		const GLfloat Normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
-		const GLfloat Texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
-		const GLuint  Elements[]  = { 0,1,2, 2,3,0 };
-		return Create(vec(Vertices, 12), vec(Normals, 12), vec(Texcoords, 8), vec(Elements, 6), this->Material(Material), Position);
-	}
-
-	////////////////////////////////////////////////////////////
-	// Model Loading
-	////////////////////////////////////////////////////////////
-
-	unsigned int Load(string Mesh, string Material, vec3 Position = vec3(0), vec3 Rotation = vec3(0), vec3 Scale = vec3(1), bool Movable = false)
-	{
-		Lib3dsFile* model = lib3ds_file_open((Name() + "/" + Mesh).c_str());
-		if(model == false)
-		{
-			Debug::Fail("Form loading (" + Mesh + ") failed.");
-			return 0;
-		}
-
-		vector<GLfloat> vertices, normals, texcoords;
-		vector<GLuint> elements;
-
-		GLuint element = 0;
-		for (int i = 0; i < model->nmeshes; ++i)
-		{
-			Lib3dsMesh *mesh = model->meshes[i];
-			for(unsigned int j = 0; j < mesh->nfaces; ++j)
-			{
-				Lib3dsFace *face = &mesh->faces[j];
-				for(int k = 0; k < 3; ++k)
-				{
-					vertices.push_back(mesh->vertices[face->index[k]][0]);
-					vertices.push_back(mesh->vertices[face->index[k]][1]);
-					vertices.push_back(mesh->vertices[face->index[k]][2]);
-					texcoords.push_back(mesh->texcos[face->index[k]][0]);
-					texcoords.push_back(mesh->texcos[face->index[k]][1]);
-					elements.push_back(element++);
-				}
-			}
-			int last = normals.size();
-			normals.resize(vertices.size());
-			lib3ds_mesh_calculate_vertex_normals(mesh, (float(*)[3])(&normals[last]));
-		}
-
-		// string texture = string(model->materials[0]->texture1_map.name);
-
-		// Debug::Pass("Form loading (" + Mesh + ") with " + to_string(vertices.size()) + " vertices and texture " + texture);
-		return Create(vertices, normals, texcoords, elements, this->Material(Material), Position, Rotation, Scale, Movable);
-	}
-
-	////////////////////////////////////////////////////////////
-	// Helpers
-	////////////////////////////////////////////////////////////
 
 	void Matrix(unsigned int id)
 	{
@@ -198,6 +105,19 @@ class ModuleForm : public Module
 						* rotate   (mat4(1), tsf->Rotation.y, vec3(0, 1, 0))
 						* rotate   (mat4(1), tsf->Rotation.z, vec3(0, 0, 1));
 		tsf->Matrix = Translate * Rotate * Scale;
+	}
+
+	unsigned int Mesh(string Path)
+	{
+		auto mes = Entity->Get<StorageMesh>();
+		for(auto i : mes)
+			if(i.second->Path == Path)
+				return i.first;
+
+		unsigned int id = Entity->New();
+		auto msh = Entity->Add<StorageMesh>(id);
+		msh->Path = Path;
+		return id;
 	}
 
 	unsigned int Material(string Path)
