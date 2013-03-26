@@ -14,15 +14,15 @@ using namespace sf;
 using namespace glm;
 
 #include "settings.h"
+#include "framebuffer.h"
+#include "shader.h"
+#include "camera.h"
+#include "light.h"
 #include "form.h"
 #include "transform.h"
-#include "texture.h"
-#include "camera.h"
-#include "shader.h"
-#include "framebuffer.h"
-#include "texture.h"
-#include "material.h"
 #include "mesh.h"
+#include "material.h"
+#include "texture.h"
 
 
 class ModuleRenderer : public Module
@@ -124,10 +124,15 @@ class ModuleRenderer : public Module
 		for(auto i : fms)
 		{
 			auto frm = i.second;
-			auto tsf = Entity->Get<StorageTransform>(i.first);
 
-			auto mat = Entity->Get<StorageMaterial>(frm->Material);
+			// continue or use fallback model, material, ...
+			//if(!Entity->Check<StorageTransform>(i.first)) continue;
+			//if(!Entity->Check<StorageMesh>(frm->Mesh)) continue;
+			//if(!Entity->Check<StorageMaterial>(frm->Material)) continue;
+			
+			auto tsf = Entity->Get<StorageTransform>(i.first);
 			auto msh = Entity->Get<StorageMesh>(frm->Mesh);
+			auto mat = Entity->Get<StorageMaterial>(frm->Material);
 
 			glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 

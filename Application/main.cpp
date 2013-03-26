@@ -13,6 +13,7 @@ using namespace std;
 #include "material.cpp"
 #include "texture.cpp"
 #include "mesh.cpp"
+#include "transform.cpp"
 #include "movement.cpp"
 #include "animation.cpp"
 #include "camera.cpp"
@@ -35,6 +36,7 @@ int main()
 	World.Add(2, "material",    new ModuleMaterial());
 	World.Add(2, "texture",     new ModuleTexture());
 	World.Add(2, "mesh",        new ModuleMesh());
+	World.Add(2, "transform",   new ModuleTransform());
 	World.Add(2, "camera",      new ModuleCamera());
 	World.Add(3, "movement",    new ModuleMovement());
 	World.Add(3, "animation",   new ModuleAnimation());

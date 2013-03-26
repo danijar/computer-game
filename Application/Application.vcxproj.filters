@@ -80,6 +80,9 @@
     <ClCompile Include="material.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -131,6 +134,9 @@
       <Filter>2. Storages</Filter>
     </ClInclude>
     <ClInclude Include="material.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
       <Filter>2. Storages</Filter>
     </ClInclude>
   </ItemGroup>

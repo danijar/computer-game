@@ -8,10 +8,10 @@ struct StorageMesh
 {
 	StorageMesh() : Changed(true)
 	{
-		glGenBuffers(4, &Positions);
-		glGenBuffers(4, &Normals);
-		glGenBuffers(4, &Texcoords);
-		glGenBuffers(4, &Elements);
+		glGenBuffers(1, &Positions);
+		glGenBuffers(1, &Normals);
+		glGenBuffers(1, &Texcoords);
+		glGenBuffers(1, &Elements);
 	}
 
 	std::string Path; 
