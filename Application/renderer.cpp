@@ -125,14 +125,16 @@ class ModuleRenderer : public Module
 		{
 			auto frm = i.second;
 
-			// continue or use fallback model, material, ...
-			//if(!Entity->Check<StorageTransform>(i.first)) continue;
-			//if(!Entity->Check<StorageMesh>(frm->Mesh)) continue;
-			//if(!Entity->Check<StorageMaterial>(frm->Material)) continue;
+			// improve by using fallbacks instead of skipping
+			if(!Entity->Check<StorageTransform>(i.first)) continue;
+			if(!Entity->Check<StorageMesh>(frm->Mesh)) continue;
+			if(!Entity->Check<StorageMaterial>(frm->Material)) continue;
 			
 			auto tsf = Entity->Get<StorageTransform>(i.first);
 			auto msh = Entity->Get<StorageMesh>(frm->Mesh);
 			auto mat = Entity->Get<StorageMaterial>(frm->Material);
+
+			if(!mat->Diffuse) continue;
 
 			glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 
@@ -166,5 +168,14 @@ class ModuleRenderer : public Module
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glUseProgram(0);
+	}
+
+	void Light()
+	{
+		/*
+		 * for each light
+		 *     draw fullscreen quad
+		 *     draw light as geometry
+		 */
 	}
 };

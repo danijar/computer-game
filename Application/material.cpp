@@ -71,19 +71,14 @@ class ModuleMaterial : public Module
 		while(getline(stream, line))
 		{
 			istringstream input(line);
-
 			string key;
 			input >> key;
 
-			string value;
-			vector<string> values;
-			while(input >> value) values.push_back(value);
-			
 			if(key == "") continue;
-			else if(key == "newmtl"  ) Name     = value;
-			else if(key == "map_Kd"  ) Diffuse  = value;
-			else if(key == "map_Bump") Normal   = value;
-			else if(key == "map_Ns"  ) Specular = value;
+			else if(key == "newmtl"  ) input >> Name;
+			else if(key == "map_Kd"  ) input >> Diffuse;
+			else if(key == "map_Bump") input >> Normal;
+			else if(key == "map_Ns"  ) input >> Specular;
 		}
 
 		if(Diffuse  != "") mat->Diffuse  = Texture(Diffuse );

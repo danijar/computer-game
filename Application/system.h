@@ -178,6 +178,14 @@ namespace system_h
 			j->second.reset();
 			list[key].erase(j);
 		}
+		template <typename T>
+		bool Check(unsigned int id)
+		{
+			auto key = type_index(typeid(T));
+			if (!Check(key)) return false;
+			if (list[key].find(id) == list[key].end()) return false;
+			return true;
+		}
 	private:
 		unsigned int index;
 		unordered_map<type_index, unordered_map<int, shared_ptr<void>>> list;
@@ -186,10 +194,10 @@ namespace system_h
 			if (list.find(key) == list.end()) return false;
 			return true;
 		}
-		bool Check(type_index key, int entity)
+		bool Check(type_index key, int id)
 		{
 			if (!Check(key)) return false;
-			if (list[key].find(entity) == list[key].end()) return false;
+			if (list[key].find(id) == list[key].end()) return false;
 			return true;
 		}
 	};
