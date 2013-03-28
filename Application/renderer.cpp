@@ -23,6 +23,7 @@ using namespace glm;
 #include "mesh.h"
 #include "material.h"
 #include "texture.h"
+#include "light.h"
 
 
 class ModuleRenderer : public Module
@@ -55,10 +56,13 @@ class ModuleRenderer : public Module
 				else
 					glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-				if(n > 0)
-					Quad(shd->Program, shd->Samplers);
-				else
+				if(n == 0)
 					Forms(shd->Program);
+				else if(n == 1)
+					Light(shd->Program, shd->Samplers);
+				else
+					Quad(shd->Program, shd->Samplers);
+					
 			}
 			n++;
 		}
@@ -170,12 +174,45 @@ class ModuleRenderer : public Module
 		glUseProgram(0);
 	}
 
-	void Light()
+	void Light(GLuint Shader, unordered_map<string, GLuint> Samplers)
 	{
-		/*
-		 * for each light
-		 *     draw fullscreen quad
-		 *     draw light as geometry
-		 */
+		auto lis = Entity->Get<StorageLight>();
+
+		glUseProgram(Shader);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+
+		int n = 0; for(auto i : Samplers)
+		{
+			glActiveTexture(GL_TEXTURE0 + n);
+			glBindTexture(GL_TEXTURE_2D, i.second);
+			glUniform1i(glGetUniformLocation(Shader, i.first.c_str()), n);
+			n++;
+		}
+
+		mat4 view = Global->Get<StorageCamera>("camera")->View;
+
+		for(auto i : lis)
+		{
+			vec3 pos = (view * vec4(i.second->Position, 1)).swizzle(X, Y, Z);
+			glUniform3f(glGetUniformLocation(Shader, "light"),     pos.x, pos.y, pos.z);
+			glUniform3f(glGetUniformLocation(Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);
+			glUniform1f(glGetUniformLocation(Shader, "radius"),    i.second->Radius);
+			glUniform1f(glGetUniformLocation(Shader, "intensity"), i.second->Intensity);
+
+			glBegin(GL_QUADS);
+				glVertex2i(0, 0);
+				glVertex2i(1, 0);
+				glVertex2i(1, 1);
+				glVertex2i(0, 1);
+			glEnd();
+		}
+
+		glDisable(GL_BLEND);
+		glActiveTexture(GL_TEXTURE0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);		
+		glUseProgram(0);
 	}
 };

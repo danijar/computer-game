@@ -64,11 +64,10 @@ class ModulePipeline : public Module
 		forms = CreatePass("forms.vert", "forms.frag", forms_targets);
 
 		unordered_map<string, string> light_samplers;
-		light_samplers.insert(make_pair("position_tex", "position"));
-		light_samplers.insert(make_pair("normal_tex",   "normal"));
-		light_samplers.insert(make_pair("albedo_tex",   "albedo"));
+		light_samplers.insert(make_pair("positions", "position"));
+		light_samplers.insert(make_pair("normals",   "normal"));
 		CreatePass("light.frag", "light", light_samplers);
-		
+
 		unordered_map<string, string> occlusion_samplers;
 		occlusion_samplers.insert(make_pair("position_tex", "position"));
 		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));

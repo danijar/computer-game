@@ -24,6 +24,7 @@ using namespace glm;
 #include "movement.h"
 #include "animation.h"
 #include "text.h"
+#include "light.h"
 
 
 class ModuleForm : public Module
@@ -46,6 +47,27 @@ class ModuleForm : public Module
 
 		Create("barrel.3ds", "barrel.mtl", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(4));
 		Create("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
+
+		auto lgt1 = Entity->Add<StorageLight>(Entity->New());
+		lgt1->Position = vec3(0, 5, 0);
+		lgt1->Radius = 20.f;
+		lgt1->Color = vec3(0, 1, 0);
+
+		auto lgt2 = Entity->Add<StorageLight>(Entity->New());
+		lgt2->Position = vec3(-10, 0.5, -15);
+		lgt2->Radius = 5.f;
+		lgt2->Color = vec3(1, 0, 0);
+		lgt2->Intensity = 2.0f;
+
+		auto lgt3 = Entity->Add<StorageLight>(Entity->New());
+		lgt3->Position = vec3(50, 5, 50);
+		lgt3->Radius = 25.f;
+		lgt3->Color = vec3(0, 0, 1);
+
+		auto lgt4 = Entity->Add<StorageLight>(Entity->New());
+		lgt4->Position = vec3(40, 10, -10);
+		lgt4->Radius = 100.f;
+		lgt4->Color = vec3(1);
 
 		Listeners();
 

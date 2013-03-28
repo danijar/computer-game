@@ -30,5 +30,5 @@ void main()
 	const float ssao_amount = 0.3;
     image = vec4(color + blur * ssao_amount - ssao_amount, 1.0); // combine
 	//image = vec4(vec3(blur), 1.0);                             // display only
-	//image = vec4(color, 1.0);                                  // skip ssao
+	image = vec4(color, 1.0);                                  // skip ssao
 }
