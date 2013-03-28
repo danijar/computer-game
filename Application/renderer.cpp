@@ -32,6 +32,8 @@ class ModuleRenderer : public Module
 	{
 		Opengl::InitGlew();
 
+
+
 		Listeners();
 	}
 
@@ -115,6 +117,7 @@ class ModuleRenderer : public Module
 		auto fms = Entity->Get<StorageForm>();
 
 		glUseProgram(Shader);
+		//glClearColor(0.0, 0.0, 1.0, 0.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		glUniformMatrix4fv(glGetUniformLocation(Shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));

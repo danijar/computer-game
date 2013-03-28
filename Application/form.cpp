@@ -68,6 +68,7 @@ class ModuleForm : public Module
 		lgt4->Position = vec3(40, 10, -10);
 		lgt4->Radius = 100.f;
 		lgt4->Color = vec3(1);
+		lgt4->Intensity = 2.5f;
 
 		Listeners();
 

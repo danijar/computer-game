@@ -42,8 +42,8 @@ int main()
 	World.Add(3, "animation",   new ModuleAnimation());
 	World.Add(3, "shader",      new ModuleShader());
 	World.Add(3, "framebuffer", new ModuleFramebuffer());
-	World.Add(4, "pipeline",    new ModulePipeline());
-	World.Add(5, "renderer",    new ModuleRenderer());
+	World.Add(4, "renderer",    new ModuleRenderer());
+	World.Add(5, "effect",      new ModulePipeline());
 	World.Add(6, "text",        new ModuleText());
 
 	World.Init();
