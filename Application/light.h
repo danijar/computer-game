@@ -9,5 +9,5 @@ struct StorageLight
 	glm::vec3 Position;
 	glm::vec3 Color;
 	float Radius, Intensity;
-	enum Type{ POINT, SPOT, DIRECTIONAL } Type;
+	enum Shape{ POINT, SPOT, DIRECTIONAL } Type;
 };

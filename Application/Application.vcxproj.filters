@@ -139,6 +139,9 @@
     <ClInclude Include="light.h">
       <Filter>2. Storages</Filter>
     </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>2. Storages</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\antialiasing.frag">
@@ -160,6 +163,9 @@
       <Filter>4. Shaders</Filter>
     </None>
     <None Include="shader\occlusion.frag">
+      <Filter>4. Shaders</Filter>
+    </None>
+    <None Include="shader\apply.frag">
       <Filter>4. Shaders</Filter>
     </None>
     <None Include="shader\combine.frag">

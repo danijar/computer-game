@@ -68,6 +68,11 @@ class ModulePipeline : public Module
 		light_samplers.insert(make_pair("normals",   "normal"));
 		CreatePass("light.frag", "light", light_samplers);
 
+		unordered_map<string, string> combine_samplers;
+		combine_samplers.insert(make_pair("albedo", "albedo"));
+		combine_samplers.insert(make_pair("lights", "light"));
+		CreatePass("combine.frag", "image", combine_samplers);
+
 		unordered_map<string, string> occlusion_samplers;
 		occlusion_samplers.insert(make_pair("position_tex", "position"));
 		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
@@ -78,9 +83,9 @@ class ModulePipeline : public Module
 		Entity->Get<StorageShader>(occlusion)->Samplers.insert(make_pair("noise_tex", tex->Id));
 
 		unordered_map<string, string> blur_samplers;
-		blur_samplers.insert(make_pair("image_tex",  "light"));
+		blur_samplers.insert(make_pair("image_tex",  "image"));
 		blur_samplers.insert(make_pair("effect_tex", "occlusion"));
-		combine = CreatePass("combine.frag", "result", blur_samplers);
+		combine = CreatePass("apply.frag", "result", blur_samplers);
 
 		unordered_map<string, string> antialiasing_samplers;
 		antialiasing_samplers.insert(make_pair("image_tex",    "result"));

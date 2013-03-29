@@ -13,4 +13,10 @@ struct StorageShader
 	std::string PathVertex, PathFragment; // required
 	unordered_map<std::string, GLuint> Samplers;
 	//map<GLenum, void*> Uniforms; // how to represent that correctly?
+
+	void Paths(std::string Vertex, std::string Fragment)
+	{
+		PathVertex = Vertex;
+		PathFragment = Fragment;
+	}
 };

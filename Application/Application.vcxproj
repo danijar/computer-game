@@ -98,6 +98,7 @@
     <ClInclude Include="animation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="framebuffer.h" />
     <ClInclude Include="keyboard.h" />
@@ -116,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\antialiasing.frag" />
+    <None Include="shader\apply.frag" />
     <None Include="shader\combine.frag" />
     <None Include="shader\forms.frag" />
     <None Include="shader\forms.vert" />
