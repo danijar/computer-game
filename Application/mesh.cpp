@@ -9,19 +9,16 @@
 #include <algorithm>
 using namespace std;
 #include "GLEW/glew.h"
-#include <LIB3DS/lib3ds.h>
+#include <ASSIMP/cimport.h>
+#include <ASSIMP/scene.h>
+#include <ASSIMP/postprocess.h>
+
 
 #include "mesh.h"
 
 
 class ModuleMesh : public Module
 {
-	struct Vertices
-	{
-		vector<GLfloat> Positions, Normals, Texcoords;
-		vector<GLuint> Elements;
-	};
-
 	void Init()
 	{
 		Listeners();
@@ -63,144 +60,59 @@ class ModuleMesh : public Module
 		});
 	}
 
-	string Extension(string Path)
-	{
-		return Path.substr(Path.find_last_of(".") + 1);
-	}
-
 	void Load(unsigned int Id)
 	{
 		auto msh = Entity->Get<StorageMesh>(Id);
 
-		vector<GLfloat> positions, normals, texcoords;
-		vector<GLuint> elements;
-
 		string path = Name() + "/" + msh->Path;
-		string extension = Extension(msh->Path);
+		const aiScene *scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+		if(!scene)
+		{
+			Debug::Fail("Mesh (" + msh->Path + ") cannot be loaded.");
+			return;
+		}
 
-		if(extension == "") return;
-		else if(extension == "3ds") Parse3ds(path, positions, normals, texcoords, elements);
-		else if(extension == "obj") ParseObj(path, positions, normals, texcoords, elements);
-		else Debug::Fail("Mesh " + msh->Path + " format is not supported");
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
+		{
+			const aiMesh* mesh = scene->mMeshes[i];
 
-		glBindBuffer(GL_ARRAY_BUFFER, msh->Positions);
-		glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(GLfloat), &positions[0], GL_STATIC_DRAW);
+			unsigned int *faces;
+			faces = (unsigned int*)malloc(sizeof(unsigned int) * mesh->mNumFaces * 3);
+			for (unsigned int t = 0; t < mesh->mNumFaces; ++t)
+			{
+				const struct aiFace* face = &mesh->mFaces[t];
+				memcpy(&faces[3 * t], face->mIndices, 3 * sizeof(float));
+			}
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->Elements);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faces, GL_STATIC_DRAW);
 
-		glBindBuffer(GL_ARRAY_BUFFER, msh->Normals);
-		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), &normals[0], GL_STATIC_DRAW);
+			if (mesh->HasPositions())
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, msh->Positions);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mVertices, GL_STATIC_DRAW);
+			}
 
-		glBindBuffer(GL_ARRAY_BUFFER, msh->Texcoords);
-		glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof(GLfloat), &texcoords[0], GL_STATIC_DRAW);
+			if(mesh->HasNormals())
+			{
+				glBindBuffer(GL_ARRAY_BUFFER, msh->Normals);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mNormals, GL_STATIC_DRAW);
+			}
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->Elements);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+			if(mesh->HasTextureCoords(0))
+			{
+				float *texcoords = (float *)malloc(sizeof(float)*2*mesh->mNumVertices);
+				for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
+				{
+					texcoords[2 * i + 0] = mesh->mTextureCoords[0][i].x;
+					texcoords[2 * i + 1] = mesh->mTextureCoords[0][i].y;
+				}
+				glBindBuffer(GL_ARRAY_BUFFER, msh->Texcoords);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * mesh->mNumVertices, texcoords, GL_STATIC_DRAW);
+			}
+		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
-	void Parse3ds(string Path, vector<GLfloat> &Positions, vector<GLfloat> &Normals, vector<GLfloat> &Texcoords, vector<GLuint> &Elements)
-	{
-		Lib3dsFile* model = lib3ds_file_open(Path.c_str());
-		if(model == false)
-		{
-			Debug::Fail("Mesh (" + Path + ") cannot be loaded.");
-			return;
-		}
-
-		GLuint element = 0;
-		for (int i = 0; i < model->nmeshes; ++i)
-		{
-			Lib3dsMesh *mesh = model->meshes[i];
-			for(unsigned int j = 0; j < mesh->nfaces; ++j)
-			{
-				Lib3dsFace *face = &mesh->faces[j];
-				for(int k = 0; k < 3; ++k)
-				{
-					Positions.push_back(mesh->vertices[face->index[k]][0]);
-					Positions.push_back(mesh->vertices[face->index[k]][1]);
-					Positions.push_back(mesh->vertices[face->index[k]][2]);
-					Texcoords.push_back(mesh->texcos[face->index[k]][0]);
-					Texcoords.push_back(mesh->texcos[face->index[k]][1]);
-					Elements.push_back(element++);
-				}
-			}
-			int last = Normals.size();
-			Normals.resize(Positions.size());
-			lib3ds_mesh_calculate_vertex_normals(mesh, (float(*)[3])(&Normals[last]));
-		}
-	}
-
-	void ParseObj(string Path, vector<GLfloat> &Positions, vector<GLfloat> &Normals, vector<GLfloat> &Texcoords, vector<GLuint> &Elements)
-	{
-		ifstream stream(Path);
-		if(!stream.is_open())
-		{
-			Debug::Fail("Mesh (" + Path + ") cannot be loaded.");
-			return;
-		}
-
-		vector<GLfloat> positions, normals, texcoords;
-		string line;
-		while(getline(stream, line))
-		{
-			istringstream input(line);
-			string key;
-			input >> key;
-
-			if(key == "") continue;
-			else if(key == "v" )
-			{
-				float x, y, z;
-				input >> x >> y >> z;
-				positions.push_back(z);
-				positions.push_back(y);
-				positions.push_back(z);
-			}
-			else if(key == "vn")
-			{
-				float x, y, z;
-				input >> x >> y >> z;
-				normals.push_back(z);
-				normals.push_back(y);
-				normals.push_back(z);
-			}
-			else if(key == "vt")
-			{
-				float u, v;
-				input >> u >> v;
-				texcoords.push_back(u);
-				texcoords.push_back(v);
-			}
-		}
-
-		stream.clear();
-		stream.seekg(ios::beg);
-
-		while(getline(stream, line))
-		{
-			replace(line.begin(), line.end(), '/', ' ');
-			istringstream input(line);
-			string key;
-			input >> key;
-			if(key == "f")
-			{
-				int p, t, n;
-				while(input >> p >> t >> n)
-				{
-					Positions.push_back(positions[3 * (p - 1) + 0]);
-					Positions.push_back(positions[3 * (p - 1) + 1]);
-					Positions.push_back(positions[3 * (p - 1) + 2]);
-					Normals  .push_back(normals  [3 * (n - 1) + 0]);
-					Normals  .push_back(normals  [3 * (n - 1) + 1]);
-					Normals  .push_back(normals  [3 * (n - 1) + 2]);
-					Texcoords.push_back(texcoords[2 * (t - 1) + 0]);
-					Texcoords.push_back(texcoords[2 * (t - 1) + 1]);
-					Elements.push_back(Elements.size());
-				}
-			}
-		}
-
-
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	void PrimitiveQube(unsigned int Id)

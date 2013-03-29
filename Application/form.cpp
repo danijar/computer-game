@@ -15,7 +15,6 @@ using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
-#include <LIB3DS/lib3ds.h>
 
 #include "form.h"
 #include "transform.h"
