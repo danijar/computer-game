@@ -47,6 +47,7 @@ class ModuleForm : public Module
 
 		Create("barrel.3ds", "barrel.mtl", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(4));
 		Create("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
+		Create("rock.obj", "rock.mtl", vec3(50, 2, 45), vec3(-90, 0, 0), vec3(3.0));
 
 		auto lgt1 = Entity->Add<StorageLight>(Entity->New());
 		lgt1->Position = vec3(0, 5, 0);
@@ -69,6 +70,12 @@ class ModuleForm : public Module
 		lgt4->Radius = 100.f;
 		lgt4->Color = vec3(1);
 		lgt4->Intensity = 2.5f;
+
+		auto lgt5 = Entity->Add<StorageLight>(Entity->New());
+		lgt5->Position = vec3(0, 50, 0);
+		lgt5->Radius = 500.f;
+		lgt5->Color = vec3(1);
+		lgt5->Intensity = 1.0f;
 
 		Listeners();
 
