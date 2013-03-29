@@ -48,33 +48,45 @@ class ModuleForm : public Module
 		Create("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
 		Create("rock.obj", "rock.mtl", vec3(50, 2, 45), vec3(-90, 0, 0), vec3(3.0));
 
-		auto lgt1 = Entity->Add<StorageLight>(Entity->New());
-		lgt1->Position = vec3(0, 5, 0);
+		unsigned int id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(0, 5, 0);
+		auto lgt1 = Entity->Add<StorageLight>(id);
 		lgt1->Radius = 20.f;
 		lgt1->Color = vec3(0, 1, 0);
 
-		auto lgt2 = Entity->Add<StorageLight>(Entity->New());
-		lgt2->Position = vec3(-10, 0.5, -15);
+		id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(-10, 0.5, -15);
+		auto lgt2 = Entity->Add<StorageLight>(id);
 		lgt2->Radius = 5.f;
 		lgt2->Color = vec3(1, 0, 0);
 		lgt2->Intensity = 2.0f;
 
-		auto lgt3 = Entity->Add<StorageLight>(Entity->New());
-		lgt3->Position = vec3(50, 5, 50);
+		id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(50, 5, 50);
+		auto lgt3 = Entity->Add<StorageLight>(id);
 		lgt3->Radius = 25.f;
 		lgt3->Color = vec3(0, 0, 1);
 
-		auto lgt4 = Entity->Add<StorageLight>(Entity->New());
-		lgt4->Position = vec3(40, 10, -10);
+		id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(40, 10, -10);
+		auto lgt4 = Entity->Add<StorageLight>(id);
 		lgt4->Radius = 100.f;
 		lgt4->Color = vec3(1);
 		lgt4->Intensity = 2.5f;
 
-		auto lgt5 = Entity->Add<StorageLight>(Entity->New());
-		lgt5->Position = vec3(0, 50, 0);
+		id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(0, 50, 0);
+		auto lgt5 = Entity->Add<StorageLight>(id);
 		lgt5->Radius = 500.f;
 		lgt5->Color = vec3(1);
 		lgt5->Intensity = 1.0f;
+
+		id = Entity->New();
+		Entity->Add<StorageTransform>(id)->Position = vec3(2, 2, 3);
+		Entity->Add<StorageMovement>(id);
+		auto lgt6 = Entity->Add<StorageLight>(id);
+		lgt6->Radius = 25.f;
+		lgt6->Color = vec3(1, 1, 0);
 
 		Listeners();
 

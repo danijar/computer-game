@@ -198,7 +198,7 @@ class ModuleRenderer : public Module
 
 		for(auto i : lis)
 		{
-			vec3 pos = (view * vec4(i.second->Position, 1)).swizzle(X, Y, Z);
+			vec3 pos = (view * vec4(Entity->Get<StorageTransform>(i.first)->Position, 1)).swizzle(X, Y, Z);
 			glUniform3f(glGetUniformLocation(Shader, "light"),     pos.x, pos.y, pos.z);
 			glUniform3f(glGetUniformLocation(Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);
 			glUniform1f(glGetUniformLocation(Shader, "radius"),    i.second->Radius);
