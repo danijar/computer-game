@@ -33,33 +33,27 @@ class ModuleShader : public Module
 		int Count = 0;
 		for(auto i = shs.begin(); i != shs.end(); ++i)
 		{
-			if(!i->second->Program)
+			if(i->second->Changed)
 			{
 				i->second->Program = Create(i->second->PathVertex, i->second->PathFragment);
+				i->second->Changed = false;
 				Count++;
 			}
 		}
-		if(Count > 0) Event->Fire("ShaderUpdated");
+		if(Count > 0)
+		{
+			Debug::Info("Shaders reloaded " + to_string(Count));
+			this->Event->Fire("ShaderUpdated");
+		}
 	}
 
 	void Listeners()
 	{
 		Event->Listen("WindowFocusGained", [=]{
 			auto shs = Entity->Get<StorageShader>();
-			int Count = 0;
 			for(auto i = shs.begin(); i != shs.end(); ++i)
 			{
-				bool Changed = true;  // check if the file actually changed
-				if(Changed)
-				{
-					i->second->Program = Create(i->second->PathVertex, i->second->PathFragment);
-					Count++;
-				}
-			}
-			if(Count > 0)
-			{
-				Debug::Info("Shaders reloaded " + to_string(Count));
-				this->Event->Fire("ShaderUpdated");
+				i->second->Changed = true;  // check if the file actually changed
 			}
 		});
 	}

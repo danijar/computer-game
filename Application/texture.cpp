@@ -22,13 +22,19 @@ class ModuleTexture : public Module
 	void Update()
 	{
 		auto txs = Entity->Get<StorageTexture>();
+		int Count = 0;
 		for(auto i = txs.begin(); i != txs.end(); ++i)
 		{
 			if(i->second->Changed)
 			{
 				Load(i->first);
 				i->second->Changed = false;
+				Count++;
 			}
+		}
+		if(Count > 0)
+		{
+			Debug::Info("Textures reloaded " + to_string(Count));
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -40,17 +46,7 @@ class ModuleTexture : public Module
 			int Count = 0;
 			for(auto i = txs.begin(); i != txs.end(); ++i)
 			{
-				bool Changed = true; // check if the file actually changed
-				if(Changed)
-				{
-					i->second->Changed = true;
-					Count++;
-				}
-			}
-			glBindTexture(GL_TEXTURE_2D, 0);
-			if(Count > 0)
-			{
-				Debug::Info("Textures reloaded " + to_string(Count));
+				i->second->Changed = true; // check if the file actually changed
 			}
 		});
 	}

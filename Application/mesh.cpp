@@ -13,7 +13,6 @@ using namespace std;
 #include <ASSIMP/scene.h>
 #include <ASSIMP/postprocess.h>
 
-
 #include "mesh.h"
 
 
@@ -27,6 +26,7 @@ class ModuleMesh : public Module
 	void Update()
 	{
 		auto mes = Entity->Get<StorageMesh>();
+		int Count = 0;
 		for(auto i = mes.begin(); i != mes.end(); ++i)
 		{
 			if(i->second->Changed)
@@ -35,7 +35,12 @@ class ModuleMesh : public Module
 				else if(i->second->Path == "PrimitivePlane") PrimitivePlane(i->first);
 				else Load(i->first);
 				i->second->Changed = false;
+				Count++;
 			}
+		}
+		if(Count > 0)
+		{
+			Debug::Info("Meshes reloaded " + to_string(Count));
 		}
 	}
 
@@ -43,19 +48,9 @@ class ModuleMesh : public Module
 	{
 		Event->Listen("WindowFocusGained", [=]{
 			auto mes = Entity->Get<StorageMesh>();
-			int Count = 0;
 			for(auto i = mes.begin(); i != mes.end(); ++i)
 			{
-				bool Changed = true; // check if the file actually changed
-				if(Changed)
-				{
-					i->second->Changed = true;
-					Count++;
-				}
-			}
-			if(Count > 0)
-			{
-				Debug::Info("Meshes reloaded " + to_string(Count));
+				i->second->Changed = true; // check if the file actually changed
 			}
 		});
 	}
@@ -76,17 +71,17 @@ class ModuleMesh : public Module
 		{
 			const aiMesh* mesh = scene->mMeshes[i];
 
-			unsigned int *faces;
-			faces = (unsigned int*)malloc(sizeof(unsigned int) * mesh->mNumFaces * 3);
+			vector<GLuint> faces;
 			for (unsigned int t = 0; t < mesh->mNumFaces; ++t)
 			{
-				const struct aiFace* face = &mesh->mFaces[t];
-				memcpy(&faces[3 * t], face->mIndices, 3 * sizeof(float));
+				faces.push_back(mesh->mFaces[t].mIndices[0]);
+				faces.push_back(mesh->mFaces[t].mIndices[1]);
+				faces.push_back(mesh->mFaces[t].mIndices[2]);
 			}
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->Elements);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * mesh->mNumFaces * 3, faces, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof GLuint, &faces[0], GL_STATIC_DRAW);
 
-			if (mesh->HasPositions())
+			if(mesh->HasPositions())
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, msh->Positions);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mVertices, GL_STATIC_DRAW);
@@ -100,14 +95,14 @@ class ModuleMesh : public Module
 
 			if(mesh->HasTextureCoords(0))
 			{
-				float *texcoords = (float *)malloc(sizeof(float)*2*mesh->mNumVertices);
+				vector<GLfloat> texcoords;
 				for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
 				{
-					texcoords[2 * i + 0] = mesh->mTextureCoords[0][i].x;
-					texcoords[2 * i + 1] = mesh->mTextureCoords[0][i].y;
+					texcoords.push_back(mesh->mTextureCoords[0][i].x);
+					texcoords.push_back(mesh->mTextureCoords[0][i].y);
 				}
 				glBindBuffer(GL_ARRAY_BUFFER, msh->Texcoords);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * mesh->mNumVertices, texcoords, GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
 			}
 		}
 

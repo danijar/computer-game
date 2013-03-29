@@ -23,13 +23,19 @@ class ModuleMaterial : public Module
 	void Update()
 	{
 		auto mts = Entity->Get<StorageMaterial>();
+		int Count = 0;
 		for(auto i = mts.begin(); i != mts.end(); ++i)
 		{
 			if(i->second->Changed)
 			{
 				Load(i->first);
 				i->second->Changed = false;
+				Count++;
 			}
+		}
+		if(Count > 0)
+		{
+			Debug::Info("Materials reloaded " + to_string(Count));
 		}
 	}
 
@@ -37,19 +43,9 @@ class ModuleMaterial : public Module
 	{
 		Event->Listen("WindowFocusGained", [=]{
 			auto mts = Entity->Get<StorageMaterial>();
-			int Count = 0;
 			for(auto i = mts.begin(); i != mts.end(); ++i)
 			{
-				bool Changed = true; // check if the file actually changed
-				if(Changed)
-				{
-					i->second->Changed = true;
-					Count++;
-				}
-			}
-			if(Count > 0)
-			{
-				Debug::Info("Materials reloaded " + to_string(Count));
+				i->second->Changed = true; // check if the file actually changed
 			}
 		});
 	}
