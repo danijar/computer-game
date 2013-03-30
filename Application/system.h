@@ -9,11 +9,15 @@
 #include <typeindex>
 #include <iostream>
 #include <fstream>
+#include <V8/v8.h>
 
 
 namespace system_h
 {
 	using namespace std;
+	using namespace v8;
+
+
 
 	inline void Warning(string Message)
 	{
@@ -244,6 +248,15 @@ namespace system_h
 		}
 	private:
 		unordered_map<string, shared_ptr<void>> list;
+	};
+
+
+
+	// manager script
+
+	class ManagerScript
+	{
+		HandleScope scope;
 	};
 
 	
