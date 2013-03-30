@@ -12,6 +12,7 @@ using namespace glm;
 
 #include "settings.h"
 #include "camera.h"
+#include "transform.h"
 #include "text.h"
 
 
@@ -24,16 +25,19 @@ class ModuleCamera : public Module
 	void Init()
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto cam = Global->Add<StorageCamera>("camera");
-		cam->Position = vec3(0, 5, -5);
+		unsigned int id = Entity->New();
+		auto cam = Entity->Add<StorageCamera>(id);
+		auto tsf = Entity->Add<StorageTransform>(id);
 		cam->Active = !stg->Mouse;
+		tsf->Position = vec3(0, 5, -5);
+		*Global->Add<unsigned int>("camera") = id;
 
 		Calculate();
 		State();
 		Projection();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
-			return "X " + to_string((int)floor(cam->Position.x)) + " Y " + to_string((int)floor(cam->Position.y)) + " Z " + to_string((int)floor(cam->Position.z));
+			return "X " + to_string((int)floor(tsf->Position.x)) + " Y " + to_string((int)floor(tsf->Position.y)) + " Z " + to_string((int)floor(tsf->Position.z));
 		};
 
 		speed = 10.f;
@@ -43,8 +47,8 @@ class ModuleCamera : public Module
 
 	void Update()
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
 		auto wnd = Global->Get<RenderWindow>("window");
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 		delta = clock.restart().asSeconds();
 
 		if(!cam->Active) return;
@@ -73,8 +77,7 @@ class ModuleCamera : public Module
 	void Listeners()
 	{
 		Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
-			auto cam = Global->Get<StorageCamera>("camera");
-
+			auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 			switch(Code)
 			{
 			case Keyboard::Key::F1:
@@ -96,13 +99,13 @@ class ModuleCamera : public Module
 
 	void State()
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 		State(cam->Active);
 	}
 
 	void State(bool Active)
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 		auto wnd = Global->Get<RenderWindow>("window");
 
 		cam->Active = Active;
@@ -118,50 +121,52 @@ class ModuleCamera : public Module
 	void Projection(Vector2u Size)
 	{
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto cam = Global->Get<StorageCamera>("camera");
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 
 		cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 	}
 
 	void Rotate(Vector2i Amount)
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
+		auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 
 		const float speed_rotate = .08f;
-		cam->Angles += vec2(-Amount.x, -Amount.y) * speed_rotate * delta;
+		tsf->Rotation += vec3(vec2(-Amount.x, -Amount.y) * speed_rotate * delta, 0);
 	}
 
 	void Move(vec3 Amount, float speed = 10.f)
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
+		auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 
-		vec3 forward = vec3(sinf(cam->Angles.x), 0, cosf(cam->Angles.x));
+		vec3 forward = vec3(sinf(tsf->Rotation.x), 0, cosf(tsf->Rotation.x));
 		vec3 right = vec3(-forward.z, 0, forward.x);
 
-		cam->Position   += forward * Amount.x * speed * delta;
-		cam->Position.y +=           Amount.y * speed * delta;
-		cam->Position   += right   * Amount.z * speed * delta;
+		tsf->Position   += forward * Amount.x * speed * delta;
+		tsf->Position.y +=           Amount.y * speed * delta;
+		tsf->Position   += right   * Amount.z * speed * delta;
 	}
 
 	void Calculate()
 	{
-		auto cam = Global->Get<StorageCamera>("camera");
+		unsigned int id = *Global->Get<unsigned int>("camera");
+		auto tsf = Entity->Get<StorageTransform>(id);
+		auto cam = Entity->Get<StorageCamera>(id);
 
 		const float pi = glm::pi<float>();
-		if		(cam->Angles.x < -pi)	cam->Angles.x += pi*2;
-		else if	(cam->Angles.x >  pi)	cam->Angles.x -= pi*2;
+		if		(tsf->Rotation.x < -pi)	tsf->Rotation.x += pi*2;
+		else if	(tsf->Rotation.x >  pi)	tsf->Rotation.x -= pi*2;
  
 		const float margin = 0.2f;
-		if		(cam->Angles.y < -pi/2+margin)	cam->Angles.y = -pi/2+margin;
-		else if	(cam->Angles.y >  pi/2-margin)	cam->Angles.y =  pi/2-margin;
+		if		(tsf->Rotation.y < -pi/2+margin) tsf->Rotation.y = -pi/2+margin;
+		else if	(tsf->Rotation.y >  pi/2-margin) tsf->Rotation.y =  pi/2-margin;
 
 		vec3 lookat(
-			sinf(cam->Angles.x) * cosf(cam->Angles.y),
-			                      sinf(cam->Angles.y),
-			cosf(cam->Angles.x) * cosf(cam->Angles.y)
+			sinf(tsf->Rotation.x) * cosf(tsf->Rotation.y),
+			                      sinf(tsf->Rotation.y),
+			cosf(tsf->Rotation.x) * cosf(tsf->Rotation.y)
 		);
 
-		cam->View = lookAt(cam->Position, cam->Position + lookat, vec3(0, 1, 0));
+		cam->View = lookAt(tsf->Position, tsf->Position + lookat, vec3(0, 1, 0));
 	}
 
 	typedef Keyboard::Key Key;

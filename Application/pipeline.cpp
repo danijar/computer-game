@@ -101,7 +101,7 @@ class ModulePipeline : public Module
 		if(GLuint id = Entity->Get<StorageShader>(forms)->Program)
 		{
 			glUseProgram(id);
-			glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->Projection));
+			glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Projection));
 			glUseProgram(0);
 		}
 

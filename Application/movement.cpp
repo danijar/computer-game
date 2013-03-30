@@ -34,7 +34,11 @@ class ModuleMovement : public Module
 		{
 			auto tsf = Entity->Get<StorageTransform>(i->first);
 
-			i->second->Direction += Randv();
+			if(i->second->Type == StorageMovement::RANDOM)
+				i->second->Direction += vec3(Randf(), Randf(), Randf());
+			else if(i->second->Type == StorageMovement::PLANAR)
+				i->second->Direction += vec3(Randf(), 0, Randf());
+
 			const float speed = 1.f;
 			tsf->Position += i->second->Direction * speed * delta;
 		}
@@ -43,9 +47,5 @@ class ModuleMovement : public Module
 	float Randf()
 	{
 		return ((float)rand() - (RAND_MAX/2)) / (RAND_MAX/2);
-	}
-	vec3 Randv()
-	{
-		return vec3(Randf(), Randf(), Randf());
 	}
 };

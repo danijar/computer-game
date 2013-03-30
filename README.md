@@ -7,11 +7,12 @@ Features
 --------
 
 - First person camera
-- Deferred Shading
+- Deferred Rendering
 - Basic text drawing
 - [Fast approximate anti-aliasing](http://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing)
 - Model Loading
 - [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
+- Deferred Lighting
 
 Libraries
 ---------
@@ -19,7 +20,7 @@ Libraries
 - [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
 - [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
-- [lib3ds](http://code.google.com/p/lib3ds/) Free library for `.3ds` model loading (2.0.0 RC1)
+- [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
 
 Screenshot
 ----------
@@ -66,5 +67,7 @@ Desired features that might be implemented in future.
 - [Global illumination](http://en.wikipedia.org/wiki/Global_illumination)
 - Characters
 - Animations
+- Pathfinding
 - Artificial intelligence
+- Combat
 - Networking, for multiplayer

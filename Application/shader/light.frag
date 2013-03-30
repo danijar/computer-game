@@ -17,8 +17,8 @@ void main()
 	vec3 normal = texture2D(normals, coord).xyz;
 	float dist = max(distance(pixel, light), 1);
 	float magnitude = 1 / pow(dist / radius + 1, 2);
-	float cutoff = 1 / (intensity + 2);
+	float cutoff = 0.4;
 	float attenuation = clamp((magnitude - cutoff) / (1 - cutoff), 0, 1);
 	float fraction = clamp(dot(normalize(light - pixel), normal), -1, 1);
-	image.xyz = color * attenuation * max(fraction, 0.2);
+	image.xyz = intensity * color * attenuation * max(fraction, 0.2);
 }

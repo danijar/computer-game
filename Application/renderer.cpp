@@ -120,7 +120,7 @@ class ModuleRenderer : public Module
 		//glClearColor(0.0, 0.0, 1.0, 0.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		glUniformMatrix4fv(glGetUniformLocation(Shader, "view"), 1, GL_FALSE, value_ptr(Global->Get<StorageCamera>("camera")->View));
+		glUniformMatrix4fv(glGetUniformLocation(Shader, "view"), 1, GL_FALSE, value_ptr(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->View));
 
 		glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 		glEnable(GL_DEPTH_TEST);
@@ -194,7 +194,7 @@ class ModuleRenderer : public Module
 			n++;
 		}
 
-		mat4 view = Global->Get<StorageCamera>("camera")->View;
+		mat4 view = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->View;
 
 		for(auto i : lis)
 		{
