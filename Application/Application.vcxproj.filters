@@ -83,6 +83,9 @@
     <ClCompile Include="transform.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>3. Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">

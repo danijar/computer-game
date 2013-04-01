@@ -15,8 +15,6 @@
 namespace system_h
 {
 	using namespace std;
-	using namespace v8;
-
 
 
 	inline void Warning(string Message)
@@ -256,7 +254,31 @@ namespace system_h
 
 	class ManagerScript
 	{
-		HandleScope scope;
+	public:
+		ManagerScript()
+		{
+			
+		}
+		void Init()
+		{
+			
+			
+		}
+		void Register(string Name, function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
+		{
+			
+		}
+		void Run(string Source)
+		{
+			
+		}
+		~ManagerScript()
+		{
+			
+		}
+	private:		
+		v8::Persistent<v8::Context> context;
+		v8::Persistent<v8::ObjectTemplate> globals;
 	};
 
 	
@@ -266,21 +288,23 @@ namespace system_h
 	class Module
 	{
 	public:
-		void Set(string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, string* Message)
+		void Set(string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, ManagerScript* Script, string* Message)
 		{
-			this->name = Name;
-			this->Event = Event;
-			this->Entity = Entity;
-			this->Global = Global;
+			this->name    = Name;
+			this->Event   = Event;
+			this->Entity  = Entity;
+			this->Global  = Global;
+			this->Script  = Script;
 			this->message = Message;
 		}
 		virtual void Init() = 0;
 		virtual void Update() = 0;
 		virtual ~Module() {};
 	protected:
-		ManagerEvent* Event;
+		ManagerEvent*  Event;
 		ManagerEntity* Entity;
 		ManagerGlobal* Global;
+		ManagerScript* Script;
 		void Exit(string Message)
 		{
 			*this->message = Message;
@@ -303,10 +327,11 @@ namespace system_h
 	public:
 		System()
 		{
+			event   = new ManagerEvent();
+			entity  = new ManagerEntity();
+			global  = new ManagerGlobal();
+			script  = new ManagerScript();
 			message = "";
-			event = new ManagerEvent();
-			entity = new ManagerEntity();
-			global = new ManagerGlobal();
 		}
 
 		void Init()
@@ -314,7 +339,7 @@ namespace system_h
 			for (auto i = list.begin(); i != list.end(); ++i)
 			for (auto j = i->second.begin(); j != i->second.end(); ++j)
 			{
-				j->second->Set(j->first, event, entity, global, &message);
+				j->second->Set(j->first, event, entity, global, script, &message);
 				j->second->Init();
 			}
 			event->Fire("SystemInitialized");
@@ -375,10 +400,11 @@ namespace system_h
 	private:
 		private:
 		map<int, vector<pair<string, Module*>>> list;
-		string message;
-		ManagerEvent* event;
+		ManagerEvent*  event;
 		ManagerEntity* entity;
 		ManagerGlobal* global;
+		ManagerScript* script;
+		string message;
 	};
 }
 

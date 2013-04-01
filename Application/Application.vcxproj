@@ -86,6 +86,7 @@
     <ClCompile Include="opengl.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
+    <ClCompile Include="script.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shaders.cpp" />

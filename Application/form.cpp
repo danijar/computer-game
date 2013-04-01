@@ -64,7 +64,7 @@ class ModuleForm : public Module
 
 	void Update()
 	{
-
+		
 	}
 
 	void Listeners()
@@ -83,7 +83,7 @@ class ModuleForm : public Module
 			for(int i = 0; i < (many ? 20 : 1); ++i)
 			{
 				vec3 position = vec3((rand() % 50) - 25, 5, (rand() % 50) - 25);
-				float radius = (rand() % 30) + 10;
+				float radius = (rand() % 30) + 10.f;
 				vec3 color = vec3((rand() % 100)/100.f, (rand() % 100)/100.f, (rand() % 100)/100.f);
 				unsigned int id = Light(position, radius, color);
 				Entity->Add<StorageMovement>(id)->Type = StorageMovement::PLANAR;
