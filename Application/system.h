@@ -257,28 +257,48 @@ namespace system_h
 	public:
 		ManagerScript()
 		{
-			
-		}
-		void Init()
-		{
-			
-			
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			{
+				v8::Persistent<v8::Context> context = v8::Context::New();
+
+				context->Enter();
+			}
 		}
 		void Register(string Name, function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
 		{
-			
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			{
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+
+				v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
+				v8::Local<v8::Object> global = context->Global();
+				global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
+			}
 		}
 		void Run(string Source)
 		{
-			
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			{
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+
+				v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+				v8::Handle<v8::Value> result = script->Run();
+			}
 		}
 		~ManagerScript()
 		{
-			
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			{
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+
+				context->Exit();
+			}
+			v8::V8::Dispose();
 		}
-	private:		
-		v8::Persistent<v8::Context> context;
-		v8::Persistent<v8::ObjectTemplate> globals;
 	};
 
 	
