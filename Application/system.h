@@ -248,59 +248,6 @@ namespace system_h
 		unordered_map<string, shared_ptr<void>> list;
 	};
 
-
-
-	// manager script
-
-	class ManagerScript
-	{
-	public:
-		ManagerScript()
-		{
-			v8::Isolate* isolate = v8::Isolate::GetCurrent();
-			v8::HandleScope scope(isolate);
-			{
-				v8::Persistent<v8::Context> context = v8::Context::New();
-
-				context->Enter();
-			}
-		}
-		void Register(string Name, function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
-		{
-			v8::Isolate* isolate = v8::Isolate::GetCurrent();
-			{
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-
-				v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
-				v8::Local<v8::Object> global = context->Global();
-				global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
-			}
-		}
-		void Run(string Source)
-		{
-			v8::Isolate* isolate = v8::Isolate::GetCurrent();
-			{
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-
-				v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
-				v8::Handle<v8::Value> result = script->Run();
-			}
-		}
-		~ManagerScript()
-		{
-			v8::Isolate* isolate = v8::Isolate::GetCurrent();
-			{
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-
-				context->Exit();
-			}
-			v8::V8::Dispose();
-		}
-	};
-
 	
 	
 	// module
@@ -308,23 +255,19 @@ namespace system_h
 	class Module
 	{
 	public:
-		void Set(string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, ManagerScript* Script, string* Message)
+		void Set(string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, string* Message)
 		{
 			this->name    = Name;
 			this->Event   = Event;
 			this->Entity  = Entity;
 			this->Global  = Global;
-			this->Script  = Script;
+			this->Script  = new HelperScript(Name);
 			this->message = Message;
 		}
 		virtual void Init() = 0;
 		virtual void Update() = 0;
 		virtual ~Module() {};
 	protected:
-		ManagerEvent*  Event;
-		ManagerEntity* Entity;
-		ManagerGlobal* Global;
-		ManagerScript* Script;
 		void Exit(string Message)
 		{
 			*this->message = Message;
@@ -333,8 +276,73 @@ namespace system_h
 		{
 			return name;
 		}
+		ManagerEvent  *Event;
+		ManagerEntity *Entity;
+		ManagerGlobal *Global;
+
+		class HelperScript
+		{
+		public:
+			HelperScript(std::string Name) : name(Name)
+			{
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Persistent<v8::Context> context = v8::Context::New();
+				context->Enter();
+			}
+			void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
+			{
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+				v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
+				v8::Local<v8::Object> global = context->Global();
+				global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
+			}
+			void Load(std::string Path, std::string Source = "")
+			{
+				if(scripts.find(Path) != scripts.end())
+				{
+					Warning("The script " + Path + " is already loaded.");
+					return;
+				}
+				std::string path = name + "/" + Path;
+				// actually load source from file here
+
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+				v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+				v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
+				scripts.insert(std::make_pair(Path, handle));
+			}
+			v8::Persistent<v8::Value> Run(std::string Path)
+			{
+				if(scripts.find(Path) == scripts.end()) Load(Path);
+
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+				v8::Local<v8::Value> result = scripts[Path]->Run();
+				v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
+				return handle;
+			}
+			~HelperScript()
+			{
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Context> context = v8::Context::GetCurrent();
+				context->Exit();
+				v8::V8::Dispose();
+			}
+		private:
+			string name;
+			std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
+		};
+
+		HelperScript* Script;
 	private:
-		string* message;
+		string *message;
 		string name;
 	};
 
@@ -350,7 +358,6 @@ namespace system_h
 			event   = new ManagerEvent();
 			entity  = new ManagerEntity();
 			global  = new ManagerGlobal();
-			script  = new ManagerScript();
 			message = "";
 		}
 
@@ -359,7 +366,7 @@ namespace system_h
 			for (auto i = list.begin(); i != list.end(); ++i)
 			for (auto j = i->second.begin(); j != i->second.end(); ++j)
 			{
-				j->second->Set(j->first, event, entity, global, script, &message);
+				j->second->Set(j->first, event, entity, global, &message);
 				j->second->Init();
 			}
 			event->Fire("SystemInitialized");
@@ -423,7 +430,6 @@ namespace system_h
 		ManagerEvent*  event;
 		ManagerEntity* entity;
 		ManagerGlobal* global;
-		ManagerScript* script;
 		string message;
 	};
 }

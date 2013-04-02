@@ -12,18 +12,21 @@ class ModuleScript : public Module
 {
 	void Init()
 	{
-		Script->Register("debug", Debug);
-	}
+		Script->Bind("debug", Debug);
 
-	void Update()
-	{
 		string source = " var number = 42;                    "
 		                " var message = '';                   "
 		                " message += 'The sense of life is '; "
 		                " message += number;                  "
 		                " message += '.';                     "
 		                " debug('Hello', 'World!', message);  ";
-		Script->Run(source);
+
+		Script->Load("update.js", source);
+	}
+
+	void Update()
+	{
+		Script->Run("update.js");
 	}
 
 	static v8::Handle<v8::Value> Debug(const v8::Arguments& args)
