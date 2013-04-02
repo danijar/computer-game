@@ -74,7 +74,6 @@
   <ItemGroup>
     <ClCompile Include="animation.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="debug.cpp" />
     <ClCompile Include="form.cpp" />
     <ClCompile Include="framebuffer.cpp" />
     <ClCompile Include="input.cpp" />
@@ -89,7 +88,6 @@
     <ClCompile Include="script.cpp" />
     <ClCompile Include="settings.cpp" />
     <ClCompile Include="shader.cpp" />
-    <ClCompile Include="shaders.cpp" />
     <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="transform.cpp" />
@@ -98,7 +96,6 @@
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="debug.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="framebuffer.h" />
@@ -110,7 +107,6 @@
     <ClInclude Include="opengl.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="shader.h" />
-    <ClInclude Include="shaders.h" />
     <ClInclude Include="system.h" />
     <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />

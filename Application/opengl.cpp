@@ -1,12 +1,15 @@
 #include "opengl.h"
 
+#include <iostream>
+using namespace std;
+
 
 namespace Opengl
 {
 	bool InitGlew()
 	{
 		bool result = (glewInit() == GLEW_OK);
-		Debug::PassFail("Glew initialization",  result);
+		cout << "Glew initialization" << " " << (result ? "success" : "fail") << endl;
 		return result;
 	}
 
@@ -26,9 +29,9 @@ namespace Opengl
 			else if(result == GL_OUT_OF_MEMORY)                     message = "GL_OUT_OF_MEMORY";
 			else if(result == GL_INVALID_FRAMEBUFFER_OPERATION_EXT) message = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
 
-			Debug::Fail(message);
+			cout << message << endl;
 		}
-		if(count > 0) Debug::Info(to_string(count) + " OpenGL error" + (count > 1 ? "s" : "") + ".");
+		if(count > 0) cout << count << " OpenGL error" << (count > 1 ? "s" : "") << endl;
 
 		return count;
 	}

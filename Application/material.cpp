@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <string>
 #include <vector>
@@ -35,7 +34,7 @@ class ModuleMaterial : public Module
 		}
 		if(Count > 0)
 		{
-			Debug::Info("Materials reloaded " + to_string(Count));
+			Debug->Info("Materials reloaded " + to_string(Count));
 		}
 	}
 
@@ -57,7 +56,7 @@ class ModuleMaterial : public Module
 		ifstream stream(Name() + "/" + mat->Path);
 		if(!stream.is_open())
 		{
-			Debug::Fail("Material (" + mat->Path + ") cannot be loaded.");
+			Debug->Fail("Material (" + mat->Path + ") cannot be loaded.");
 			return;
 		}
 

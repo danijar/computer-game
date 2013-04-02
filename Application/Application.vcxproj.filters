@@ -44,16 +44,10 @@
     <ClCompile Include="window.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
-    <ClCompile Include="debug.cpp">
-      <Filter>1. Sources</Filter>
-    </ClCompile>
     <ClCompile Include="opengl.cpp">
       <Filter>1. Sources</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>1. Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="shaders.cpp">
       <Filter>1. Sources</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
@@ -112,13 +106,7 @@
     <ClInclude Include="system.h">
       <Filter>0. Headers</Filter>
     </ClInclude>
-    <ClInclude Include="debug.h">
-      <Filter>0. Headers</Filter>
-    </ClInclude>
     <ClInclude Include="opengl.h">
-      <Filter>0. Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders.h">
       <Filter>0. Headers</Filter>
     </ClInclude>
     <ClInclude Include="keyboard.h">

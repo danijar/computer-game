@@ -12,9 +12,9 @@
 #include <V8/v8.h>
 
 
-namespace system_h
+namespace system_h // instead use "detail" namespace for internal stuff and show other
 {
-	using namespace std;
+	using namespace std; // get rid of that
 
 
 	inline void Warning(string Message)
@@ -30,8 +30,13 @@ namespace system_h
 	}
 
 
+	///////////////////////////////////////////////////////////
+	// Managers
+	///////////////////////////////////////////////////////////
 
+	//
 	// manager event
+	//
 
 	class ManagerEvent
 	{
@@ -94,8 +99,9 @@ namespace system_h
 	};
 
 
-
+	//
 	// manager entity
+	//
 
 	class ManagerEntity
 	{
@@ -205,8 +211,9 @@ namespace system_h
 	};
 
 
-
+	//
 	// manager global
+	//
 
 	class ManagerGlobal
 	{
@@ -248,9 +255,150 @@ namespace system_h
 		unordered_map<string, shared_ptr<void>> list;
 	};
 
-	
-	
+
+	///////////////////////////////////////////////////////////
+	// Helpers
+	///////////////////////////////////////////////////////////
+
+	//
+	// helper debug
+	//
+
+	class HelperDebug
+	{
+	public:
+		HelperDebug(std::string Name) : name(Name) {}
+		void Info(std::string Message)
+		{
+			std::cout << name << " " << Message << std::endl;
+		}
+		void Inline(std::string Message)
+		{
+			std::cout << " " << Message;
+		}
+		void Pass(std::string Message)
+		{
+			std::cout << name << " " << Message << std::endl;
+		}
+		void Fail(std::string Message)
+		{
+			std::cout << name << " " << Message << std::endl;
+		}
+		void PassFail(std::string Message, bool Result, std::string Pass = "success", std::string Fail = "fail")
+		{
+			std::cout << name << " " << Message << " " << (Result ? Pass : Fail) << std::endl;
+		}
+		void Wait(std::string Message = "...")
+		{
+			std::cout << name << "" << Message << std::endl;
+			std::cin.clear();
+			std::cin.get();
+		}
+		void Crash(std::string Message)
+		{
+			std::cout << "crash" << " " << name << " " << Message << std::endl;
+			std::cin.clear();
+			std::cin.get();
+			std::exit(EXIT_FAILURE);
+		}
+	private:
+		std::string name;
+	};
+
+	//
+	// helper file
+	//
+
+	class HelperFile
+	{
+	public:
+		HelperFile(std::string Name) : name(Name) {}
+		std::string Read(std::string Path)
+		{
+			std::string path = name + "/" + Path;
+			return "";
+		}
+		void Write(std::string Path, std::string Text)
+		{
+			std::string path = name + "/" + Path;
+		}
+	private:
+		std::string name;
+	};
+
+
+	//
+	// helper script
+	//
+
+	class HelperScript
+	{
+	public:
+		HelperScript(std::string Name) : name(Name)
+		{
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Persistent<v8::Context> context = v8::Context::New();
+			context->Enter();
+		}
+		void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
+		{
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Local<v8::Context> context = v8::Context::GetCurrent();
+			v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
+			v8::Local<v8::Object> global = context->Global();
+			global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
+		}
+		void Load(std::string Path, std::string Source = "")
+		{
+			if(scripts.find(Path) != scripts.end())
+			{
+				Warning("The script " + Path + " is already loaded.");
+				return;
+			}
+			std::string path = name + "/" + Path;
+			// actually load source from file here
+
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Local<v8::Context> context = v8::Context::GetCurrent();
+			v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+			v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
+			scripts.insert(std::make_pair(Path, handle));
+		}
+		v8::Persistent<v8::Value> Run(std::string Path)
+		{
+			if(scripts.find(Path) == scripts.end()) Load(Path);
+
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Local<v8::Context> context = v8::Context::GetCurrent();
+			v8::Local<v8::Value> result = scripts[Path]->Run();
+			v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
+			return handle;
+		}
+		~HelperScript()
+		{
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Local<v8::Context> context = v8::Context::GetCurrent();
+			context->Exit();
+			v8::V8::Dispose();
+		}
+	private:
+		string name;
+		std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
+	};
+
+
+	///////////////////////////////////////////////////////////
+	// System
+	///////////////////////////////////////////////////////////
+
+	//
 	// module
+	//
 
 	class Module
 	{
@@ -261,6 +409,8 @@ namespace system_h
 			this->Event   = Event;
 			this->Entity  = Entity;
 			this->Global  = Global;
+			this->Debug   = new HelperDebug(Name);
+			this->File    = new HelperFile(Name);
 			this->Script  = new HelperScript(Name);
 			this->message = Message;
 		}
@@ -279,76 +429,18 @@ namespace system_h
 		ManagerEvent  *Event;
 		ManagerEntity *Entity;
 		ManagerGlobal *Global;
-
-		class HelperScript
-		{
-		public:
-			HelperScript(std::string Name) : name(Name)
-			{
-				v8::Isolate* isolate = v8::Isolate::GetCurrent();
-				v8::HandleScope scope(isolate);
-				v8::Persistent<v8::Context> context = v8::Context::New();
-				context->Enter();
-			}
-			void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
-			{
-				v8::Isolate* isolate = v8::Isolate::GetCurrent();
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-				v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
-				v8::Local<v8::Object> global = context->Global();
-				global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
-			}
-			void Load(std::string Path, std::string Source = "")
-			{
-				if(scripts.find(Path) != scripts.end())
-				{
-					Warning("The script " + Path + " is already loaded.");
-					return;
-				}
-				std::string path = name + "/" + Path;
-				// actually load source from file here
-
-				v8::Isolate* isolate = v8::Isolate::GetCurrent();
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-				v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
-				v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
-				scripts.insert(std::make_pair(Path, handle));
-			}
-			v8::Persistent<v8::Value> Run(std::string Path)
-			{
-				if(scripts.find(Path) == scripts.end()) Load(Path);
-
-				v8::Isolate* isolate = v8::Isolate::GetCurrent();
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-				v8::Local<v8::Value> result = scripts[Path]->Run();
-				v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
-				return handle;
-			}
-			~HelperScript()
-			{
-				v8::Isolate* isolate = v8::Isolate::GetCurrent();
-				v8::HandleScope scope(isolate);
-				v8::Local<v8::Context> context = v8::Context::GetCurrent();
-				context->Exit();
-				v8::V8::Dispose();
-			}
-		private:
-			string name;
-			std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
-		};
-
-		HelperScript* Script;
+		HelperDebug   *Debug;
+		HelperFile    *File;
+		HelperScript  *Script;
 	private:
 		string *message;
 		string name;
 	};
 
 
-
+	//
 	// system
+	//
 
 	class System
 	{
@@ -427,9 +519,9 @@ namespace system_h
 	private:
 		private:
 		map<int, vector<pair<string, Module*>>> list;
-		ManagerEvent*  event;
-		ManagerEntity* entity;
-		ManagerGlobal* global;
+		ManagerEvent  *event;
+		ManagerEntity *entity;
+		ManagerGlobal *global;
 		string message;
 	};
 }

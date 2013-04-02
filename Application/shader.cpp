@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 #include "opengl.h"
 
 #include <GLEW/glew.h>
@@ -42,7 +41,7 @@ class ModuleShader : public Module
 		}
 		if(Count > 0)
 		{
-			Debug::Info("Shaders reloaded " + to_string(Count));
+			Debug->Info("Shaders reloaded " + to_string(Count));
 			this->Event->Fire("ShaderUpdated");
 		}
 	}
@@ -74,7 +73,7 @@ class ModuleShader : public Module
 
 		if(!TestProgram(program))
 		{
-			Debug::Fail("Shader program creation fail");
+			Debug->Fail("Shader program creation fail");
 			return 0;
 		}
 
@@ -92,7 +91,7 @@ class ModuleShader : public Module
 		const GLchar* chars = source.c_str();
 		glShaderSource(id, 1, &chars, NULL);
 		glCompileShader(id);
-		if(!TestShader(id)) Debug::Fail("... in (" + Path + ")");
+		if(!TestShader(id)) Debug->Fail("... in (" + Path + ")");
 		return id;
 	}
 
@@ -110,7 +109,7 @@ class ModuleShader : public Module
 			GLchar Log[513];
 			GLsizei Length;
 			glGetProgramInfoLog(Id, 512, &Length, Log);
-			if(Length > 0) Debug::Fail(Log);
+			if(Length > 0) Debug->Fail(Log);
 		}
 		return Result;
 	}
@@ -125,7 +124,7 @@ class ModuleShader : public Module
 			GLchar Log[513];
 			GLsizei Length;
 			glGetShaderInfoLog(Id, 512, &Length, Log);
-			if(Length > 0) Debug::Fail(Log);
+			if(Length > 0) Debug->Fail(Log);
 		}
 		return Result;
 	}

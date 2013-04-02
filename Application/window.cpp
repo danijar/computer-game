@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <GLEW/glew.h>
 #include <SFML/Window.hpp>
@@ -138,7 +137,7 @@ class ModuleWindow : public Module
 		}
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 
-		Debug::PassFail("Window creation", wnd->isOpen());
+		Debug->PassFail("Window creation", wnd->isOpen());
 
 		if(Recreated) Event->Fire<bool>("WindowRecreated", Fullscreen);
 	}

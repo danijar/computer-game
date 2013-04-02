@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <functional>
 using namespace std;
@@ -21,7 +20,7 @@ class ModuleText : public Module
 	void Init()
 	{
 		bool result = font.loadFromFile(Name() + "/source.ttf");
-		Debug::PassFail("Text font loading", result);
+		Debug->PassFail("Text font loading", result);
 
 		Listeners();
 	}

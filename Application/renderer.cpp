@@ -1,7 +1,7 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
+
 #include "opengl.h"
 
 #include <unordered_map>

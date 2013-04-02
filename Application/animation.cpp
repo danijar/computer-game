@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <SFML/System/Clock.hpp>
 using namespace sf;
@@ -58,7 +57,7 @@ class ModuleAnimation : public Module
 			{
 				if(!i->second->Active) Start(i->first);
 			}
-			Debug::Pass("Animation jump");
+			Debug->Pass("Animation jump");
 		});
 	}
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <string>
 using namespace std;
@@ -34,7 +33,7 @@ class ModuleTexture : public Module
 		}
 		if(Count > 0)
 		{
-			Debug::Info("Textures reloaded " + to_string(Count));
+			Debug->Info("Textures reloaded " + to_string(Count));
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -59,7 +58,7 @@ class ModuleTexture : public Module
 		bool result = image.loadFromFile(Name() + "/" + tex->Path);
 		if(!result)
 		{
-			Debug::Fail("Texture (" + tex->Path + ") cannot be loaded.");
+			Debug->Fail("Texture (" + tex->Path + ") cannot be loaded.");
 			return;
 		}
 		image.flipVertically();

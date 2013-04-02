@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <vector>
 #include <fstream>
@@ -40,7 +39,7 @@ class ModuleMesh : public Module
 		}
 		if(Count > 0)
 		{
-			Debug::Info("Meshes reloaded " + to_string(Count));
+			Debug->Info("Meshes reloaded " + to_string(Count));
 		}
 	}
 
@@ -63,7 +62,7 @@ class ModuleMesh : public Module
 		const aiScene *scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 		if(!scene)
 		{
-			Debug::Fail("Mesh (" + msh->Path + ") cannot be loaded.");
+			Debug->Fail("Mesh (" + msh->Path + ") cannot be loaded.");
 			return;
 		}
 

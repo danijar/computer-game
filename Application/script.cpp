@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <string>
 using namespace std;
@@ -12,15 +11,16 @@ class ModuleScript : public Module
 {
 	void Init()
 	{
-		Script->Bind("debug", Debug);
+		Script->Bind("print", Print);
 
 		string source = " var number = 42;                    "
 		                " var message = '';                   "
 		                " message += 'The sense of life is '; "
 		                " message += number;                  "
 		                " message += '.';                     "
-		                " debug('Hello', 'World!', message);  ";
+		                " print('Hello', 'World!', message);  ";
 
+		Debug->Info("loading a script");
 		Script->Load("update.js", source);
 	}
 
@@ -29,18 +29,18 @@ class ModuleScript : public Module
 		Script->Run("update.js");
 	}
 
-	static v8::Handle<v8::Value> Debug(const v8::Arguments& args)
+	static v8::Handle<v8::Value> Print(const v8::Arguments& args)
 	{
 		bool first = true;
 		for (int i = 0; i < args.Length(); ++i)
 		{
 			v8::HandleScope scope(args.GetIsolate());
 			if (first) first = false;
-			else Debug::Inline(" ");
+			else cout << " ";
 			string message = string(*v8::String::Utf8Value(args[i]));
-			Debug::Inline(message);
+			cout << message;
 		}
-		Debug::Info("");
+		cout << endl;
 		return v8::Undefined();
 	}
 };

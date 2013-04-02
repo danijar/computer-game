@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 #include "opengl.h"
 #include "keyboard.h"
 

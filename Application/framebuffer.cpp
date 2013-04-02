@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 #include "opengl.h"
 
 #include <unordered_map>
@@ -110,7 +109,7 @@ class ModuleFramebuffer : public Module
 		}
 		glDrawBuffers(buffers.size(), &buffers[0]);
 
-		Debug::PassFail("Framebuffer setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+		Debug->PassFail("Framebuffer setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	
