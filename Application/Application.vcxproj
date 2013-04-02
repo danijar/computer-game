@@ -82,7 +82,6 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="mods.cpp" />
     <ClCompile Include="movement.cpp" />
-    <ClCompile Include="opengl.cpp" />
     <ClCompile Include="pipeline.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="script.cpp" />
@@ -104,7 +103,6 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="movement.h" />
-    <ClInclude Include="opengl.h" />
     <ClInclude Include="settings.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="system.h" />

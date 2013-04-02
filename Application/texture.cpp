@@ -33,7 +33,7 @@ class ModuleTexture : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Info("Textures reloaded " + to_string(Count));
+			Debug->Print("Textures reloaded " + to_string(Count));
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}

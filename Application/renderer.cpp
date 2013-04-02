@@ -30,7 +30,7 @@ class ModuleRenderer : public Module
 {
 	void Init()
 	{
-		Opengl::InitGlew();
+		Opengl->Init();
 
 
 
@@ -69,7 +69,7 @@ class ModuleRenderer : public Module
 			n++;
 		}
 
-		Opengl::Test();
+		Opengl->Test();
 	}
 
 	void Listeners()

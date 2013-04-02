@@ -7,7 +7,7 @@
 #include <sstream>
 #include <algorithm>
 using namespace std;
-#include "GLEW/glew.h"
+#include <GLEW/glew.h>
 #include <ASSIMP/cimport.h>
 #include <ASSIMP/scene.h>
 #include <ASSIMP/postprocess.h>
@@ -39,7 +39,7 @@ class ModuleMesh : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Info("Meshes reloaded " + to_string(Count));
+			Debug->Print("Meshes reloaded " + to_string(Count));
 		}
 	}
 

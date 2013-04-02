@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "opengl.h"
 
 #include <unordered_map>
 using namespace std;
@@ -25,7 +24,7 @@ class ModulePipeline : public Module
 
 	void Init()
 	{
-		Opengl::InitGlew();
+		Opengl->Init();
 
 		Pipeline();
 

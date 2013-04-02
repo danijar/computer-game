@@ -12,12 +12,6 @@
     <Filter Include="4. Shaders">
       <UniqueIdentifier>{f0b6eb3d-9818-440f-b3de-0b1d4410eaba}</UniqueIdentifier>
     </Filter>
-    <Filter Include="0. Headers">
-      <UniqueIdentifier>{00cf05d5-bcb5-45e0-bf62-2d6c3f2bb360}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="1. Sources">
-      <UniqueIdentifier>{37784a7b-ddb6-4e46-9f5e-01d403f12919}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="animation.cpp">
@@ -43,12 +37,6 @@
     </ClCompile>
     <ClCompile Include="window.cpp">
       <Filter>3. Components</Filter>
-    </ClCompile>
-    <ClCompile Include="opengl.cpp">
-      <Filter>1. Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>1. Sources</Filter>
     </ClCompile>
     <ClCompile Include="shader.cpp">
       <Filter>3. Components</Filter>
@@ -80,6 +68,7 @@
     <ClCompile Include="script.cpp">
       <Filter>3. Components</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h">
@@ -103,15 +92,6 @@
     <ClInclude Include="transform.h">
       <Filter>2. Storages</Filter>
     </ClInclude>
-    <ClInclude Include="system.h">
-      <Filter>0. Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="opengl.h">
-      <Filter>0. Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="keyboard.h">
-      <Filter>0. Headers</Filter>
-    </ClInclude>
     <ClInclude Include="shader.h">
       <Filter>2. Storages</Filter>
     </ClInclude>
@@ -133,6 +113,8 @@
     <ClInclude Include="effect.h">
       <Filter>2. Storages</Filter>
     </ClInclude>
+    <ClInclude Include="system.h" />
+    <ClInclude Include="keyboard.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\antialiasing.frag">

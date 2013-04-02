@@ -29,7 +29,7 @@ class ModuleForm : public Module
 {
 	void Init()
 	{
-		Opengl::InitGlew();
+		Opengl->Init();
 
 		// init the scene, this will be done in an initialization script later on
 		// or will be loaded from a scene file or database

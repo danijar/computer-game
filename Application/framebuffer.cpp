@@ -16,7 +16,7 @@ class ModuleFramebuffer : public Module
 {
 	void Init()
 	{
-		Opengl::InitGlew();
+		Opengl->Init();
 
 		Listeners();
 	}

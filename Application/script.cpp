@@ -4,7 +4,7 @@
 
 #include <string>
 using namespace std;
-#include "V8/v8.h"
+#include <V8/v8.h>
 
 
 class ModuleScript : public Module
@@ -13,14 +13,15 @@ class ModuleScript : public Module
 	{
 		Script->Bind("print", Print);
 
-		string source = " var number = 42;                    "
+		Script->Load("init.js", "var number = 42;");
+		Script->Run("init.js");
+
+		string source = " number++;                           "
 		                " var message = '';                   "
 		                " message += 'The sense of life is '; "
 		                " message += number;                  "
 		                " message += '.';                     "
 		                " print('Hello', 'World!', message);  ";
-
-		Debug->Info("loading a script");
 		Script->Load("update.js", source);
 	}
 

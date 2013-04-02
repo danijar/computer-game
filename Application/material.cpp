@@ -34,7 +34,7 @@ class ModuleMaterial : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Info("Materials reloaded " + to_string(Count));
+			Debug->Print("Materials reloaded " + to_string(Count));
 		}
 	}
 

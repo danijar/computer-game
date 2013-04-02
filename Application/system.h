@@ -9,6 +9,8 @@
 #include <typeindex>
 #include <iostream>
 #include <fstream>
+
+#include <GLEW/glew.h>
 #include <V8/v8.h>
 
 
@@ -268,42 +270,68 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 	{
 	public:
 		HelperDebug(std::string Name) : name(Name) {}
-		void Info(std::string Message)
+
+		void Print(std::string Message)
 		{
-			std::cout << name << " " << Message << std::endl;
-		}
-		void Inline(std::string Message)
-		{
-			std::cout << " " << Message;
+			Print(name, Message);
 		}
 		void Pass(std::string Message)
 		{
-			std::cout << name << " " << Message << std::endl;
+			Pass(name, Message);
 		}
 		void Fail(std::string Message)
 		{
-			std::cout << name << " " << Message << std::endl;
+			Fail(name, Message);
 		}
 		void PassFail(std::string Message, bool Result, std::string Pass = "success", std::string Fail = "fail")
 		{
-			std::cout << name << " " << Message << " " << (Result ? Pass : Fail) << std::endl;
+			PassFail(name, Message, Result, Pass, Fail);
 		}
 		void Wait(std::string Message = "...")
 		{
-			std::cout << name << "" << Message << std::endl;
-			std::cin.clear();
-			std::cin.get();
+			Wait(name, Message);
 		}
 		void Crash(std::string Message)
 		{
-			std::cout << "crash" << " " << name << " " << Message << std::endl;
+			Crash(name, Message);
+		}
+
+		static void Print(std::string Name, std::string Message)
+		{
+			std::cout << Name << " " << Message << std::endl;
+		}
+		static void Inline(std::string Message)
+		{
+			std::cout << " " << Message;
+		}
+		static void Pass(std::string Name, std::string Message)
+		{
+			Print(Name, Message);
+		}
+		static void Fail(std::string Name, std::string Message)
+		{
+			Print(Name, Message);
+		}
+		static void PassFail(std::string Name, std::string Message, bool Result, std::string Pass = "success", std::string Fail = "fail")
+		{
+			if(Result) HelperDebug::Pass(Name, Message + " " + Pass);
+			else       HelperDebug::Fail(Name, Message + " " + Fail);
+		}
+		static void Wait(std::string Name, std::string Message = "...")
+		{
+			Print(Name, Message);
 			std::cin.clear();
 			std::cin.get();
+		}
+		static void Crash(std::string Name, std::string Message)
+		{
+			Wait(Name, "crashed");
 			std::exit(EXIT_FAILURE);
 		}
 	private:
 		std::string name;
 	};
+
 
 	//
 	// helper file
@@ -313,14 +341,75 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 	{
 	public:
 		HelperFile(std::string Name) : name(Name) {}
+
 		std::string Read(std::string Path)
 		{
-			std::string path = name + "/" + Path;
-			return "";
+			return Read(name, Path);
 		}
 		void Write(std::string Path, std::string Text)
 		{
-			std::string path = name + "/" + Path;
+			Write(name, Path, Text);
+		}
+
+		static void Write(std::string Name, std::string Path, std::string Text)
+		{
+			std::string path = Name + "/" + Path;
+		}
+		static std::string Read(std::string Name, std::string Path)
+		{
+			std::string path = Name + "/" + Path;
+			return "";
+		}
+	private:
+		std::string name;
+	};
+
+
+	//
+	// helper opengl
+	//
+
+	class HelperOpengl
+	{
+	public:
+		HelperOpengl(std::string Name) : name(Name) {}
+
+		bool Init()
+		{
+			return Init(name);
+		}
+		int Test()
+		{
+			return Test(name);
+		}
+
+		static bool Init(std::string Name)
+		{
+			bool result = (glewInit() == GLEW_OK);
+			HelperDebug::PassFail(Name, "glew initialization", result);
+			return result;
+		}
+		static int Test(std::string Name)
+		{
+			GLenum result;
+			int count;
+			string message;
+
+			for(count = 0; (result = glGetError()) != GL_NO_ERROR; ++count)
+			{
+					 if(result == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
+				else if(result == GL_INVALID_VALUE)                     message = "GL_INVALID_VALUE";
+				else if(result == GL_INVALID_OPERATION)                 message = "GL_INVALID_OPERATION";
+				else if(result == GL_STACK_OVERFLOW)                    message = "GL_STACK_OVERFLOW";
+				else if(result == GL_STACK_UNDERFLOW)                   message = "GL_STACK_UNDERFLOW";
+				else if(result == GL_OUT_OF_MEMORY)                     message = "GL_OUT_OF_MEMORY";
+				else if(result == GL_INVALID_FRAMEBUFFER_OPERATION_EXT) message = "GL_INVALID_FRAMEBUFFER_OPERATION_EXT";
+
+				cout << message << endl;
+			}
+			if(count > 0) HelperDebug::Fail(Name, to_string(count) + " OpenGL error" + (count > 1 ? "s" : ""));
+
+			return count;
 		}
 	private:
 		std::string name;
@@ -384,7 +473,6 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			v8::HandleScope scope(isolate);
 			v8::Local<v8::Context> context = v8::Context::GetCurrent();
 			context->Exit();
-			v8::V8::Dispose();
 		}
 	private:
 		string name;
@@ -411,6 +499,7 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			this->Global  = Global;
 			this->Debug   = new HelperDebug(Name);
 			this->File    = new HelperFile(Name);
+			this->Opengl  = new HelperOpengl(Name);
 			this->Script  = new HelperScript(Name);
 			this->message = Message;
 		}
@@ -431,6 +520,7 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 		ManagerGlobal *Global;
 		HelperDebug   *Debug;
 		HelperFile    *File;
+		HelperOpengl  *Opengl;
 		HelperScript  *Script;
 	private:
 		string *message;

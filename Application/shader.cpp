@@ -21,7 +21,7 @@ class ModuleShader : public Module
 
 	void Init()
 	{
-		Opengl::InitGlew();
+		Opengl->Init();
 
 		Listeners();
 	}
@@ -41,7 +41,7 @@ class ModuleShader : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Info("Shaders reloaded " + to_string(Count));
+			Debug->Print("Shaders reloaded " + to_string(Count));
 			this->Event->Fire("ShaderUpdated");
 		}
 	}
