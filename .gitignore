@@ -1,4 +1,7 @@
 Application/Debug
 Application/Release
+Release/Application.exp
+Release/Application.lib
+Release/Application.pdb
 /Debug
 Thumbs.db
