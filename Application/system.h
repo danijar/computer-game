@@ -16,8 +16,20 @@
 
 namespace system_h // instead use "detail" namespace for internal stuff and show other
 {
-	using namespace std; // get rid of that
+	///////////////////////////////////////////////////////////
+	// General
+	///////////////////////////////////////////////////////////
 
+	//
+	// namespace, later on get rid of that
+	//
+
+	using namespace std;
+
+
+	//
+	// debug output, later on use HelperDebug
+	//
 
 	inline void Warning(string Message)
 	{
@@ -30,6 +42,13 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 		cin.get();
 		exit(EXIT_FAILURE);
 	}
+
+
+	//
+	// prototypes
+	//
+
+	class Module;
 
 
 	///////////////////////////////////////////////////////////
@@ -423,13 +442,23 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 	class HelperScript
 	{
 	public:
-		HelperScript(std::string Name) : name(Name)
+		HelperScript(string Name, Module* Module) : name(Name)
 		{
 			v8::Isolate* isolate = v8::Isolate::GetCurrent();
 			v8::HandleScope scope(isolate);
 			v8::Persistent<v8::Context> context = v8::Context::New();
 			context->Enter();
+			v8::Local<v8::External> handle = v8::External::New(reinterpret_cast<void*>(Module));
+			module = v8::Persistent<v8::External>::New(isolate, handle);
 		}
+		~HelperScript()
+		{
+			v8::Isolate* isolate = v8::Isolate::GetCurrent();
+			v8::HandleScope scope(isolate);
+			v8::Local<v8::Context> context = v8::Context::GetCurrent();
+			context->Exit();
+		}
+
 		void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
 		{
 			v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -437,7 +466,7 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			v8::Local<v8::Context> context = v8::Context::GetCurrent();
 			v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
 			v8::Local<v8::Object> global = context->Global();
-			global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function)->GetFunction());
+			global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
 		}
 		void Load(std::string Path, std::string Source = "")
 		{
@@ -447,7 +476,7 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 				return;
 			}
 			std::string path = name + "/" + Path;
-			// actually load source from file here
+			// actually load source from file here using HelperFile
 
 			v8::Isolate* isolate = v8::Isolate::GetCurrent();
 			v8::HandleScope scope(isolate);
@@ -467,16 +496,19 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
 			return handle;
 		}
-		~HelperScript()
+
+		static Module *Unwrap(v8::Local<v8::Value> Data)
 		{
-			v8::Isolate* isolate = v8::Isolate::GetCurrent();
-			v8::HandleScope scope(isolate);
-			v8::Local<v8::Context> context = v8::Context::GetCurrent();
-			context->Exit();
+			if(Data.IsEmpty())           HelperDebug::Fail("", "cannot get module from script argument because it is empty"); // return;
+			else if(!Data->IsExternal()) HelperDebug::Fail("", "cannot get module from script argument because it's a wrong type"); // return;
+
+			v8::External *handle = v8::External::Cast(*Data);
+			return static_cast<Module*>(handle->Value());
 		}
 	private:
-		string name;
+		std::string name;
 		std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
+		v8::Persistent<v8::External> module;
 	};
 
 
@@ -500,20 +532,20 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			this->Debug   = new HelperDebug(Name);
 			this->File    = new HelperFile(Name);
 			this->Opengl  = new HelperOpengl(Name);
-			this->Script  = new HelperScript(Name);
+			this->Script  = new HelperScript(Name, this);
 			this->message = Message;
 		}
 		virtual void Init() = 0;
 		virtual void Update() = 0;
 		virtual ~Module() {};
+		string Name()
+		{
+			return name;
+		}
 	protected:
 		void Exit(string Message)
 		{
 			*this->message = Message;
-		}
-		string Name()
-		{
-			return name;
 		}
 		ManagerEvent  *Event;
 		ManagerEntity *Entity;

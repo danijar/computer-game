@@ -12,6 +12,7 @@ class ModuleScript : public Module
 	void Init()
 	{
 		Script->Bind("print", Print);
+		Script->Bind("greet", Greeting);
 
 		Script->Load("init.js", "var number = 42;");
 		Script->Run("init.js");
@@ -21,13 +22,24 @@ class ModuleScript : public Module
 		                " message += 'The sense of life is '; "
 		                " message += number;                  "
 		                " message += '.';                     "
-		                " print('Hello', 'World!', message);  ";
+		                " print('Hello', 'World!', message);  "
+						"                                     "
+						" greet('Dear');                      ";
 		Script->Load("update.js", source);
 	}
 
 	void Update()
 	{
 		Script->Run("update.js");
+	}
+
+	static v8::Handle<v8::Value> Greeting(const v8::Arguments& args)
+	{
+		string introduction = *v8::String::Utf8Value(args[0]);
+		Module* module = system_h::HelperScript::Unwrap(args.Data());
+		string name = module->Name();
+		cout << introduction << " " << name << "!" << endl;
+		return v8::Undefined();
 	}
 
 	static v8::Handle<v8::Value> Print(const v8::Arguments& args)
@@ -38,7 +50,7 @@ class ModuleScript : public Module
 			v8::HandleScope scope(args.GetIsolate());
 			if (first) first = false;
 			else cout << " ";
-			string message = string(*v8::String::Utf8Value(args[i]));
+			string message = *v8::String::Utf8Value(args[i]);
 			cout << message;
 		}
 		cout << endl;
