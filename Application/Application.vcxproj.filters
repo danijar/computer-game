@@ -114,7 +114,6 @@
       <Filter>2. Storages</Filter>
     </ClInclude>
     <ClInclude Include="system.h" />
-    <ClInclude Include="keyboard.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shader\antialiasing.frag">

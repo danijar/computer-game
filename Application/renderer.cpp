@@ -2,8 +2,6 @@
 
 #include "system.h"
 
-#include "opengl.h"
-
 #include <unordered_map>
 using namespace std;
 #include <SFML/Window.hpp>

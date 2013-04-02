@@ -98,7 +98,6 @@
     <ClInclude Include="effect.h" />
     <ClInclude Include="form.h" />
     <ClInclude Include="framebuffer.h" />
-    <ClInclude Include="keyboard.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="mesh.h" />

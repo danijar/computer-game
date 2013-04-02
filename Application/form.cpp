@@ -1,15 +1,14 @@
 #pragma once
 
 #include "system.h"
-#include "opengl.h"
-#include "keyboard.h"
 
 #include <unordered_map>
 #include <cstdlib>
 using namespace std;
 #include <GLEW/glew.h>
-#include <SFML/OpenGL.hpp>
+//#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Image.hpp>
+#include <SFML/Window/Keyboard.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
@@ -70,7 +69,7 @@ class ModuleForm : public Module
 	{
 		Event->Listen("InputBindCreate", [=]{
 			// move this into a script
-			bool many = KeyDown(Key::LShift);
+			bool many = Keyboard::isKeyPressed(Keyboard::LShift);
 			for(int i = 0; i < (many ? 500 : 1); ++i)
 			{
 				unsigned int id = Model("PrimitiveQube", "magic.mtl", vec3(0, 4, 0), vec3(0), vec3(1), false);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "opengl.h"
 
 #include <GLEW/glew.h>
 #include <GLM/glm.hpp>

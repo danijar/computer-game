@@ -1,7 +1,6 @@
 #pragma once
 
 #include "system.h"
-#include "opengl.h"
 
 #include <unordered_map>
 using namespace std;
