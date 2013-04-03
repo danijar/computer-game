@@ -130,7 +130,13 @@ public:
 	static std::string Read(std::string Name, std::string Path)
 	{
 		std::string path = Name + "/" + Path;
-		return std::string((std::istreambuf_iterator<char>(std::ifstream(path))), std::istreambuf_iterator<char>());
+		std::ifstream stream(path);
+		if(!stream.is_open())
+		{
+			HelperDebug::Fail(Name, "cannot read file (" + Path + ")");
+			return "";
+		}
+		return std::string((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
 	}
 private:
 	std::string name;
@@ -169,7 +175,7 @@ public:
 
 		for(count = 0; (result = glGetError()) != GL_NO_ERROR; ++count)
 		{
-					if(result == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
+			     if(result == GL_INVALID_ENUM)                      message = "GL_INVALID_ENUM";
 			else if(result == GL_INVALID_VALUE)                     message = "GL_INVALID_VALUE";
 			else if(result == GL_INVALID_OPERATION)                 message = "GL_INVALID_OPERATION";
 			else if(result == GL_STACK_OVERFLOW)                    message = "GL_STACK_OVERFLOW";

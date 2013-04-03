@@ -24,7 +24,7 @@ using namespace glm;
 #include "light.h"
 
 
-class ModuleForm : public Module
+class ModuleModel : public Module
 {
 	void Init()
 	{
@@ -123,7 +123,7 @@ class ModuleForm : public Module
 
 	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args)
 	{
-		ModuleForm* module = (ModuleForm*)HelperScript::Unwrap(args.Data());
+		ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 		string mesh = *v8::String::Utf8Value(args[0]);
 		string material = *v8::String::Utf8Value(args[1]);
@@ -138,7 +138,7 @@ class ModuleForm : public Module
 
 	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args)
 	{
-		ModuleForm* module = (ModuleForm*)HelperScript::Unwrap(args.Data());
+		ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 		vec3 position(args[0]->NumberValue(), args[1]->NumberValue(), args[2]->NumberValue());
 		float radius = (float)args[3]->NumberValue();

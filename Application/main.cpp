@@ -8,7 +8,7 @@ using namespace std;
 #include "settings/settings.cpp"
 #include "window/window.cpp"
 #include "input/input.cpp"
-#include "model/form.cpp"
+#include "model/model.cpp"
 #include "model/material.cpp"
 #include "model/texture.cpp"
 #include "model/mesh.cpp"
@@ -31,7 +31,7 @@ int main()
 	World.Add(0, "settings",    new ModuleSettings());
 	World.Add(1, "window",      new ModuleWindow());
 	World.Add(2, "input",       new ModuleInput());
-	World.Add(2, "form",        new ModuleForm());
+	World.Add(2, "model",       new ModuleModel());
 	World.Add(2, "material",    new ModuleMaterial());
 	World.Add(2, "texture",     new ModuleTexture());
 	World.Add(2, "mesh",        new ModuleMesh());

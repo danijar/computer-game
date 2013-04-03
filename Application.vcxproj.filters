@@ -66,9 +66,6 @@
     <ClCompile Include="Application\interface\text.cpp">
       <Filter>interface</Filter>
     </ClCompile>
-    <ClCompile Include="Application\model\form.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\model\material.cpp">
       <Filter>model</Filter>
     </ClCompile>
@@ -106,6 +103,9 @@
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="Application\main.cpp" />
+    <ClCompile Include="Application\model\model.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
