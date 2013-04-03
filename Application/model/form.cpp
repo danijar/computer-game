@@ -40,6 +40,7 @@ class ModuleForm : public Module
 		Script->Bind("model", jsModel);
 		Script->Bind("light", jsLight);
 
+		Debug->Print("start loading the scene...");
 		Script->Run("init.js");
 	}
 

@@ -5,22 +5,22 @@
 #include <string>
 using namespace std;
 
-#include "settings.cpp"
-#include "window.cpp"
-#include "input.cpp"
-#include "form.cpp"
-#include "material.cpp"
-#include "texture.cpp"
-#include "mesh.cpp"
-#include "transform.cpp"
-#include "movement.cpp"
-#include "animation.cpp"
-#include "camera.cpp"
-#include "shader.cpp"
-#include "framebuffer.cpp"
-#include "pipeline.cpp"
-#include "renderer.cpp"
-#include "text.cpp"
+#include "settings/settings.cpp"
+#include "window/window.cpp"
+#include "input/input.cpp"
+#include "model/form.cpp"
+#include "model/material.cpp"
+#include "model/texture.cpp"
+#include "model/mesh.cpp"
+#include "physic/transform.cpp"
+#include "movement/movement.cpp"
+#include "animation/animation.cpp"
+#include "camera/camera.cpp"
+#include "renderer/shader.cpp"
+#include "renderer/framebuffer.cpp"
+#include "renderer/pipeline.cpp"
+#include "renderer/renderer.cpp"
+#include "interface/text.cpp"
 
 
 int main()

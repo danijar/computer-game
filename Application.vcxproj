@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{88647751-F8F5-40F6-B4AC-78FC3548C06D}</ProjectGuid>
+    <RootNamespace>Application</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(ProjectDir)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\Build\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(SolutionDir)\Build\</IntDir>
+    <OutDir>$(ProjectDir)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-audio-s-d.lib;sfml-graphics-s-d.lib;sfml-network-s-d.lib;sfml-system-s-d.lib;sfml-window-s-d.lib;assimpd.lib;zlibd.lib;v8_base-d.lib;v8_snapshot-d.lib;preparser_lib-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-main.lib;sfml-system-s.lib;sfml-audio-s.lib;sfml-window-s.lib;sfml-network-s.lib;sfml-graphics-s.lib;assimp.lib;zlib.lib;v8_base.lib;v8_snapshot.lib;preparser_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Application\animation\animation.cpp" />
+    <ClCompile Include="Application\camera\camera.cpp" />
+    <ClCompile Include="Application\input\input.cpp" />
+    <ClCompile Include="Application\interface\text.cpp" />
+    <ClCompile Include="Application\main.cpp" />
+    <ClCompile Include="Application\model\form.cpp" />
+    <ClCompile Include="Application\model\material.cpp" />
+    <ClCompile Include="Application\model\mesh.cpp" />
+    <ClCompile Include="Application\model\texture.cpp" />
+    <ClCompile Include="Application\mods\mods.cpp" />
+    <ClCompile Include="Application\movement\movement.cpp" />
+    <ClCompile Include="Application\physic\transform.cpp" />
+    <ClCompile Include="Application\renderer\framebuffer.cpp" />
+    <ClCompile Include="Application\renderer\pipeline.cpp" />
+    <ClCompile Include="Application\renderer\renderer.cpp" />
+    <ClCompile Include="Application\renderer\shader.cpp" />
+    <ClCompile Include="Application\settings\settings.cpp" />
+    <ClCompile Include="Application\window\window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\storage\animation.h" />
+    <ClInclude Include="Application\storage\camera.h" />
+    <ClInclude Include="Application\storage\form.h" />
+    <ClInclude Include="Application\storage\framebuffer.h" />
+    <ClInclude Include="Application\storage\light.h" />
+    <ClInclude Include="Application\storage\material.h" />
+    <ClInclude Include="Application\storage\mesh.h" />
+    <ClInclude Include="Application\storage\movement.h" />
+    <ClInclude Include="Application\storage\settings.h" />
+    <ClInclude Include="Application\storage\shader.h" />
+    <ClInclude Include="Application\storage\text.h" />
+    <ClInclude Include="Application\storage\texture.h" />
+    <ClInclude Include="Application\storage\transform.h" />
+    <ClInclude Include="Application\system.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Application\model\init.js" />
+    <None Include="Application\model\material\barrel.mtl" />
+    <None Include="Application\model\material\chess.mtl" />
+    <None Include="Application\model\material\dirt.mtl" />
+    <None Include="Application\model\material\grass.mtl" />
+    <None Include="Application\model\material\magic.mtl" />
+    <None Include="Application\model\material\rock.mtl" />
+    <None Include="Application\model\material\shrine.mtl" />
+    <None Include="Application\model\mesh\barrel.3ds" />
+    <None Include="Application\model\mesh\shrine.3ds" />
+    <None Include="Application\model\update.js" />
+    <None Include="Application\renderer\shader\antialiasing.frag" />
+    <None Include="Application\renderer\shader\apply.frag" />
+    <None Include="Application\renderer\shader\combine.frag" />
+    <None Include="Application\renderer\shader\forms.frag" />
+    <None Include="Application\renderer\shader\forms.vert" />
+    <None Include="Application\renderer\shader\light.frag" />
+    <None Include="Application\renderer\shader\occlusion.frag" />
+    <None Include="Application\renderer\shader\quad.vert" />
+    <None Include="Application\renderer\shader\screen.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Application\model\texture\barrel_d.jpg" />
+    <Image Include="Application\model\texture\barrel_n.jpg" />
+    <Image Include="Application\model\texture\bottom.jpg" />
+    <Image Include="Application\model\texture\dirt.jpg" />
+    <Image Include="Application\model\texture\grass.jpg" />
+    <Image Include="Application\model\texture\magic.jpg" />
+    <Image Include="Application\model\texture\noise.png" />
+    <Image Include="Application\model\texture\rock.jpg" />
+    <Image Include="Application\model\texture\shrine_d.jpg" />
+    <Image Include="Application\model\texture\shrine_n.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Application\interface\text\source.ttf" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

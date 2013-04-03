@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="animation">
+      <UniqueIdentifier>{e5476561-e7ae-4656-87aa-4c4fa3d47bb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="camera">
+      <UniqueIdentifier>{5a5c0e9f-0b1c-43de-9846-2a08e62f22f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{d22d5133-c29e-4764-bb17-d75cc1228378}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface">
+      <UniqueIdentifier>{2a033122-84c1-441e-b304-5ae7e72ef551}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{bc4eb0b8-a82f-4a80-8a7b-122f04e48323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model\material">
+      <UniqueIdentifier>{b0c5005b-7785-438a-b5d5-e8f6e2c6f826}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model\mesh">
+      <UniqueIdentifier>{0aa1bf98-0d3e-4a62-ad38-7c838749181a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model\texture">
+      <UniqueIdentifier>{2a7d6224-e017-4bc9-9dbc-53bc4bd44676}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mods">
+      <UniqueIdentifier>{b5900934-b0be-4d79-9923-857ea751353c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="movement">
+      <UniqueIdentifier>{063851b0-0878-48b2-8680-ce0764f2f00d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="physic">
+      <UniqueIdentifier>{fa7bd3d7-3637-4b41-9082-3a31cf3de2d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer">
+      <UniqueIdentifier>{19c3ca19-31d8-4175-8a91-1196bfe0f629}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="renderer\shader">
+      <UniqueIdentifier>{24a0b306-e3f0-438f-8296-ff1b3787b768}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="settings">
+      <UniqueIdentifier>{883db618-8abf-4916-885e-47faeea539c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface\text">
+      <UniqueIdentifier>{accc5f3a-5441-43b6-8a80-c580a1c5e799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="window">
+      <UniqueIdentifier>{4c051fd7-69f0-4e2a-8034-515bf93ed3e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="storage">
+      <UniqueIdentifier>{153d5050-398b-4c4c-ad7e-23f239bcd1d0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Application\animation\animation.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\camera.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\input\input.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\interface\text.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\form.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\material.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\mesh.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\texture.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\mods\mods.cpp">
+      <Filter>mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\movement\movement.cpp">
+      <Filter>movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\physic\transform.cpp">
+      <Filter>physic</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\framebuffer.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\pipeline.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\renderer.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\shader.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\settings\settings.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\window\window.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\storage\animation.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\camera.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\form.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\framebuffer.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\light.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\material.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\mesh.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\movement.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\settings.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\shader.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\text.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\texture.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\transform.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\system.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Application\model\init.js">
+      <Filter>model</Filter>
+    </None>
+    <None Include="Application\model\update.js">
+      <Filter>model</Filter>
+    </None>
+    <None Include="Application\model\material\barrel.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\chess.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\dirt.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\grass.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\magic.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\rock.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\material\shrine.mtl">
+      <Filter>model\material</Filter>
+    </None>
+    <None Include="Application\model\mesh\barrel.3ds">
+      <Filter>model\mesh</Filter>
+    </None>
+    <None Include="Application\model\mesh\shrine.3ds">
+      <Filter>model\mesh</Filter>
+    </None>
+    <None Include="Application\renderer\shader\antialiasing.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\apply.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\combine.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\forms.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\forms.vert">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\light.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\occlusion.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\quad.vert">
+      <Filter>renderer\shader</Filter>
+    </None>
+    <None Include="Application\renderer\shader\screen.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Application\model\texture\grass.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\magic.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\noise.png">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\rock.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\shrine_d.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\shrine_n.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\barrel_d.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\barrel_n.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\bottom.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+    <Image Include="Application\model\texture\dirt.jpg">
+      <Filter>model\texture</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Application\interface\text\source.ttf">
+      <Filter>interface\text</Filter>
+    </Font>
+  </ItemGroup>
+</Project>

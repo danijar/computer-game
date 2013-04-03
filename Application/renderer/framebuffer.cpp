@@ -108,7 +108,7 @@ class ModuleFramebuffer : public Module
 		}
 		glDrawBuffers(buffers.size(), &buffers[0]);
 
-		Debug->PassFail("Framebuffer setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+		Debug->PassFail("setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	

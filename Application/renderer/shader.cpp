@@ -40,7 +40,7 @@ class ModuleShader : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Print("Shaders reloaded " + to_string(Count));
+			Debug->Print("reloaded " + to_string(Count));
 			this->Event->Fire("ShaderUpdated");
 		}
 	}
@@ -72,7 +72,7 @@ class ModuleShader : public Module
 
 		if(!TestProgram(program))
 		{
-			Debug->Fail("Shader program creation fail");
+			Debug->Fail("program creation fail");
 			return 0;
 		}
 
@@ -86,7 +86,7 @@ class ModuleShader : public Module
 	GLuint CreateShader(string Path, GLenum Type)
 	{
 		GLuint id = glCreateShader(Type);
-		string source = File->Read(Path);
+		string source = HelperFile::Read("renderer/shader", Path);
 		const GLchar* chars = source.c_str();
 		glShaderSource(id, 1, &chars, NULL);
 		glCompileShader(id);

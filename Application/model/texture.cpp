@@ -33,7 +33,7 @@ class ModuleTexture : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Print("Textures reloaded " + to_string(Count));
+			Debug->Print("reloaded " + to_string(Count));
 		}
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
@@ -55,10 +55,10 @@ class ModuleTexture : public Module
 		auto tex = Entity->Get<StorageTexture>(Id);
 
 		Image image;
-		bool result = image.loadFromFile(Name() + "/" + tex->Path);
+		bool result = image.loadFromFile("model/" + Name() + "/" + tex->Path);
 		if(!result)
 		{
-			Debug->Fail("Texture (" + tex->Path + ") cannot be loaded.");
+			Debug->Fail("(" + tex->Path + ") cannot be loaded.");
 			return;
 		}
 		image.flipVertically();

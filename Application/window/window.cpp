@@ -136,7 +136,7 @@ class ModuleWindow : public Module
 		}
 		wnd->setVerticalSyncEnabled(stg->Verticalsync);
 
-		Debug->PassFail("Window creation", wnd->isOpen());
+		Debug->PassFail("creation", wnd->isOpen());
 
 		if(Recreated) Event->Fire<bool>("WindowRecreated", Fullscreen);
 	}

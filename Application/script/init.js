@@ -1,1 +1,0 @@
-var number = 42;

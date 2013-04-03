@@ -34,7 +34,7 @@ class ModuleMaterial : public Module
 		}
 		if(Count > 0)
 		{
-			Debug->Print("Materials reloaded " + to_string(Count));
+			Debug->Print("reloaded " + to_string(Count));
 		}
 	}
 
@@ -53,10 +53,10 @@ class ModuleMaterial : public Module
 	{
 		auto mat = Entity->Get<StorageMaterial>(Id);
 
-		ifstream stream(Name() + "/" + mat->Path);
+		ifstream stream("model/" + Name() + "/" + mat->Path);
 		if(!stream.is_open())
 		{
-			Debug->Fail("Material (" + mat->Path + ") cannot be loaded.");
+			Debug->Fail("(" + mat->Path + ") cannot be loaded.");
 			return;
 		}
 

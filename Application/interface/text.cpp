@@ -19,8 +19,8 @@ class ModuleText : public Module
 
 	void Init()
 	{
-		bool result = font.loadFromFile(Name() + "/source.ttf");
-		Debug->PassFail("Text font loading", result);
+		bool result = font.loadFromFile("interface/" + Name() + "/source.ttf");
+		Debug->PassFail("font loading", result);
 
 		Listeners();
 	}

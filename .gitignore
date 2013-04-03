@@ -1,7 +1,7 @@
-/Debug
-/Release
+/Build
 Application/Application.exp
 Application/Application.lib
+Application/Application.ilk
 Application/Application.pdb
 Thumbs.db
 Application.opensdf

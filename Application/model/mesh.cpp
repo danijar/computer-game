@@ -56,7 +56,7 @@ class ModuleMesh : public Module
 	{
 		auto msh = Entity->Get<StorageMesh>(Id);
 
-		string path = Name() + "/" + msh->Path;
+		string path = "model/" + Name() + "/" + msh->Path;
 		const aiScene *scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 		if(!scene)
 		{
