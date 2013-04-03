@@ -24,16 +24,14 @@ float ssao()
 	for(int i = 0; i < 16; ++i)
 	{
 		vec3  of = orientate(reflect(unKernel[i], ref), nor);
-		float sz = texture2D(position_tex, coord + 0.3 * of.xy / z).z;
+		float sz = texture2D(position_tex, coord + 0.03 * of.xy).z;
 		float zd = (sz - z) * 0.2;
 		bl += clamp(zd * 10.0, 0.1, 1.0) * (1.0 - clamp((zd - 1.0) / 5.0, 0.0, 1.0));
 	}
-
-	return 1.0 - 1.0 * bl / 16.0;
+	return 1.0 - bl / 16.0;
 }
 
 void main()
 {
 	image = vec4(vec3(ssao()), 1.0);
 }
-
