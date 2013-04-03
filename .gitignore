@@ -1,8 +1,7 @@
-Application/Debug
-Application/Release
-Release/Application.exp
-Release/Application.lib
-Release/Application.pdb
 /Debug
+/Release
+Application/Application.exp
+Application/Application.lib
+Application/Application.pdb
 Thumbs.db
 Application.opensdf
