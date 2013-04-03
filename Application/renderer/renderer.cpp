@@ -30,8 +30,6 @@ class ModuleRenderer : public Module
 	{
 		Opengl->Init();
 
-
-
 		Listeners();
 	}
 
@@ -179,16 +177,16 @@ class ModuleRenderer : public Module
 	{
 		auto lis = Entity->Get<StorageLight>();
 
-		glUseProgram(Shader);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ONE, GL_ONE);
 
-		int n = 0; for(auto i : Samplers)
+		glUseProgram(Shader);
+		int n = 0; for(auto j : Samplers)
 		{
 			glActiveTexture(GL_TEXTURE0 + n);
-			glBindTexture(GL_TEXTURE_2D, i.second);
-			glUniform1i(glGetUniformLocation(Shader, i.first.c_str()), n);
+			glBindTexture(GL_TEXTURE_2D, j.second);
+			glUniform1i(glGetUniformLocation(Shader, j.first.c_str()), n);
 			n++;
 		}
 
@@ -196,7 +194,9 @@ class ModuleRenderer : public Module
 
 		for(auto i : lis)
 		{
-			vec3 pos = (view * vec4(Entity->Get<StorageTransform>(i.first)->Position, 1)).swizzle(X, Y, Z);
+			int type = i.second->Type == StorageLight::DIRECTIONAL ? 0 : 1;
+			vec3 pos = vec3(view * vec4(Entity->Get<StorageTransform>(i.first)->Position, !type ? 0 : 1));
+			glUniform1i(glGetUniformLocation(Shader, "type"),      type);
 			glUniform3f(glGetUniformLocation(Shader, "light"),     pos.x, pos.y, pos.z);
 			glUniform3f(glGetUniformLocation(Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);
 			glUniform1f(glGetUniformLocation(Shader, "radius"),    i.second->Radius);

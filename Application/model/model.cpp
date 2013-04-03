@@ -42,6 +42,8 @@ class ModuleModel : public Module
 
 		Debug->Print("start loading the scene...");
 		Script->Run("init.js");
+
+		Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
 	}
 
 	void Update()
@@ -81,7 +83,7 @@ class ModuleModel : public Module
 		return id;
 	}
 
-	unsigned int Light(vec3 Position, float Radius, vec3 Color = vec3(1), float Intensity = 1.f)
+	unsigned int Light(vec3 Position, float Radius, vec3 Color = vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT)
 	{
 		unsigned int id = Entity->New();
 		auto tsf = Entity->Add<StorageTransform>(id);
@@ -91,6 +93,7 @@ class ModuleModel : public Module
 		lgh->Radius = Radius;
 		lgh->Color = Color;
 		lgh->Intensity = Intensity;
+		lgh->Type = Type;
 
 		return id;
 	}
