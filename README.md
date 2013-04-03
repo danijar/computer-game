@@ -9,7 +9,7 @@ Features
 - First person camera
 - Deferred Rendering
 - Basic text drawing
-- [Edge detect anti-aliasing]
+- Edge detect anti-aliasing
 - [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
 - Deferred Lighting
 - Scripting
