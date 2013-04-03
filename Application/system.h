@@ -373,11 +373,12 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 		static void Write(std::string Name, std::string Path, std::string Text)
 		{
 			std::string path = Name + "/" + Path;
+			// write here
 		}
 		static std::string Read(std::string Name, std::string Path)
 		{
 			std::string path = Name + "/" + Path;
-			return "";
+			return std::string((std::istreambuf_iterator<char>(std::ifstream(path))), std::istreambuf_iterator<char>());
 		}
 	private:
 		std::string name;
@@ -468,20 +469,21 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 			v8::Local<v8::Object> global = context->Global();
 			global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
 		}
-		void Load(std::string Path, std::string Source = "")
+		void Load(std::string Path)
 		{
 			if(scripts.find(Path) != scripts.end())
 			{
 				Warning("The script " + Path + " is already loaded.");
 				return;
 			}
+
 			std::string path = name + "/" + Path;
-			// actually load source from file here using HelperFile
+			std::string source = HelperFile::Read(name, Path);
 
 			v8::Isolate* isolate = v8::Isolate::GetCurrent();
 			v8::HandleScope scope(isolate);
 			v8::Local<v8::Context> context = v8::Context::GetCurrent();
-			v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+			v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(source.c_str()));
 			v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
 			scripts.insert(std::make_pair(Path, handle));
 		}
@@ -499,8 +501,16 @@ namespace system_h // instead use "detail" namespace for internal stuff and show
 
 		static Module *Unwrap(v8::Local<v8::Value> Data)
 		{
-			if(Data.IsEmpty())           HelperDebug::Fail("", "cannot get module from script argument because it is empty"); // return;
-			else if(!Data->IsExternal()) HelperDebug::Fail("", "cannot get module from script argument because it's a wrong type"); // return;
+			if(Data.IsEmpty())
+			{
+				HelperDebug::Fail("", "cannot get module from script argument because it is empty");
+				return nullptr;
+			}
+			else if(!Data->IsExternal())
+			{
+				HelperDebug::Fail("", "cannot get module from script argument because it's a wrong type");
+				return nullptr;
+			}
 
 			v8::External *handle = v8::External::Cast(*Data);
 			return static_cast<Module*>(handle->Value());

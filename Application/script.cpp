@@ -14,18 +14,9 @@ class ModuleScript : public Module
 		Script->Bind("print", Print);
 		Script->Bind("greet", Greeting);
 
-		Script->Load("init.js", "var number = 42;");
 		Script->Run("init.js");
 
-		string source = " number++;                           "
-		                " var message = '';                   "
-		                " message += 'The sense of life is '; "
-		                " message += number;                  "
-		                " message += '.';                     "
-		                " print('Hello', 'World!', message);  "
-						"                                     "
-						" greet('Dear');                      ";
-		Script->Load("update.js", source);
+		Script->Load("update.js");
 	}
 
 	void Update()

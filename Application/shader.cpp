@@ -2,12 +2,12 @@
 
 #include "system.h"
 
+#include <string>
+using namespace std;
 #include <GLEW/glew.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace glm;
-#include <fstream>
-using namespace std;
 
 #include "shader.h"
 
@@ -86,7 +86,7 @@ class ModuleShader : public Module
 	GLuint CreateShader(string Path, GLenum Type)
 	{
 		GLuint id = glCreateShader(Type);
-		string source = string((istreambuf_iterator<char>(ifstream(Name() + "/" + Path))), istreambuf_iterator<char>());
+		string source = File->Read(Path);
 		const GLchar* chars = source.c_str();
 		glShaderSource(id, 1, &chars, NULL);
 		glCompileShader(id);

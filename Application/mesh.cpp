@@ -3,8 +3,6 @@
 #include "system.h"
 
 #include <vector>
-#include <fstream>
-#include <sstream>
 #include <algorithm>
 using namespace std;
 #include <GLEW/glew.h>
