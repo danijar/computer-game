@@ -2,7 +2,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <SFML/OpenGL.hpp>
+#include <GLEW/glew.h>
 
 struct StorageShader
 {

@@ -21,7 +21,6 @@ using namespace std;
 #include "pipeline.cpp"
 #include "renderer.cpp"
 #include "text.cpp"
-#include "script.cpp"
 
 
 int main()
@@ -45,7 +44,6 @@ int main()
 	World.Add(4, "pipeline",    new ModulePipeline());
 	World.Add(5, "renderer",    new ModuleRenderer());
 	World.Add(6, "text",        new ModuleText());
-	World.Add(7, "script",      new ModuleScript());
 
 	World.Init();
 

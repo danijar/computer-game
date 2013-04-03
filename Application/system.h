@@ -530,7 +530,6 @@ public:
 	{
 		return name;
 	}
-protected:
 	void Exit(std::string Message)
 	{
 		*this->message = Message;

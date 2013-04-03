@@ -4,7 +4,7 @@
 
 #include <cstdlib>
 using namespace std;
-#include <SFML/OpenGL.hpp>
+#include <GLEW/glew.h>
 #include <SFML/System/Clock.hpp>
 using namespace sf;
 #include <GLM/gtc/matrix_transform.hpp>

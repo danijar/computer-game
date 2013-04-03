@@ -6,13 +6,13 @@
 #include <cstdlib>
 using namespace std;
 #include <GLEW/glew.h>
-//#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Window/Keyboard.hpp>
 using namespace sf;
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 using namespace glm;
+#include <V8/v8.h>
 
 #include "form.h"
 #include "transform.h"
@@ -30,39 +30,22 @@ class ModuleForm : public Module
 	{
 		Opengl->Init();
 
-		// init the scene, this will be done in an initialization script later on
-		// or will be loaded from a scene file or database
-		const int a = 3;
-		for(float x = -3; x <= 3; ++x)
-		for(float z = -3; z <= 3; ++z)
-			Model("PrimitiveQube", "dirt.mtl", vec3(a*x, 1, a*z));
-		for(float x = -3; x <= 3; x+=3)
-		for(float z = -3; z <= 3; z+=3)
-			if(x == 0 && z == 0) continue;
-			else Model("PrimitiveQube", "grass.mtl", vec3(a*x, a+1, a*z));
-		Model("PrimitivePlane", "chess.mtl");
-
-		Model("barrel.3ds", "barrel.mtl", vec3(16, 0, 8), vec3(-90, 0, 0), vec3(4));
-		Model("shrine.3ds", "shrine.mtl", vec3(40, 0, -10), vec3(-90, 0, -30), vec3(2.5));
-		Model("rock.obj", "rock.mtl", vec3(50, 2, 45), vec3(-90, 0, 0), vec3(5.0));
-
-		Light(vec3(0, 5, 0), 20.f, vec3(0, 1, 0));
-		Light(vec3(-10, 0.5, -15), 7.f, vec3(1, 0, 0), 2.f);
-		Light(vec3(50, 5, 50), 25.f, vec3(0, 0, 1));
-		Light(vec3(40, 10, -10), 100.f, vec3(1), 2.5f);
-		//Light(vec3(0, 50, 50), 500.f, vec3(1)); // pointlight for daylight
-
 		Listeners();
 
 		Entity->Add<StorageText>(Entity->New())->Text = [=]{
 			auto fms = Entity->Get<StorageForm>();
 			return "Forms " + to_string(fms.size());
 		};
+
+		Script->Bind("model", jsModel);
+		Script->Bind("light", jsLight);
+
+		Script->Run("init.js");
 	}
 
 	void Update()
 	{
-		
+		Script->Run("update.js");
 	}
 
 	void Listeners()
@@ -77,14 +60,6 @@ class ModuleForm : public Module
 				Entity->Add<StorageAnimation>(id);
 				auto tsf = Entity->Get<StorageTransform>(id);
 				tsf->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
-			}
-			for(int i = 0; i < (many ? 20 : 1); ++i)
-			{
-				vec3 position = vec3((rand() % 50) - 25, 5, (rand() % 50) - 25);
-				float radius = (rand() % 30) + 10.f;
-				vec3 color = vec3((rand() % 100)/100.f, (rand() % 100)/100.f, (rand() % 100)/100.f);
-				unsigned int id = Light(position, radius, color);
-				Entity->Add<StorageMovement>(id)->Type = StorageMovement::PLANAR;
 			}
 		});
 	}
@@ -143,5 +118,33 @@ class ModuleForm : public Module
 		auto mat = Entity->Add<StorageMaterial>(id);
 		mat->Path = Path;
 		return id;
+	}
+
+	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args)
+	{
+		ModuleForm* module = (ModuleForm*)HelperScript::Unwrap(args.Data());
+
+		string mesh = *v8::String::Utf8Value(args[0]);
+		string material = *v8::String::Utf8Value(args[1]);
+		vec3 position(args[2]->NumberValue(), args[3]->NumberValue(), args[4]->NumberValue());
+		vec3 rotation(args[5]->NumberValue(), args[6]->NumberValue(), args[7]->NumberValue());
+		vec3 scale(args[8]->NumberValue());
+		bool still = args[8]->BooleanValue();
+
+		unsigned int id = module->Model(mesh, material, position, rotation, scale, still);
+		return v8::Uint32::New(id);
+	}
+
+	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args)
+	{
+		ModuleForm* module = (ModuleForm*)HelperScript::Unwrap(args.Data());
+
+		vec3 position(args[0]->NumberValue(), args[1]->NumberValue(), args[2]->NumberValue());
+		float radius = (float)args[3]->NumberValue();
+		vec3 color(args[4]->NumberValue(), args[5]->NumberValue(), args[6]->NumberValue());
+		float intensity  = (float)args[7]->NumberValue();
+
+		unsigned int id = module->Light(position, radius, color, intensity);
+		return v8::Uint32::New(id);
 	}
 };

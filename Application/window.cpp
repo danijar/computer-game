@@ -5,7 +5,6 @@
 #include <GLEW/glew.h>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/OpenGL.hpp>
 using namespace sf;
 
 #include "settings.h"
