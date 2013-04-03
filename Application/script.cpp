@@ -27,7 +27,7 @@ class ModuleScript : public Module
 	static v8::Handle<v8::Value> Greeting(const v8::Arguments& args)
 	{
 		string introduction = *v8::String::Utf8Value(args[0]);
-		Module* module = system_h::HelperScript::Unwrap(args.Data());
+		Module* module = HelperScript::Unwrap(args.Data());
 		string name = module->Name();
 		cout << introduction << " " << name << "!" << endl;
 		return v8::Undefined();

@@ -9,10 +9,10 @@ Features
 - First person camera
 - Deferred Rendering
 - Basic text drawing
-- [Fast approximate anti-aliasing](http://en.wikipedia.org/wiki/Fast_approximate_anti-aliasing)
-- Model Loading
+- [Edge detect anti-aliasing]
 - [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
 - Deferred Lighting
+- Scripting
 
 Libraries
 ---------
@@ -21,6 +21,7 @@ Libraries
 - [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
 - [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
+- [V8](https://developers.google.com/v8/) V8 JavaScript Engine (30.03.2013)
 
 Screenshot
 ----------
@@ -50,14 +51,12 @@ There is a precompiled executable for Windows. To use it, download the content o
 Branches
 --------
 
-### [Terrain](https://github.com/ComputerGame/GraphicsApplication/tree/terrain)
-
-In this branch a voxel based terrain generator and renderer is implmented.
+The [Terrain](https://github.com/ComputerGame/GraphicsApplication/tree/terrain) branch implements a voxel based world. It involves chunk management, a terrain generator and meshing techniques.
 
 Upcoming Features
 -----------------
 
-There is a lot to do since the core development isn't finished yet.
+There is a lot to do and the core development hasn't finished yet.
 
 - Physics and Collision
 - Shadow mapping
