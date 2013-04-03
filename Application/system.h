@@ -15,257 +15,10 @@
 
 
 ///////////////////////////////////////////////////////////
-// General
-///////////////////////////////////////////////////////////
-
-//
-// debug output, later on use HelperDebug
-//
-
-inline void Warning(std::string Message)
-{
-	std::cout << "System Warning: " << Message << std::endl;
-}
-inline void Error(std::string Message)
-{
-	std::cout << "System Error: " << Message << std::endl;
-	std::cin.clear();
-	std::cin.get();
-	std::exit(EXIT_FAILURE);
-}
-
-
-//
 // prototypes
-//
+///////////////////////////////////////////////////////////
 
 class Module;
-
-
-///////////////////////////////////////////////////////////
-// Managers
-///////////////////////////////////////////////////////////
-
-//
-// manager event
-//
-
-class ManagerEvent
-{
-	typedef std::unordered_map<std::string, std::unordered_map<int, std::vector<std::pair<void*, bool>>>> Events;
-public:
-	void Listen(std::string Name, std::function<void()> Function)
-	{
-		Listen(Name, 0, Function);
-	}
-	void Listen(std::string Name, int State, std::function<void()> Function)
-	{
-		list[Name][State].push_back(std::make_pair(new std::function<void()>(Function), false));
-	}
-	template <typename T>
-	void Listen(std::string Name, std::function<void(T)> Function)
-	{
-		Listen<T>(Name, 0, Function);
-	}
-	template <typename T>
-	void Listen(std::string Name, int State, std::function<void(T)> Function)
-	{
-		list[Name][State].push_back(std::make_pair(new std::function<void(T)>(Function), true));
-	}
-	void Fire(std::string Name)
-	{
-		Fire(Name, 0);
-	}
-	void Fire(std::string Name, int State)
-	{
-		auto Functions = list[Name][State];
-
-		for (auto i = Functions.begin(); i != Functions.end(); ++i)
-		{
-			if(i->second) continue;
-			else          (*(std::function<void()>*)(i->first))();
-		}
-	}
-	void FireRange(std::string Name, int From, int To)
-	{
-		for(int i = From; i <= To; ++i) Fire(Name, i);
-	}
-	template <typename T>
-	void Fire(std::string Name, T Data)
-	{
-		Fire(Name, 0, Data);
-	}
-	template <typename T>
-	void Fire(std::string Name, int State, T Data)
-	{
-		auto Functions = list[Name][State];
-
-		for (auto i = Functions.begin(); i != Functions.end(); ++i)
-		{
-			if(i->second) (*(std::function<void(T)>*)i->first)(Data);
-			else          (*(std::function<void()>*)i->first)();
-		}
-	}
-private:
-	Events list;
-};
-
-
-//
-// manager entity
-//
-
-class ManagerEntity
-{
-public:
-	ManagerEntity() : index(0) {}
-	int New()
-	{
-		return ++index;
-	}
-	template <typename T>
-	T* Add(unsigned int id)
-	{
-		if(id > index || id == 0) Error("Cannot add entity " + std::to_string(id) + " because it is not an entity id. Use 'int New()'.");
-		auto key = std::type_index(typeid(T));
-
-		if (list.find(key) == list.end())
-		{
-			auto value = new std::unordered_map<int, std::shared_ptr<void> >();
-			list.insert(make_pair(key, *value));
-		}
-		T* t = new T();
-		auto result = list[key].insert(make_pair(id, std::shared_ptr<void>(t)));
-		if (!result.second)
-		{
-			Warning("Cannot add entity " + std::to_string(id) + " to " + std::string(key.name()) + " because it already exists.");
-			return Get<T>(id);
-		}
-		return t;
-	}
-	template <typename T>
-	std::unordered_map<int, T*> Get()
-	{
-		std::unordered_map<int, T*> output;
-		auto key = std::type_index(typeid(T));
-		if (Check(key))
-		{
-			for(auto i = list[key].begin(); i != list[key].end(); ++i)
-			{
-				output.insert(std::make_pair(i->first, static_cast<T*>(i->second.get())));
-			}
-		}
-		return output;
-	}
-	template <typename T>
-	T* Get(unsigned int id)
-	{
-		auto key = std::type_index(typeid(T));
-		if (!Check(key, id))
-		{
-			Error("Cannot get entity because " + std::to_string(id) + " in " + std::string(key.name()) + " does not exist.");
-			return nullptr;
-		}
-		else return static_cast<T*>(list[key][id].get());
-	}
-	void Delete(unsigned int id)
-	{
-		if(id > index || id == 0)
-		{
-			Warning("Cannot delete entity " + std::to_string(id) + " because it is not an entity id.");
-			return;
-		}
-		for(auto i = list.begin(); i != list.end(); ++i)
-		{
-			if (Check(i->first, id))
-			{
-				auto j = i->second.find(id);
-				j->second.reset();
-				i->second.erase(j);
-			}
-		}
-	}
-	template <typename T>
-	void Delete(unsigned int id)
-	{
-		auto key = std::type_index(typeid(T));
-		if (!Check(key, id))
-		{
-			Error("Cannot delete entity because " + std::string(key.name()) + " in " + std::string(key.name()) + " does not exist.");
-			return;
-		}
-		auto j = list[key].find(id);
-		j->second.reset();
-		list[key].erase(j);
-	}
-	template <typename T>
-	bool Check(unsigned int id)
-	{
-		auto key = std::type_index(typeid(T));
-		if (!Check(key)) return false;
-		if (list[key].find(id) == list[key].end()) return false;
-		return true;
-	}
-private:
-	unsigned int index;
-	std::unordered_map<std::type_index, std::unordered_map<int, std::shared_ptr<void>>> list;
-	bool Check(std::type_index key)
-	{
-		if (list.find(key) == list.end()) return false;
-		return true;
-	}
-	bool Check(std::type_index key, int id)
-	{
-		if (!Check(key)) return false;
-		if (list[key].find(id) == list[key].end()) return false;
-		return true;
-	}
-};
-
-
-//
-// manager global
-//
-
-class ManagerGlobal
-{
-public:
-	template <typename T>
-	T* Add(std::string Name)
-	{
-		T* t = new T();
-		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(t)));
-		if (!result.second)
-		{
-			Warning("Cannot add global " + Name + " because it already exists.");
-			return Get<T>(Name);
-		}
-		return t;
-	}
-	template <typename T>
-	T* Get(std::string Name)
-	{
-		auto i = list.find(Name);
-		if(i == list.end())
-		{
-			Error("Cannot get global " + Name + " because it does not exists.");
-			return nullptr;
-		}
-		return static_cast<T*>(i->second.get());
-	}
-	void Delete(std::string Name)
-	{
-		auto i = list.find(Name);
-		if(i == list.end())
-		{
-			Warning("Cannot delete global " + Name + " because it does not exists.");
-			return;
-		}
-		list.erase(i);
-	}
-private:
-	std::unordered_map<std::string, std::shared_ptr<void>> list;
-};
 
 
 ///////////////////////////////////////////////////////////
@@ -297,6 +50,10 @@ public:
 	{
 		PassFail(name, Message, Result, Pass, Fail);
 	}
+	void Warning(std::string Message)
+	{
+		Warning(name, Message);
+	}
 	void Wait(std::string Message = "...")
 	{
 		Wait(name, Message);
@@ -326,6 +83,10 @@ public:
 	{
 		if(Result) HelperDebug::Pass(Name, Message + " " + Pass);
 		else       HelperDebug::Fail(Name, Message + " " + Fail);
+	}
+	static void Warning(std::string Name, std::string Message)
+	{
+		Print(Name, Message);
 	}
 	static void Wait(std::string Name, std::string Message = "...")
 	{
@@ -464,7 +225,7 @@ public:
 	{
 		if(scripts.find(Path) != scripts.end())
 		{
-			Warning("The script " + Path + " is already loaded.");
+			HelperDebug::Warning("system", "The script " + Path + " is already loaded.");
 			return;
 		}
 
@@ -510,6 +271,232 @@ private:
 	std::string name;
 	std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
 	v8::Persistent<v8::External> module;
+};
+
+
+///////////////////////////////////////////////////////////
+// Managers
+///////////////////////////////////////////////////////////
+
+//
+// manager event
+//
+
+class ManagerEvent
+{
+	typedef std::unordered_map<std::string, std::unordered_map<int, std::vector<std::pair<void*, bool>>>> Events;
+public:
+	void Listen(std::string Name, std::function<void()> Function)
+	{
+		Listen(Name, 0, Function);
+	}
+	void Listen(std::string Name, int State, std::function<void()> Function)
+	{
+		list[Name][State].push_back(std::make_pair(new std::function<void()>(Function), false));
+	}
+	template <typename T>
+	void Listen(std::string Name, std::function<void(T)> Function)
+	{
+		Listen<T>(Name, 0, Function);
+	}
+	template <typename T>
+	void Listen(std::string Name, int State, std::function<void(T)> Function)
+	{
+		list[Name][State].push_back(std::make_pair(new std::function<void(T)>(Function), true));
+	}
+	void Fire(std::string Name)
+	{
+		Fire(Name, 0);
+	}
+	void Fire(std::string Name, int State)
+	{
+		auto Functions = list[Name][State];
+
+		for (auto i = Functions.begin(); i != Functions.end(); ++i)
+		{
+			if(i->second) continue;
+			else          (*(std::function<void()>*)(i->first))();
+		}
+	}
+	void FireRange(std::string Name, int From, int To)
+	{
+		for(int i = From; i <= To; ++i) Fire(Name, i);
+	}
+	template <typename T>
+	void Fire(std::string Name, T Data)
+	{
+		Fire(Name, 0, Data);
+	}
+	template <typename T>
+	void Fire(std::string Name, int State, T Data)
+	{
+		auto Functions = list[Name][State];
+
+		for (auto i = Functions.begin(); i != Functions.end(); ++i)
+		{
+			if(i->second) (*(std::function<void(T)>*)i->first)(Data);
+			else          (*(std::function<void()>*)i->first)();
+		}
+	}
+private:
+	Events list;
+};
+
+
+//
+// manager entity
+//
+
+class ManagerEntity
+{
+public:
+	ManagerEntity() : index(0) {}
+	int New()
+	{
+		return ++index;
+	}
+	template <typename T>
+	T* Add(unsigned int id)
+	{
+		if(id > index || id == 0) HelperDebug::Crash("system", "cannot add entity " + std::to_string(id) + " because it is not an entity id. Use 'int New()'.");
+		auto key = std::type_index(typeid(T));
+
+		if (list.find(key) == list.end())
+		{
+			auto value = new std::unordered_map<int, std::shared_ptr<void> >();
+			list.insert(make_pair(key, *value));
+		}
+		T* t = new T();
+		auto result = list[key].insert(make_pair(id, std::shared_ptr<void>(t)));
+		if (!result.second)
+		{
+			HelperDebug::Warning("system", "cannot add entity " + std::to_string(id) + " to " + std::string(key.name()) + " because it already exists.");
+			return Get<T>(id);
+		}
+		return t;
+	}
+	template <typename T>
+	std::unordered_map<int, T*> Get()
+	{
+		std::unordered_map<int, T*> output;
+		auto key = std::type_index(typeid(T));
+		if (Check(key))
+		{
+			for(auto i = list[key].begin(); i != list[key].end(); ++i)
+			{
+				output.insert(std::make_pair(i->first, static_cast<T*>(i->second.get())));
+			}
+		}
+		return output;
+	}
+	template <typename T>
+	T* Get(unsigned int id)
+	{
+		auto key = std::type_index(typeid(T));
+		if (!Check(key, id))
+		{
+			HelperDebug::Crash("system", "cannot get entity because " + std::to_string(id) + " in " + std::string(key.name()) + " does not exist.");
+			return nullptr;
+		}
+		else return static_cast<T*>(list[key][id].get());
+	}
+	void Delete(unsigned int id)
+	{
+		if(id > index || id == 0)
+		{
+			HelperDebug::Warning("system", "cannot delete entity " + std::to_string(id) + " because it is not an entity id.");
+			return;
+		}
+		for(auto i = list.begin(); i != list.end(); ++i)
+		{
+			if (Check(i->first, id))
+			{
+				auto j = i->second.find(id);
+				j->second.reset();
+				i->second.erase(j);
+			}
+		}
+	}
+	template <typename T>
+	void Delete(unsigned int id)
+	{
+		auto key = std::type_index(typeid(T));
+		if (!Check(key, id))
+		{
+			HelperDebug::Crash("system", "cannot delete entity because " + std::string(key.name()) + " in " + std::string(key.name()) + " does not exist.");
+			return;
+		}
+		auto j = list[key].find(id);
+		j->second.reset();
+		list[key].erase(j);
+	}
+	template <typename T>
+	bool Check(unsigned int id)
+	{
+		auto key = std::type_index(typeid(T));
+		if (!Check(key)) return false;
+		if (list[key].find(id) == list[key].end()) return false;
+		return true;
+	}
+private:
+	unsigned int index;
+	std::unordered_map<std::type_index, std::unordered_map<int, std::shared_ptr<void>>> list;
+	bool Check(std::type_index key)
+	{
+		if (list.find(key) == list.end()) return false;
+		return true;
+	}
+	bool Check(std::type_index key, int id)
+	{
+		if (!Check(key)) return false;
+		if (list[key].find(id) == list[key].end()) return false;
+		return true;
+	}
+};
+
+
+//
+// manager global
+//
+
+class ManagerGlobal
+{
+public:
+	template <typename T>
+	T* Add(std::string Name)
+	{
+		T* t = new T();
+		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(t)));
+		if (!result.second)
+		{
+			HelperDebug::Warning("system", "cannot add global " + Name + " because it already exists.");
+			return Get<T>(Name);
+		}
+		return t;
+	}
+	template <typename T>
+	T* Get(std::string Name)
+	{
+		auto i = list.find(Name);
+		if(i == list.end())
+		{
+			HelperDebug::Crash("system", "cannot get global " + Name + " because it does not exists.");
+			return nullptr;
+		}
+		return static_cast<T*>(i->second.get());
+	}
+	void Delete(std::string Name)
+	{
+		auto i = list.find(Name);
+		if(i == list.end())
+		{
+			HelperDebug::Warning("system", "cannot delete global " + Name + " because it does not exists.");
+			return;
+		}
+		list.erase(i);
+	}
+private:
+	std::unordered_map<std::string, std::shared_ptr<void>> list;
 };
 
 
@@ -597,7 +584,7 @@ public:
 		{
 			if (i.first == Name)
 			{
-				Error("Cannot add module because there already is a module with this priority and name.");
+				HelperDebug::Crash("system", "cannot add module because there already is a module with this priority and name.");
 				return;
 			}
 		}
@@ -617,7 +604,7 @@ public:
 				return;
 			}
 		}
-		Warning("Cannot remove module because there is no module with this priority and name.");
+		HelperDebug::Warning("system", "cannot remove module because there is no module with this priority and name.");
 	}
 	bool Update()
 	{
