@@ -11,6 +11,11 @@ using namespace sf;
 #include "texture.h"
 
 
+/*
+* do not inherit from anything anymore
+* and change name to ModelTexture, or only Texture
+*/
+
 class ModuleTexture : public Module
 {
 	void Init()
@@ -20,6 +25,10 @@ class ModuleTexture : public Module
 
 	void Update()
 	{
+		/*
+		 * move such logic into main module
+		 */
+
 		auto txs = Entity->Get<StorageTexture>();
 		int Count = 0;
 		for(auto i = txs.begin(); i != txs.end(); ++i)
@@ -49,6 +58,10 @@ class ModuleTexture : public Module
 			}
 		});
 	}
+
+	/*
+	 * make those functions static if possible
+	 */
 
 	void Load(unsigned int Id)
 	{

@@ -12,6 +12,11 @@ using namespace std;
 #include "texture.h"
 
 
+/*
+* do not inherit from anything anymore
+* and change name to ModelMaterial, or only Material
+*/
+
 class ModuleMaterial : public Module
 {
 	void Init()
@@ -21,6 +26,10 @@ class ModuleMaterial : public Module
 
 	void Update()
 	{
+		/*
+		 * move such logic into main module
+		 */
+
 		auto mts = Entity->Get<StorageMaterial>();
 		int Count = 0;
 		for(auto i = mts.begin(); i != mts.end(); ++i)
@@ -48,6 +57,10 @@ class ModuleMaterial : public Module
 			}
 		});
 	}
+
+	/*
+	 * make those functions static if possible
+	 */
 
 	void Load(unsigned int Id)
 	{

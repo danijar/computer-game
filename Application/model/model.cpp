@@ -23,9 +23,32 @@ using namespace glm;
 #include "text.h"
 #include "light.h"
 
+/*
+ * Include the sub classes here.
+ *
+ * #include "model/mesh.cpp";
+ * #include "model/material.cpp";
+ * #include "model/texture.cpp";
+ */
+
 
 class ModuleModel : public Module
 {
+	/*
+	 * Store maps of internal module data here. These each map the file path to a struct.
+	 * The struct is inspired by the related storage struct, but obviously doesn't include the name.
+	 *
+	 * unordered_map<string, Mesh> meshes;
+	 * unordered_map<string, Material> materials;
+	 * unordered_map<string, Texture> textures;
+	 */
+
+	/*
+	 * Moreover, store an instance of ModelMesh, ModelMaterial and ModelTexture is necessary.
+	 * By the way, it might be better to name them just Mesh, Material and Texture.
+	 * Otherwise just access static functions from them, if they actually are all static.
+	 */
+
 	void Init()
 	{
 		Opengl->Init();

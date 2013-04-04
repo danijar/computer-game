@@ -13,6 +13,11 @@ using namespace std;
 #include "mesh.h"
 
 
+/*
+* do not inherit from anything anymore
+* and change name to ModelMesh, or only Mesh 
+*/
+
 class ModuleMesh : public Module
 {
 	void Init()
@@ -22,6 +27,10 @@ class ModuleMesh : public Module
 
 	void Update()
 	{
+		/*
+		 * move such logic into main module
+		 */
+
 		auto mes = Entity->Get<StorageMesh>();
 		int Count = 0;
 		for(auto i = mes.begin(); i != mes.end(); ++i)
@@ -51,6 +60,10 @@ class ModuleMesh : public Module
 			}
 		});
 	}
+
+	/*
+	 * make those functions static if possible
+	 */
 
 	void Load(unsigned int Id)
 	{
