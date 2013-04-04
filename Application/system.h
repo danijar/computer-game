@@ -496,7 +496,7 @@ public:
 		auto i = list.find(Name);
 		if(i == list.end())
 		{
-			HelperDebug::Warning("system", "cannot delete global " + Name + " because it does not exists.");
+			HelperDebug::Warning("system", "cannot delete global " + Name + " because it does not exists");
 			return;
 		}
 		list.erase(i);
@@ -548,8 +548,8 @@ public:
 	HelperOpengl  *Opengl;
 	HelperScript  *Script;
 private:
-	std::string *message;
 	std::string name;
+	std::string *message;
 };
 
 
@@ -570,54 +570,73 @@ public:
 
 	void Init()
 	{
-		for (auto i = list.begin(); i != list.end(); ++i)
-		for (auto j = i->second.begin(); j != i->second.end(); ++j)
+		for (auto i : list)
 		{
-			j->second->Set(j->first, event, entity, global, &message);
-			j->second->Init();
+			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, &message);
+			std::get<1>(i)->Init();
 		}
 		event->Fire("SystemInitialized");
 	}
 
 	void Add(std::string Name, Module* Module)
 	{
-		Add(0, Name, Module);
-	}
-	void Add(int Priority, std::string Name, Module* Module)
-	{
-		for(auto i : list[Priority])
+		for(auto i : list)
 		{
-			if (i.first == Name)
+			if(std::get<0>(i) == Name)
 			{
-				HelperDebug::Crash("system", "cannot add module because there already is a module with this priority and name.");
+				HelperDebug::Crash("system", "cannot add module " + Name + " because the name already exists");
 				return;
 			}
 		}
-		list[Priority].push_back(make_pair(Name, Module));
+		list.push_back(make_tuple(Name, Module, true));
 	}
 	void Remove(std::string Name)
 	{
-		Remove(0, Name);
-	}
-	void Remove(int Priority, std::string Name)
-	{
-		for (auto i = list[Priority].begin(); i != list[Priority].end(); ++i)
+		for(auto i = list.begin(); i != list.end(); ++i)
 		{
-			if(i->first == Name)
+			if(std::get<0>(*i) == Name)
 			{
-				list[Priority].erase(i);
+				list.erase(i);
 				return;
 			}
 		}
-		HelperDebug::Warning("system", "cannot remove module because there is no module with this priority and name.");
+		HelperDebug::Warning("system", "cannot remove module " + Name + " because the name was not found");
+	}
+	void Pause(std::string Name)
+	{
+		for (auto i : list)
+		{
+			if(std::get<2>(i) == false) HelperDebug::Warning("system", "module " + Name + " is already paused");
+			else std::get<2>(i) = false;
+			return;
+		}
+		HelperDebug::Warning("system", "cannot pause module " + Name + " because the name was not found");
+	}
+	void Resume(std::string Name)
+	{
+		for (auto i : list)
+		{
+			if(std::get<2>(i) == true) HelperDebug::Warning("system", "module " + Name + " isn't paused");
+			else std::get<2>(i) = true;
+			return;
+		}
+		HelperDebug::Warning("system", "cannot resume module " + Name + " because the name was not found");
+	}
+	bool Paused(std::string Name)
+	{
+		for (auto i : list)
+		{
+			return !std::get<2>(i);
+		}
+		HelperDebug::Warning("system", "cannot find module " + Name);
 	}
 	bool Update()
 	{
-		for (auto i = list.begin(); i != list.end(); ++i)
-		for (auto j = i->second.begin(); j != i->second.end(); ++j)
+		for(auto i : list)
 		{
 			if(message != "") return false;
-			j->second->Update();
+			if(std::get<2>(i))
+				std::get<1>(i)->Update();
 		}
 		event->Fire("SystemUpdated");
 		return true;
@@ -633,7 +652,7 @@ public:
 	}	
 private:
 	private:
-	std::map<int, std::vector<std::pair<std::string, Module*>>> list;
+	std::vector<std::tuple<std::string, Module*, bool>> list;
 	ManagerEvent  *event;
 	ManagerEntity *entity;
 	ManagerGlobal *global;
