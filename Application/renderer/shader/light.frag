@@ -30,6 +30,8 @@ void main()
 		float cutoff = 0.4;
 		float attenuation = clamp((magnitude - cutoff) / (1 - cutoff), 0, 1);
 		float fraction = clamp(dot(normalize(light - pixel), normal), -1, 1);
+
+		// attenuation = attenuation > 0 ? 0.5 : 0; // show radius
 		image.xyz = intensity * color * attenuation * max(fraction, 0.2);
 	}
 	else if(type == 2) // spot light

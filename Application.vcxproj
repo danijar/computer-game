@@ -71,11 +71,12 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-main.lib;sfml-system-s.lib;sfml-audio-s.lib;sfml-window-s.lib;sfml-network-s.lib;sfml-graphics-s.lib;assimp.lib;zlib.lib;v8_base.lib;v8_snapshot.lib;preparser_lib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>$(SolutionDir)\Build\$(ProjectName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
