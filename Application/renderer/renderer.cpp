@@ -16,11 +16,8 @@ using namespace glm;
 #include "shader.h"
 #include "camera.h"
 #include "light.h"
-#include "form.h"
+#include "model.h"
 #include "transform.h"
-#include "mesh.h"
-#include "material.h"
-#include "texture.h"
 #include "light.h"
 
 
@@ -110,7 +107,7 @@ class ModuleRenderer : public Module
 	void Forms(GLuint Shader)
 	{	
 		auto stg = Global->Get<StorageSettings>("settings");
-		auto fms = Entity->Get<StorageForm>();
+		auto fms = Entity->Get<StorageModel>();
 
 		glUseProgram(Shader);
 		//glClearColor(0.0, 0.0, 1.0, 0.0);
@@ -129,33 +126,28 @@ class ModuleRenderer : public Module
 			auto frm = i.second;
 
 			// improve by using fallbacks instead of skipping
+			if(!frm->Elements) continue;
+			if(!frm->Diffuse) continue;
 			if(!Entity->Check<StorageTransform>(i.first)) continue;
-			if(!Entity->Check<StorageMesh>(frm->Mesh)) continue;
-			if(!Entity->Check<StorageMaterial>(frm->Material)) continue;
-			
 			auto tsf = Entity->Get<StorageTransform>(i.first);
-			auto msh = Entity->Get<StorageMesh>(frm->Mesh);
-			auto mat = Entity->Get<StorageMaterial>(frm->Material);
-
-			if(!mat->Diffuse) continue;
 
 			glUniformMatrix4fv(glGetUniformLocation(Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
 
 			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, msh->Positions);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
 			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glEnableVertexAttribArray(1);
-			glBindBuffer(GL_ARRAY_BUFFER, msh->Normals);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
 			glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 			glEnableVertexAttribArray(2);
-			glBindBuffer(GL_ARRAY_BUFFER, msh->Texcoords);
+			glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-			glBindTexture(GL_TEXTURE_2D, Entity->Get<StorageTexture>(mat->Diffuse)->Id);
+			glBindTexture(GL_TEXTURE_2D, frm->Diffuse);
 
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, msh->Elements);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
 
 			GLint size = 0;
 			glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);

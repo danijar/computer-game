@@ -9,9 +9,6 @@ using namespace std;
 #include "window/window.cpp"
 #include "input/input.cpp"
 #include "model/model.cpp"
-#include "model/material.cpp"
-#include "model/texture.cpp"
-#include "model/mesh.cpp"
 #include "physic/transform.cpp"
 #include "movement/movement.cpp"
 #include "animation/animation.cpp"
@@ -31,9 +28,6 @@ int main()
 	World.Add("window",      new ModuleWindow());
 	World.Add("input",       new ModuleInput());
 	World.Add("model",       new ModuleModel());
-	World.Add("material",    new ModuleMaterial());
-	World.Add("texture",     new ModuleTexture());
-	World.Add("mesh",        new ModuleMesh());
 	World.Add("transform",   new ModuleTransform());
 	World.Add("camera",      new ModuleCamera());
 	World.Add("movement",    new ModuleMovement());

@@ -66,15 +66,6 @@
     <ClCompile Include="Application\interface\text.cpp">
       <Filter>interface</Filter>
     </ClCompile>
-    <ClCompile Include="Application\model\material.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\mesh.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\texture.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\mods\mods.cpp">
       <Filter>mods</Filter>
     </ClCompile>
@@ -106,6 +97,15 @@
     <ClCompile Include="Application\model\model.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\model\materials.h">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\textures.h">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\meshes.h">
+      <Filter>model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
@@ -114,19 +114,10 @@
     <ClInclude Include="Application\storage\camera.h">
       <Filter>storage</Filter>
     </ClInclude>
-    <ClInclude Include="Application\storage\form.h">
-      <Filter>storage</Filter>
-    </ClInclude>
     <ClInclude Include="Application\storage\framebuffer.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\light.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\material.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\mesh.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\movement.h">
@@ -141,13 +132,13 @@
     <ClInclude Include="Application\storage\text.h">
       <Filter>storage</Filter>
     </ClInclude>
-    <ClInclude Include="Application\storage\texture.h">
-      <Filter>storage</Filter>
-    </ClInclude>
     <ClInclude Include="Application\storage\transform.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\system.h" />
+    <ClInclude Include="Application\storage\model.h">
+      <Filter>storage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\model\init.js">

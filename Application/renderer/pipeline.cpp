@@ -13,7 +13,6 @@ using namespace glm;
 #include "shader.h"
 #include "framebuffer.h"
 #include "camera.h"
-#include "texture.h"
 
 
 class ModulePipeline : public Module
@@ -77,9 +76,9 @@ class ModulePipeline : public Module
 		occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
 		occlusion = CreatePass("occlusion.frag", "occlusion", occlusion_samplers, 0.5);
 		unsigned int id = Entity->New();
-		auto tex = Entity->Add<StorageTexture>(id);
-		tex->Path = "noise.png";
-		Entity->Get<StorageShader>(occlusion)->Samplers.insert(make_pair("noise_tex", tex->Id));
+		//auto tex = Entity->Add<StorageTexture>(id);
+		//tex->Path = "noise.png";
+		Entity->Get<StorageShader>(occlusion)->Samplers.insert(make_pair("noise_tex", /*tex->Id*/ 0));
 
 		unordered_map<string, string> blur_samplers;
 		blur_samplers.insert(make_pair("image_tex",  "image"));

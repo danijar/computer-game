@@ -1,17 +1,17 @@
-model('PrimitiveQube', 'magic.mtl', 20, 5, -6, 27, 31, 57, 1, false);
+model('qube.prim', 'magic.mtl', 20, 5, -6, 27, 31, 57, 1, false);
 light(20, 6, -4.5, 25, 1.0, 0.6, 0.2, 1.0);
 
 var a = 3;
 for(x = -3; x <= 3; ++x)
 for(z = -3; z <= 3; ++z)
-	model("PrimitiveQube", "dirt.mtl", a*x, 1, a*z, 0, 0, 0, 1, true);
+    model("qube.prim", "dirt.mtl", a * x, 1, a * z, 0, 0, 0, 1, true);
 
 for(x = -3; x <= 3; x+=3)
 for(z = -3; z <= 3; z+=3)
 	if(x == 0 && z == 0) continue;
-	else model("PrimitiveQube", "grass.mtl", a*x, a+1, a*z, 0, 0, 0, 1, true);
+	else model("qube.prim", "grass.mtl", a * x, a + 1, a * z, 0, 0, 0, 1, true);
 
-model("PrimitivePlane", "chess.mtl", 0, 0, 0, 0, 0, 0, 1, true);
+model("plane.prim", "chess.mtl", 0, 0, 0, 0, 0, 0, 1, true);
 
 model("barrel.3ds", "barrel.mtl",    16, 0,  8,   -90,  0,  0,    4.0,    true);
 model("shrine.3ds", "shrine.mtl",    40, 0,-10,   -90,  0,-30,    2.5,    true);

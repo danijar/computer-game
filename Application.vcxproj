@@ -86,9 +86,9 @@
     <ClCompile Include="Application\interface\text.cpp" />
     <ClCompile Include="Application\main.cpp" />
     <ClCompile Include="Application\model\model.cpp" />
-    <ClCompile Include="Application\model\material.cpp" />
-    <ClCompile Include="Application\model\mesh.cpp" />
-    <ClCompile Include="Application\model\texture.cpp" />
+    <ClCompile Include="Application\model\materials.h" />
+    <ClCompile Include="Application\model\meshes.h" />
+    <ClCompile Include="Application\model\textures.h" />
     <ClCompile Include="Application\mods\mods.cpp" />
     <ClCompile Include="Application\movement\movement.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
@@ -102,16 +102,13 @@
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
-    <ClInclude Include="Application\storage\form.h" />
+    <ClInclude Include="Application\storage\model.h" />
     <ClInclude Include="Application\storage\framebuffer.h" />
     <ClInclude Include="Application\storage\light.h" />
-    <ClInclude Include="Application\storage\material.h" />
-    <ClInclude Include="Application\storage\mesh.h" />
     <ClInclude Include="Application\storage\movement.h" />
     <ClInclude Include="Application\storage\settings.h" />
     <ClInclude Include="Application\storage\shader.h" />
     <ClInclude Include="Application\storage\text.h" />
-    <ClInclude Include="Application\storage\texture.h" />
     <ClInclude Include="Application\storage\transform.h" />
     <ClInclude Include="Application\system.h" />
   </ItemGroup>
