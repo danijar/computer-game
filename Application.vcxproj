@@ -53,6 +53,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -69,6 +70,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -85,10 +87,10 @@
     <ClCompile Include="Application\input\input.cpp" />
     <ClCompile Include="Application\interface\text.cpp" />
     <ClCompile Include="Application\main.cpp" />
-    <ClCompile Include="Application\model\model.cpp" />
-    <ClCompile Include="Application\model\materials.h" />
-    <ClCompile Include="Application\model\meshes.h" />
-    <ClCompile Include="Application\model\textures.h" />
+    <ClCompile Include="Application\model\module.cpp" />
+    <ClCompile Include="Application\model\material.cpp" />
+    <ClCompile Include="Application\model\mesh.cpp" />
+    <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mods\mods.cpp" />
     <ClCompile Include="Application\movement\movement.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
@@ -101,6 +103,7 @@
     <ClCompile Include="Application\window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\model\module.h" />
     <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />

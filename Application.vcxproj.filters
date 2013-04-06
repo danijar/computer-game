@@ -91,23 +91,23 @@
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="Application\main.cpp" />
-    <ClCompile Include="Application\model\model.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\materials.h">
-      <Filter>model</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\textures.h">
-      <Filter>model</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\meshes.h">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\module.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="Application\renderer\draw.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\mesh.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\material.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\texture.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\module.cpp">
+      <Filter>model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +144,9 @@
     </ClInclude>
     <ClInclude Include="Application\renderer\module.h">
       <Filter>renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\model\module.h">
+      <Filter>model</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

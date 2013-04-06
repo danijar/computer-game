@@ -58,4 +58,15 @@ class ModuleRenderer : public Module
 		std::unordered_map<GLenum, std::pair<std::string, GLenum> > Targets,
 		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
 		float Size = 1.0);
+
+	// data structure
+	struct Pass
+	{
+		GLuint Framebuffer;
+		GLuint Shader;
+		std::unordered_map<std::string, GLuint> Samplers;
+		std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets;
+		float Size;
+	};
+	std::vector<std::pair<std::string, Pass>> passes;
 };

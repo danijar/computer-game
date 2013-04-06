@@ -8,7 +8,7 @@ using namespace std;
 #include "settings/settings.cpp"
 #include "window/window.cpp"
 #include "input/input.cpp"
-#include "model/model.cpp"
+#include "model/module.h"
 #include "physic/transform.cpp"
 #include "movement/movement.cpp"
 #include "animation/animation.cpp"
