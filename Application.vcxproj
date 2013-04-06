@@ -92,14 +92,16 @@
     <ClCompile Include="Application\mods\mods.cpp" />
     <ClCompile Include="Application\movement\movement.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
+    <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
     <ClCompile Include="Application\renderer\pipeline.cpp" />
-    <ClCompile Include="Application\renderer\renderer.cpp" />
+    <ClCompile Include="Application\renderer\module.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
     <ClCompile Include="Application\settings\settings.cpp" />
     <ClCompile Include="Application\window\window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />

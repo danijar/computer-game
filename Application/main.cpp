@@ -13,10 +13,7 @@ using namespace std;
 #include "movement/movement.cpp"
 #include "animation/animation.cpp"
 #include "camera/camera.cpp"
-#include "renderer/shader.cpp"
-#include "renderer/framebuffer.cpp"
-#include "renderer/pipeline.cpp"
-#include "renderer/renderer.cpp"
+#include "renderer/module.h"
 #include "interface/text.cpp"
 
 
@@ -32,9 +29,6 @@ int main()
 	World.Add("camera",      new ModuleCamera());
 	World.Add("movement",    new ModuleMovement());
 	World.Add("animation",   new ModuleAnimation());
-	World.Add("shader",      new ModuleShader());
-	World.Add("framebuffer", new ModuleFramebuffer());
-	World.Add("pipeline",    new ModulePipeline());
 	World.Add("renderer",    new ModuleRenderer());
 	World.Add("text",        new ModuleText());
 

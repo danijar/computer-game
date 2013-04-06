@@ -81,9 +81,6 @@
     <ClCompile Include="Application\renderer\pipeline.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\renderer\renderer.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\shader.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
@@ -105,6 +102,12 @@
     </ClCompile>
     <ClCompile Include="Application\model\meshes.h">
       <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\module.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\draw.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +141,9 @@
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\storage\model.h">
       <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\renderer\module.h">
+      <Filter>renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
