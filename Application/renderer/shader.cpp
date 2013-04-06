@@ -1,23 +1,15 @@
-#pragma once
-
 #include "module.h"
 
 using namespace std;
-#include <GLEW/glew.h>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-using namespace glm;
-
-#include "shader.h"
 
 
-GLuint ModuleRenderer::CreateProgram(string PathVertex, string PathFragment)
+GLuint ModuleRenderer::CreateProgram(string Vertex, string Fragment)
 {
-	GLuint vertex   = CreateShader(PathVertex,   GL_VERTEX_SHADER  );
-	GLuint fragment = CreateShader(PathFragment, GL_FRAGMENT_SHADER);
+	GLuint vertex   = CreateShader(Vertex, GL_VERTEX_SHADER);
+	GLuint fragment = CreateShader(Fragment, GL_FRAGMENT_SHADER);
 
 	GLuint program = glCreateProgram();
-	glAttachShader(program, vertex  );
+	glAttachShader(program, vertex);
 	glAttachShader(program, fragment);
 	glLinkProgram(program);
 
@@ -27,9 +19,9 @@ GLuint ModuleRenderer::CreateProgram(string PathVertex, string PathFragment)
 		return 0;
 	}
 
-	glDetachShader(program, vertex  );
+	glDetachShader(program, vertex);
 	glDetachShader(program, fragment);
-	glDeleteShader(vertex  );
+	glDeleteShader(vertex);
 	glDeleteShader(fragment);
 	return program;
 }
@@ -37,7 +29,7 @@ GLuint ModuleRenderer::CreateProgram(string PathVertex, string PathFragment)
 GLuint ModuleRenderer::CreateShader(string Path, GLenum Type)
 {
 	GLuint id = glCreateShader(Type);
-	string source = HelperFile::Read("renderer/shader", Path);
+	string source = File->Read("shader/" + Path);
 	const GLchar* chars = source.c_str();
 	glShaderSource(id, 1, &chars, NULL);
 	glCompileShader(id);
@@ -73,25 +65,4 @@ bool ModuleRenderer::TestShader(int Id)
 		if(Length > 0) Debug->Fail(Log);
 	}
 	return Result;
-}
-
-void ModuleRenderer::Uniform(GLuint Program, string Name, float Value)
-{
-	glUseProgram(Program);
-	glUniform1f(glGetUniformLocation(Program, Name.c_str()), Value);
-	glUseProgram(0);
-}
-
-void ModuleRenderer::Uniform(GLuint Program, string Name, mat4 Value)
-{
-	glUseProgram(Program);
-	glUniformMatrix4fv(glGetUniformLocation(Program, Name.c_str()), 1, GL_FALSE, value_ptr(Value));
-	glUseProgram(0);
-}
-
-void ModuleRenderer::Uniform(GLuint Program, string Name, vec2 Value)
-{
-	glUseProgram(Program);
-	glUniform2fv(glGetUniformLocation(Program, Name.c_str()), 1, value_ptr(Value));
-	glUseProgram(0);
 }

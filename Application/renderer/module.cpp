@@ -1,18 +1,10 @@
-#pragma once
-
 #include "module.h"
 
-using namespace std;
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
-using namespace glm;
 
 #include "settings.h"
-#include "framebuffer.h"
-#include "shader.h"
 #include "camera.h"
 #include "light.h"
 #include "model.h"
@@ -30,60 +22,28 @@ void ModuleRenderer::Init()
 
 void ModuleRenderer::Update()
 {
-	auto fbs = Entity->Get<StorageFramebuffer>();
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	uint n = 0;
-	for(auto i : fbs)
+	for(auto i : passes)
 	{
-		auto fbr = i.second;
-		auto shd = Entity->Get<StorageShader>(i.first);
-		if(fbr->Id && shd->Program)
+		if(i.second.Framebuffer && i.second.Shader)
 		{
-			glViewport(0, 0, (int)(size.x * fbr->Size), (int)(size.y * fbr->Size));
+			glViewport(0, 0, (int)(size.x * i.second.Size), (int)(size.y * i.second.Size));
 
-			if(n < fbs.size() - 1)
-				glBindFramebuffer(GL_FRAMEBUFFER, fbr->Id);
+			if(n < passes.size() - 1)
+				glBindFramebuffer(GL_FRAMEBUFFER, i.second.Framebuffer);
 			else
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 			if(n == 0)
-				Forms(shd->Program, shd->Samplers);
+				Forms(i.second.Shader, i.second.Samplers);
 			else if(n == 1)
-				Light(shd->Program, shd->Samplers);
+				Light(i.second.Shader, i.second.Samplers);
 			else
-				Quad (shd->Program, shd->Samplers);
+				Quad (i.second.Shader, i.second.Samplers);
 		}
 		n++;
-	}
-
-	auto shs = Entity->Get<StorageShader>();
-	int Count = 0;
-	for(auto i = shs.begin(); i != shs.end(); ++i)
-	{
-		if(i->second->Changed)
-		{
-			i->second->Program = CreateProgram(i->second->PathVertex, i->second->PathFragment);
-			i->second->Changed = false;
-			Count++;
-		}
-	}
-	if(Count > 0)
-	{
-		Debug->Print("reloaded " + to_string(Count));
-		this->Event->Fire("ShaderUpdated");
-	}
-
-	// auto fbs = Entity->Get<StorageFramebuffer>();
-	for(auto i = fbs.begin(); i != fbs.end(); ++i)
-	{
-		if(!i->second->Id)
-		{
-			glGenFramebuffers(1, &i->second->Id);
-			Setup(i->first);
-		}
 	}
 }
 
@@ -100,35 +60,35 @@ void ModuleRenderer::Listeners()
 	});
 
 	Event->Listen("WindowFocusGained", [=]{
-		auto shs = Entity->Get<StorageShader>();
-		for(auto i = shs.begin(); i != shs.end(); ++i)
+		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
-			// check if the file actually changed
-			i->second->Changed = true;
+			// check whether file actually changed
+			glDeleteProgram(i->second.Shader); // simply do this in CreateProgram every time?
+			i->second.Shader = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
-	});
 
-	Event->Listen("WindowResize", [=]{
-		Uniforms();
-	});
-
-	Event->Listen("ShaderUpdated", [=]{
 		Uniforms();
 	});
 
 	Event->Listen("WindowRecreated", [=]{
-		auto fbs = Entity->Get<StorageFramebuffer>();
-		for(auto i = fbs.begin(); i != fbs.end(); ++i)
+		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
-			glDeleteFramebuffers(1, &i->second->Id);
-			glGenFramebuffers(1, &i->second->Id);
-			Setup(i->first);
+			glDeleteFramebuffers(1, &i->second.Framebuffer); // simply do this in SetupFramebuffer every time?
+			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Samplers, i->second.Size);
 		}
 
 		Uniforms();
 	});
 
 	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-		Resize(Size);
+		for(auto i : passes)
+			for(auto j : i.second.Targets)
+				TextureResize(j.second.first, j.second.second, Vector2u(Vector2f(Size) * i.second.Size));
+
+		Uniforms();
+	});
+
+	Event->Listen("ShaderUpdated", [=]{
+		Uniforms();
 	});
 }

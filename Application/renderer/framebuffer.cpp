@@ -1,47 +1,31 @@
-#pragma once
-
 #include "module.h"
 
-#include <unordered_map>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/Graphics/RenderWindow.hpp>
+using namespace std;
 using namespace sf;
 
-#include "framebuffer.h"
 
-
-void ModuleRenderer::Resize()
+GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLenum>> Targets, unordered_map<string, GLuint> Samplers, float Size)
 {
-	Resize(Global->Get<RenderWindow>("window")->getSize());
-}
-
-void ModuleRenderer::Resize(Vector2u Size)
-{
-	auto fbs = Entity->Get<StorageFramebuffer>();
-	for(auto i : fbs)
-		for(auto j : i.second->Targets)
-			TextureResize(j.second.first, j.second.second, Vector2u(Vector2f(Size) * i.second->Size));
-}
-
-void ModuleRenderer::Setup(unsigned int Id)
-{
-	auto frb = Entity->Get<StorageFramebuffer>(Id);
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, frb->Id);
+	GLuint framebuffer;
+	glGenFramebuffers(1, &framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
 	vector<GLenum> buffers;
-	for(auto i = frb->Targets.begin(); i != frb->Targets.end(); ++i)
+	for(auto i : Targets)
 	{
-		TextureResize(i->second.first, i->second.second, Vector2u(Vector2f(size) * frb->Size));
-		glFramebufferTexture2D(GL_FRAMEBUFFER, i->first, GL_TEXTURE_2D, i->second.first, 0);
-		if(i->first != GL_DEPTH_ATTACHMENT) buffers.push_back(i->first); // check for color attachment instead
+		TextureResize(i.second.first, i.second.second, Vector2u(Vector2f(size) * Size));
+		glFramebufferTexture2D(GL_FRAMEBUFFER, i.first, GL_TEXTURE_2D, i.second.first, 0);
+		if(i.first != GL_DEPTH_ATTACHMENT) buffers.push_back(i.first); // check for color attachment instead
 	}
 	glDrawBuffers(buffers.size(), &buffers[0]);
 
-	Debug->PassFail("setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
+	Debug->PassFail("framebuffer setup", (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE));
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	return framebuffer;
 }
 	
 void ModuleRenderer::TextureResize(GLuint Id, GLenum Type)

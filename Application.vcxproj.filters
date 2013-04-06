@@ -78,9 +78,6 @@
     <ClCompile Include="Application\renderer\framebuffer.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\renderer\pipeline.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\shader.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
@@ -109,15 +106,15 @@
     <ClCompile Include="Application\model\module.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\renderer\passes.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\camera.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\framebuffer.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\light.h">
@@ -127,9 +124,6 @@
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\settings.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\shader.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\text.h">

@@ -96,7 +96,7 @@
     <ClCompile Include="Application\physic\transform.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
-    <ClCompile Include="Application\renderer\pipeline.cpp" />
+    <ClCompile Include="Application\renderer\passes.cpp" />
     <ClCompile Include="Application\renderer\module.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
     <ClCompile Include="Application\settings\settings.cpp" />
@@ -108,11 +108,9 @@
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />
-    <ClInclude Include="Application\storage\framebuffer.h" />
     <ClInclude Include="Application\storage\light.h" />
     <ClInclude Include="Application\storage\movement.h" />
     <ClInclude Include="Application\storage\settings.h" />
-    <ClInclude Include="Application\storage\shader.h" />
     <ClInclude Include="Application\storage\text.h" />
     <ClInclude Include="Application\storage\transform.h" />
     <ClInclude Include="Application\system.h" />

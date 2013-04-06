@@ -21,7 +21,8 @@ class ModuleRenderer : public Module
 	void Light(GLuint Shader, std::unordered_map<std::string, GLuint> Samplers);
 
 	// shader
-	GLuint CreateProgram(std::string PathVertex, std::string PathFragment);
+	GLuint GetShader(std::string Vertex, std::string Fragment);
+	GLuint CreateProgram(std::string Vertex, std::string Fragment);
 	GLuint CreateShader(std::string Path, GLenum Type);
 	bool TestProgram(int Id);
 	bool TestShader(int Id);
@@ -30,43 +31,45 @@ class ModuleRenderer : public Module
 	void Uniform(GLuint Program, std::string Name, glm::vec2 Value);
 
 	// framebuffer
-	void Resize();
-	void Resize(sf::Vector2u Size);
-	void Setup(unsigned int Id);
+	std::unordered_map<std::string, GLuint> targets;
+	GLuint CreateFramebuffer(std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets,
+		std::unordered_map<std::string, GLuint> Samplers,
+		float Size);
 	void TextureResize(GLuint Id, GLenum Type);
 	void TextureResize(GLuint Id, GLenum Type, sf::Vector2u Size);
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
 
-	// pipeline
-	std::unordered_map<std::string, GLuint> Textures;
-	GLuint forms, occlusion, combine, antialiasing;
-	void Pipeline();
-	void Uniforms();
-	unsigned int CreatePass(
-		std::string Fragment,
-		std::string Target,
-		std::pair<std::string, std::string> Sampler,
-		float Size = 1.0);
-	unsigned int CreatePass(
-		std::string Fragment,
-		std::string Target,
-		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
-		float Size = 1.0);
-	unsigned int CreatePass(
-		std::string Vertex,
-		std::string Fragment,
-		std::unordered_map<GLenum, std::pair<std::string, GLenum> > Targets,
-		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
-		float Size = 1.0);
-
-	// data structure
+	// passes
 	struct Pass
 	{
 		GLuint Framebuffer;
 		GLuint Shader;
+		std::string Vertex, Fragment;
 		std::unordered_map<std::string, GLuint> Samplers;
 		std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets;
 		float Size;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
+	Pass forms, occlusion, combine, antialiasing;
+	void Pipeline();
+	void Uniforms();
+	Pass CreatePass(
+		std::string Name,
+		std::string Fragment,
+		std::string Target,
+		std::pair<std::string, std::string> Sampler,
+		float Size = 1.0);
+	Pass CreatePass(
+		std::string Name,
+		std::string Fragment,
+		std::string Target,
+		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
+		float Size = 1.0);
+	Pass CreatePass(
+		std::string Name,
+		std::string Vertex,
+		std::string Fragment,
+		std::unordered_map<GLenum, std::pair<std::string, GLenum> > Targets,
+		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
+		float Size = 1.0);
 };
