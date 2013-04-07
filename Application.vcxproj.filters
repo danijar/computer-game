@@ -54,23 +54,11 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application\animation\animation.cpp">
-      <Filter>animation</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\camera\camera.cpp">
-      <Filter>camera</Filter>
-    </ClCompile>
     <ClCompile Include="Application\input\input.cpp">
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="Application\interface\text.cpp">
       <Filter>interface</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\mods\mods.cpp">
-      <Filter>mods</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\movement\movement.cpp">
-      <Filter>movement</Filter>
     </ClCompile>
     <ClCompile Include="Application\physic\transform.cpp">
       <Filter>physic</Filter>
@@ -80,12 +68,6 @@
     </ClCompile>
     <ClCompile Include="Application\renderer\shader.cpp">
       <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\settings\settings.cpp">
-      <Filter>settings</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\window\window.cpp">
-      <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="Application\main.cpp" />
     <ClCompile Include="Application\renderer\module.cpp">
@@ -108,6 +90,30 @@
     </ClCompile>
     <ClCompile Include="Application\renderer\passes.cpp">
       <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\module.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\animation\module.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\interface\module.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\mods\module.cpp">
+      <Filter>mods</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\movement\module.cpp">
+      <Filter>movement</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\physic\module.cpp">
+      <Filter>physic</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\settings\module.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\window\module.cpp">
+      <Filter>window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +147,33 @@
     </ClInclude>
     <ClInclude Include="Application\model\module.h">
       <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\input\module.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\camera\module.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\animation\module.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\interface\module.h">
+      <Filter>interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\mods\module.h">
+      <Filter>mods</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\movement\module.h">
+      <Filter>movement</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\physic\module.h">
+      <Filter>physic</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\settings\module.h">
+      <Filter>settings</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\window\module.h">
+      <Filter>window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

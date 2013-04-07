@@ -49,16 +49,6 @@ void ModuleRenderer::Update()
 
 void ModuleRenderer::Listeners()
 {
-	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
-		auto stg = Global->Get<StorageSettings>("settings");
-		switch(Code)
-		{
-		case Keyboard::Key::F3:
-			stg->Wireframe = !stg->Wireframe;
-			break;
-		}
-	});
-
 	Event->Listen("WindowFocusGained", [=]{
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{

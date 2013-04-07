@@ -2,12 +2,12 @@
 
 #include <vector>
 #include <unordered_map>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/OpenGL.hpp>
 #include <ASSIMP/cimport.h>
 #include <ASSIMP/scene.h>
 #include <ASSIMP/postprocess.h>
+using namespace std;
 
 
 ModuleModel::Mesh ModuleModel::GetMesh(string Path)

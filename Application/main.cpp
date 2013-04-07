@@ -5,32 +5,32 @@
 #include <string>
 using namespace std;
 
-#include "settings/settings.cpp"
-#include "window/window.cpp"
-#include "input/input.cpp"
-#include "model/module.h"
-#include "physic/transform.cpp"
-#include "movement/movement.cpp"
-#include "animation/animation.cpp"
-#include "camera/camera.cpp"
-#include "renderer/module.h"
-#include "interface/text.cpp"
+#include  "settings/module.h"
+#include    "window/module.h"
+#include     "input/module.h"
+#include     "model/module.h"
+#include    "physic/module.h"
+#include  "movement/module.h"
+#include "animation/module.h"
+#include    "camera/module.h"
+#include  "renderer/module.h"
+#include "interface/module.h"
 
 
 int main()
 {
 	System World;
 
-	World.Add("settings",    new ModuleSettings());
-	World.Add("window",      new ModuleWindow());
-	World.Add("input",       new ModuleInput());
-	World.Add("model",       new ModuleModel());
-	World.Add("transform",   new ModuleTransform());
-	World.Add("camera",      new ModuleCamera());
-	World.Add("movement",    new ModuleMovement());
-	World.Add("animation",   new ModuleAnimation());
-	World.Add("renderer",    new ModuleRenderer());
-	World.Add("text",        new ModuleText());
+	World.Add("settings",  new ModuleSettings() );
+	World.Add("window",    new ModuleWindow()   );
+	World.Add("input",     new ModuleInput()    );
+	World.Add("model",     new ModuleModel()    );
+	World.Add("physic",    new ModulePhysic()   );
+	World.Add("camera",    new ModuleCamera()   );
+	World.Add("movement",  new ModuleMovement() );
+	World.Add("animation", new ModuleAnimation());
+	World.Add("renderer",  new ModuleRenderer() );
+	World.Add("interface", new ModuleInterface());
 
 	World.Init();
 

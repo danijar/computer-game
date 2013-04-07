@@ -53,7 +53,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -70,7 +70,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -82,29 +82,39 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\animation\animation.cpp" />
-    <ClCompile Include="Application\camera\camera.cpp" />
+    <ClCompile Include="Application\animation\module.cpp" />
+    <ClCompile Include="Application\camera\module.cpp" />
     <ClCompile Include="Application\input\input.cpp" />
+    <ClCompile Include="Application\interface\module.cpp" />
     <ClCompile Include="Application\interface\text.cpp" />
     <ClCompile Include="Application\main.cpp" />
     <ClCompile Include="Application\model\module.cpp" />
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
-    <ClCompile Include="Application\mods\mods.cpp" />
-    <ClCompile Include="Application\movement\movement.cpp" />
+    <ClCompile Include="Application\mods\module.cpp" />
+    <ClCompile Include="Application\movement\module.cpp" />
+    <ClCompile Include="Application\physic\module.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
     <ClCompile Include="Application\renderer\passes.cpp" />
     <ClCompile Include="Application\renderer\module.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
-    <ClCompile Include="Application\settings\settings.cpp" />
-    <ClCompile Include="Application\window\window.cpp" />
+    <ClCompile Include="Application\settings\module.cpp" />
+    <ClCompile Include="Application\window\module.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\animation\module.h" />
+    <ClInclude Include="Application\camera\module.h" />
+    <ClInclude Include="Application\input\module.h" />
+    <ClInclude Include="Application\interface\module.h" />
     <ClInclude Include="Application\model\module.h" />
+    <ClInclude Include="Application\mods\module.h" />
+    <ClInclude Include="Application\movement\module.h" />
+    <ClInclude Include="Application\physic\module.h" />
     <ClInclude Include="Application\renderer\module.h" />
+    <ClInclude Include="Application\settings\module.h" />
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />
@@ -114,6 +124,7 @@
     <ClInclude Include="Application\storage\text.h" />
     <ClInclude Include="Application\storage\transform.h" />
     <ClInclude Include="Application\system.h" />
+    <ClInclude Include="Application\window\module.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\model\init.js" />
