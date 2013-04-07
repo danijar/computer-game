@@ -7,6 +7,8 @@
 #include <sstream>
 using namespace std;
 
+#include "model.h"
+
 
 ModuleModel::Material ModuleModel::GetMaterial(string Path)
 {
@@ -22,10 +24,20 @@ ModuleModel::Material ModuleModel::GetMaterial(string Path)
 
 void ModuleModel::ReloadMaterials()
 {
+	auto mds = Entity->Get<StorageModel>();
+
 	for(auto i = materials.begin(); i != materials.end(); ++i)
 	{
 		// check if the file actually changed
+
+		pair<string, GLuint> previous(make_pair(i->second.Diffuse, GetTexture(i->second.Diffuse)));
 		LoadMaterial(i->second, i->first);
+		if(i->second.Diffuse == previous.first) continue;
+
+		pair<string, GLuint> fresh(make_pair(i->second.Diffuse, GetTexture(i->second.Diffuse)));
+		for(auto j = mds.begin(); j != mds.end(); ++j)
+			if(j->second->Diffuse == previous.second)
+				j->second->Diffuse = fresh.second;
 	}
 }
 

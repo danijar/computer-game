@@ -21,7 +21,7 @@ Libraries
 - [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
 - [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
-- [V8](https://developers.google.com/v8/) V8 JavaScript Engine (30.03.2013)
+- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
 
 Screenshot
 ----------
@@ -31,7 +31,7 @@ Screenshot
 Instructions
 ------------
 
-There is a precompiled executable for Windows. To use it, download the content of the `Release` folder and start the executable.
+There is a precompiled executable for Windows. To use it, download the content of the `Application` folder and run the executable.
 
 ### Key controls
 
@@ -59,7 +59,7 @@ Upcoming Features
 There is a lot to do and the core development hasn't finished yet.
 
 - Physics and Collision
-- Shadow mapping
+- Shadow Volumes
 
 Desired features that might be implemented in future.
 
