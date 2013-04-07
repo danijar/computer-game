@@ -32,6 +32,9 @@ void ModuleModel::Init()
 
 	Script->Bind("model", jsModel);
 	Script->Bind("light", jsLight);
+	Script->Bind("getposition", jsGetPosition);
+	Script->Bind("setposition", jsSetPosition);
+	Script->Bind("print", jsPrint);
 
 	Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
 	Script->Run("init.js");
@@ -130,4 +133,42 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 
 	unsigned int id = module->Light(position, radius, color, intensity);
 	return v8::Uint32::New(id);
+}
+
+v8::Handle<v8::Value> ModuleModel::jsGetPosition(const v8::Arguments& args)
+{
+	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	unsigned int id = args[0]->Uint32Value();
+
+	auto tsf = module->Entity->Get<StorageTransform>(id);
+	vec3 position = tsf->Position;
+
+	v8::Handle<v8::Array> result = v8::Array::New(3);
+	result->Set(0, v8::Number::New(position.x));
+	result->Set(1, v8::Number::New(position.y));
+	result->Set(2, v8::Number::New(position.z));
+	return result;
+}
+
+v8::Handle<v8::Value> ModuleModel::jsSetPosition(const v8::Arguments& args)
+{
+	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	unsigned int id = args[0]->Uint32Value();
+	vec3 position(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
+
+	auto tsf = module->Entity->Get<StorageTransform>(id);
+	tsf->Position = position;
+	return v8::Undefined();
+}
+
+v8::Handle<v8::Value> ModuleModel::jsPrint(const v8::Arguments& args)
+{
+	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	string message = *v8::String::Utf8Value(args[0]);
+
+	module->Debug->Print(message);
+	return v8::Undefined();
 }
