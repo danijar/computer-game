@@ -16,15 +16,19 @@ for(z = -3; z <= 3; z+=3)
 model('qube.prim', 'magic.mtl', 20, 5, -6, 27, 31, 57, 1, false);
 model("shrine.3ds", "shrine.mtl",    40, 0,-10,   -90,  0,-30,    2.5,    true);
 model("rock.obj", "rock.mtl", 50, 2, 45, -90, 0, 0, 5.0, true);
+model("barrel.3ds", "barrel.mtl", 16, 0, 8, -90, 0, 0, 4.0, true);
 
 var barrel = model("barrel.3ds", "barrel.mtl", 16, 0, 8, -90, 0, 0, 4.0, true);
 var position = getposition(barrel);
 print("position of barrel is " + position[0] + ", " + position[1] + ", " + position[2]);
 
 // lights
-light(-10, 15,-15,    100,    1.0, 1.0, 1.0,    1.0); // white
-light(-10, 15, 15,     80,    0.2, 1.0, 0.2,    2.0); // green
-light( 40, 10,-10,    100,    1.0, 1.0, 1.0,    2.5); // white
-light( 50, 20, 50,    120,    0.0, 0.4, 1.0,    2.0); // blue
-light( 40,  8, 58,     40,    1.0, 0.0, 0.0,    5.0); // red
-light( 20,  6, -5,     25,    1.0, 0.6, 0.2,    1.0); // brown
+light(-10, 15,-15,    100,    1.0, 1.0, 1.0,    1.0,    true); // white
+light(-10, 15, 15,     80,    0.2, 1.0, 0.2,    2.0,    true); // green
+light( 40, 10,-10,    100,    1.0, 1.0, 1.0,    2.5,    true); // white
+light( 40,  8, 58,     40,    1.0, 0.0, 0.0,    5.0,    true); // red
+light( 20,  6, -5,     25,    1.0, 0.6, 0.2,    1.0,    true); // brown
+
+// global variables
+var spark = light(0, 5, 0, 20, 1.0, 1.0, 1.0, 3.0, false);
+var blue = light(50, 20, 50, 120, 0.0, 0.4, 1.0, 2.0, false);

@@ -42,7 +42,7 @@ class ModuleModel : public Module
 	// creation
 public:
 	unsigned int Model(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), bool Static = true);
-	unsigned int Light(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT);
+	unsigned int Light(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT, bool Static = true);
 	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsGetPosition(const v8::Arguments& args);

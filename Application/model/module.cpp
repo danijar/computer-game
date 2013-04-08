@@ -38,6 +38,7 @@ void ModuleModel::Init()
 
 	Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
 	Script->Run("init.js");
+	Script->Load("update.js"); // why doesn't it work without precompiling the script?
 }
 
 void ModuleModel::Update()
@@ -92,13 +93,14 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	return id;
 }
 
-unsigned int ModuleModel::Light(vec3 Position, float Radius, vec3 Color, float Intensity, StorageLight::Shape Type)
+unsigned int ModuleModel::Light(vec3 Position, float Radius, vec3 Color, float Intensity, StorageLight::Shape Type, bool Static)
 {
 	unsigned int id = Entity->New();
 	auto tsf = Entity->Add<StorageTransform>(id);
 	auto lgh = Entity->Add<StorageLight>(id);
 
 	tsf->Position = Position;
+	tsf->Static = Static;
 	lgh->Radius = Radius;
 	lgh->Color = Color;
 	lgh->Intensity = Intensity;
@@ -130,8 +132,9 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 	float radius = (float)args[3]->NumberValue();
 	vec3 color(args[4]->NumberValue(), args[5]->NumberValue(), args[6]->NumberValue());
 	float intensity  = (float)args[7]->NumberValue();
+	bool statically = args[8]->BooleanValue();
 
-	unsigned int id = module->Light(position, radius, color, intensity);
+	unsigned int id = module->Light(position, radius, color, intensity, StorageLight::POINT, statically);
 	return v8::Uint32::New(id);
 }
 
