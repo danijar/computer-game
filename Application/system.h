@@ -205,8 +205,9 @@ public:
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		v8::Persistent<v8::Context> context = v8::Context::New();
+		context = v8::Context::New();
 		context->Enter();
+
 		v8::Local<v8::External> handle = v8::External::New(reinterpret_cast<void*>(Module));
 		module = v8::Persistent<v8::External>::New(isolate, handle);
 	}
@@ -214,7 +215,6 @@ public:
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		v8::Local<v8::Context> context = v8::Context::GetCurrent();
 		context->Exit();
 	}
 
@@ -222,7 +222,8 @@ public:
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		v8::Local<v8::Context> context = v8::Context::GetCurrent();
+		context->Enter();
+
 		v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
 		v8::Local<v8::Object> global = context->Global();
 		global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
@@ -234,13 +235,12 @@ public:
 			HelperDebug::Warning("system", "The script " + Path + " is already loaded.");
 			return;
 		}
-
-		std::string path = name + "/" + Path;
 		std::string source = HelperFile::Read(name, Path);
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		v8::Local<v8::Context> context = v8::Context::GetCurrent();
+		context->Enter();
+
 		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(source.c_str()));
 		v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
 		scripts.insert(std::make_pair(Path, handle));
@@ -251,7 +251,8 @@ public:
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		v8::Local<v8::Context> context = v8::Context::GetCurrent();
+		context->Enter();
+
 		v8::Local<v8::Value> result = scripts[Path]->Run();
 		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
 		return handle;
@@ -275,7 +276,8 @@ public:
 	}
 private:
 	std::string name;
-	std::unordered_map<std::string, v8::Persistent<v8::Script>> scripts;
+	v8::Persistent<v8::Context> context;
+	std::unordered_map<std::string, v8::Persistent<v8::Script> > scripts;
 	v8::Persistent<v8::External> module;
 };
 

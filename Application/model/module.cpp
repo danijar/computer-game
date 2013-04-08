@@ -38,7 +38,6 @@ void ModuleModel::Init()
 
 	Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
 	Script->Run("init.js");
-	Script->Load("update.js"); // why doesn't it work without precompiling the script?
 }
 
 void ModuleModel::Update()
