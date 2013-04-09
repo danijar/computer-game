@@ -33,7 +33,7 @@ void ModuleModel::ReloadTextures()
 void ModuleModel::LoadTexture(GLuint &Texture, string Path)
 {
 	Image image;
-	bool result = image.loadFromFile("model/texture/" + Path);
+	bool result = image.loadFromFile(Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Debug->Fail("(" + Path + ") cannot be loaded.");

@@ -3,7 +3,7 @@
 #include "system.h"
 
 
-class ModuleMods : public Module
+class ModuleMod : public Module
 {
 	void Init();
 	void Update();

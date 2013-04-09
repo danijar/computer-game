@@ -40,7 +40,7 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 	if(Path == "qube.prim")  return LoadQube (Mesh);
 	if(Path == "plane.prim") return LoadPlane(Mesh);
 
-	const aiScene *scene = aiImportFile(("model/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if(!scene)
 	{
 		// log error to console

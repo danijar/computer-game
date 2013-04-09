@@ -43,7 +43,7 @@ void ModuleModel::ReloadMaterials()
 
 void ModuleModel::LoadMaterial(Material &Material, string Path)
 {
-	ifstream stream("model/material/" + Path);
+	ifstream stream(Name() + "/material/" + Path);
 	if(!stream.is_open())
 	{
 		Debug->Fail("(" + Path + ") cannot be loaded.");

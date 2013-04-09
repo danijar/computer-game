@@ -18,7 +18,7 @@ float ssao()
 {
 	float z   = texture2D(position_tex, coord).z;       // read eye linear z
 	vec3  nor = texture2D(normal_tex, coord).xyz;       // read normal
-	vec3  ref = texture2D(noise_tex, coord * 30.0).xyz; // read dithering vector
+	vec3  ref = texture2D(noise_tex, coord * 200.0).xyz; // read dithering vector
 
 	float bl = 0.0;
 	for(int i = 0; i < 16; ++i)

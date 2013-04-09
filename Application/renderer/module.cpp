@@ -22,29 +22,40 @@ void ModuleRenderer::Init()
 
 void ModuleRenderer::Update()
 {
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+	Forms(GetPass("form"));
 
-	uint n = 0;
-	for(auto i : passes)
-	{
-		if(i.second.Framebuffer && i.second.Shader)
-		{
-			glViewport(0, 0, (int)(size.x * i.second.Size), (int)(size.y * i.second.Size));
+	Light(GetPass("light"));
 
-			if(n < passes.size() - 1)
-				glBindFramebuffer(GL_FRAMEBUFFER, i.second.Framebuffer);
-			else
-				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	for(uint i = 2; i < passes.size() - 1; ++i)
+		Quad(&passes[i].second);
 
-			if(n == 0)
-				Forms(i.second.Shader, i.second.Samplers);
-			else if(n == 1)
-				Light(i.second.Shader, i.second.Samplers);
-			else
-				Quad (i.second.Shader, i.second.Samplers);
-		}
-		n++;
-	}
+	Quad(&passes.back().second, true);
+
+	/*
+	 * This is the old drawing routine using a only distinctive loop.
+	 *
+	 * uint n = 0;
+	 * for(auto i : passes)
+	 * {
+	 *     if(i.second.Framebuffer && i.second.Shader)
+	 *     {
+	 *         glViewport(0, 0, (int)(size.x * i.second.Size), (int)(size.y * i.second.Size));
+	 *         if(n < passes.size() - 1)
+	 *             glBindFramebuffer(GL_FRAMEBUFFER, i.second.Framebuffer);
+	 *         else
+	 *             glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	 * 
+	 *         if(n == 0)
+	 *             Forms(i.second.Shader, i.second.Samplers);
+	 *         else if(n == 1)
+	 *             Light(i.second.Shader, i.second.Samplers);
+	 *         else
+	 *             Quad (i.second.Shader, i.second.Samplers);
+	 *     }
+	 *     n++;
+	 * }
+	 *
+	 */
 }
 
 void ModuleRenderer::Listeners()

@@ -92,11 +92,12 @@
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
-    <ClCompile Include="Application\mods\module.cpp" />
+    <ClCompile Include="Application\mod\module.cpp" />
     <ClCompile Include="Application\movement\module.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
+    <ClCompile Include="Application\renderer\effect.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
     <ClCompile Include="Application\renderer\passes.cpp" />
     <ClCompile Include="Application\renderer\module.cpp" />
@@ -110,7 +111,7 @@
     <ClInclude Include="Application\input\module.h" />
     <ClInclude Include="Application\interface\module.h" />
     <ClInclude Include="Application\model\module.h" />
-    <ClInclude Include="Application\mods\module.h" />
+    <ClInclude Include="Application\mod\module.h" />
     <ClInclude Include="Application\movement\module.h" />
     <ClInclude Include="Application\physic\module.h" />
     <ClInclude Include="Application\renderer\module.h" />

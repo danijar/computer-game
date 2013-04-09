@@ -15,20 +15,20 @@ float avg(vec3 value)
 
 void main()
 {
-    const int radius = 1;
-    float blur = 0;
-    int n = 0;
-    for(float u = -radius; u <= +radius; ++u)
-    for(float v = -radius; v <= +radius; ++v)
-    {
-        blur += avg(texture2D(effect_tex, coord + vec2(u, v) / frameBufSize).rgb);
-        n++;
-    }
-    blur /= n;
+	const int radius = 1;
+	float blur = 0;
+	int n = 0;
+	for(float u = -radius; u <= +radius; ++u)
+	for(float v = -radius; v <= +radius; ++v)
+	{
+		blur += avg(texture2D(effect_tex, coord + vec2(u, v) / frameBufSize).rgb);
+		n++;
+	}
+	blur /= n;
 
-    vec3 color = texture2D(image_tex, coord).rgb;
+	vec3 color = texture2D(image_tex, coord).rgb;
 	const float ssao_amount = 0.3;
-    image = vec4(color + blur * ssao_amount - ssao_amount, 1.0); // combine
+	image = vec4(color + blur * ssao_amount - ssao_amount, 1.0); // combine
 	//image = vec4(vec3(blur), 1.0);                             // display only
 	//image = vec4(color, 1.0);                                  // skip ssao
 }

@@ -15,11 +15,6 @@ class ModuleRenderer : public Module
 	void Update();
 	void Listeners();
 
-	// draw
-	void Quad (GLuint Shader, std::unordered_map<std::string, GLuint> Samplers);
-	void Forms(GLuint Shader, std::unordered_map<std::string, GLuint> Samplers);
-	void Light(GLuint Shader, std::unordered_map<std::string, GLuint> Samplers);
-
 	// shader
 	GLuint GetShader(std::string Vertex, std::string Fragment);
 	GLuint CreateProgram(std::string Vertex, std::string Fragment);
@@ -50,7 +45,6 @@ class ModuleRenderer : public Module
 		float Size;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
-	Pass forms, occlusion, combine, antialiasing;
 	void Pipeline();
 	void Uniforms();
 	Pass CreatePass(
@@ -72,4 +66,13 @@ class ModuleRenderer : public Module
 		std::unordered_map<GLenum, std::pair<std::string, GLenum> > Targets,
 		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
 		float Size = 1.0);
+	Pass *GetPass(std::string Name);
+	
+	// draw
+	void Quad (Pass *Pass, bool Screen = false);
+	void Forms(Pass *Pass);
+	void Light(Pass *Pass);
+
+	// effects
+	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
 };

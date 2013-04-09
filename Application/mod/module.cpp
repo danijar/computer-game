@@ -1,17 +1,17 @@
 #include "module.h"
 
 
-void ModuleMods::Init()
+void ModuleMod::Init()
 {
 
 }
 
-void ModuleMods::Update()
+void ModuleMod::Update()
 {
 
 }
 
-void ModuleMods::Listeners()
+void ModuleMod::Listeners()
 {
 	Event->Listen("SystemInitialized", [=]{
 		/*

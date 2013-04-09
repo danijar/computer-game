@@ -25,9 +25,6 @@
     <Filter Include="model\texture">
       <UniqueIdentifier>{2a7d6224-e017-4bc9-9dbc-53bc4bd44676}</UniqueIdentifier>
     </Filter>
-    <Filter Include="mods">
-      <UniqueIdentifier>{b5900934-b0be-4d79-9923-857ea751353c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="movement">
       <UniqueIdentifier>{063851b0-0878-48b2-8680-ce0764f2f00d}</UniqueIdentifier>
     </Filter>
@@ -51,6 +48,9 @@
     </Filter>
     <Filter Include="storage">
       <UniqueIdentifier>{153d5050-398b-4c4c-ad7e-23f239bcd1d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mod">
+      <UniqueIdentifier>{b5900934-b0be-4d79-9923-857ea751353c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +100,6 @@
     <ClCompile Include="Application\interface\module.cpp">
       <Filter>interface</Filter>
     </ClCompile>
-    <ClCompile Include="Application\mods\module.cpp">
-      <Filter>mods</Filter>
-    </ClCompile>
     <ClCompile Include="Application\movement\module.cpp">
       <Filter>movement</Filter>
     </ClCompile>
@@ -114,6 +111,12 @@
     </ClCompile>
     <ClCompile Include="Application\window\module.cpp">
       <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\mod\module.cpp">
+      <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\effect.cpp">
+      <Filter>renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,9 +163,6 @@
     <ClInclude Include="Application\interface\module.h">
       <Filter>interface</Filter>
     </ClInclude>
-    <ClInclude Include="Application\mods\module.h">
-      <Filter>mods</Filter>
-    </ClInclude>
     <ClInclude Include="Application\movement\module.h">
       <Filter>movement</Filter>
     </ClInclude>
@@ -174,6 +174,9 @@
     </ClInclude>
     <ClInclude Include="Application\window\module.h">
       <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\mod\module.h">
+      <Filter>mod</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
