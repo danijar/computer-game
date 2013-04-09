@@ -87,6 +87,10 @@ void ModuleRenderer::Uniforms()
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
 
+	id = GetPass("apply")->Shader;
+	glUseProgram(id);
+	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	
 	id = GetPass("blur_u")->Shader;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
