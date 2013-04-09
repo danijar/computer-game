@@ -17,6 +17,7 @@ GLuint ModuleRenderer::CreateTexture(string Path, bool Repeat, bool Filtering, b
 	image.flipVertically();
 
 	GLuint id;
+	glGenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
 	if(Repeat)
