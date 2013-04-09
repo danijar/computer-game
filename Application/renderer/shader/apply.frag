@@ -5,7 +5,8 @@ out vec4 image;
 
 uniform sampler2D image_tex;
 uniform sampler2D effect_tex;
-uniform vec2 frameBufSize = vec2(1000);
+uniform sampler2D edge_tex;
+uniform vec2 frameBufSize;
 
 
 float avg(vec3 value)
@@ -28,7 +29,8 @@ void main()
 
 	vec3 color = texture2D(image_tex, coord).rgb;
 	const float ssao_amount = 0.3;
-	image = vec4(color + blur * ssao_amount - ssao_amount, 1.0); // combine
-	//image = vec4(vec3(blur), 1.0);                             // display only
-	//image = vec4(color, 1.0);                                  // skip ssao
+	image = vec4(color + blur * ssao_amount - ssao_amount, 1.0);
+	//image = vec4(vec3(blur), 1.0);                             // only ssao
+	image = vec4(color, 1.0);                                  // only image
+	//image = texture2D(edge_tex, coord);                        // only edge
 }

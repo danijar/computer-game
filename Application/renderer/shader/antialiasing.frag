@@ -1,67 +1,28 @@
 #version 330
 
 in vec2 coord;
-out vec4 image;
+out vec4 result;
 
 uniform sampler2D image_tex;
-uniform sampler2D position_tex;
-uniform sampler2D normal_tex;
+uniform sampler2D blur_u_tex;
+uniform sampler2D blur_v_tex;
+uniform sampler2D edge_tex;
 uniform vec2 frameBufSize;
 
-void depth(out float value, in vec2 offset)
+vec3 edge(in float u, in float v)
 {
-    value = texture2D(position_tex, coord + offset / frameBufSize).z;
-}
-
-void normal(out vec3 value, in vec2 offset)
-{
-    value = texture2D(normal_tex, coord + offset / frameBufSize).xyz;
+	return texture2D(edge_tex, coord + vec2(u, v) / frameBufSize).xyz;
 }
 
 void main()
 {
-    // depth
+	float edge_u = (edge(0, 0).y + 0.5 * edge(0, 1).y + 0.5 * edge(0,-1).y + 0.25 * edge(0, 2).y + 0.25 * edge(0,-2).y) / 2.5;
+	float edge_v = (edge(0, 0).x + 0.5 * edge(1, 0).x + 0.5 * edge(-1,0).x + 0.25 * edge(2, 0).x + 0.25 * edge(-2,0).x) / 2.5;
 
-    float dc, dn, ds, de, dw;
-    depth(dc, vec2( 0,  0));
-    depth(dn, vec2( 0, +1));
-    depth(ds, vec2( 0, -1));
-    depth(de, vec2(+1,  0));
-    depth(dw, vec2(-1,  0));
-    
-    float dvertical   = abs(dc - ((dn + ds) / 2));
-    float dhorizontal = abs(dc - ((de + dw) / 2));
-    float damount = (dvertical + dhorizontal) / 2;
-
-    // normals
-
-    vec3 nc, nn, ns, ne, nw;
-    normal(nc, vec2( 0,  0));
-    normal(nn, vec2( 0, +1));
-    normal(ns, vec2( 0, -1));
-    normal(ne, vec2(+1,  0));
-    normal(nw, vec2(-1,  0));
-
-    float nvertical   = dot(vec3(1), abs(nc - ((nn + ns) / 2.0)));
-    float nhorizontal = dot(vec3(1), abs(nc - ((ne + nw) / 2.0)));
-    float namount = (nvertical + nhorizontal) / 2;
-
-    // blur
-
-    const int radius = 1;
-    vec3 blur = vec3(0);
-    int n = 0;
-    for(float u = -radius; u <= +radius; ++u)
-    for(float v = -radius; v <= +radius; ++v)
-    {
-        blur += texture2D(image_tex, coord + vec2(u, v) / frameBufSize).rgb;
-        n++;
-    }
-    blur /= n;
-
-    // result
-
-    float amount = (damount + namount) / 2;
-    vec3 color = texture2D(image_tex, coord).rgb;
-    image = vec4(mix(color, blur, min(amount, 0.75)), 1.0);
+	vec4 image = texture2D(image_tex, coord);
+	vec4 blur = mix(texture2D(blur_v_tex, coord), texture2D(blur_u_tex, coord), 0.5 + edge_u/2 - edge_v/2);
+	
+	result = mix(image, blur, clamp(4 * edge_v + edge_u, 0, 1));
+	//result = vec4(edge_u, edge_v, 0.0, 1.0); // aliasing only
+	//result = texture2D(image_tex, coord);    // image only
 }

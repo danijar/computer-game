@@ -141,7 +141,10 @@
     <None Include="Application\model\update.js" />
     <None Include="Application\renderer\shader\antialiasing.frag" />
     <None Include="Application\renderer\shader\apply.frag" />
+    <None Include="Application\renderer\shader\blur_u.frag" />
+    <None Include="Application\renderer\shader\blur_v.frag" />
     <None Include="Application\renderer\shader\combine.frag" />
+    <None Include="Application\renderer\shader\edge.frag" />
     <None Include="Application\renderer\shader\forms.frag" />
     <None Include="Application\renderer\shader\forms.vert" />
     <None Include="Application\renderer\shader\light.frag" />

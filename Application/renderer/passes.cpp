@@ -23,6 +23,11 @@ void ModuleRenderer::Pipeline()
 	light_samplers.insert(make_pair("normals",   "normal"));
 	CreatePass("light", "light.frag", "light", light_samplers);
 
+	unordered_map<string, string> edge_samplers;
+	edge_samplers.insert(make_pair("position_tex", "position"));
+	edge_samplers.insert(make_pair("normal_tex",   "normal"));
+	CreatePass("edge", "edge.frag", "edge", edge_samplers);
+
 	unordered_map<string, string> combine_samplers;
 	combine_samplers.insert(make_pair("albedo", "albedo"));
 	combine_samplers.insert(make_pair("lights", "light"));
@@ -34,15 +39,27 @@ void ModuleRenderer::Pipeline()
 	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.5);
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
-	unordered_map<string, string> blur_samplers;
-	blur_samplers.insert(make_pair("image_tex",  "image"));
-	blur_samplers.insert(make_pair("effect_tex", "occlusion"));
-	CreatePass("apply", "apply.frag", "result", blur_samplers);
+	unordered_map<string, string> apply_samplers;
+	apply_samplers.insert(make_pair("image_tex",  "image"));
+	apply_samplers.insert(make_pair("effect_tex", "occlusion"));
+	apply_samplers.insert(make_pair("edge_tex",   "edge"));
+	CreatePass("apply", "apply.frag", "result", apply_samplers);
+
+	/*
+	 * bilinear blur of scene image 
+	 *
+	 * CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));
+	 * CreatePass("blur_v", "blur_v.frag", "blur", make_pair("image_tex", "temp"));
+	 */
+
+	CreatePass("blur_u", "blur_u.frag", "blur_u", make_pair("image_tex", "result"));
+	CreatePass("blur_v", "blur_v.frag", "blur_v", make_pair("image_tex", "result"));
 
 	unordered_map<string, string> antialiasing_samplers;
-	antialiasing_samplers.insert(make_pair("image_tex",    "result"));
-	antialiasing_samplers.insert(make_pair("position_tex", "position"));
-	antialiasing_samplers.insert(make_pair("normal_tex",   "normal"));
+	antialiasing_samplers.insert(make_pair("image_tex", "result"));
+	antialiasing_samplers.insert(make_pair("blur_u_tex",  "blur_u"));
+	antialiasing_samplers.insert(make_pair("blur_v_tex",  "blur_v"));
+	antialiasing_samplers.insert(make_pair("edge_tex",  "edge"));
 	CreatePass("antialiasing", "antialiasing.frag", "antialiasing", antialiasing_samplers);
 
 	CreatePass("screen", "screen.frag", "screen", make_pair("image_tex", "antialiasing"));
@@ -50,14 +67,30 @@ void ModuleRenderer::Pipeline()
 
 void ModuleRenderer::Uniforms()
 {
-	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 	GLuint id;
 	
 	id = GetPass("form")->Shader;
 	glUseProgram(id);
 	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Projection));
 
+	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
+
+	id = GetPass("edge")->Shader;
+	glUseProgram(id);
+	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+
 	id = GetPass("combine")->Shader;
+	glUseProgram(id);
+	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+
+	id = GetPass("combine")->Shader;
+	glUseProgram(id);
+	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+
+	id = GetPass("blur_u")->Shader;
+	glUseProgram(id);
+	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	id = GetPass("blur_v")->Shader;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
 
