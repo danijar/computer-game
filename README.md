@@ -10,7 +10,7 @@ Features
 - Deferred Rendering
 - Basic text drawing
 - Edge detect anti-aliasing
-- [Screen space ambient occlusion](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion)
+- Screen space ambient occlusion
 - Deferred Lighting
 - Scripting
 
@@ -22,6 +22,7 @@ Libraries
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
 - [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
 - [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
+- [Bullet](http://bulletphysics.org/) Physics Library (2.81)
 
 Screenshot
 ----------
@@ -59,11 +60,12 @@ Upcoming Features
 There is a lot to do and the core development hasn't finished yet.
 
 - Physics and Collision
+- Normal Mapping
 - Shadow Volumes
 
 Desired features that might be implemented in future.
 
-- [Global illumination](http://en.wikipedia.org/wiki/Global_illumination)
+- Global illumination
 - Characters
 - Animations
 - Pathfinding
