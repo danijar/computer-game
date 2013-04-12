@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <SFML/OpenGL.hpp>
 #include <GLM/glm.hpp>
+#include <BULLET/btBulletDynamicsCommon.h>
 #include <V8/v8.h>
 
 #include "light.h"
@@ -38,6 +39,11 @@ class ModuleModel : public Module
 	GLuint GetTexture(std::string Path);
 	void ReloadTextures();
 	void LoadTexture(GLuint &Texture, std::string Path);
+
+	// bodies
+	btRigidBody *CreateBody();
+	btRigidBody *CreateBodyCube();
+	btRigidBody *CreateBodyPlane();
 
 	// creation
 public:

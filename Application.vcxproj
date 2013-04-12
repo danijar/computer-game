@@ -91,6 +91,7 @@
     <ClCompile Include="Application\model\module.cpp" />
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />
+    <ClCompile Include="Application\model\body.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
     <ClCompile Include="Application\movement\module.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="Application\storage\model.h" />
     <ClInclude Include="Application\storage\light.h" />
     <ClInclude Include="Application\storage\movement.h" />
+    <ClInclude Include="Application\storage\physics.h" />
     <ClInclude Include="Application\storage\settings.h" />
     <ClInclude Include="Application\storage\text.h" />
     <ClInclude Include="Application\storage\transform.h" />

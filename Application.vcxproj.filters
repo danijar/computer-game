@@ -121,6 +121,9 @@
     <ClCompile Include="Application\physic\physic.cpp">
       <Filter>physic</Filter>
     </ClCompile>
+    <ClCompile Include="Application\model\body.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
@@ -180,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="Application\mod\module.h">
       <Filter>mod</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\physics.h">
+      <Filter>storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

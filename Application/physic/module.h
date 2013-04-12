@@ -20,13 +20,6 @@ class ModulePhysic : public Module
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* world;
-	
-	// test
-	btRigidBody* ground;
-	btRigidBody* shape;
-	float shapeHeight;
-	void Ground();
-	void Cube();
 
 	// transform
 	void Matrix(unsigned int id);

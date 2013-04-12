@@ -2,14 +2,16 @@
 
 #include <unordered_map>
 #include <cstdlib>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/Window/Keyboard.hpp>
-using namespace sf;
 #include <GLM/glm.hpp>
+#include <GLM/gtc/quaternion.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
-using namespace glm;
+#include <BULLET/btBulletDynamicsCommon.h>
 #include <V8/v8.h>
+using namespace std;
+using namespace sf;
+using namespace glm;
 
 #include "model.h"
 #include "transform.h"
@@ -17,6 +19,7 @@ using namespace glm;
 #include "animation.h"
 #include "text.h"
 #include "light.h"
+#include "physics.h"
 
 
 void ModuleModel::Init()
@@ -56,13 +59,12 @@ void ModuleModel::Listeners()
 	Event->Listen("InputBindCreate", [=]{
 		// move this into a script
 		bool many = Keyboard::isKeyPressed(Keyboard::LShift);
-		for(int i = 0; i < (many ? 500 : 1); ++i)
+		for(int i = 0; i < (many ? 20 : 1); ++i)
 		{
-			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 4, 0), vec3(0), vec3(1), false);
-			Entity->Add<StorageMovement>(id);
+			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+			Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(btVector3(0, 5.0f, 0));
+			Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 			Entity->Add<StorageAnimation>(id);
-			auto tsf = Entity->Get<StorageTransform>(id);
-			tsf->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 		}
 	});
 }
@@ -88,6 +90,17 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	tsf->Rotation  = Rotation;
 	tsf->Scale     = Scale;
 	tsf->Static    = Static;
+
+	if(Mesh == "qube.prim") // later on, if Body string isn't empty
+	{
+		auto bdy = Entity->Add<StoragePhysic>(id);
+		bdy->Body = CreateBodyCube();
+	}
+	else if(Mesh == "plane.prim")
+	{
+		auto bdy = Entity->Add<StoragePhysic>(id);
+		bdy->Body = CreateBodyPlane();
+	}
 
 	return id;
 }

@@ -28,8 +28,8 @@ int main()
 	World.Add("model",     new ModuleModel()    );
 	World.Add("physic",    new ModulePhysic()   );
 	World.Add("camera",    new ModuleCamera()   );
-	World.Add("movement",  new ModuleMovement() );
-	World.Add("animation", new ModuleAnimation());
+	//World.Add("movement",  new ModuleMovement() );
+	//World.Add("animation", new ModuleAnimation());
 	World.Add("renderer",  new ModuleRenderer() );
 	World.Add("interface", new ModuleInterface());
 	World.Add("mod",       new ModuleMod()      );
