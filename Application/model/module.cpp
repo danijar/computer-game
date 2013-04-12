@@ -94,7 +94,7 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	if(Mesh == "qube.prim") // later on, if Body string isn't empty
 	{
 		auto bdy = Entity->Add<StoragePhysic>(id);
-		bdy->Body = CreateBodyCube();
+		bdy->Body = CreateBodyCube(Static ? 0 : 5.0f);
 	}
 	else if(Mesh == "plane.prim")
 	{

@@ -63,7 +63,7 @@ void ModulePhysic::Update()
 				btQuaternion orientation = phy->Body->getOrientation();
 				quat quaternion(orientation.getW(), orientation.getX(), orientation.getY(), orientation.getZ());
 				vec3 rotation = eulerAngles(quaternion);
-				i->second->Rotation = vec3(rotation.z, rotation.y, rotation.x);
+				i->second->Rotation = vec3(rotation.z, -rotation.y, rotation.x - 90.0f); // does this give correct results?
 			}
 			Matrix(i->first);
 		}

@@ -42,7 +42,7 @@ class ModuleModel : public Module
 
 	// bodies
 	btRigidBody *CreateBody();
-	btRigidBody *CreateBodyCube();
+	btRigidBody *CreateBodyCube(float Mass = 0);
 	btRigidBody *CreateBodyPlane();
 
 	// creation

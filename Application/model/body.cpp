@@ -15,15 +15,14 @@ btRigidBody *ModuleModel::CreateBody()
 	return new btRigidBody(info);
 }
 
-btRigidBody *ModuleModel::CreateBodyCube()
+btRigidBody *ModuleModel::CreateBodyCube(float Mass)
 {
 	btRigidBody *body = CreateBody();
-	const btScalar mass = 5;
 	btCollisionShape* shape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
 	btVector3 inertia;
-	shape->calculateLocalInertia(mass, inertia);
+	shape->calculateLocalInertia(Mass, inertia);
 	body->setCollisionShape(shape);
-	body->setMassProps(mass, inertia);
+	body->setMassProps(Mass, inertia);
 	return body;
 }
 
