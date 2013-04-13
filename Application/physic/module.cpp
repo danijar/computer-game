@@ -61,16 +61,16 @@ void ModulePhysic::Update()
 				i->second->Position = vec3(position.getX(), position.getY(), position.getZ());
 
 				btQuaternion orientation = phy->Body->getOrientation();
-				quat quaternion(orientation.getW(), orientation.getX(), orientation.getY(), orientation.getZ());
+				quat quaternion(orientation.getW(), -orientation.getX(), -orientation.getY(), -orientation.getZ());
 				vec3 rotation = eulerAngles(quaternion);
-				i->second->Rotation = vec3(rotation.z, -rotation.y, rotation.x - 90.0f); // does this give correct results?
+				i->second->Rotation = vec3(-rotation.x, -rotation.y, -rotation.z); 
 			}
 			Matrix(i->first);
 		}
 	}
 
 	float delta = clock.restart().asSeconds();
-	world->stepSimulation(delta);
+	world->stepSimulation(delta, 10);
 }
 
 ModulePhysic::~ModulePhysic()

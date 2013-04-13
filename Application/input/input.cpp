@@ -16,14 +16,23 @@ void ModuleInput::Update()
 
 void ModuleInput::Listeners()
 {
-	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+	Event->Listen<Keyboard::Key>("InputKeyPressed", [=](Keyboard::Key Code){
 		switch(Code)
 		{
-		case Keyboard::Key::Space:
+		case Keyboard::Space:
 			this->Event->Fire("InputBindJump");
 			break;
-		case Keyboard::Key::Tab:
+		case Keyboard::Tab:
 			this->Event->Fire("InputBindCreate");
+			break;
+		}
+	});
+
+	Event->Listen<Mouse::Button>("InputMousePressed", [=](Mouse::Button Code){
+		switch(Code)
+		{
+		case Mouse::Left:
+			this->Event->Fire("InputBindShoot");
 			break;
 		}
 	});

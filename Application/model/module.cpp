@@ -57,15 +57,37 @@ void ModuleModel::Listeners()
 	});
 
 	Event->Listen("InputBindCreate", [=]{
+
 		// move this into a script
-		bool many = Keyboard::isKeyPressed(Keyboard::LShift);
-		for(int i = 0; i < (many ? 20 : 1); ++i)
+		if(Keyboard::isKeyPressed(Keyboard::LShift))
+		{
+			for(int i = 0; i < 20; ++i)
+			{
+				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+				Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
+				Entity->Get<StorageTransform>(id)->Position.y = 50.0f;
+				Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(btVector3((rand() % 200) / 10.0f - 10.0f, -500.0f, (rand() % 200) / 10.0f - 10.0f));
+			}
+		}
+		else
 		{
 			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
-			Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(btVector3(0, 5.0f, 0));
 			Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 			Entity->Add<StorageAnimation>(id);
 		}
+	});
+
+	Event->Listen("InputBindShoot", [=]{
+
+		// move this into a script
+		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+		auto cam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+
+		vec3 lookat(sinf(cam->Rotation.x) * cosf(cam->Rotation.y), sinf(cam->Rotation.y), cosf(cam->Rotation.x) * cosf(cam->Rotation.y));
+
+		Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
+		Entity->Get<StorageTransform>(id)->Position = cam->Position;
+		Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(500.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
 }
 
@@ -94,7 +116,7 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	if(Mesh == "qube.prim") // later on, if Body string isn't empty
 	{
 		auto bdy = Entity->Add<StoragePhysic>(id);
-		bdy->Body = CreateBodyCube(Static ? 0 : 5.0f);
+		bdy->Body = CreateBodyCube(Static ? 0 : 4.0f);
 	}
 	else if(Mesh == "plane.prim")
 	{

@@ -43,7 +43,7 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 	const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if(!scene)
 	{
-		// log error to console
+		Debug->Fail("mesh " + Path + " cannot be loaded");
 		return;
 	}
 

@@ -44,6 +44,9 @@ void ModuleWindow::Update()
 			case Event::KeyReleased:
 				Event->Fire<Keyboard::Key>("InputKeyReleased", evt.key.code);
 				break;
+			case Event::MouseButtonPressed:
+				Event->Fire<Mouse::Button>("InputMousePressed", evt.mouseButton.button);
+				break;
 			case Event::Closed:
 				Close();
 				break;

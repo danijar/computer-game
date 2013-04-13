@@ -13,6 +13,7 @@ Features
 - Screen space ambient occlusion
 - Deferred Lighting
 - Scripting
+- Physics and Collision
 
 Libraries
 ---------
@@ -42,8 +43,9 @@ There is a precompiled executable for Windows. To use it, download the content o
 - `F3` Toggle wire frame mode.
 - `F4` Toggle antialiasing.
 - `F11` Toggle between fullscreen and windowed mode.
-- `Tab` Insert new cube at the center.
-- `Left Shift` + `Tab` Insert 500 new cubes.
+- `Tab` Let a cube fall at the center.
+- `Left Shift` + `Tab` Let twenty cubes fall at the center with a strong impulse.
+- `Mouse Left` Shoot a cube in view direction.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
 - Hold `Left Shift` to move faster.
@@ -59,7 +61,6 @@ Upcoming Features
 
 There is a lot to do and the core development hasn't finished yet.
 
-- Physics and Collision
 - Normal Mapping
 - Shadow Volumes
 

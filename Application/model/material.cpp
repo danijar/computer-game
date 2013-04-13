@@ -46,7 +46,7 @@ void ModuleModel::LoadMaterial(Material &Material, string Path)
 	ifstream stream(Name() + "/material/" + Path);
 	if(!stream.is_open())
 	{
-		Debug->Fail("(" + Path + ") cannot be loaded.");
+		Debug->Fail("material " + Path + " cannot be loaded");
 		return;
 	}
 

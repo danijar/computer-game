@@ -36,7 +36,7 @@ void ModuleModel::LoadTexture(GLuint &Texture, string Path)
 	bool result = image.loadFromFile(Name() + "/texture/" + Path);
 	if(!result)
 	{
-		Debug->Fail("(" + Path + ") cannot be loaded.");
+		Debug->Fail("texture " + Path + " cannot be loaded");
 		return;
 	}
 	image.flipVertically();
