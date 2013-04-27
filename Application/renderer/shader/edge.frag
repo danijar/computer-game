@@ -5,16 +5,16 @@ out vec4 image;
 
 uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
-uniform vec2 frameBufSize;
+uniform vec2 frame_size;
 
 float depth(in vec2 offset)
 {
-	return texture2D(position_tex, coord + offset / frameBufSize).z;
+	return texture2D(position_tex, coord + offset / frame_size).z;
 }
 
 void normal(out vec3 value, in vec2 offset)
 {
-	value = texture2D(normal_tex, coord + offset / frameBufSize).xyz;
+	value = texture2D(normal_tex, coord + offset / frame_size).xyz;
 }
 
 void main()

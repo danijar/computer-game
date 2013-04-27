@@ -36,7 +36,7 @@ void ModuleRenderer::Pipeline()
 	unordered_map<string, string> occlusion_samplers;
 	occlusion_samplers.insert(make_pair("position_tex", "position"));
 	occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
-	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.5);
+	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.75);
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
 	unordered_map<string, string> apply_samplers;
@@ -69,26 +69,22 @@ void ModuleRenderer::Uniforms()
 
 	id = GetPass("edge")->Shader;
 	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
 	id = GetPass("combine")->Shader;
 	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
-	id = GetPass("combine")->Shader;
+	id = GetPass("occlusion")->Shader;
 	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
-
-	id = GetPass("apply")->Shader;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 	
 	id = GetPass("blur_u")->Shader;
 	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 	id = GetPass("blur_v")->Shader;
 	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
+	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
 	glUseProgram(0);
 }

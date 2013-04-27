@@ -15,7 +15,7 @@ void main()
 	float presence = clamp(0.8 * (edge.x + edge.y + edge.z), 0, 1);
 
 	result = mix(image, blur, presence);
-	//result = vec4(vec3(presence), 1.0); // aliasing only
-	//result = blur;                      // blur only
-	//result = image;                     // image only
+	//result = vec4(vec3(presence), 1.0); // only aliasing
+	//result = blur;                      // only blur
+	//result = image;                     // only image
 }

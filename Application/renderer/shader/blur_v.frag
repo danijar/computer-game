@@ -4,13 +4,13 @@ in vec2 coord;
 out vec4 result;
 
 uniform sampler2D image_tex;
-uniform vec2 frameBufSize;
+uniform vec2 frame_size;
 uniform int radius = 3;
 
 
 vec4 fetch(in float u, in float v)
 {
-	return texture2D(image_tex, coord + vec2(u, v) / frameBufSize);
+	return texture2D(image_tex, coord + vec2(u, v) / frame_size);
 }
 
 void main()
