@@ -45,20 +45,12 @@ void ModuleRenderer::Pipeline()
 	apply_samplers.insert(make_pair("edge_tex",   "edge"));
 	CreatePass("apply", "apply.frag", "result", apply_samplers);
 
-	/*
-	 * bilinear blur of scene image 
-	 *
-	 * CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));
-	 * CreatePass("blur_v", "blur_v.frag", "blur", make_pair("image_tex", "temp"));
-	 */
-
-	CreatePass("blur_u", "blur_u.frag", "blur_u", make_pair("image_tex", "result"));
-	CreatePass("blur_v", "blur_v.frag", "blur_v", make_pair("image_tex", "result"));
+	CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));
+	CreatePass("blur_v", "blur_v.frag", "blur", make_pair("image_tex", "temp"));
 
 	unordered_map<string, string> antialiasing_samplers;
 	antialiasing_samplers.insert(make_pair("image_tex", "result"));
-	antialiasing_samplers.insert(make_pair("blur_u_tex",  "blur_u"));
-	antialiasing_samplers.insert(make_pair("blur_v_tex",  "blur_v"));
+	antialiasing_samplers.insert(make_pair("blur_tex",  "blur"));
 	antialiasing_samplers.insert(make_pair("edge_tex",  "edge"));
 	CreatePass("antialiasing", "antialiasing.frag", "antialiasing", antialiasing_samplers);
 
@@ -95,10 +87,6 @@ void ModuleRenderer::Uniforms()
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
 	id = GetPass("blur_v")->Shader;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
-
-	id = GetPass("antialiasing")->Shader;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frameBufSize"), 1, value_ptr(vec2(Size.x, Size.y)));
 

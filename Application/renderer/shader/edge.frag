@@ -28,8 +28,8 @@ void main()
 	de = depth(vec2(+1,  0));
 	dw = depth(vec2(-1,  0));
 	
-	float dvertical   = /*abs*/(dc - ((dn + ds) / 2));
-	float dhorizontal = /*abs*/(dc - ((de + dw) / 2));
+	float dvertical   = abs(dc - ((dn + ds) / 2));
+	float dhorizontal = abs(dc - ((de + dw) / 2));
 
 	// normals
 
@@ -40,8 +40,8 @@ void main()
 	normal(ne, vec2(+1,  0));
 	normal(nw, vec2(-1,  0));
 
-	float nvertical   = /*abs*/(dot(vec3(1), nc - ((nn + ns) / 2.0)));
-	float nhorizontal = /*abs*/(dot(vec3(1), nc - ((ne + nw) / 2.0)));
+	float nvertical   = abs(dot(vec3(1), nc - ((nn + ns) / 2.0)));
+	float nhorizontal = abs(dot(vec3(1), nc - ((ne + nw) / 2.0)));
 
 	// result
 
