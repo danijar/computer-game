@@ -7,5 +7,5 @@ out vec2 coord;
 void main()
 {
 	coord = vertex.xy;
-    gl_Position = vertex * 2.0 - 1.0;
+	gl_Position = vertex * 2.0 - 1.0;
 }

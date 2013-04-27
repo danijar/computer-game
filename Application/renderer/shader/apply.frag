@@ -1,7 +1,7 @@
 #version 330
 
 in vec2 coord;
-out vec4 image;
+out vec3 image;
 
 uniform sampler2D image_tex;
 uniform sampler2D effect_tex;
@@ -15,9 +15,9 @@ void main()
 	int n = 0;
 
 	vec3 color  = texture2D(image_tex,  coord).rgb;
-	vec3 effect = texture2D(effect_tex, coord).rgb;
+	vec3 effect = texture2D(effect_tex, coord).xyz;
 
-	image = vec4(color + vec3(0.3 * dot(effect, vec3(1)) * 0.5 - 0.5), 1.0);
+	image = color + vec3(0.3 * dot(effect, vec3(1)) * 0.5 - 0.5);
 	//image = vec4(vec3(0.3 * dot(effect, vec3(1))), 1.0); // only ssao
 	//image = vec4(vec3(blur), 1.0);                       // only blurred ssao
 	//image = vec4(color, 1.0);                            // only image

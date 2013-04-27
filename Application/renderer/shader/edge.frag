@@ -1,7 +1,7 @@
 #version 330
 
 in vec2 coord;
-out vec4 image;
+out vec3 image;
 
 uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
@@ -12,9 +12,9 @@ float depth(in vec2 offset)
 	return texture2D(position_tex, coord + offset / frame_size).z;
 }
 
-void normal(out vec3 value, in vec2 offset)
+vec3 normal(in vec2 offset)
 {
-	value = texture2D(normal_tex, coord + offset / frame_size).xyz;
+	return texture2D(normal_tex, coord + offset / frame_size).xyz;
 }
 
 void main()
@@ -34,11 +34,11 @@ void main()
 	// normals
 
 	vec3 nc, nn, ns, ne, nw;
-	normal(nc, vec2( 0,  0));
-	normal(nn, vec2( 0, +1));
-	normal(ns, vec2( 0, -1));
-	normal(ne, vec2(+1,  0));
-	normal(nw, vec2(-1,  0));
+	nc = normal(vec2( 0,  0));
+	nn = normal(vec2( 0, +1));
+	ns = normal(vec2( 0, -1));
+	ne = normal(vec2(+1,  0));
+	nw = normal(vec2(-1,  0));
 
 	float nvertical   = abs(dot(vec3(1), nc - ((nn + ns) / 2.0)));
 	float nhorizontal = abs(dot(vec3(1), nc - ((ne + nw) / 2.0)));
@@ -51,5 +51,5 @@ void main()
 	float edge = clamp(abs(amount - vertical) + abs(amount - horizontal), 0, 1);
 	float aliasing = (amount > 0.2 ? 1 : 0) * (1 - edge);
 
-	image = vec4(horizontal, vertical, aliasing, 1.0);
+	image = vec3(horizontal, vertical, aliasing);
 }

@@ -1,7 +1,7 @@
 #version 330
 
 in vec2 coord;
-out vec4 image;
+out vec3 image;
 
 uniform sampler2D position_tex;
 uniform sampler2D normal_tex;
@@ -38,5 +38,5 @@ float ssao()
 void main()
 {
 	float effect = ssao();
-	image = vec4(vec3(effect < 0.9 ? effect : 0.9), 1.0);
+	image = vec3(effect < 0.9 ? effect : 0.9);
 }

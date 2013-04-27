@@ -50,6 +50,11 @@ pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 	GLenum type;
 	switch (InternalType)
 	{
+	case GL_RGB16:
+	case GL_RGB16F:
+	case GL_RGB32F:
+		type = GL_RGB;
+		break;
 	case GL_RGBA16:
 	case GL_RGBA16F:
 	case GL_RGBA32F:
@@ -64,11 +69,14 @@ pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 	GLenum format;
 	switch (InternalType)
 	{
+	case GL_RGB16:
 	case GL_RGBA16:
 	case GL_DEPTH_COMPONENT24:
 	case GL_DEPTH_COMPONENT32:
 		format = GL_UNSIGNED_BYTE;
 		break;
+	case GL_RGB16F:
+	case GL_RGB32F:
 	case GL_RGBA16F:
 	case GL_RGBA32F:
 	case GL_DEPTH_COMPONENT32F:

@@ -12,10 +12,10 @@ using namespace glm;
 void ModuleRenderer::Pipeline()
 {
 	unordered_map<GLenum, pair<string, GLenum>> forms_targets;
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("position", GL_RGBA32F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT1, make_pair("normal",   GL_RGBA32F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT2, make_pair("albedo",   GL_RGBA32F)));
-	forms_targets.insert(make_pair(GL_DEPTH_ATTACHMENT,  make_pair("depth",    GL_DEPTH_COMPONENT32F)));
+	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("position", GL_RGB16F)));
+	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT1, make_pair("normal",   GL_RGB16F)));
+	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT2, make_pair("albedo",   GL_RGB16F)));
+	forms_targets.insert(make_pair(GL_DEPTH_ATTACHMENT,  make_pair("depth",    GL_DEPTH_COMPONENT24)));
 	CreatePass("form", "forms.vert", "forms.frag", forms_targets);
 	
 	unordered_map<string, string> light_samplers;
@@ -99,7 +99,7 @@ ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, st
 ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, string Target, unordered_map<string, string> Samplers, float Size)
 {
 	unordered_map<GLenum, pair<string, GLenum>> targets;
-	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair(Target, GL_RGBA32F)));
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair(Target, GL_RGB16F)));
 	return CreatePass(Name, "quad.vert", Fragment, targets, Samplers, Size);
 }
 
