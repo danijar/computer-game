@@ -220,7 +220,6 @@ public:
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		context->Enter();
 
 		v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
 		v8::Local<v8::Object> global = context->Global();
@@ -249,7 +248,6 @@ public:
 
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		context->Enter();
 
 		v8::Local<v8::Value> result = scripts[Path]->Run();
 		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
@@ -259,7 +257,6 @@ public:
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		context->Enter();
 
 		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
 		v8::Local<v8::Value> result = script->Run();
@@ -287,7 +284,7 @@ private:
 	std::string name;
 	v8::Persistent<v8::Context> context;
 	std::unordered_map<std::string, v8::Persistent<v8::Script> > scripts;
-	v8::Persistent<v8::External> module;
+	v8::Persistent<v8::External> module; // store them globally as pair with scripts
 };
 
 
