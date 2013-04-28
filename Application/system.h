@@ -201,12 +201,10 @@ private:
 class HelperScript
 {
 public:
-	HelperScript(std::string Name, Module* Module) : name(Name)
+	HelperScript(std::string Name, Module* Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context)
 	{
 		v8::Isolate* isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
-		context = v8::Context::New();
-		context->Enter();
 
 		v8::Local<v8::External> handle = v8::External::New(reinterpret_cast<void*>(Module));
 		module = v8::Persistent<v8::External>::New(isolate, handle);
@@ -519,7 +517,7 @@ private:
 class Module
 {
 public:
-	void Set(std::string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, std::string* Message)
+	void Set(std::string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, v8::Persistent<v8::Context> Context, std::string* Message)
 	{
 		this->name    = Name;
 		this->Event   = Event;
@@ -528,7 +526,7 @@ public:
 		this->Debug   = new HelperDebug(Name);
 		this->File    = new HelperFile(Name);
 		this->Opengl  = new HelperOpengl(Name);
-		this->Script  = new HelperScript(Name, this);
+		this->Script  = new HelperScript(Name, this, Context);
 		this->message = Message;
 	}
 	virtual void Init() = 0;
@@ -572,9 +570,11 @@ public:
 
 	void Init()
 	{
+		v8::Persistent<v8::Context> context = v8::Context::New();
+		context->Enter();
 		for (auto i : list)
 		{
-			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, &message);
+			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, context, &message);
 			std::get<1>(i)->Init();
 		}
 		event->Fire("SystemInitialized");

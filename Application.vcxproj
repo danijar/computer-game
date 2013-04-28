@@ -142,6 +142,7 @@
     <None Include="Application\model\mesh\barrel.3ds" />
     <None Include="Application\model\mesh\shrine.3ds" />
     <None Include="Application\model\update.js" />
+    <None Include="Application\mod\init.js" />
     <None Include="Application\renderer\shader\antialiasing.frag" />
     <None Include="Application\renderer\shader\apply.frag" />
     <None Include="Application\renderer\shader\blur_u.frag" />

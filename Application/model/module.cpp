@@ -152,9 +152,9 @@ v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args)
 	vec3 position(args[2]->NumberValue(), args[3]->NumberValue(), args[4]->NumberValue());
 	vec3 rotation(args[5]->NumberValue(), args[6]->NumberValue(), args[7]->NumberValue());
 	vec3 scale(args[8]->NumberValue());
-	bool still = args[8]->BooleanValue();
+	bool isstatic = args[9]->BooleanValue();
 
-	unsigned int id = module->Model(mesh, material, position, rotation, scale, still);
+	unsigned int id = module->Model(mesh, material, position, rotation, scale, isstatic);
 	return v8::Uint32::New(id);
 }
 

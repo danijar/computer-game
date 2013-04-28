@@ -3,7 +3,7 @@
 
 void ModuleMod::Init()
 {
-
+	Script->Run("init.js");
 }
 
 void ModuleMod::Update()

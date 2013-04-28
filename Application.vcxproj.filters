@@ -258,6 +258,9 @@
     <None Include="Application\renderer\shader\blur_v.frag">
       <Filter>renderer\shader</Filter>
     </None>
+    <None Include="Application\mod\init.js">
+      <Filter>mod</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Application\model\texture\grass.jpg">
