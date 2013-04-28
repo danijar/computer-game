@@ -6,6 +6,7 @@
 using namespace std;
 
 #include  "settings/module.h"
+#include   "console/module.h"
 #include    "window/module.h"
 #include     "input/module.h"
 #include     "model/module.h"
@@ -15,7 +16,6 @@ using namespace std;
 #include    "camera/module.h"
 #include  "renderer/module.h"
 #include "interface/module.h"
-#include   "console/module.h"
 #include       "mod/module.h"
 
 
@@ -24,6 +24,7 @@ int main()
 	System World;
 
 	World.Add("settings",  new ModuleSettings() );
+	World.Add("console",   new ModuleConsole()  );
 	World.Add("window",    new ModuleWindow()   );
 	World.Add("input",     new ModuleInput()    );
 	World.Add("model",     new ModuleModel()    );
@@ -33,7 +34,6 @@ int main()
 	//World.Add("animation", new ModuleAnimation());
 	World.Add("renderer",  new ModuleRenderer() );
 	World.Add("interface", new ModuleInterface());
-	World.Add("console",   new ModuleConsole()  );
 	World.Add("mod",       new ModuleMod()      );
 
 	World.Init();

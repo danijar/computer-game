@@ -65,7 +65,7 @@ public:
 
 	static void Print(std::string Name, std::string Message)
 	{
-		std::cout << Name << " " << Message << std::endl;
+		std::cout << Name << (Name == "" ? "" : " " ) << Message << std::endl;
 	}
 	static void Inline(std::string Message)
 	{
@@ -284,7 +284,7 @@ private:
 	std::string name;
 	v8::Persistent<v8::Context> context;
 	std::unordered_map<std::string, v8::Persistent<v8::Script> > scripts;
-	v8::Persistent<v8::External> module; // store them globally as pair with scripts
+	v8::Persistent<v8::External> module; // this is only for binding scripts
 };
 
 

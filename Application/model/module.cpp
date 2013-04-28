@@ -37,7 +37,6 @@ void ModuleModel::Init()
 	Script->Bind("light", jsLight);
 	Script->Bind("getposition", jsGetPosition);
 	Script->Bind("setposition", jsSetPosition);
-	Script->Bind("print", jsPrint);
 
 	Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
 	Script->Run("init.js");
@@ -197,15 +196,5 @@ v8::Handle<v8::Value> ModuleModel::jsSetPosition(const v8::Arguments& args)
 
 	auto tsf = module->Entity->Get<StorageTransform>(id);
 	tsf->Position = position;
-	return v8::Undefined();
-}
-
-v8::Handle<v8::Value> ModuleModel::jsPrint(const v8::Arguments& args)
-{
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
-
-	string message = *v8::String::Utf8Value(args[0]);
-
-	module->Debug->Print(message);
 	return v8::Undefined();
 }

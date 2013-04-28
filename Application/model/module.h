@@ -45,7 +45,7 @@ class ModuleModel : public Module
 	btRigidBody *CreateBodyCube(float Mass = 0);
 	btRigidBody *CreateBodyPlane();
 
-	// creation
+	// scripting
 public:
 	unsigned int Model(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), bool Static = true);
 	unsigned int Light(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT, bool Static = true);
@@ -53,5 +53,4 @@ public:
 	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsGetPosition(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsSetPosition(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPrint(const v8::Arguments& args);
 };
