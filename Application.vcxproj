@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="Application\animation\module.cpp" />
     <ClCompile Include="Application\camera\module.cpp" />
+    <ClCompile Include="Application\console\module.cpp" />
     <ClCompile Include="Application\input\input.cpp" />
     <ClCompile Include="Application\interface\module.cpp" />
     <ClCompile Include="Application\interface\text.cpp" />
@@ -110,6 +111,7 @@
   <ItemGroup>
     <ClInclude Include="Application\animation\module.h" />
     <ClInclude Include="Application\camera\module.h" />
+    <ClInclude Include="Application\console\module.h" />
     <ClInclude Include="Application\input\module.h" />
     <ClInclude Include="Application\interface\module.h" />
     <ClInclude Include="Application\model\module.h" />

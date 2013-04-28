@@ -61,6 +61,11 @@ void ModuleWindow::Update()
 			case Event::LostFocus:
 				Event->Fire("WindowFocusLost");
 				break;
+			case Event::TextEntered:
+				char letter = static_cast<char>(evt.text.unicode);
+				if(31 < letter && letter < 128)
+					Event->Fire<char>("WindowKeyText", letter);
+				break;
 			}
 		}
 	}

@@ -52,6 +52,9 @@
     <Filter Include="mod">
       <UniqueIdentifier>{b5900934-b0be-4d79-9923-857ea751353c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="console">
+      <UniqueIdentifier>{a71daff9-37a8-4f78-b3ef-6e29c1bc1b12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\input\input.cpp">
@@ -124,6 +127,9 @@
     <ClCompile Include="Application\model\body.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\console\module.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
@@ -186,6 +192,9 @@
     </ClInclude>
     <ClInclude Include="Application\storage\physics.h">
       <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\console\module.h">
+      <Filter>console</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

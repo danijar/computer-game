@@ -22,8 +22,11 @@ void ModuleInput::Listeners()
 		case Keyboard::Space:
 			this->Event->Fire("InputBindJump");
 			break;
-		case Keyboard::Tab:
+		case Keyboard::F:
 			this->Event->Fire("InputBindCreate");
+			break;
+		case Keyboard::Tab:
+			this->Event->Fire("InputBindConsole");
 			break;
 		}
 	});

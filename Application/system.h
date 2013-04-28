@@ -255,6 +255,17 @@ public:
 		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
 		return handle;
 	}
+	v8::Persistent<v8::Value> Inline(std::string Source)
+	{
+		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::HandleScope scope(isolate);
+		context->Enter();
+
+		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+		v8::Local<v8::Value> result = script->Run();
+		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
+		return handle;
+	}
 
 	static Module *Unwrap(v8::Local<v8::Value> Data)
 	{

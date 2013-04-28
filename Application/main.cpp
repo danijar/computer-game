@@ -15,6 +15,7 @@ using namespace std;
 #include    "camera/module.h"
 #include  "renderer/module.h"
 #include "interface/module.h"
+#include   "console/module.h"
 #include       "mod/module.h"
 
 
@@ -32,6 +33,7 @@ int main()
 	//World.Add("animation", new ModuleAnimation());
 	World.Add("renderer",  new ModuleRenderer() );
 	World.Add("interface", new ModuleInterface());
+	World.Add("console",   new ModuleConsole()  );
 	World.Add("mod",       new ModuleMod()      );
 
 	World.Init();

@@ -43,12 +43,13 @@ There is a precompiled executable for Windows. To use it, download the content o
 - `F3` Toggle wire frame mode.
 - `F4` Toggle antialiasing.
 - `F11` Toggle between fullscreen and windowed mode.
-- `Tab` Let a cube fall down in the center of the world.
-- `Left Shift` + `Tab` Let twenty cubes fall down in the center of the world with a strong impulse.
+- `F` Let a cube fall down in the center of the world.
+- `Left Shift` + `F` Let twenty cubes fall down in the center of the world with a strong impulse.
 - `Mouse Left` Shoot a cube in view direction.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
 - Hold `Left Shift` to move faster.
+- `Tab` Toggle scripting console.
 
 Branches
 --------
