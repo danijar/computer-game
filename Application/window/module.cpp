@@ -58,6 +58,9 @@ void ModuleWindow::Update()
 			case Event::GainedFocus:
 				Event->Fire("WindowFocusGained");
 				break;
+			case Event::LostFocus:
+				Event->Fire("WindowFocusLost");
+				break;
 			}
 		}
 	}

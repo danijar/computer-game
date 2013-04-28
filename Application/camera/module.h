@@ -16,6 +16,7 @@ class ModuleCamera : public Module
 	void Update();
 	void Listeners();
 
+	bool focus;
 	void State();
 	void State(bool Active);
 

@@ -23,6 +23,8 @@ void ModuleCamera::Init()
 	tsf->Position = vec3(0, 5, -5);
 	*Global->Add<unsigned int>("camera") = id;
 
+	focus = true; // how to find out whether window was opened in background?
+
 	Calculate();
 	State();
 	Projection();
@@ -44,7 +46,7 @@ void ModuleCamera::Update()
 		
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
-	if(position != center)
+	if(position != center && focus)
 	{
 		Mouse::setPosition(center, *wnd);
 		Vector2i offset = position - center;
@@ -76,13 +78,33 @@ void ModuleCamera::Listeners()
 	});
 
 	Event->Listen("WindowRecreated", [=]{
-			State();
-			Projection();
+		State();
+		Projection();
 	});
 
 	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
 		State();
 		Projection(Size);
+	});
+
+	Event->Listen("WindowFocusLost", [=]{
+		auto wnd = Global->Get<RenderWindow>("window");
+
+		wnd->setMouseCursorVisible(true);
+		focus = false;
+	});
+
+	Event->Listen("WindowFocusGained", [=]{
+		auto wnd = Global->Get<RenderWindow>("window");
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+
+		if(cam->Active)
+		{
+			wnd->setMouseCursorVisible(false);
+			Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
+			Mouse::setPosition(center, *wnd);
+		}
+		focus = true;
 	});
 }
 
