@@ -49,7 +49,10 @@ void ModulePhysic::Update()
 
 				btTransform transform = phy->Body->getWorldTransform();
 				transform.setOrigin(btVector3(tsf->Position.x, tsf->Position.y, tsf->Position.z));
-				transform.setRotation(btQuaternion(tsf->Rotation.x, tsf->Rotation.y, tsf->Rotation.z));
+
+				glm::quat quaternion(vec3(tsf->Rotation.x, tsf->Rotation.z, tsf->Rotation.y) * 3.14159f / 180.f);
+				btQuaternion orientation(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+				transform.setRotation(orientation);
 				phy->Body->setWorldTransform(transform);
 
 				phy->Body->getCollisionShape()->setLocalScaling(btVector3(tsf->Scale.x, tsf->Scale.y, tsf->Scale.z)); // correct orientation?

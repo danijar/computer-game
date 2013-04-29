@@ -60,7 +60,7 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, bool Static)
 	{
 		btTriangleMesh* triangles = new btTriangleMesh();
 
-		const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+		const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 		if(!scene)
 		{
 			Debug->Fail("mesh " + Path + " cannot be loaded for collision");
