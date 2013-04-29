@@ -30,15 +30,12 @@ void ModuleModel::Init()
 
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
 		auto fms = Entity->Get<StorageModel>();
-		return "Forms " + to_string(fms.size());
-	};
-
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		return to_string(meshes.size())        + " meshes, "
-			 + to_string(materials.size())     + " materials, "
-			 + to_string(textures.size())      + " textures, "
-			 + to_string(staticshapes.size())  + " static shapes, "
-			 + to_string(dynamicshapes.size()) + " dynamic shapes";
+		return "Forms          " + to_string(fms.size()          ) + '\n'
+			 + "Meshes         " + to_string(meshes.size()       ) + '\n'
+			 + "Materials      " + to_string(materials.size()    ) + '\n'
+			 + "Textures       " + to_string(textures.size()     ) + '\n'
+			 + "Static shapes  " + to_string(staticshapes.size() ) + '\n'
+			 + "Dynamic shapes " + to_string(dynamicshapes.size());
 	};
 
 	Script->Bind("model", jsModel);
@@ -87,14 +84,14 @@ void ModuleModel::Listeners()
 	Event->Listen("InputBindShoot", [=]{
 
 		// move this into a script
-		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
+		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 10.0f);
 		auto cam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 
 		vec3 lookat(sinf(cam->Rotation.x) * cosf(cam->Rotation.y), sinf(cam->Rotation.y), cosf(cam->Rotation.x) * cosf(cam->Rotation.y));
 
 		Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 		Entity->Get<StorageTransform>(id)->Position = cam->Position;
-		Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(500.0f * btVector3(lookat.x, lookat.y, lookat.z));
+		Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(1000.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
 }
 

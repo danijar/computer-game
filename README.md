@@ -43,15 +43,12 @@ There is a precompiled executable for Windows. To use it, download the content o
 - `F3` Toggle collision shapes debug draw.
 - `F4` Toggle vertical sync.
 - `F11` Toggle between fullscreen and windowed mode.
-
 - `Mouse Left` Shoot a cube in view direction.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
 - Hold `Left Shift` to move faster.
-
 - `F` Let a cube fall down in the center of the world.
 - `Left Shift` + `F` Let twenty cubes fall down in the center of the world with a strong impulse.
-
 - `Tab` Toggle scripting console.
 
 Branches
@@ -70,9 +67,7 @@ There is a lot to do and the core development hasn't finished yet.
 Desired features that might be implemented in future.
 
 - Global illumination
-- Characters
-- Animations
-- Pathfinding
+- Character animations
 - Artificial intelligence
 - Combat
 - Networking, for multiplayer

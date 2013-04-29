@@ -24,6 +24,8 @@ void ModuleInterface::DrawText()
 		Text text(chars, font, textsize);
 		text.setPosition((float)margin, (float)offset);
 		wnd->draw(text);
-		offset += margin + textsize;
+
+		int lines = 1 + count(chars.begin(), chars.end(), '\n');
+		offset += lines * (margin + textsize);
 	}
 }

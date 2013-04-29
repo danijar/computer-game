@@ -16,8 +16,6 @@ void ModuleConsole::Init()
 	Script->Bind("print", jsPrint);
 
 	Listeners();
-
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Script console: " + text + (active ? "_" : ""); };
 }
 
 void ModuleConsole::Update()
@@ -27,6 +25,10 @@ void ModuleConsole::Update()
 
 void ModuleConsole::Listeners()
 {
+	Event->Listen("SystemInitialized", [=]{
+		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Script console: " + text + (active ? "_" : ""); };
+	});
+
 	Event->Listen("InputBindConsole", [=]{
 		active = !active;
 		text = "";
