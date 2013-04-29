@@ -37,8 +37,8 @@ void ModuleModel::ReloadMeshes()
 
 void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 {
-	if(Path == "qube.prim")  return LoadQube (Mesh);
-	if(Path == "plane.prim") return LoadPlane(Mesh);
+	if(Path == "qube.prim")  return LoadMeshCube (Mesh);
+	if(Path == "plane.prim") return LoadMeshPlane(Mesh);
 
 	const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if(!scene)
@@ -90,7 +90,7 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void ModuleModel::LoadQube(Mesh &Mesh)
+void ModuleModel::LoadMeshCube(Mesh &Mesh)
 {
 	const GLfloat positions[] = {-1.,-1.,1.,1.,-1.,1.,1.,1.,1.,-1.,1.,1.,-1.,1.,1.,1.,1.,1.,1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,-1.,-1.,-1.,1.,-1.,-1.,1.,-1.,1.,-1.,-1.,1.,-1.,-1.,-1.,-1.,-1.,1.,-1.,1.,1.,-1.,1.,-1.,1.,-1.,1.,1.,-1.,-1.,1.,1.,-1.,1.,1.,1.};
 	const GLfloat normals[]   = {0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,0,1,0,0,1,0,0,1,0,0,1,0,0};
@@ -107,7 +107,7 @@ void ModuleModel::LoadQube(Mesh &Mesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void ModuleModel::LoadPlane(Mesh &Mesh)
+void ModuleModel::LoadMeshPlane(Mesh &Mesh)
 {
 	const float l = 100;
 	const GLfloat positions[] = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };

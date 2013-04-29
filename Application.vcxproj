@@ -92,7 +92,7 @@
     <ClCompile Include="Application\model\module.cpp" />
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />
-    <ClCompile Include="Application\model\body.cpp" />
+    <ClCompile Include="Application\model\shape.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
     <ClCompile Include="Application\movement\module.cpp" />

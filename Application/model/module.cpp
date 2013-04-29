@@ -33,6 +33,14 @@ void ModuleModel::Init()
 		return "Forms " + to_string(fms.size());
 	};
 
+	Entity->Add<StorageText>(Entity->New())->Text = [=]{
+		return to_string(meshes.size())        + " meshes, "
+			 + to_string(materials.size())     + " materials, "
+			 + to_string(textures.size())      + " textures, "
+			 + to_string(staticshapes.size())  + " static shapes, "
+			 + to_string(dynamicshapes.size()) + " dynamic shapes";
+	};
+
 	Script->Bind("model", jsModel);
 	Script->Bind("light", jsLight);
 	Script->Bind("getposition", jsGetPosition);
@@ -62,7 +70,7 @@ void ModuleModel::Listeners()
 		{
 			for(int i = 0; i < 20; ++i)
 			{
-				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
 				Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 				Entity->Get<StorageTransform>(id)->Position.y = 50.0f;
 				Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(btVector3((rand() % 200) / 10.0f - 10.0f, -500.0f, (rand() % 200) / 10.0f - 10.0f));
@@ -70,7 +78,7 @@ void ModuleModel::Listeners()
 		}
 		else
 		{
-			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
 			Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
 			Entity->Add<StorageAnimation>(id);
 		}
@@ -79,7 +87,7 @@ void ModuleModel::Listeners()
 	Event->Listen("InputBindShoot", [=]{
 
 		// move this into a script
-		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), false);
+		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
 		auto cam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 
 		vec3 lookat(sinf(cam->Rotation.x) * cosf(cam->Rotation.y), sinf(cam->Rotation.y), cosf(cam->Rotation.x) * cosf(cam->Rotation.y));
@@ -90,11 +98,12 @@ void ModuleModel::Listeners()
 	});
 }
 
-unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec3 Rotation , vec3 Scale, bool Static)
+unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec3 Rotation , vec3 Scale, float Mass)
 {
 	unsigned int id = Entity->New();
 	auto frm = Entity->Add<StorageModel>(id);
 	auto tsf = Entity->Add<StorageTransform>(id);
+	auto bdy = Entity->Add<StoragePhysic>(id);
 
 	ModuleModel::Mesh mesh = GetMesh(Mesh);
 	frm->Positions = mesh.Positions;
@@ -110,18 +119,9 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	tsf->Position  = Position;
 	tsf->Rotation  = Rotation;
 	tsf->Scale     = Scale;
-	tsf->Static    = Static;
+	tsf->Static    = (Mass == 0);
 
-	if(Mesh == "qube.prim") // later on, if Body string isn't empty
-	{
-		auto bdy = Entity->Add<StoragePhysic>(id);
-		bdy->Body = CreateBodyCube(Static ? 0 : 4.0f);
-	}
-	else if(Mesh == "plane.prim")
-	{
-		auto bdy = Entity->Add<StoragePhysic>(id);
-		bdy->Body = CreateBodyPlane();
-	}
+	bdy->Body = CreateBody(Mesh, Mass);
 
 	return id;
 }
@@ -151,9 +151,9 @@ v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args)
 	vec3 position(args[2]->NumberValue(), args[3]->NumberValue(), args[4]->NumberValue());
 	vec3 rotation(args[5]->NumberValue(), args[6]->NumberValue(), args[7]->NumberValue());
 	vec3 scale(args[8]->NumberValue());
-	bool isstatic = args[9]->BooleanValue();
+	float mass = (float)args[9]->NumberValue();
 
-	unsigned int id = module->Model(mesh, material, position, rotation, scale, isstatic);
+	unsigned int id = module->Model(mesh, material, position, rotation, scale, mass);
 	return v8::Uint32::New(id);
 }
 
