@@ -5,6 +5,7 @@
 using namespace std;
 using namespace sf;
 
+
 GLuint ModuleRenderer::CreateTexture(string Path, bool Repeat, bool Filtering, bool Mipmapping)
 {
 	Image image;

@@ -55,11 +55,11 @@
     <Filter Include="console">
       <UniqueIdentifier>{a71daff9-37a8-4f78-b3ef-6e29c1bc1b12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="physic\shader">
+      <UniqueIdentifier>{11544af3-2c25-411d-a224-c35eb23e0918}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application\input\input.cpp">
-      <Filter>input</Filter>
-    </ClCompile>
     <ClCompile Include="Application\interface\text.cpp">
       <Filter>interface</Filter>
     </ClCompile>
@@ -121,14 +121,17 @@
     <ClCompile Include="Application\renderer\effect.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\physic\physic.cpp">
-      <Filter>physic</Filter>
-    </ClCompile>
     <ClCompile Include="Application\console\module.cpp">
       <Filter>console</Filter>
     </ClCompile>
     <ClCompile Include="Application\model\shape.cpp">
       <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\physic\debug.cpp">
+      <Filter>physic</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\input\module.cpp">
+      <Filter>input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,6 +272,12 @@
     </None>
     <None Include="Application\mod\init.js">
       <Filter>mod</Filter>
+    </None>
+    <None Include="Application\physic\shader\shader.frag">
+      <Filter>physic\shader</Filter>
+    </None>
+    <None Include="Application\physic\shader\shader.vert">
+      <Filter>physic\shader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

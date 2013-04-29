@@ -81,23 +81,12 @@ void ModuleWindow::Update()
 
 void ModuleWindow::Listeners()
 {
-	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
-		auto wnd = Global->Get<RenderWindow>("window");
+	Event->Listen("InputBindExit", [=]{ Close(); });
+	Event->Listen("InputBindFullscreen", [=]{ Create(); });
+	Event->Listen("InputBindVsync", [=]{
 		auto stg = Global->Get<StorageSettings>("settings");
-
-		switch(Code)
-		{
-		case Keyboard::Key::Escape:
-			Close();
-			break;
-		case Keyboard::Key::F2:
-			stg->Verticalsync = !stg->Verticalsync;
-			wnd->setVerticalSyncEnabled(stg->Verticalsync);
-			break;
-		case Keyboard::Key::F11:
-			Create();
-			break;
-		}
+		stg->Verticalsync = !stg->Verticalsync;
+		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Verticalsync);
 	});
 
 	Event->Listen("SystemUpdated", [=]{

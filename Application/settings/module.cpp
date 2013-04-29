@@ -27,13 +27,8 @@ void ModuleSettings::Update()
 
 void ModuleSettings::Listeners()
 {
-	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code) {
+	Event->Listen("InputBindWireframe", [=]{
 		auto stg = Global->Get<StorageSettings>("settings");
-		switch(Code)
-		{
-		case Keyboard::Key::F3:
-			stg->Wireframe = !stg->Wireframe;
-			break;
-		}
+		stg->Wireframe = !stg->Wireframe;
 	});
 }

@@ -39,16 +39,19 @@ There is a precompiled executable for Windows. To use it, download the content o
 
 - `Esc` Exit the application.
 - `F1` Toggle mouse capture for camera movement.
-- `F2` Toggle vertical sync.
-- `F3` Toggle wire frame mode.
-- `F4` Toggle antialiasing.
+- `F2` Toggle wire frame mode.
+- `F3` Toggle collision shapes debug draw.
+- `F4` Toggle vertical sync.
 - `F11` Toggle between fullscreen and windowed mode.
-- `F` Let a cube fall down in the center of the world.
-- `Left Shift` + `F` Let twenty cubes fall down in the center of the world with a strong impulse.
+
 - `Mouse Left` Shoot a cube in view direction.
 - `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
 - `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
 - Hold `Left Shift` to move faster.
+
+- `F` Let a cube fall down in the center of the world.
+- `Left Shift` + `F` Let twenty cubes fall down in the center of the world with a strong impulse.
+
 - `Tab` Toggle scripting console.
 
 Branches

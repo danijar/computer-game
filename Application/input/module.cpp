@@ -25,6 +25,27 @@ void ModuleInput::Listeners()
 		case Keyboard::F:
 			this->Event->Fire("InputBindCreate");
 			break;
+		}
+	});
+	
+	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+		switch(Code)
+		{
+		case Keyboard::Escape:
+			this->Event->Fire("InputBindExit");
+			break;
+		case Keyboard::Key::F2:
+			this->Event->Fire("InputBindWireframe");
+			break;
+		case Keyboard::Key::F3:
+			this->Event->Fire("InputBindDebugdraw");
+			break;
+		case Keyboard::Key::F4:
+			this->Event->Fire("InputBindVsync");
+			break;
+		case Keyboard::Key::F11:
+			this->Event->Fire("InputBindFullscreen");
+			break;
 		case Keyboard::Tab:
 			this->Event->Fire("InputBindConsole");
 			break;

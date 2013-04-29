@@ -85,7 +85,7 @@
     <ClCompile Include="Application\animation\module.cpp" />
     <ClCompile Include="Application\camera\module.cpp" />
     <ClCompile Include="Application\console\module.cpp" />
-    <ClCompile Include="Application\input\input.cpp" />
+    <ClCompile Include="Application\input\module.cpp" />
     <ClCompile Include="Application\interface\module.cpp" />
     <ClCompile Include="Application\interface\text.cpp" />
     <ClCompile Include="Application\main.cpp" />
@@ -96,8 +96,8 @@
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
     <ClCompile Include="Application\movement\module.cpp" />
+    <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
-    <ClCompile Include="Application\physic\physic.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\effect.cpp" />
@@ -145,6 +145,8 @@
     <None Include="Application\model\mesh\shrine.3ds" />
     <None Include="Application\model\update.js" />
     <None Include="Application\mod\init.js" />
+    <None Include="Application\physic\shader\shader.frag" />
+    <None Include="Application\physic\shader\shader.vert" />
     <None Include="Application\renderer\shader\antialiasing.frag" />
     <None Include="Application\renderer\shader\apply.frag" />
     <None Include="Application\renderer\shader\blur_u.frag" />

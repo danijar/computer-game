@@ -1,6 +1,9 @@
 #include "module.h"
 
 #include <BULLET/btBulletDynamicsCommon.h>
+#include <ASSIMP/cimport.h>
+#include <ASSIMP/scene.h>
+#include <ASSIMP/postprocess.h>
 using namespace std;
 
 
@@ -55,7 +58,48 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, bool Static)
 
 	if(Static)
 	{
+		btTriangleMesh* triangles = new btTriangleMesh();
 
+		const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_ConvertToLeftHanded);
+		if(!scene)
+		{
+			Debug->Fail("mesh " + Path + " cannot be loaded for collision");
+			return;
+		}
+
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
+		{
+			const aiMesh* mesh = scene->mMeshes[i];
+
+			vector<vector<int>> faces;
+			for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
+			{
+				vector<int> face;
+				for(int j = 0; j < 3; ++j)
+				{
+					face.push_back(mesh->mFaces[i].mIndices[j]);
+				}
+				faces.push_back(face);
+			}
+
+			if(mesh->HasPositions())
+			{
+				for(auto face : faces)
+				{
+					vector<btVector3> triangle;
+					for(auto index : face)
+					{
+						aiVector3D vertex = mesh->mVertices[index];
+						triangle.push_back(btVector3(vertex.x, vertex.y, vertex.z));
+					}
+					triangles->addTriangle(triangle[0], triangle[1], triangle[2]);
+				}
+			}
+		}
+
+		Debug->Pass("collision shape with " + to_string(triangles->getNumTriangles()) + " triangles");
+
+		Shape = new btBvhTriangleMeshShape(triangles, true, true);
 	}
 	else
 	{

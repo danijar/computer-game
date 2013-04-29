@@ -4,6 +4,7 @@
 
 #include <SFML/System.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
+#include <GLEW/glew.h>
 
 
 class ModulePhysic : public Module
@@ -12,6 +13,7 @@ class ModulePhysic : public Module
 	sf::Clock clock;
 	void Init();
 	void Update();
+	void Listeners();
 	~ModulePhysic();
 
 	// bullet
@@ -20,6 +22,23 @@ class ModulePhysic : public Module
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* world;
+
+	// debug
+	class DebugDrawer : public btIDebugDraw
+	{
+	public:
+		DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Global, HelperFile *File, HelperDebug *Debug);
+		void drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color);
+		void drawContactPoint(const btVector3 &PointOnB, const btVector3 &normalOnB, btScalar distance, int lifeTime, const btVector3 &color) {}
+		void reportErrorWarning(const char *warningString) {}
+		void draw3dText(const btVector3 &location, const char *textString) {}
+		void setDebugMode(int debugMode);
+		int	getDebugMode() const;
+	private:
+		ManagerEntity *Entity; ManagerGlobal *Global; HelperFile *File; HelperDebug *Debug;
+		GLuint shader;
+		int mode;
+	};
 
 	// transform
 	void Matrix(unsigned int id);
