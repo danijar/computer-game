@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="animation">
-      <UniqueIdentifier>{e5476561-e7ae-4656-87aa-4c4fa3d47bb2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="camera">
       <UniqueIdentifier>{5a5c0e9f-0b1c-43de-9846-2a08e62f22f1}</UniqueIdentifier>
     </Filter>
@@ -24,9 +21,6 @@
     </Filter>
     <Filter Include="model\texture">
       <UniqueIdentifier>{2a7d6224-e017-4bc9-9dbc-53bc4bd44676}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="movement">
-      <UniqueIdentifier>{063851b0-0878-48b2-8680-ce0764f2f00d}</UniqueIdentifier>
     </Filter>
     <Filter Include="physic">
       <UniqueIdentifier>{fa7bd3d7-3637-4b41-9082-3a31cf3de2d1}</UniqueIdentifier>
@@ -97,14 +91,8 @@
     <ClCompile Include="Application\camera\module.cpp">
       <Filter>camera</Filter>
     </ClCompile>
-    <ClCompile Include="Application\animation\module.cpp">
-      <Filter>animation</Filter>
-    </ClCompile>
     <ClCompile Include="Application\interface\module.cpp">
       <Filter>interface</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\movement\module.cpp">
-      <Filter>movement</Filter>
     </ClCompile>
     <ClCompile Include="Application\physic\module.cpp">
       <Filter>physic</Filter>
@@ -172,14 +160,8 @@
     <ClInclude Include="Application\camera\module.h">
       <Filter>camera</Filter>
     </ClInclude>
-    <ClInclude Include="Application\animation\module.h">
-      <Filter>animation</Filter>
-    </ClInclude>
     <ClInclude Include="Application\interface\module.h">
       <Filter>interface</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\movement\module.h">
-      <Filter>movement</Filter>
     </ClInclude>
     <ClInclude Include="Application\physic\module.h">
       <Filter>physic</Filter>

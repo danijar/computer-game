@@ -11,8 +11,6 @@ using namespace std;
 #include     "input/module.h"
 #include     "model/module.h"
 #include    "physic/module.h"
-#include  "movement/module.h"
-#include "animation/module.h"
 #include    "camera/module.h"
 #include  "renderer/module.h"
 #include "interface/module.h"
@@ -29,8 +27,6 @@ int main()
 	World.Add("input",     new ModuleInput()    );
 	World.Add("model",     new ModuleModel()    );
 	World.Add("camera",    new ModuleCamera()   );
-	//World.Add("movement",  new ModuleMovement() );
-	//World.Add("animation", new ModuleAnimation());
 	World.Add("renderer",  new ModuleRenderer() );
 	World.Add("physic",    new ModulePhysic()   );
 	World.Add("interface", new ModuleInterface());

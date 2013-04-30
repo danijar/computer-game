@@ -4,6 +4,7 @@
 
 #include <SFML/System.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
+#include <GLM/glm.hpp>
 #include <GLEW/glew.h>
 
 
@@ -12,9 +13,9 @@ class ModulePhysic : public Module
 	// general
 	sf::Clock clock;
 	void Init();
+	~ModulePhysic();
 	void Update();
 	void Listeners();
-	~ModulePhysic();
 
 	// bullet
 	btBroadphaseInterface* broadphase;
@@ -22,6 +23,10 @@ class ModulePhysic : public Module
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* world;
+
+	// helper
+	btQuaternion Rotation(glm::vec3 &Angles);
+	glm::vec3 Rotation(btQuaternion &Quaternion);
 
 	// debug
 	class DebugDrawer : public btIDebugDraw

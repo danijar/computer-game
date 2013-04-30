@@ -82,7 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\animation\module.cpp" />
     <ClCompile Include="Application\camera\module.cpp" />
     <ClCompile Include="Application\console\module.cpp" />
     <ClCompile Include="Application\input\module.cpp" />
@@ -95,7 +94,6 @@
     <ClCompile Include="Application\model\shape.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
-    <ClCompile Include="Application\movement\module.cpp" />
     <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
@@ -109,14 +107,12 @@
     <ClCompile Include="Application\window\module.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\animation\module.h" />
     <ClInclude Include="Application\camera\module.h" />
     <ClInclude Include="Application\console\module.h" />
     <ClInclude Include="Application\input\module.h" />
     <ClInclude Include="Application\interface\module.h" />
     <ClInclude Include="Application\model\module.h" />
     <ClInclude Include="Application\mod\module.h" />
-    <ClInclude Include="Application\movement\module.h" />
     <ClInclude Include="Application\physic\module.h" />
     <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\settings\module.h" />

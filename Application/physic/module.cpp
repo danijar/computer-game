@@ -25,6 +25,15 @@ void ModulePhysic::Init()
 	Listeners();
 }
 
+ModulePhysic::~ModulePhysic()
+{
+	delete world;
+	delete solver;
+	delete dispatcher;
+	delete configuration;
+	delete broadphase;
+}
+
 void ModulePhysic::Update()
 {
 	auto pys = Entity->Get<StoragePhysic>();
@@ -49,12 +58,8 @@ void ModulePhysic::Update()
 
 				btTransform transform = phy->Body->getWorldTransform();
 				transform.setOrigin(btVector3(tsf->Position.x, tsf->Position.y, tsf->Position.z));
-
-				glm::quat quaternion(vec3(tsf->Rotation.x, tsf->Rotation.z, tsf->Rotation.y) * 3.14159f / 180.f);
-				btQuaternion orientation(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-				transform.setRotation(orientation);
+				transform.setRotation(Rotation(tsf->Rotation));
 				phy->Body->setWorldTransform(transform);
-
 				phy->Body->getCollisionShape()->setLocalScaling(btVector3(tsf->Scale.x, tsf->Scale.y, tsf->Scale.z)); // correct orientation?
 			}
 			Matrix(i->first);
@@ -68,11 +73,7 @@ void ModulePhysic::Update()
 
 				btVector3 position = phy->Body->getWorldTransform().getOrigin();
 				tsf->Position = vec3(position.getX(), position.getY(), position.getZ());
-
-				btQuaternion orientation = phy->Body->getOrientation();
-				quat quaternion(orientation.getW(), -orientation.getX(), -orientation.getY(), -orientation.getZ());
-				vec3 rotation = eulerAngles(quaternion);
-				tsf->Rotation = vec3(-rotation.x, -rotation.y, -rotation.z); 
+				tsf->Rotation = Rotation(phy->Body->getOrientation()); 
 			}
 			Matrix(i->first);
 		}
@@ -94,11 +95,15 @@ void ModulePhysic::Listeners()
 	});
 }
 
-ModulePhysic::~ModulePhysic()
+btQuaternion ModulePhysic::Rotation(vec3 &Angles)
 {
-	delete world;
-	delete solver;
-	delete dispatcher;
-	delete configuration;
-	delete broadphase;
+	quat quaternion(glm::vec3(Angles.x, Angles.z, Angles.y) * 3.14159f / 180.f);
+	return btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+}
+
+vec3 ModulePhysic::Rotation(btQuaternion &Quaternion)
+{
+	quat quaternion(Quaternion.getW(), -Quaternion.getX(), -Quaternion.getY(), -Quaternion.getZ());
+	vec3 angles = eulerAngles(quaternion);
+	return vec3(-angles.x, -angles.y, -angles.z);
 }
