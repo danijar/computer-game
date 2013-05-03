@@ -11,16 +11,14 @@ using namespace glm;
 #include "camera.h"
 #include "transform.h"
 #include "text.h"
+#include "physic.h"
 
 
 void ModuleCamera::Init()
 {
 	auto stg = Global->Get<StorageSettings>("settings");
-	unsigned int id = Entity->New();
-	auto cam = Entity->Add<StorageCamera>(id);
-	auto tsf = Entity->Add<StorageTransform>(id);
-	cam->Active = !stg->Mouse;
-	tsf->Position = vec3(0, 5, -5);
+	unsigned int id = Personrcamera(vec3(0, 5, -5));
+	Entity->Get<StorageCamera>(id)->Active = !stg->Mouse;
 	*Global->Add<unsigned int>("camera") = id;
 
 	focus = true; // how to find out whether window was opened in background?
@@ -30,7 +28,14 @@ void ModuleCamera::Init()
 	Projection();
 
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		return "X " + to_string((int)floor(tsf->Position.x)) + " Y " + to_string((int)floor(tsf->Position.y)) + " Z " + to_string((int)floor(tsf->Position.z));
+		//auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+		//return "X " + to_string((int)floor(tsf->Position.x)) + " Y " + to_string((int)floor(tsf->Position.y)) + " Z " + to_string((int)floor(tsf->Position.z));
+		unsigned int camera = *Global->Get<unsigned int>("camera");
+		auto cam = Entity->Get<StorageCamera>(camera);
+		auto tsfcam = Entity->Get<StorageTransform>(camera);
+		auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
+		return "camera X " + to_string((int)floor(tsfcam->Position.x)) + " Y " + to_string((int)floor(tsfcam->Position.y)) + " Z " + to_string((int)floor(tsfcam->Position.z)) + " Yaw (Y) " + to_string((int)floor(tsfcam->Rotation.y)) + " Pitch (X) " + to_string((int)floor(tsfcam->Rotation.x)) + " Roll (Z) " + to_string((int)floor(tsfcam->Rotation.z)) + "\n"
+			 + "person X " + to_string((int)floor(tsfpsn->Position.x)) + " Y " + to_string((int)floor(tsfpsn->Position.y)) + " Z " + to_string((int)floor(tsfpsn->Position.z)) + " Yaw (Y) " + to_string((int)floor(tsfpsn->Rotation.y)) + " Pitch (X) " + to_string((int)floor(tsfpsn->Rotation.x)) + " Roll (Z) " + to_string((int)floor(tsfpsn->Rotation.z));
 	};
 
 	Listeners();
@@ -39,11 +44,22 @@ void ModuleCamera::Init()
 void ModuleCamera::Update()
 {
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+	unsigned int camera = *Global->Get<unsigned int>("camera");
+	auto cam = Entity->Get<StorageCamera>(camera);
+	unsigned int person = cam->Person;
+
 	delta = clock.restart().asSeconds();
 
 	if(!cam->Active) return;
-		
+
+	// synchronization
+	auto tsfcam = Entity->Get<StorageTransform>(camera);
+	auto tsfpsn = Entity->Get<StorageTransform>(person);
+	tsfcam->Position = tsfpsn->Position + vec3(0, 1.8f /* meters to eyes */, 0);
+	tsfcam->Rotation.y = tsfpsn->Rotation.y;
+	tsfcam->Changed = true;
+	
+	// rotation
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
 	if(position != center && focus)
@@ -53,6 +69,7 @@ void ModuleCamera::Update()
 		Rotate(offset);
 	}
 
+	// position
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
@@ -137,24 +154,38 @@ void ModuleCamera::Projection(Vector2u Size)
 	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
 }
 
-void ModuleCamera::Rotate(Vector2i Amount)
+void ModuleCamera::Rotate(Vector2i Amount, float Speed)
 {
-	auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+	unsigned int camera = *Global->Get<unsigned int>("camera");
+	unsigned int person = Entity->Get<StorageCamera>(camera)->Person;
+	auto tsfcam = Entity->Get<StorageTransform>(camera);
+	auto tsfpsn = Entity->Get<StorageTransform>(person);
 
-	const float speed = .08f;
-	tsf->Rotation += vec3(vec2(-Amount.x, -Amount.y) * speed * delta, 0);
+	// use forces instead, dont't involve delta time anymore
+
+	vec3 rotation(vec2(-Amount.y, -Amount.x) * Speed * delta, 0);
+
+	tsfcam->Rotation += vec3(rotation.x, 0, 0);
+	tsfpsn->Rotation += vec3(0, rotation.y, 0);
+	tsfcam->Changed = true;
+	tsfpsn->Changed = true;
 }
 
 void ModuleCamera::Move(vec3 Amount, float Speed)
 {
-	auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+	unsigned int person = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
+	auto tsf = Entity->Get<StorageTransform>(person);
+	auto bdy = Entity->Get<StoragePhysic>(person);
 
-	vec3 forward = vec3(sinf(tsf->Rotation.x), 0, cosf(tsf->Rotation.x));
+	vec3 rotation = radians(tsf->Rotation);
+	vec3 forward = vec3(sinf(rotation.y), 0, cosf(rotation.y));
 	vec3 right = vec3(-forward.z, 0, forward.x);
 
+	// use forces instead, dont't involve delta time anymore
 	tsf->Position   += forward * Amount.x * Speed * delta;
 	tsf->Position.y +=           Amount.y * Speed * delta;
 	tsf->Position   += right   * Amount.z * Speed * delta;
+	tsf->Changed = true;
 }
 
 void ModuleCamera::Calculate()
@@ -163,18 +194,15 @@ void ModuleCamera::Calculate()
 	auto tsf = Entity->Get<StorageTransform>(id);
 	auto cam = Entity->Get<StorageCamera>(id);
 
-	const float pi = glm::pi<float>();
-	if		(tsf->Rotation.x < -pi)	tsf->Rotation.x += pi*2;
-	else if	(tsf->Rotation.x >  pi)	tsf->Rotation.x -= pi*2;
- 
-	const float margin = 0.2f;
-	if		(tsf->Rotation.y < -pi/2+margin) tsf->Rotation.y = -pi/2+margin;
-	else if	(tsf->Rotation.y >  pi/2-margin) tsf->Rotation.y =  pi/2-margin;
+	const int margin = 10;
+	if		(tsf->Rotation.x < -90 + margin) tsf->Rotation.x = -90 + margin;
+	else if	(tsf->Rotation.x >  90 - margin) tsf->Rotation.x =  90 - margin;
 
+	vec3 rotation = radians(tsf->Rotation);
 	vec3 lookat(
-		sinf(tsf->Rotation.x) * cosf(tsf->Rotation.y),
-			                    sinf(tsf->Rotation.y),
-		cosf(tsf->Rotation.x) * cosf(tsf->Rotation.y)
+		sinf(rotation.y) * cosf(rotation.x),
+			               sinf(rotation.x),
+		cosf(rotation.y) * cosf(rotation.x)
 	);
 
 	cam->View = lookAt(tsf->Position, tsf->Position + lookat, vec3(0, 1, 0));

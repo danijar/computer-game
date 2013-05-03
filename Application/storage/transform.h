@@ -6,7 +6,7 @@ using namespace glm;
 
 struct StorageTransform
 {
-	StorageTransform() : Position(0), Rotation(0), Scale(1), Changed(true) {}
+	StorageTransform() : Position(0), Rotation(0), Scale(1), Changed(true), Static(false) {}
 	vec3 Position, Rotation, Scale;
 	mat4 Matrix;
 	bool Static;

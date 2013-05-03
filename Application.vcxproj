@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\camera\create.cpp" />
     <ClCompile Include="Application\camera\module.cpp" />
     <ClCompile Include="Application\console\module.cpp" />
     <ClCompile Include="Application\input\module.cpp" />
@@ -94,6 +95,7 @@
     <ClCompile Include="Application\model\shape.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
+    <ClCompile Include="Application\person\module.cpp" />
     <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
     <ClCompile Include="Application\physic\transform.cpp" />
@@ -113,15 +115,17 @@
     <ClInclude Include="Application\interface\module.h" />
     <ClInclude Include="Application\model\module.h" />
     <ClInclude Include="Application\mod\module.h" />
+    <ClInclude Include="Application\person\module.h" />
     <ClInclude Include="Application\physic\module.h" />
     <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\settings\module.h" />
+    <ClInclude Include="Application\storage\person.h" />
     <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />
     <ClInclude Include="Application\storage\light.h" />
     <ClInclude Include="Application\storage\movement.h" />
-    <ClInclude Include="Application\storage\physics.h" />
+    <ClInclude Include="Application\storage\physic.h" />
     <ClInclude Include="Application\storage\settings.h" />
     <ClInclude Include="Application\storage\text.h" />
     <ClInclude Include="Application\storage\transform.h" />

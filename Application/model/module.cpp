@@ -19,7 +19,7 @@ using namespace glm;
 #include "animation.h"
 #include "text.h"
 #include "light.h"
-#include "physics.h"
+#include "physic.h"
 
 
 void ModuleModel::Init()
@@ -85,12 +85,13 @@ void ModuleModel::Listeners()
 
 		// move this into a script
 		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 10.0f);
-		auto cam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+		auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 
-		vec3 lookat(sinf(cam->Rotation.x) * cosf(cam->Rotation.y), sinf(cam->Rotation.y), cosf(cam->Rotation.x) * cosf(cam->Rotation.y));
+		vec3 rotation = radians(tsf->Rotation);
+		vec3 lookat(sinf(rotation.y) * cosf(rotation.x), sinf(rotation.x), cosf(rotation.y) * cosf(rotation.x));
 
 		Entity->Get<StorageTransform>(id)->Rotation = vec3(rand() % 360, rand() % 360, rand() % 360);
-		Entity->Get<StorageTransform>(id)->Position = cam->Position;
+		Entity->Get<StorageTransform>(id)->Position = tsf->Position + lookat;
 		Entity->Get<StoragePhysic>(id)->Body->applyCentralImpulse(1000.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
 }

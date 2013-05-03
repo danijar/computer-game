@@ -7,7 +7,7 @@ using namespace glm;
 
 struct StorageCamera
 {
-	StorageCamera() : Active(false)
+	StorageCamera() : Active(false), Person(0)
 	{
 		View = lookAt(
 			vec3(1.2, 1.2, 1.2),
@@ -16,7 +16,7 @@ struct StorageCamera
 		);
 	}
 	bool Active;
-	vec3 Position;
+	unsigned int Person;
 	vec2 Angles;
 	mat4 View, Projection;
 };

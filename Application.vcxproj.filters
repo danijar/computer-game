@@ -52,6 +52,9 @@
     <Filter Include="physic\shader">
       <UniqueIdentifier>{11544af3-2c25-411d-a224-c35eb23e0918}</UniqueIdentifier>
     </Filter>
+    <Filter Include="person">
+      <UniqueIdentifier>{b83a8f44-1cf5-429f-b7a1-42cf450f2f3a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\interface\text.cpp">
@@ -121,6 +124,12 @@
     <ClCompile Include="Application\input\module.cpp">
       <Filter>input</Filter>
     </ClCompile>
+    <ClCompile Include="Application\person\module.cpp">
+      <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\create.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\animation.h">
@@ -175,11 +184,17 @@
     <ClInclude Include="Application\mod\module.h">
       <Filter>mod</Filter>
     </ClInclude>
-    <ClInclude Include="Application\storage\physics.h">
-      <Filter>storage</Filter>
-    </ClInclude>
     <ClInclude Include="Application\console\module.h">
       <Filter>console</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\person\module.h">
+      <Filter>person</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\person.h">
+      <Filter>storage</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\physic.h">
+      <Filter>storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

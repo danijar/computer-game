@@ -25,6 +25,8 @@ class ModulePhysic : public Module
 	btDiscreteDynamicsWorld* world;
 
 	// helper
+	btVector3 ModulePhysic::Position(glm::vec3 &Coordinates);
+	glm::vec3 ModulePhysic::Position(btVector3 &Coordinates);
 	btQuaternion Rotation(glm::vec3 &Angles);
 	glm::vec3 Rotation(btQuaternion &Quaternion);
 

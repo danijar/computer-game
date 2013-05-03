@@ -8,7 +8,7 @@ using namespace glm;
 using namespace std;
 
 #include "transform.h"
-#include "physics.h"
+#include "physic.h"
 
 
 void ModulePhysic::Init()
@@ -57,30 +57,41 @@ void ModulePhysic::Update()
 				auto phy = Entity->Get<StoragePhysic>(i->first);
 
 				btTransform transform = phy->Body->getWorldTransform();
-				transform.setOrigin(btVector3(tsf->Position.x, tsf->Position.y, tsf->Position.z));
+				transform.setOrigin(Position(tsf->Position));
 				transform.setRotation(Rotation(tsf->Rotation));
 				phy->Body->setWorldTransform(transform);
 				phy->Body->getCollisionShape()->setLocalScaling(btVector3(tsf->Scale.x, tsf->Scale.y, tsf->Scale.z)); // correct orientation?
 			}
+
+			if(tsf->Rotation.x < -180) tsf->Rotation.x += 360; else if(tsf->Rotation.x > 180) tsf->Rotation.x -= 360;
+			if(tsf->Rotation.y < -180) tsf->Rotation.y += 360; else if(tsf->Rotation.y > 180) tsf->Rotation.y -= 360;
+			if(tsf->Rotation.z < -180) tsf->Rotation.z += 360; else if(tsf->Rotation.z > 180) tsf->Rotation.z -= 360;
+
 			Matrix(i->first);
 			i->second->Changed = false;
-		}
-		else if(tsf->Static == false)
-		{
-			if(Entity->Check<StoragePhysic>(i->first))
-			{
-				auto phy = Entity->Get<StoragePhysic>(i->first);
-
-				btVector3 position = phy->Body->getWorldTransform().getOrigin();
-				tsf->Position = vec3(position.getX(), position.getY(), position.getZ());
-				tsf->Rotation = Rotation(phy->Body->getOrientation()); 
-			}
-			Matrix(i->first);
 		}
 	}
 
 	float delta = clock.restart().asSeconds();
 	world->stepSimulation(delta, 10);
+
+	// use motion states for that later on
+	for(auto i = tfs.begin(); i != tfs.end(); ++i)
+	{
+		auto tsf = i->second;
+		if(!tsf->Static)
+		{
+			if(Entity->Check<StoragePhysic>(i->first))
+			{
+				auto phy = Entity->Get<StoragePhysic>(i->first);
+
+				tsf->Position = Position(phy->Body->getWorldTransform().getOrigin());
+				tsf->Rotation = Rotation(phy->Body->getOrientation());
+				//tsf->Rotation = Rotation(phy->Body->getWorldTransform().getRotation());
+			}
+			Matrix(i->first);
+		}
+	}
 
 	world->debugDrawWorld();
 }
@@ -95,15 +106,24 @@ void ModulePhysic::Listeners()
 	});
 }
 
+btVector3 ModulePhysic::Position(vec3 &Coordinates)
+{
+	return btVector3(Coordinates.x, Coordinates.y, Coordinates.z);
+}
+
+vec3 ModulePhysic::Position(btVector3 &Coordinates)
+{
+	return vec3(Coordinates.getX(), Coordinates.getY(), Coordinates.getZ());
+}
+
 btQuaternion ModulePhysic::Rotation(vec3 &Angles)
 {
-	quat quaternion(glm::vec3(Angles.x, Angles.z, Angles.y) * 3.14159f / 180.f);
-	return btQuaternion(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+	vec3 angles = radians(Angles); // always use radians instead of degrees
+	return btQuaternion(angles.y, angles.x, angles.z);
 }
 
 vec3 ModulePhysic::Rotation(btQuaternion &Quaternion)
 {
-	quat quaternion(Quaternion.getW(), -Quaternion.getX(), -Quaternion.getY(), -Quaternion.getZ());
-	vec3 angles = eulerAngles(quaternion);
-	return vec3(-angles.x, -angles.y, -angles.z);
+	// this doesn't work properly
+	return eulerAngles(quat(Quaternion.getW(), Quaternion.getX(), Quaternion.getY(), Quaternion.getZ()));
 }

@@ -16,6 +16,8 @@ class ModuleCamera : public Module
 	void Update();
 	void Listeners();
 
+	unsigned int Personrcamera(glm::vec3 Position = glm::vec3(0));
+
 	bool focus;
 	void State();
 	void State(bool Active);
@@ -23,7 +25,7 @@ class ModuleCamera : public Module
 	void Projection();
 	void Projection(sf::Vector2u Size);
 
-	void Rotate(sf::Vector2i Amount);
-	void Move(glm::vec3 Amount, float Speed = 10.f);
+	void Rotate(sf::Vector2i Amount, float Speed = 5.0f);
+	void Move(glm::vec3 Amount, float Speed = 10.0f);
 	void Calculate();
 };
