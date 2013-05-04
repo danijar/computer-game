@@ -75,7 +75,7 @@ void ModuleRenderer::Forms(Pass *Pass)
 		if(!Entity->Check<StorageTransform>(i.first)) continue;
 		auto tsf = Entity->Get<StorageTransform>(i.first);
 
-		glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix));
+		glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix()));
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
@@ -135,7 +135,7 @@ void ModuleRenderer::Light(Pass *Pass)
 	for(auto i : lis)
 	{
 		int type = i.second->Type == StorageLight::DIRECTIONAL ? 0 : 1;
-		vec3 pos = vec3(view * vec4(Entity->Get<StorageTransform>(i.first)->Position, !type ? 0 : 1));
+		vec3 pos = vec3(view * vec4(Entity->Get<StorageTransform>(i.first)->Position(), !type ? 0 : 1));
 		glUniform1i(glGetUniformLocation(Pass->Shader, "type"),      type);
 		glUniform3f(glGetUniformLocation(Pass->Shader, "light"),     pos.x, pos.y, pos.z);
 		glUniform3f(glGetUniformLocation(Pass->Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);

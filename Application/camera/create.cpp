@@ -9,27 +9,28 @@ using namespace glm;
 #include "transform.h"
 #include "camera.h"
 #include "person.h"
-#include "physic.h"
 
 
 unsigned int ModuleCamera::Personrcamera(vec3 Position)
 {
 	unsigned int camera = Entity->New(), person = Entity->New();
-
-	Entity->Add<StorageTransform>(camera)->Position = Position;
+	auto tsfcam = Entity->Add<StorageTransform>(camera);
+	auto tsfpsn = Entity->Add<StorageTransform>(person);
 	Entity->Add<StorageCamera>(camera)->Person = person;
-
-	Entity->Add<StorageTransform>(person)->Position = Position;
 	Entity->Add<StoragePerson>(person);
-	auto bdy = Entity->Add<StoragePhysic>(person);
+
+	tsfcam->Position(Position);
+	tsfcam->Body->setActivationState(DISABLE_DEACTIVATION);
 
 	float mass = 70.0f /* kilogramms mass */;
 	btCollisionShape *shape = new btCapsuleShape(0.5f /* meter wide */, 2.0f /* meters tall */);
 	btVector3 inertia;
 	shape->calculateLocalInertia(mass, inertia);
-	Debug->Print("intertia of person is (" + to_string(inertia.getX()) + "," + to_string(inertia.getY()) + "," + to_string(inertia.getZ()));
-	bdy->Body = new btRigidBody(mass, new btDefaultMotionState(), shape, inertia);
-	bdy->Body->setAngularFactor(btVector3(0, 1, 0)); /* lock rotation around X and Z */
+
+	tsfpsn->Position(Position);
+	tsfpsn->Body = new btRigidBody(mass, new btDefaultMotionState(), shape, inertia);
+	tsfpsn->Body->setAngularFactor(btVector3(0, 1, 0)); /* lock rotation around X and Z */
+	tsfpsn->Body->setActivationState(DISABLE_DEACTIVATION);
 
 	return camera;
 }

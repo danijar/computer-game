@@ -25,7 +25,7 @@ class ModuleCamera : public Module
 	void Projection();
 	void Projection(sf::Vector2u Size);
 
-	void Rotate(sf::Vector2i Amount, float Speed = 5.0f);
+	void Rotate(sf::Vector2i Amount, float Speed = 0.01f);
 	void Move(glm::vec3 Amount, float Speed = 10.0f);
 	void Calculate();
 };

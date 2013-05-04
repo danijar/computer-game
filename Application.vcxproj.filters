@@ -60,9 +60,6 @@
     <ClCompile Include="Application\interface\text.cpp">
       <Filter>interface</Filter>
     </ClCompile>
-    <ClCompile Include="Application\physic\transform.cpp">
-      <Filter>physic</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\framebuffer.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
@@ -132,16 +129,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\storage\animation.h">
-      <Filter>storage</Filter>
-    </ClInclude>
     <ClInclude Include="Application\storage\camera.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\light.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\movement.h">
       <Filter>storage</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\settings.h">
@@ -191,9 +182,6 @@
       <Filter>person</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\person.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\physic.h">
       <Filter>storage</Filter>
     </ClInclude>
   </ItemGroup>

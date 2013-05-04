@@ -2,6 +2,7 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/constants.hpp>
 using namespace sf;
@@ -11,7 +12,6 @@ using namespace glm;
 #include "camera.h"
 #include "transform.h"
 #include "text.h"
-#include "physic.h"
 
 
 void ModuleCamera::Init()
@@ -28,14 +28,15 @@ void ModuleCamera::Init()
 	Projection();
 
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		//auto tsf = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
-		//return "X " + to_string((int)floor(tsf->Position.x)) + " Y " + to_string((int)floor(tsf->Position.y)) + " Z " + to_string((int)floor(tsf->Position.z));
 		unsigned int camera = *Global->Get<unsigned int>("camera");
 		auto cam = Entity->Get<StorageCamera>(camera);
 		auto tsfcam = Entity->Get<StorageTransform>(camera);
 		auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
-		return "camera X " + to_string((int)floor(tsfcam->Position.x)) + " Y " + to_string((int)floor(tsfcam->Position.y)) + " Z " + to_string((int)floor(tsfcam->Position.z)) + " Yaw (Y) " + to_string((int)floor(tsfcam->Rotation.y)) + " Pitch (X) " + to_string((int)floor(tsfcam->Rotation.x)) + " Roll (Z) " + to_string((int)floor(tsfcam->Rotation.z)) + "\n"
-			 + "person X " + to_string((int)floor(tsfpsn->Position.x)) + " Y " + to_string((int)floor(tsfpsn->Position.y)) + " Z " + to_string((int)floor(tsfpsn->Position.z)) + " Yaw (Y) " + to_string((int)floor(tsfpsn->Rotation.y)) + " Pitch (X) " + to_string((int)floor(tsfpsn->Rotation.x)) + " Roll (Z) " + to_string((int)floor(tsfpsn->Rotation.z));
+		ivec3 rotcam = (ivec3)degrees(tsfcam->Rotation());
+		ivec3 rotpsn = (ivec3)degrees(tsfpsn->Rotation());
+		return "X " + to_string((int)floor(tsfcam->Position().x)) + " Y " + to_string((int)floor(tsfcam->Position().y)) + " Z " + to_string((int)floor(tsfcam->Position().z)) + '\n'
+			 + "cam Yaw " + to_string(rotcam.y) + " Pitch " + to_string(rotcam.x) + " Roll " + to_string(rotcam.z) + "\n"
+			 + "psn Yaw " + to_string(rotpsn.y) + " Pitch " + to_string(rotpsn.x) + " Roll " + to_string(rotpsn.z);
 	};
 
 	Listeners();
@@ -52,13 +53,6 @@ void ModuleCamera::Update()
 
 	if(!cam->Active) return;
 
-	// synchronization
-	auto tsfcam = Entity->Get<StorageTransform>(camera);
-	auto tsfpsn = Entity->Get<StorageTransform>(person);
-	tsfcam->Position = tsfpsn->Position + vec3(0, 1.8f /* meters to eyes */, 0);
-	tsfcam->Rotation.y = tsfpsn->Rotation.y;
-	tsfcam->Changed = true;
-	
 	// rotation
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
@@ -78,6 +72,12 @@ void ModuleCamera::Update()
 	if (Keyboard::isKeyPressed(Keyboard::PageUp  ) || Keyboard::isKeyPressed(Keyboard::Q)) move.y++;
 	if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move.y--;
 	Move(move, 10.f * (Keyboard::isKeyPressed(Keyboard::LShift) ? 10 : 1));
+
+	// synchronization
+	auto tsfcam = Entity->Get<StorageTransform>(camera);
+	auto tsfpsn = Entity->Get<StorageTransform>(person);
+	tsfcam->Position(tsfpsn->Position() + vec3(0, 1.8f /* meters to eyes */, 0));
+	//tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0));
 
 	Calculate();
 }
@@ -156,36 +156,30 @@ void ModuleCamera::Projection(Vector2u Size)
 
 void ModuleCamera::Rotate(Vector2i Amount, float Speed)
 {
+	unsigned int id = *Global->Get<unsigned int>("camera");
+	auto tsf = Entity->Get<StorageTransform>(id);
+
+	//tsf->Rotation(tsf->Rotation() + vec3(-Amount.y * Speed, -Amount.x * Speed, 0));
+	btTransform transform = tsf->Body->getWorldTransform();
+	btQuaternion rotation = transform.getRotation();
+	rotation = rotation * btQuaternion(-Amount.x * Speed, -Amount.y * Speed, 0);
+	transform.setRotation(rotation);
+	tsf->Body->setWorldTransform(transform);
+}
+
+void ModuleCamera::Move(vec3 Amount, float Speed)
+{
 	unsigned int camera = *Global->Get<unsigned int>("camera");
 	unsigned int person = Entity->Get<StorageCamera>(camera)->Person;
 	auto tsfcam = Entity->Get<StorageTransform>(camera);
 	auto tsfpsn = Entity->Get<StorageTransform>(person);
 
-	// use forces instead, dont't involve delta time anymore
+	vec3 forward(sinf(tsfcam->Rotation().y), 0, cosf(tsfcam->Rotation().y));
+	vec3 right(-forward.z, 0, forward.x);
+	vec3 up(0, 1, 0);
 
-	vec3 rotation(vec2(-Amount.y, -Amount.x) * Speed * delta, 0);
-
-	tsfcam->Rotation += vec3(rotation.x, 0, 0);
-	tsfpsn->Rotation += vec3(0, rotation.y, 0);
-	tsfcam->Changed = true;
-	tsfpsn->Changed = true;
-}
-
-void ModuleCamera::Move(vec3 Amount, float Speed)
-{
-	unsigned int person = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
-	auto tsf = Entity->Get<StorageTransform>(person);
-	auto bdy = Entity->Get<StoragePhysic>(person);
-
-	vec3 rotation = radians(tsf->Rotation);
-	vec3 forward = vec3(sinf(rotation.y), 0, cosf(rotation.y));
-	vec3 right = vec3(-forward.z, 0, forward.x);
-
-	// use forces instead, dont't involve delta time anymore
-	tsf->Position   += forward * Amount.x * Speed * delta;
-	tsf->Position.y +=           Amount.y * Speed * delta;
-	tsf->Position   += right   * Amount.z * Speed * delta;
-	tsf->Changed = true;
+	vec3 combined(Amount.x * forward + Amount.y * up + Amount.z * right);
+	tsfpsn->Body->setLinearVelocity(btVector3(combined.x, combined.y, combined.z) * Speed);
 }
 
 void ModuleCamera::Calculate()
@@ -194,16 +188,17 @@ void ModuleCamera::Calculate()
 	auto tsf = Entity->Get<StorageTransform>(id);
 	auto cam = Entity->Get<StorageCamera>(id);
 
-	const int margin = 10;
-	if		(tsf->Rotation.x < -90 + margin) tsf->Rotation.x = -90 + margin;
-	else if	(tsf->Rotation.x >  90 - margin) tsf->Rotation.x =  90 - margin;
+	/*
+	 * doesn't work with physics simulation's wrapping
+	 * const float margin = 0.2f;
+	 * const float pi = glm::pi<float>();
+	 * if     (tsf->Rotation().x < -pi/2 + margin) { vec3 rotation = tsf->Rotation(); tsf->Rotation(vec3(-pi/2 + margin, rotation.y, rotation.z)); }
+	 * else if(tsf->Rotation().x >  pi/2 - margin) { vec3 rotation = tsf->Rotation(); tsf->Rotation(vec3( pi/2 - margin, rotation.y, rotation.z)); }
+	 */
 
-	vec3 rotation = radians(tsf->Rotation);
-	vec3 lookat(
-		sinf(rotation.y) * cosf(rotation.x),
-			               sinf(rotation.x),
-		cosf(rotation.y) * cosf(rotation.x)
-	);
+	//vec3 lookat(sinf(tsf->Rotation().y) * cosf(tsf->Rotation().x), sinf(tsf->Rotation().x), cosf(tsf->Rotation().y) * cosf(tsf->Rotation().x));
+	btVector3 axis = tsf->Body->getWorldTransform().getRotation().getAxis();
+	vec3 lookat(axis.getX(), axis.getY(), axis.getZ());
 
-	cam->View = lookAt(tsf->Position, tsf->Position + lookat, vec3(0, 1, 0));
+	cam->View = lookAt(tsf->Position(), tsf->Position() + normalize(lookat), vec3(0, 1, 0));
 }

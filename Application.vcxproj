@@ -98,7 +98,6 @@
     <ClCompile Include="Application\person\module.cpp" />
     <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
-    <ClCompile Include="Application\physic\transform.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\effect.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
@@ -120,12 +119,9 @@
     <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\settings\module.h" />
     <ClInclude Include="Application\storage\person.h" />
-    <ClInclude Include="Application\storage\animation.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />
     <ClInclude Include="Application\storage\light.h" />
-    <ClInclude Include="Application\storage\movement.h" />
-    <ClInclude Include="Application\storage\physic.h" />
     <ClInclude Include="Application\storage\settings.h" />
     <ClInclude Include="Application\storage\text.h" />
     <ClInclude Include="Application\storage\transform.h" />
