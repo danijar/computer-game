@@ -89,6 +89,7 @@
     <ClCompile Include="Application\interface\module.cpp" />
     <ClCompile Include="Application\interface\text.cpp" />
     <ClCompile Include="Application\main.cpp" />
+    <ClCompile Include="Application\model\callback.cpp" />
     <ClCompile Include="Application\model\module.cpp" />
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />

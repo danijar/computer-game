@@ -16,10 +16,11 @@ for (x = -3; x <= 3; x += 3)
 model('qube.prim', 'magic.mtl', 20, 5, -6, 27, 31, 57, 1, 1.0);
 model("shrine.3ds", "shrine.mtl", 40, 0, -10, -90, 0, -30, 2.5, 0);
 model("rock.obj", "rock.mtl", 27, 2, 23, -90, 0, 0, 5.0, 0);
+model("barrel.3ds", "barrel.mtl", 16, 0, 8, -90, 0, 0, 4.0, 0);
 
-var barrel = model("barrel.3ds", "barrel.mtl", 16, 0, 8, -90, 0, 0, 4.0, 0);
-var position = getposition(barrel);
-print("position of barrel is " + position[0] + ", " + position[1] + ", " + position[2]);
+var rock = model("rock.obj", "rock.mtl", 0, 10, 0, 0, 0, 0, 3, 0);
+var position = getposition(rock);
+print("position of rotating rock is " + position[0] + ", " + position[1] + ", " + position[2]);
 
 // lights
 light(-10, 15, -15, 100, 1.0, 1.0, 1.0, 1.0, true); // white

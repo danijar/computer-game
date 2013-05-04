@@ -127,6 +127,9 @@
     <ClCompile Include="Application\camera\create.cpp">
       <Filter>camera</Filter>
     </ClCompile>
+    <ClCompile Include="Application\model\callback.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

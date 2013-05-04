@@ -151,7 +151,7 @@ void ModuleCamera::Projection(Vector2u Size)
 	auto stg = Global->Get<StorageSettings>("settings");
 	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
 
-	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 1.0f, stg->Viewdistance);
+	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 0.1f, stg->Viewdistance);
 }
 
 void ModuleCamera::Rotate(Vector2i Amount, float Speed)
@@ -159,12 +159,25 @@ void ModuleCamera::Rotate(Vector2i Amount, float Speed)
 	unsigned int id = *Global->Get<unsigned int>("camera");
 	auto tsf = Entity->Get<StorageTransform>(id);
 
+	/*
+	btTransform transform = tsf->Body->getWorldTransform();
+	btQuaternion rotation = transform.getRotation();
+	rotation = rotation * btQuaternion(1, 0, 0, -Amount.y * Speed);
+	//rotation = btQuaternion(0, 1, 0, -Amount.x * Speed) * rotation;
+	transform.setRotation(rotation);
+	tsf->Body->setWorldTransform(transform);
+	*/
+
+	tsf->Body->applyTorque(btVector3(Amount.y, Amount.x, 0) * Speed * 1000.0f);
+
 	//tsf->Rotation(tsf->Rotation() + vec3(-Amount.y * Speed, -Amount.x * Speed, 0));
+	/*
 	btTransform transform = tsf->Body->getWorldTransform();
 	btQuaternion rotation = transform.getRotation();
 	rotation = rotation * btQuaternion(-Amount.x * Speed, -Amount.y * Speed, 0);
 	transform.setRotation(rotation);
 	tsf->Body->setWorldTransform(transform);
+	*/
 }
 
 void ModuleCamera::Move(vec3 Amount, float Speed)
@@ -196,9 +209,7 @@ void ModuleCamera::Calculate()
 	 * else if(tsf->Rotation().x >  pi/2 - margin) { vec3 rotation = tsf->Rotation(); tsf->Rotation(vec3( pi/2 - margin, rotation.y, rotation.z)); }
 	 */
 
-	//vec3 lookat(sinf(tsf->Rotation().y) * cosf(tsf->Rotation().x), sinf(tsf->Rotation().x), cosf(tsf->Rotation().y) * cosf(tsf->Rotation().x));
-	btVector3 axis = tsf->Body->getWorldTransform().getRotation().getAxis();
-	vec3 lookat(axis.getX(), axis.getY(), axis.getZ());
+	cam->View = lookAt(tsf->Position(), tsf->Position() + tsf->Direction(), vec3(0, 1, 0));
 
-	cam->View = lookAt(tsf->Position(), tsf->Position() + normalize(lookat), vec3(0, 1, 0));
+	// Debug->Print("lookat X " + to_string(tsf->Direction().x) + " Y " + to_string(tsf->Direction().y) + " Z " + to_string(tsf->Direction().z));
 }
