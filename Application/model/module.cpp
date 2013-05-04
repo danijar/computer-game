@@ -79,14 +79,13 @@ void ModuleModel::Listeners()
 		// move this into a script
 		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 10.0f);
 		auto tsfcam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
+		auto tsfcbe = Entity->Get<StorageTransform>(id);
 
-		vec3 rotation = tsfcam->Rotation();
-		vec3 lookat(sinf(rotation.y) * cosf(rotation.x), sinf(rotation.x), cosf(rotation.y) * cosf(rotation.x));
-
-		auto tsf = Entity->Get<StorageTransform>(id);
-		tsf->Rotation(vec3(rand() % 360, rand() % 360, rand() % 360));
-		tsf->Position(tsfcam->Position() + lookat);
-		tsf->Body->applyCentralImpulse(1000.0f * btVector3(lookat.x, lookat.y, lookat.z));
+		vec3 lookat = tsfcam->Direction();
+		
+		tsfcbe->Rotation(vec3(rand() % 360, rand() % 360, rand() % 360));
+		tsfcbe->Position(tsfcam->Position() + 1.5f * lookat);
+		tsfcbe->Body->applyCentralImpulse(1000.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
 }
 

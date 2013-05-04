@@ -130,6 +130,9 @@
     <ClCompile Include="Application\model\callback.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\camera\control.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

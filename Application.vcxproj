@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\camera\control.cpp" />
     <ClCompile Include="Application\camera\create.cpp" />
     <ClCompile Include="Application\camera\module.cpp" />
     <ClCompile Include="Application\console\module.cpp" />

@@ -60,7 +60,7 @@ void ModuleCamera::Update()
 	{
 		Mouse::setPosition(center, *wnd);
 		Vector2i offset = position - center;
-		Rotate(offset);
+		Rotate(vec3(-offset.x, offset.y, 0));
 	}
 
 	// position
@@ -154,47 +154,6 @@ void ModuleCamera::Projection(Vector2u Size)
 	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 0.1f, stg->Viewdistance);
 }
 
-void ModuleCamera::Rotate(Vector2i Amount, float Speed)
-{
-	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<StorageTransform>(id);
-
-	/*
-	btTransform transform = tsf->Body->getWorldTransform();
-	btQuaternion rotation = transform.getRotation();
-	rotation = rotation * btQuaternion(1, 0, 0, -Amount.y * Speed);
-	//rotation = btQuaternion(0, 1, 0, -Amount.x * Speed) * rotation;
-	transform.setRotation(rotation);
-	tsf->Body->setWorldTransform(transform);
-	*/
-
-	tsf->Body->applyTorque(btVector3(Amount.y, Amount.x, 0) * Speed * 1000.0f);
-
-	//tsf->Rotation(tsf->Rotation() + vec3(-Amount.y * Speed, -Amount.x * Speed, 0));
-	/*
-	btTransform transform = tsf->Body->getWorldTransform();
-	btQuaternion rotation = transform.getRotation();
-	rotation = rotation * btQuaternion(-Amount.x * Speed, -Amount.y * Speed, 0);
-	transform.setRotation(rotation);
-	tsf->Body->setWorldTransform(transform);
-	*/
-}
-
-void ModuleCamera::Move(vec3 Amount, float Speed)
-{
-	unsigned int camera = *Global->Get<unsigned int>("camera");
-	unsigned int person = Entity->Get<StorageCamera>(camera)->Person;
-	auto tsfcam = Entity->Get<StorageTransform>(camera);
-	auto tsfpsn = Entity->Get<StorageTransform>(person);
-
-	vec3 forward(sinf(tsfcam->Rotation().y), 0, cosf(tsfcam->Rotation().y));
-	vec3 right(-forward.z, 0, forward.x);
-	vec3 up(0, 1, 0);
-
-	vec3 combined(Amount.x * forward + Amount.y * up + Amount.z * right);
-	tsfpsn->Body->setLinearVelocity(btVector3(combined.x, combined.y, combined.z) * Speed);
-}
-
 void ModuleCamera::Calculate()
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
@@ -210,6 +169,4 @@ void ModuleCamera::Calculate()
 	 */
 
 	cam->View = lookAt(tsf->Position(), tsf->Position() + tsf->Direction(), vec3(0, 1, 0));
-
-	// Debug->Print("lookat X " + to_string(tsf->Direction().x) + " Y " + to_string(tsf->Direction().y) + " Z " + to_string(tsf->Direction().z));
 }
