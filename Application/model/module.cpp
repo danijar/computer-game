@@ -25,12 +25,11 @@ void ModuleModel::Init()
 
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
 		auto fms = Entity->Get<StorageModel>();
-		return "Forms          " + to_string(fms.size()          ) + '\n'
-			 + "Meshes         " + to_string(meshes.size()       ) + '\n'
-			 + "Materials      " + to_string(materials.size()    ) + '\n'
-			 + "Textures       " + to_string(textures.size()     ) + '\n'
-			 + "Static shapes  " + to_string(staticshapes.size() ) + '\n'
-			 + "Dynamic shapes " + to_string(dynamicshapes.size());
+		return "Forms     " + to_string(fms.size()      ) + '\n'
+			 + "Meshes    " + to_string(meshes.size()   ) + '\n'
+			 + "Materials " + to_string(materials.size()) + '\n'
+			 + "Textures  " + to_string(textures.size() ) + '\n'
+			 + "Shapes    " + to_string(shapes.size()   );
 	};
 
 	Callbacks();
@@ -52,40 +51,36 @@ void ModuleModel::Listeners()
 		ReloadTextures();
 	});
 
-	Event->Listen("InputBindCreate", [=]{
+	auto cook = [](float from, float to){ return (rand() % (int)((to - from) * 10) / 10.f) + from; };
 
-		// move this into a script
+	// move this into a script
+	Event->Listen("InputBindCreate", [=]{		
 		if(Keyboard::isKeyPressed(Keyboard::LShift))
 		{
-			for(int i = 0; i < 20; ++i)
+			int count((int)cook(10.0f, 25.0f));
+			for(int i = 0; i < count; ++i)
 			{
-				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
-				auto tsf = Entity->Get<StorageTransform>(id);
-
-				tsf->Rotation(vec3(rand() % 360, rand() % 360, rand() % 360));
-				tsf->Position(vec3(0, 50, 0));
-				tsf->Body->applyCentralImpulse(btVector3((rand() % 200) / 10.0f - 10.0f, -500.0f, (rand() % 200) / 10.0f - 10.0f));
+				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 30, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 0.7f), cook(0.3f, 0.7f), cook(0.3f, 0.7f)), 3.0f);
+				Entity->Get<StorageTransform>(id)->Body->applyCentralImpulse(btVector3(cook(-12.5f, 12.5f), -75.0f, cook(-12.5f, 12.5f)));
 			}
 		}
 		else
 		{
-			unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 4.0f);
-			Entity->Get<StorageTransform>(id)->Rotation(vec3(rand() % 360, rand() % 360, rand() % 360));
+			Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
 		}
 	});
 
+	// move this into a script
 	Event->Listen("InputBindShoot", [=]{
-
-		// move this into a script
-		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(1), 10.0f);
+		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(0.5f), 5.0f);
 		auto tsfcam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
 		auto tsfcbe = Entity->Get<StorageTransform>(id);
 
 		vec3 lookat = tsfcam->Direction();
 		
-		tsfcbe->Rotation(vec3(rand() % 360, rand() % 360, rand() % 360));
-		tsfcbe->Position(tsfcam->Position() + 1.5f * lookat);
-		tsfcbe->Body->applyCentralImpulse(1000.0f * btVector3(lookat.x, lookat.y, lookat.z));
+		tsfcbe->Rotation(vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)));
+		tsfcbe->Position(tsfcam->Position() + lookat);
+		tsfcbe->Body->applyCentralImpulse(200.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
 }
 
@@ -107,7 +102,7 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	// frm->Specular = textures.Get(material.Specular);
 
 	delete tsf->Body;
-	tsf->Body = CreateBody(Mesh, Mass);
+	tsf->Body = CreateBody(Mesh, Scale, Mass);
 	tsf->Position(Position);
 	tsf->Rotation(Rotation);
 	tsf->Scale(Scale);

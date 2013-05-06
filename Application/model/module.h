@@ -41,12 +41,28 @@ class ModuleModel : public Module
 	void LoadTexture(GLuint &Texture, std::string Path);
 
 	// bodies
-	std::unordered_map<std::string, btCollisionShape*> staticshapes;
-	std::unordered_map<std::string, btCollisionShape*> dynamicshapes;
-	btRigidBody *CreateBody(std::string Path, float Mass = 0);
-	btCollisionShape *GetShape(std::string Path, bool Static = true);
-	void LoadShape(btCollisionShape *&Shape, std::string Path, bool Static = true);
-	void LoadShapeCube(btCollisionShape *&Shape);
+	typedef std::tuple<std::string, glm::vec3, bool> shape_key;
+	struct shape_key_hash : public std::unary_function<shape_key, std::size_t>
+	{
+		std::size_t operator()(const shape_key& k) const
+		{
+			glm::vec3 vector = std::get<1>(k);
+			int hash = 23;
+			hash += 37 * std::hash<std::string>()(std::get<0>(k));
+			hash += 37 * std::hash<float>()(vector.x);
+			hash += 37 * std::hash<float>()(vector.y);
+			hash += 37 * std::hash<float>()(vector.z);
+			hash += 37 * std::hash<bool>()(std::get<2>(k));
+			return hash;
+		}
+	};
+	struct shape_key_equal : public std::binary_function<shape_key, shape_key, bool> { bool operator()(const shape_key& v0, const shape_key& v1) const { return v0 == v1; } };
+
+	std::unordered_map<shape_key, btCollisionShape*, shape_key_hash> shapes;
+	btRigidBody *CreateBody(std::string Path, glm::vec3 Scale = glm::vec3(1), float Mass = 0);
+	btCollisionShape *GetShape(std::string Path, glm::vec3 Scale = glm::vec3(1), bool Static = true);
+	void LoadShape(btCollisionShape *&Shape, std::string Path, glm::vec3 Scale = glm::vec3(1), bool Static = true);
+	void LoadShapeCube(btCollisionShape *&Shape, glm::vec3 Scale = glm::vec3(1));
 	void LoadShapePlane(btCollisionShape *&Shape);
 
 public:

@@ -1,59 +1,53 @@
 #include "module.h"
 
+#include <GLM/glm.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
 #include <ASSIMP/cimport.h>
 #include <ASSIMP/scene.h>
 #include <ASSIMP/postprocess.h>
 using namespace std;
+using namespace glm;
 
 
-btRigidBody *ModuleModel::CreateBody(string Path, float Mass)
+btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 {
-	btCollisionShape *shape = GetShape(Path, (Mass == 0));
+	btCollisionShape *shape = GetShape(Path, Scale, (Mass == 0));
 	btRigidBody *body = new btRigidBody(Mass, new btDefaultMotionState(), shape);
 
-	if(Mass == 0)
-	{
-		body->setMassProps(0, btVector3(0, 0, 0));
-	}
-	else
+	if(Mass)
 	{
 		btVector3 inertia;
 		shape->calculateLocalInertia(Mass, inertia);
 		body->setMassProps(Mass, inertia);
 	}
+	else
+	{
+		body->setMassProps(0, btVector3(0, 0, 0));
+	}
 
 	return body;
 }
 
-btCollisionShape *ModuleModel::GetShape(string Path, bool Static)
+btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static)
 {
-	if(Static)
-	{
-		auto i = staticshapes.find(Path);
-		if(i != staticshapes.end()) return i->second;
-	}
-	else
-	{
-		auto i = dynamicshapes.find(Path);
-		if(i != dynamicshapes.end()) return i->second;
-	}
+	shape_key key = make_tuple(Path, Scale, Static);
+	auto i = shapes.find(key);
+	if(i != shapes.end()) return i->second;
 
 	btCollisionShape *shape = NULL;
-	LoadShape(shape, Path, Static);
+	LoadShape(shape, Path, Scale, Static);
 
-	if(Static) staticshapes.insert(make_pair(Path, shape));
-	else      dynamicshapes.insert(make_pair(Path, shape));
+	shapes.insert(make_pair(key, shape));
 
 	return shape;
 }
 
-void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, bool Static)
+void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, bool Static)
 {
 	delete Shape;
 	Shape = NULL;
 
-	if(Path == "qube.prim")  return LoadShapeCube (Shape);
+	if(Path == "qube.prim")  return LoadShapeCube (Shape, Scale);
 	if(Path == "plane.prim") return LoadShapePlane(Shape);
 
 	if(Static)
@@ -105,11 +99,14 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, bool Static)
 	{
 
 	}
+
+	Shape->setLocalScaling(btVector3(Scale.x, Scale.y, Scale.z));
 }
 
-void ModuleModel::LoadShapeCube(btCollisionShape *&Shape)
+void ModuleModel::LoadShapeCube(btCollisionShape *&Shape, vec3 Scale)
 {
 	Shape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
+	Shape->setLocalScaling(btVector3(Scale.x, Scale.y, Scale.z));
 }
 
 void ModuleModel::LoadShapePlane(btCollisionShape *&Shape)

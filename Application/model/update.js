@@ -1,10 +1,10 @@
 
 // moving objects
-setposition(spark, 7 * sine(5, 0.0), 3 * sine(3, 0.25) + 3, 7 * sine(10, 0.5));
-setposition(blue, 55 * sine(5, 0.0), 10, 55 * sine(5, 0.25));
-setposition(red, 30, 10 * sine(7, 0, true) + 7, 36);
-setrotation(rock, 360 * sine(0.005, 0.0, true), 360 * sine(0.007, 0.0, true), 360 * sine(0.009, 0.0, true));
-setposition(rock, 5 * sine(0.3), 10, 5 * sine(0.3, 0.25));
+setposition(spark, 3 * sine(5, 0.0), 1.5 * sine(3, 0.25) + 3, 3 * sine(10, 0.5));
+setposition(blue, 30 * sine(5, 0.0), 5, 30 * sine(5, 0.25));
+setposition(red, 15, 5 * sine(7, 0, true) + 3, 18);
+setrotation(cube, 360 * sine(0.005, 0.0, true), 360 * sine(0.007, 0.0, true), 360 * sine(0.009, 0.0, true));
+setposition(cube, 3 * sine(0.3), 8, 3 * sine(0.3, 0.25));
 
 // helper functions
 function sine(speed, offset, positive) {
