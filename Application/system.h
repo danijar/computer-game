@@ -659,7 +659,7 @@ public:
 	std::string GetMessage()
 	{
 		return message;
-	}	
+	}
 private:
 	private:
 	std::vector<std::tuple<std::string, Module*, bool>> list;

@@ -3,5 +3,5 @@
 
 struct StoragePerson
 {
-	
+	float Eyes;
 };

@@ -34,6 +34,9 @@ void ModuleInput::Listeners()
 		case Keyboard::Escape:
 			this->Event->Fire("InputBindExit");
 			break;
+		case Keyboard::Key::F1:
+			this->Event->Fire("InputBindCamera");
+			break;
 		case Keyboard::Key::F2:
 			this->Event->Fire("InputBindWireframe");
 			break;

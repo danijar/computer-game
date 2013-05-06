@@ -133,6 +133,12 @@
     <ClCompile Include="Application\camera\control.cpp">
       <Filter>camera</Filter>
     </ClCompile>
+    <ClCompile Include="Application\camera\calculate.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\state.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

@@ -5,21 +5,23 @@
 #include <SFML/System.hpp>
 #include <GLM/glm.hpp>
 
+// helpers
+#include <string>
+#include <GLM/gtc/quaternion.hpp>
+#include <BULLET/btBulletDynamicsCommon.h>
+
 
 class ModuleCamera : public Module
 {
 	// general
+	sf::Clock clock;
+	float delta;
 	void Init();
 	void Update();
 	void Listeners();
 
-	// members
-	sf::Clock clock;
-	float delta;
-	//float speed;
-
-	// init
-	unsigned int Personrcamera(glm::vec3 Position = glm::vec3(0));
+	// create
+	unsigned int Create(glm::vec3 Position = glm::vec3(0), float Height = 2.0f);
 
 	// state
 	bool focus;
@@ -27,7 +29,7 @@ class ModuleCamera : public Module
 	void State(bool Active);
 
 	// conrol
-	void Rotate(glm::vec3 Amount, float Speed = 0.005f);
+	void Rotate(glm::vec3 Amount, float Sensitivity = 0.002f);
 	void Move(glm::vec3 Amount, float Speed = 10.0f);
 
 	// calculation
