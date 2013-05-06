@@ -16,18 +16,20 @@ unsigned int ModuleCamera::Create(vec3 Position, float Height)
 	unsigned int camera = Entity->New(), person = Entity->New();
 	auto tsfcam = Entity->Add<StorageTransform>(camera);
 	auto tsfpsn = Entity->Add<StorageTransform>(person);
+	auto psn = Entity->Add<StoragePerson>(person);
 	Entity->Add<StorageCamera>(camera)->Person = person;
-	Entity->Add<StoragePerson>(person)->Eyes   = Height/1.1f/2; /* meters to eyes from center */
+	
+	psn->Eyes = Height/1.1f/2; /* meters to eyes from center */
+	psn->Mass = 70.0f; /* kilograms mass */
 
 	tsfcam->Body->setActivationState(DISABLE_DEACTIVATION);
 	tsfcam->Position(Position);
 
-	float mass = 70.0f /* kilogramms mass */;
 	btCollisionShape *shape = new btCapsuleShape(Height/3 /* meters radius */, Height/3 /* meters plus twice radius tall */);
 	btVector3 inertia;
-	shape->calculateLocalInertia(mass, inertia);
+	shape->calculateLocalInertia(psn->Mass, inertia);
 	
-	tsfpsn->Body = new btRigidBody(mass, new btDefaultMotionState(), shape, inertia);
+	tsfpsn->Body = new btRigidBody(psn->Mass, new btDefaultMotionState(), shape, inertia);
 	tsfpsn->Body->setAngularFactor(btVector3(0, 1, 0)); /* lock rotation around X and Z to prevent falling over */
 	tsfpsn->Body->setActivationState(DISABLE_DEACTIVATION);
 	tsfpsn->Position(Position);

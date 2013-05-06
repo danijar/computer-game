@@ -17,7 +17,8 @@ void ModuleCamera::Init()
 {
 	unsigned int id = Create(vec3(0, 5, 0), 1.80f);
 	*Global->Add<unsigned int>("camera") = id;
-	Entity->Get<StorageCamera>(id)->Active = !Global->Get<StorageSettings>("settings")->Mouse;
+	auto cam = Entity->Get<StorageCamera>(id);
+	cam->Active = !Global->Get<StorageSettings>("settings")->Mouse;
 
 	focus = true; // how to find out whether window was opened in background?
 
@@ -88,7 +89,8 @@ void ModuleCamera::Update()
 void ModuleCamera::Listeners()
 {
 	Event->Listen("InputBindCamera", [=]{
-		State();
+		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+		State(!cam->Active);
 	});
 
 	Event->Listen("WindowRecreated", [=]{
@@ -121,5 +123,11 @@ void ModuleCamera::Listeners()
 			Mouse::setPosition(center, *wnd);
 		}
 		focus = true;
+	});
+
+	Event->Listen("InputBindJump", [=] {
+		// test if body has contact to anything
+		auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
+		tsf->Body->applyCentralImpulse(btVector3(0.0f, !Keyboard::isKeyPressed(Keyboard::LShift) ? 350.0f : 1000.0f, 0.0f));
 	});
 }

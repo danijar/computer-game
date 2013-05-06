@@ -6,6 +6,7 @@ using namespace glm;
 
 #include "camera.h"
 #include "transform.h"
+#include "person.h"
 
 
 void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
@@ -40,8 +41,9 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 {
 	unsigned int camera = *Global->Get<unsigned int>("camera");
 	unsigned int person = Entity->Get<StorageCamera>(camera)->Person;
+	auto tsf = Entity->Get<StorageTransform>(person);
 
-	// fetch current rotation
+	// fetch camera orientation
 	btQuaternion rotation = Entity->Get<StorageTransform>(camera)->Body->getWorldTransform().getRotation();
 
 	// create orientation vectors
@@ -50,9 +52,11 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
 	btVector3 side    = btCross(up, forward);
 
-	// combine movements of all orientations
-	btVector3 combined = btVector3(forward * Amount.x + up * Amount.y + side * Amount.z) * Speed;
+	// sum walking orientations together
+	btVector3 current  = tsf->Body->getLinearVelocity();
+	btVector3 velocity = btVector3(forward * Amount.x + up * Amount.y + side * Amount.z) * Speed;
+	if(abs(velocity.getY()) < 0.01f) velocity.setY(current.getY());
 
-	// move body by velocity
-	Entity->Get<StorageTransform>(person)->Body->setLinearVelocity(combined);
+	// set velocity to move body
+	tsf->Body->setLinearVelocity(velocity);
 }

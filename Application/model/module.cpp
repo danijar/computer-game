@@ -66,7 +66,7 @@ void ModuleModel::Listeners()
 		}
 		else
 		{
-			Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
+			Model("qube.prim", "magic.mtl", vec3(0, 15, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
 		}
 	});
 

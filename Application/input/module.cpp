@@ -19,9 +19,6 @@ void ModuleInput::Listeners()
 	Event->Listen<Keyboard::Key>("InputKeyPressed", [=](Keyboard::Key Code){
 		switch(Code)
 		{
-		case Keyboard::Space:
-			this->Event->Fire("InputBindJump");
-			break;
 		case Keyboard::F:
 			this->Event->Fire("InputBindCreate");
 			break;
@@ -51,6 +48,10 @@ void ModuleInput::Listeners()
 			break;
 		case Keyboard::Tab:
 			this->Event->Fire("InputBindConsole");
+			break;
+		// later on when for contact point of body is checked, call this on pressed instead of released button event
+		case Keyboard::Space:
+			this->Event->Fire("InputBindJump");
 			break;
 		}
 	});
