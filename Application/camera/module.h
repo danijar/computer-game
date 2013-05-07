@@ -31,6 +31,9 @@ class ModuleCamera : public Module
 	// conrol
 	float campitch;
 	void Rotate(glm::vec3 Amount, float Sensitivity = 0.002f);
+	void Roll(float Amount);
+	bool walking;
+	sf::Clock walktime;
 	void Move(glm::vec3 Amount, float Speed = 10.0f);
 
 	// calculation

@@ -35,6 +35,11 @@ struct StorageTransform
 		transform.setRotation(btQuaternion(Angles.y, Angles.x, Angles.z));
 		Body->setWorldTransform(transform);
 	}
+	glm::quat Quaternion()
+	{
+		btQuaternion rotation(Body->getWorldTransform().getRotation());
+		return glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
+	}
 	glm::vec3 Scale()
 	{
 		btVector3 factors(Body->getCollisionShape()->getLocalScaling());

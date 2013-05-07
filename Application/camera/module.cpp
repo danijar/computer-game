@@ -20,8 +20,9 @@ void ModuleCamera::Init()
 	auto cam = Entity->Get<StorageCamera>(id);
 	cam->Active = !Global->Get<StorageSettings>("settings")->Mouse;
 
-	campitch = 0.0f;
 	focus = true; // how to find out whether window was opened in background?
+	campitch = 0.0f;
+	walking = false;
 
 	Calculate();
 	State();
@@ -30,6 +31,10 @@ void ModuleCamera::Init()
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
 		ivec3 position = (ivec3)Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
 		return "X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
+	};
+
+	Entity->Add<StorageText>(Entity->New())->Text = [=]{
+		return walking ? "walking " + to_string((int)walktime.getElapsedTime().asSeconds()) : "";
 	};
 
 	Listeners();
@@ -63,9 +68,19 @@ void ModuleCamera::Update()
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
 	if (Keyboard::isKeyPressed(Keyboard::PageUp  ) || Keyboard::isKeyPressed(Keyboard::Q)) move.y++;
 	if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move.y--;
-	if(move.length() > 0)
-	{
-		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 100.0f) : Move(move);
+	if(length(move) > 0) {
+		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 50.0f) : Move(move);
+		if(walking) {
+			Roll(0.03f * sin(12.0f * walktime.getElapsedTime().asSeconds()));
+		} else {
+			walking = true;
+			walktime.restart();
+		}
+	} else {
+		if(walking) {
+			walking = false;
+			Roll(0.0f);
+		}
 	}
 
 	// synchronize camera head and capsule body
