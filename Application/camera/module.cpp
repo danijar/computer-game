@@ -20,6 +20,7 @@ void ModuleCamera::Init()
 	auto cam = Entity->Get<StorageCamera>(id);
 	cam->Active = !Global->Get<StorageSettings>("settings")->Mouse;
 
+	campitch = 0.0f;
 	focus = true; // how to find out whether window was opened in background?
 
 	Calculate();
@@ -29,16 +30,6 @@ void ModuleCamera::Init()
 	Entity->Add<StorageText>(Entity->New())->Text = [=]{
 		ivec3 position = (ivec3)Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
 		return "X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
-	};
-
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		ivec3 rotation = (ivec3)degrees(Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"))->Rotation());
-		return "camera  Yaw " + to_string(rotation.y) + " Pitch " + to_string(rotation.x) + " Roll " + to_string(rotation.z);
-	};
-
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		ivec3 rotation = (ivec3)degrees(Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person)->Rotation());
-		return "capsule Yaw " + to_string(rotation.y) + " Pitch " + to_string(rotation.x) + " Roll " + to_string(rotation.z);
 	};
 
 	Listeners();

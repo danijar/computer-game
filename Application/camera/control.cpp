@@ -14,12 +14,18 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 	unsigned int id = *Global->Get<unsigned int>("camera");
 	auto tsf = Entity->Get<StorageTransform>(id);
 
+	// apply mouse sensitivity
+	Amount *= Sensitivity;
+
+	// clamp camera pitch
+	const float clamp = 1.0f;
+	if     (campitch + Amount.x >  clamp) Amount.x =  clamp - campitch;
+	else if(campitch + Amount.x < -clamp) Amount.x = -clamp - campitch;
+	campitch += Amount.x;
+
 	// fetch current rotation
 	btTransform transform = tsf->Body->getWorldTransform();
 	btQuaternion rotation = transform.getRotation();
-
-	// apply mouse sensitivity
-	Amount *= Sensitivity;
 
 	// create orientation vectors
 	btVector3 up(0, 1, 0);

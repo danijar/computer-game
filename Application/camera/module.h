@@ -29,6 +29,7 @@ class ModuleCamera : public Module
 	void State(bool Active);
 
 	// conrol
+	float campitch;
 	void Rotate(glm::vec3 Amount, float Sensitivity = 0.002f);
 	void Move(glm::vec3 Amount, float Speed = 10.0f);
 
