@@ -22,7 +22,6 @@ class ModulePhysic : public Module
 	btDefaultCollisionConfiguration* configuration;
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* world;
 
 	// debug
 	class DebugDrawer : public btIDebugDraw

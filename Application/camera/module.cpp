@@ -22,7 +22,7 @@ void ModuleCamera::Init()
 
 	focus = true; // how to find out whether window was opened in background?
 	campitch = 0.0f;
-	walking = false;
+	onground = false;
 
 	Calculate();
 	State();
@@ -33,10 +33,6 @@ void ModuleCamera::Init()
 		return "X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
 	};
 
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		return walking ? "walking " + to_string((int)walktime.getElapsedTime().asSeconds()) : "";
-	};
-
 	Listeners();
 }
 
@@ -44,12 +40,15 @@ void ModuleCamera::Update()
 {
 	unsigned int camera = *Global->Get<unsigned int>("camera");
 	auto cam = Entity->Get<StorageCamera>(camera);
-	auto wnd = Global->Get<RenderWindow>("window");
-
-	delta = clock.restart().asSeconds();
-
 	if(!cam->Active) return;
 
+	auto psn = Entity->Get<StoragePerson>(cam->Person);
+	auto wnd = Global->Get<RenderWindow>("window");
+	auto tsfcam = Entity->Get<StorageTransform>(camera);
+	auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
+
+	delta = clock.restart().asSeconds();
+	
 	// rotate camera head
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
@@ -60,32 +59,21 @@ void ModuleCamera::Update()
 		Rotate(vec3(offset.y, -offset.x, 0));
 	}
 
+	// whether stay on ground or not
+	btVector3 origin = tsfpsn->Body->getWorldTransform().getOrigin();
+	auto hit = Ray(origin, origin - btVector3(0, 1, 0));
+	onground = (abs(hit.first.getY() - origin.getY()) < psn->Height/2 + 0.1f);
+
 	// move capsule body
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
 	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
-	if (Keyboard::isKeyPressed(Keyboard::PageUp  ) || Keyboard::isKeyPressed(Keyboard::Q)) move.y++;
-	if (Keyboard::isKeyPressed(Keyboard::PageDown) || Keyboard::isKeyPressed(Keyboard::E)) move.y--;
-	if(length(move) > 0) {
+	if(length(move) > 0 && onground)
 		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 50.0f) : Move(move);
-		if(walking) {
-			Roll(0.03f * sin(12.0f * walktime.getElapsedTime().asSeconds()));
-		} else {
-			walking = true;
-			walktime.restart();
-		}
-	} else {
-		if(walking) {
-			walking = false;
-			Roll(0.0f);
-		}
-	}
-
+	
 	// synchronize camera head and capsule body
-	auto tsfcam = Entity->Get<StorageTransform>(camera);
-	auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
 	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0));
 
@@ -132,8 +120,15 @@ void ModuleCamera::Listeners()
 	});
 
 	Event->Listen("InputBindJump", [=] {
-		// test if body has contact to anything
-		auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
-		tsf->Body->applyCentralImpulse(btVector3(0.0f, !Keyboard::isKeyPressed(Keyboard::LShift) ? 350.0f : 1000.0f, 0.0f));
+		if(onground)
+		{
+			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
+			tsf->Body->applyCentralImpulse(btVector3(0, 350, 0));
+		}
+		else if(Keyboard::isKeyPressed(Keyboard::LShift))
+		{
+			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
+			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
+		}
 	});
 }

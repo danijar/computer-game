@@ -31,10 +31,9 @@ class ModuleCamera : public Module
 	// conrol
 	float campitch;
 	void Rotate(glm::vec3 Amount, float Sensitivity = 0.002f);
-	void Roll(float Amount);
-	bool walking;
-	sf::Clock walktime;
-	void Move(glm::vec3 Amount, float Speed = 10.0f);
+	void Move(glm::vec3 Amount, float Speed = 7.0f);
+	bool onground;
+	std::pair<btVector3, btVector3> Ray(btVector3 &From, btVector3 &To);
 
 	// calculation
 	void Projection();

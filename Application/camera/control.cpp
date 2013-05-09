@@ -2,6 +2,8 @@
 
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
+#include <BULLET/btBulletDynamicsCommon.h>
+using namespace std;
 using namespace glm;
 
 #include "camera.h"
@@ -43,23 +45,6 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 	tsf->Body->setWorldTransform(transform);
 }
 
-void ModuleCamera::Roll(float Amount)
-{
-	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<StorageTransform>(id);
-
-	// fetch current rotation
-	btTransform transform = tsf->Body->getWorldTransform();
-	btQuaternion rotation = transform.getRotation();
-
-	// orient camera to desired roll
-	// ...
-
-	// set new rotation
-	transform.setRotation(rotation);
-	tsf->Body->setWorldTransform(transform);
-}
-
 void ModuleCamera::Move(vec3 Amount, float Speed)
 {
 	unsigned int camera = *Global->Get<unsigned int>("camera");
@@ -80,9 +65,22 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 	btVector3 velocity = btVector3(forward * Amount.x + up * Amount.y + side * Amount.z) * Speed;
 	if(abs(velocity.getY()) < 0.01f) velocity.setY(current.getY());
 
-	// push body on the floor
-	tsf->Body->setLinearVelocity(btVector3(velocity.getX(), -3.0f, velocity.getZ()));
-
 	// set velocity to move body
-	// tsf->Body->setLinearVelocity(velocity);
+	tsf->Body->setLinearVelocity(velocity);
+}
+
+pair<btVector3, btVector3> ModuleCamera::Ray(btVector3 &From, btVector3 &To)
+{
+	auto world = Global->Get<btDiscreteDynamicsWorld>("world");
+
+	btCollisionWorld::ClosestRayResultCallback ray(From, To);
+	world->rayTest(From, To, ray);
+
+	btVector3 Point, Normal;
+	if(ray.hasHit())
+	{
+		Point  = ray.m_hitPointWorld;
+		Normal = ray.m_hitNormalWorld;
+	}
+	return make_pair(Point, Normal);
 }

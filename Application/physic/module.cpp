@@ -16,7 +16,7 @@ void ModulePhysic::Init()
 	configuration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(configuration);
 	solver = new btSequentialImpulseConstraintSolver;
-	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration);
+	auto world = Global->Add<btDiscreteDynamicsWorld>("world", new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration));
 
 	world->setGravity(btVector3(0, -9.81f, 0));
 	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Debug));
@@ -26,7 +26,7 @@ void ModulePhysic::Init()
 
 ModulePhysic::~ModulePhysic()
 {
-	delete world;
+	Global->Delete("world");
 	delete solver;
 	delete dispatcher;
 	delete configuration;
@@ -35,6 +35,8 @@ ModulePhysic::~ModulePhysic()
 
 void ModulePhysic::Update()
 {
+	auto world = Global->Get<btDiscreteDynamicsWorld>("world");
+
 	auto tfs = Entity->Get<StorageTransform>();
 	for(auto i = tfs.begin(); i != tfs.end(); ++i)
 	{
@@ -54,6 +56,8 @@ void ModulePhysic::Update()
 void ModulePhysic::Listeners()
 {
 	Event->Listen("InputBindDebugdraw", [=]{
+		auto world = Global->Get<btDiscreteDynamicsWorld>("world");
+
 		if(world->getDebugDrawer()->getDebugMode() == btIDebugDraw::DBG_NoDebug)
 			world->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 		else

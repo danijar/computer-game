@@ -19,6 +19,7 @@ unsigned int ModuleCamera::Create(vec3 Position, float Height)
 	auto psn = Entity->Add<StoragePerson>(person);
 	Entity->Add<StorageCamera>(camera)->Person = person;
 	
+	psn->Height = Height;
 	psn->Eyes = Height/1.1f/2; /* meters to eyes from center */
 	psn->Mass = 70.0f; /* kilograms mass */
 

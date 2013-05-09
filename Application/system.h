@@ -426,6 +426,7 @@ public:
 			if (Check(i->first, id))
 			{
 				auto j = i->second.find(id);
+				delete &j->second; // test this
 				j->second.reset();
 				i->second.erase(j);
 			}
@@ -441,6 +442,7 @@ public:
 			return;
 		}
 		auto j = list[key].find(id);
+		delete &j->second; // test this
 		j->second.reset();
 		list[key].erase(j);
 	}
@@ -479,7 +481,7 @@ public:
 	template <typename T>
 	T* Add(std::string Name)
 	{
-		T* t = new T();
+		T *t = new T();
 		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(t)));
 		if (!result.second)
 		{
@@ -487,6 +489,17 @@ public:
 			return Get<T>(Name);
 		}
 		return t;
+	}
+	template <typename T>
+	T* Add(std::string Name, T *Instance)
+	{
+		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(Instance)));
+		if (!result.second)
+		{
+			HelperDebug::Warning("system", "cannot add global " + Name + " because it already exists.");
+			return Get<T>(Name);
+		}
+		return Instance;
 	}
 	template <typename T>
 	T* Get(std::string Name)
@@ -507,6 +520,7 @@ public:
 			HelperDebug::Warning("system", "cannot delete global " + Name + " because it does not exists");
 			return;
 		}
+		delete &i->second; // test this
 		list.erase(i);
 	}
 private:
