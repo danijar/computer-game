@@ -8,7 +8,7 @@ for (X = -radius; X <= radius; ++X)
 for (Z = -radius; Z <= radius; ++Z)
 if(X * X + Z * Z <= radius * radius)
 {
-	scale = 0.5 + Math.random() / 3;
+	scale = 0.4 + Math.random() / 3;
 	x     = 2 * (Math.random() - 0.5) * 2 + 2 * X;
 	z     = 2 * (Math.random() - 0.5) * 2 + 2 * Z;
 	model("qube.prim", "dirt.mtl", x, scale, z, 0, 0, 0, scale, 0);

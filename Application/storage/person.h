@@ -9,7 +9,7 @@ struct StoragePerson
 		this->Step   =   0.25f  *  Height;
 		this->Eyes   =   1.1f   *  Height / 2;
 		this->Mass   = 100.0f   * (Height - 1);
-		this->Radius =             Height / 3;
+		this->Radius =             Height / 4;
 		this->Step   =   0.15f *   Height;
 	}
 

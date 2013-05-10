@@ -67,7 +67,7 @@ void ModuleCamera::Update()
 	{
 		float value = glm::pi<float>() * 2 * (float)i / samples;
 		btVector3 direction = btVector3(sin(value), 0, cos(value)).normalize();
-		onground = RayDown(origin + direction * psn->Radius, psn->Height / 2 + 0.1f).first;
+		onground = RayDown(origin + direction * psn->Radius * 0.9f, psn->Height / 2 + 0.1f).first;
 	}
 
 	// move capsule body
@@ -76,7 +76,7 @@ void ModuleCamera::Update()
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
 	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
-	if(length(move) > 0 && onground)
+	if(length(move) > 0 && (onground || Keyboard::isKeyPressed(Keyboard::LShift)))
 		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 20.0f) : Move(move);
 	
 	// synchronize camera head and capsule body

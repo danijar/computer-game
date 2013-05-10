@@ -24,7 +24,7 @@ unsigned int ModuleCamera::Create(vec3 Position, float Height)
 
 	psn->Calculate(Height);
 
-	btCollisionShape *shape = new btCapsuleShape(psn->Radius, psn->Radius /* plus twice radius tall */);
+	btCollisionShape *shape = new btCapsuleShape(psn->Radius, Height / 2 /* plus twice radius tall */);
 	btVector3 inertia;
 	shape->calculateLocalInertia(psn->Mass, inertia);
 	
