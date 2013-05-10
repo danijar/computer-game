@@ -63,8 +63,8 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 
 	// adapt to surface angle
 	float distance = 0;
-	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius, psn->Height);
-	if(result.first) distance = result.second + psn->Height / 2;
+	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
+	if(result.first) distance = result.second + psn->Step;
 	Amount.y += distance;
 
 	// sum walking orientations together
