@@ -3,14 +3,23 @@
 model("plane.prim", "chess.mtl", 0, 0, 0, 0, 0, 0, 1, 0);
 
 // qubes
-var a = 1.5;
-for (x = -3; x <= 3; ++x)
-    for (z = -3; z <= 3; ++z)
-        model("qube.prim", "dirt.mtl", a * x, 0.5, a * z, 0, 0, 0, 0.5, 0);
-for (x = -3; x <= 3; x += 3)
-    for (z = -3; z <= 3; z += 3)
-        if (x == 0 && z == 0) continue;
-        else model("qube.prim", "grass.mtl", a * x, a + 0.5, a * z, 0, 0, 0, 0.5, 0);
+radius = 4;
+for (X = -radius; X <= radius; ++X)
+for (Z = -radius; Z <= radius; ++Z)
+if(X * X + Z * Z <= radius * radius)
+{
+	scale = 0.5 + Math.random() / 3;
+	x     = 2 * (Math.random() - 0.5) * 2 + 2 * X;
+	z     = 2 * (Math.random() - 0.5) * 2 + 2 * Z;
+	model("qube.prim", "dirt.mtl", x, scale, z, 0, 0, 0, scale, 0);
+}
+for (i = 0; i < 30; ++i)
+{
+	scale = 0.5 + Math.random() / 3;
+	x     = 5 * (Math.random() - 0.5) * 2;
+	z     = 5 * (Math.random() - 0.5) * 2;
+	model("qube.prim", "grass.mtl", x, 2 * (scale + 1.0) + 1.0, z, 0, 0, 0, scale, 0);
+}
 
 // models
 model('qube.prim', 'magic.mtl', 10, 4, -3, 27, 31, 57, 0.5, 1.0);

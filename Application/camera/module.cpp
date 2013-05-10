@@ -77,7 +77,7 @@ void ModuleCamera::Update()
 	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
 	if(length(move) > 0 && onground)
-		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 0.5f) : Move(move);
+		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 20.0f) : Move(move);
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
@@ -126,15 +126,15 @@ void ModuleCamera::Listeners()
 	});
 
 	Event->Listen("InputBindJump", [=] {
-		if(onground)
-		{
-			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
-			tsf->Body->applyCentralImpulse(btVector3(0, 350, 0));
-		}
-		else if(Keyboard::isKeyPressed(Keyboard::LShift))
+		if(Keyboard::isKeyPressed(Keyboard::LShift))
 		{
 			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
 			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
+		}
+		else if(onground)
+		{
+			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
+			tsf->Body->applyCentralImpulse(btVector3(0, 350, 0));
 		}
 	});
 }
