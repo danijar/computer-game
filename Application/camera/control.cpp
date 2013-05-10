@@ -50,6 +50,7 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 	unsigned int camera = *Global->Get<unsigned int>("camera");
 	unsigned int person = Entity->Get<StorageCamera>(camera)->Person;
 	auto tsf = Entity->Get<StorageTransform>(person);
+	auto psn = Entity->Get<StoragePerson>(person);
 
 	// fetch camera orientation
 	btQuaternion rotation = Entity->Get<StorageTransform>(camera)->Body->getWorldTransform().getRotation();
@@ -60,27 +61,40 @@ void ModuleCamera::Move(vec3 Amount, float Speed)
 	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
 	btVector3 side    = btCross(up, forward);
 
+	// adapt to surface angle
+	float distance = 0;
+	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius, psn->Height);
+	if(result.first) distance = result.second + psn->Height / 2;
+	Amount.y += distance;
+
 	// sum walking orientations together
 	btVector3 current  = tsf->Body->getLinearVelocity();
 	btVector3 velocity = btVector3(forward * Amount.x + up * Amount.y + side * Amount.z) * Speed;
-	if(abs(velocity.getY()) < 0.01f) velocity.setY(current.getY());
+	if(abs(velocity.getY()) < 0.01f || velocity.getY() < current.getY()) velocity.setY(current.getY());
 
 	// set velocity to move body
 	tsf->Body->setLinearVelocity(velocity);
 }
 
-pair<btVector3, btVector3> ModuleCamera::Ray(btVector3 &From, btVector3 &To)
+bool ModuleCamera::Ray(btVector3 &From, btVector3 &To, btVector3 &Point, btVector3 &Normal)
 {
 	auto world = Global->Get<btDiscreteDynamicsWorld>("world");
 
 	btCollisionWorld::ClosestRayResultCallback ray(From, To);
 	world->rayTest(From, To, ray);
 
-	btVector3 Point, Normal;
 	if(ray.hasHit())
 	{
 		Point  = ray.m_hitPointWorld;
 		Normal = ray.m_hitNormalWorld;
+		return true;
 	}
-	return make_pair(Point, Normal);
+	return false;
+}
+
+pair<bool, float> ModuleCamera::RayDown(btVector3 &Position, float Length)
+{
+	btVector3 Point;
+	bool hit = Ray(Position, Position - btVector3(0, Length, 0), Point);
+	return make_pair(hit, Point.getY() - Position.getY());
 }

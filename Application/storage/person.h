@@ -4,6 +4,6 @@
 struct StoragePerson
 {
 	float Mass;
-	float Height;
+	float Radius, Height;
 	float Eyes; // distance from center to eyes
 };

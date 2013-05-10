@@ -61,8 +61,14 @@ void ModuleCamera::Update()
 
 	// whether stay on ground or not
 	btVector3 origin = tsfpsn->Body->getWorldTransform().getOrigin();
-	auto hit = Ray(origin, origin - btVector3(0, 1, 0));
-	onground = (abs(hit.first.getY() - origin.getY()) < psn->Height/2 + 0.1f);
+	onground = RayDown(origin, psn->Height / 2).first;
+	const int samples = 8;
+	for (int i = 0; i < samples && !onground; ++i)
+	{
+		float value = glm::pi<float>() * 2 * (float)i / samples;
+		btVector3 direction = btVector3(sin(value), 0, cos(value)).normalize();
+		onground = RayDown(origin + direction * psn->Radius, psn->Height / 2 + 0.1f).first;
+	}
 
 	// move capsule body
 	vec3 move;
@@ -71,7 +77,7 @@ void ModuleCamera::Update()
 	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
 	if(length(move) > 0 && onground)
-		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 50.0f) : Move(move);
+		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 0.5f) : Move(move);
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
