@@ -133,8 +133,11 @@ void ModuleCamera::Listeners()
 		}
 		else if(onground)
 		{
-			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
-			tsf->Body->applyCentralImpulse(btVector3(0, 350, 0));
+			unsigned int person = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
+			auto tsf = Entity->Get<StorageTransform>(person);
+			auto psn = Entity->Get<StoragePerson>(person);
+
+			tsf->Body->applyCentralImpulse(btVector3(0, 5.5, 0) * psn->Mass);
 		}
 	});
 }

@@ -30,6 +30,8 @@ unsigned int ModuleCamera::Create(vec3 Position, float Height)
 	
 	tsfpsn->Body = new btRigidBody(psn->Mass, new btDefaultMotionState(), shape, inertia);
 	tsfpsn->Body->setAngularFactor(btVector3(0, 1, 0)); /* lock rotation around X and Z to prevent falling over */
+	tsfpsn->Body->setFriction(5.0f); /* set high friction to not slide after walking */
+	tsfpsn->Body->setAnisotropicFriction(btVector3(1, 0, 1)); /* disable friction in Y direction to not scratch in jumps */
 	tsfpsn->Body->setActivationState(DISABLE_DEACTIVATION);
 	tsfpsn->Position(Position);
 
