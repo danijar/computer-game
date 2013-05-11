@@ -4,6 +4,7 @@
 using namespace sf;
 
 #include "settings.h"
+#include "text.h"
 
 
 void ModuleSettings::Init()
@@ -17,12 +18,23 @@ void ModuleSettings::Init()
 	stg->Fieldofview  = 45.f;
 	stg->Viewdistance = 1000.f;
 
+	frames = 0;
+	Entity->Add<StorageText>(Entity->New())->Text = [=]{
+		return "FPS " + to_string(stg->FPS);
+	};
+
 	Listeners();
 }
 
 void ModuleSettings::Update()
 {
-
+	if(clock.getElapsedTime().asMilliseconds() >= 1000)
+	{
+		clock.restart();
+		Global->Get<StorageSettings>("settings")->FPS = frames;
+		frames = 0;
+	}
+	frames++;
 }
 
 void ModuleSettings::Listeners()

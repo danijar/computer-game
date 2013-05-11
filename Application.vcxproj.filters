@@ -85,32 +85,14 @@
     <ClCompile Include="Application\renderer\passes.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\interface\module.cpp">
-      <Filter>interface</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\physic\module.cpp">
-      <Filter>physic</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\settings\module.cpp">
-      <Filter>settings</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\window\module.cpp">
-      <Filter>window</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\effect.cpp">
       <Filter>renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\console\module.cpp">
-      <Filter>console</Filter>
     </ClCompile>
     <ClCompile Include="Application\model\shape.cpp">
       <Filter>model</Filter>
     </ClCompile>
     <ClCompile Include="Application\physic\debug.cpp">
       <Filter>physic</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\input\module.cpp">
-      <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="Application\camera\create.cpp">
       <Filter>camera</Filter>
@@ -144,6 +126,36 @@
     </ClCompile>
     <ClCompile Include="Application\mod\general.cpp">
       <Filter>mod</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\interface\general.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\input\general.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\console\general.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\console\callbacks.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\console\history.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\window\create.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\window\general.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\settings\general.cpp">
+      <Filter>settings</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\person\create.cpp">
+      <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\physic\general.cpp">
+      <Filter>physic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

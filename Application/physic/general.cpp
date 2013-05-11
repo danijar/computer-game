@@ -1,11 +1,6 @@
 #include "module.h"
 
-#include <string>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/quaternion.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
-using namespace glm;
-using namespace std;
 
 #include "transform.h"
 

@@ -13,7 +13,7 @@ class ModulePerson : public Module
 	void Update();
 	void Listeners();
 
-	// setup
+	// create
 	void Setup(unsigned int Id);
 
 	// movement

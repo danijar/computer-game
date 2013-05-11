@@ -9,16 +9,19 @@
 
 class ModuleConsole : public Module
 {
+	// general
+	bool active;
+	std::string text;
 	void Init();
 	void Update();
 	void Listeners();
 
-	bool active;
-	std::string text;
-
+	// history
 	std::vector<std::string> history;
 	unsigned int history_index;
 	void History();
+
+	// callbacks
 public:
 	static v8::Handle<v8::Value> jsPrint(const v8::Arguments& args);
 };

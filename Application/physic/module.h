@@ -4,24 +4,20 @@
 
 #include <SFML/System.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
-#include <GLM/glm.hpp>
-#include <GLEW/glew.h>
 
 
 class ModulePhysic : public Module
 {
 	// general
 	sf::Clock clock;
+	btBroadphaseInterface               *broadphase;
+	btDefaultCollisionConfiguration     *configuration;
+	btCollisionDispatcher               *dispatcher;
+	btSequentialImpulseConstraintSolver *solver;
 	void Init();
 	~ModulePhysic();
 	void Update();
 	void Listeners();
-
-	// bullet
-	btBroadphaseInterface* broadphase;
-	btDefaultCollisionConfiguration* configuration;
-	btCollisionDispatcher* dispatcher;
-	btSequentialImpulseConstraintSolver* solver;
 
 	// debug
 	class DebugDrawer : public btIDebugDraw

@@ -6,7 +6,7 @@ using namespace glm;
 
 #include "person.h"
 #include "transform.h"
-#include "camera.h"
+#include "camera.h" // get rid of that later
 
 
 void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
