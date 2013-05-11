@@ -9,7 +9,7 @@ using namespace sf;
 #include "text.h"
 
 
-void ModuleInterface::DrawText()
+void ModuleInterface::Draw()
 {
 	auto wnd = Global->Get<RenderWindow>("window");
 	auto txs = Entity->Get<StorageText>();

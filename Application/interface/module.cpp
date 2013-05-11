@@ -19,7 +19,7 @@ void ModuleInterface::Update()
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	wnd->pushGLStates();
-	DrawText();
+	Draw();
 	wnd->popGLStates();
 }
 

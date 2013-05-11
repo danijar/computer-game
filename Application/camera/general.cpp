@@ -17,10 +17,12 @@ void ModuleCamera::Init()
 {
 	unsigned int id = Create(vec3(0, 5, 0), 1.80f);
 	*Global->Add<unsigned int>("camera") = id;
-	auto cam = Entity->Get<StorageCamera>(id);
-	cam->Active = !Global->Get<StorageSettings>("settings")->Mouse;
+	Entity->Get<StorageCamera>(id)->Active = !Global->Get<StorageSettings>("settings")->Mouse;
+	auto wnd = Global->Get<RenderWindow>("window");
 
-	focus = true; // how to find out whether window was opened in background?
+	focus = Focus();
+	wnd->setMouseCursorVisible(!focus);
+
 	campitch = 0.0f;
 
 	Calculate();
@@ -46,7 +48,7 @@ void ModuleCamera::Update()
 	auto tsfcam = Entity->Get<StorageTransform>(camera);
 	auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
 
-	delta = clock.restart().asSeconds();
+	float delta = clock.restart().asSeconds();
 	
 	// rotate camera head
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
@@ -55,12 +57,12 @@ void ModuleCamera::Update()
 	{
 		Mouse::setPosition(center, *wnd);
 		Vector2i offset = position - center;
-		Rotate(vec3(offset.y, -offset.x, 0));
+		Rotate(vec3(offset.y, -offset.x, 0), delta);
 	}
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
-	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0));
+	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0)); // this doesn't work yet
 
 	Calculate();
 }

@@ -23,3 +23,29 @@ void ModuleCamera::State(bool Active)
 
 	if(Active) Mouse::setPosition(Vector2i(wnd->getSize().x / 2, wnd->getSize().y / 2), *wnd);
 }
+
+#ifdef _WIN32
+#include <Windows.h>
+bool ModuleCamera::Focus()
+{
+	auto wnd = Global->Get<RenderWindow>("window");
+
+	HWND handle = wnd->getSystemHandle();
+	bool focus      = (handle == GetFocus());
+	bool foreground = (handle == GetForegroundWindow());
+
+	// focus window if in foreground.
+	if(focus != foreground)
+	{
+		SetFocus(handle);
+		SetForegroundWindow(handle);
+	}
+
+	return focus;
+}
+#else
+bool ModuleCamera::Focus()
+{
+	return false;
+}
+#endif

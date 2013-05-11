@@ -57,9 +57,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application\interface\text.cpp">
-      <Filter>interface</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\framebuffer.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
     </ClCompile>
     <ClCompile Include="Application\window\module.cpp">
       <Filter>window</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\mod\module.cpp">
-      <Filter>mod</Filter>
     </ClCompile>
     <ClCompile Include="Application\renderer\effect.cpp">
       <Filter>renderer</Filter>
@@ -144,6 +138,12 @@
     </ClCompile>
     <ClCompile Include="Application\person\general.cpp">
       <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\interface\draw.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\mod\general.cpp">
+      <Filter>mod</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

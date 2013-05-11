@@ -9,12 +9,13 @@ using namespace glm;
 #include "transform.h"
 
 
-void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
+void ModuleCamera::Rotate(vec3 Amount, float Time, float Sensitivity)
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
 	auto tsf = Entity->Get<StorageTransform>(id);
 
-	// apply mouse sensitivity
+	// apply multipliers
+	Amount *= Time;
 	Amount *= Sensitivity;
 
 	// clamp camera pitch
