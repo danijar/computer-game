@@ -3,7 +3,6 @@
 #include <vector>
 #include <unordered_map>
 #include <GLEW/glew.h>
-#include <SFML/OpenGL.hpp>
 #include <ASSIMP/cimport.h>
 #include <ASSIMP/scene.h>
 #include <ASSIMP/postprocess.h>

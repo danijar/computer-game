@@ -2,9 +2,9 @@
 
 #include <string>
 #include <unordered_map>
-using namespace std;
 #include <GLEW/glew.h>
 #include <SFML/Graphics.hpp>
+using namespace std;
 using namespace sf;
 
 

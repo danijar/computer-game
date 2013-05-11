@@ -73,6 +73,6 @@ class ModuleRenderer : public Module
 	void Forms(Pass *Pass);
 	void Light(Pass *Pass);
 
-	// effects
+	// effect
 	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
 };

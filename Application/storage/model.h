@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <SFML/OpenGL.hpp>
+#include <GLEW/glew.h>
 
 
 struct StorageModel

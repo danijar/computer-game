@@ -1,15 +1,7 @@
 #include "module.h"
 
 #include <SFML/Window.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
-
-#include "settings.h"
-#include "camera.h"
-#include "light.h"
-#include "model.h"
-#include "transform.h"
-#include "light.h"
 
 
 void ModuleRenderer::Init()
@@ -26,7 +18,7 @@ void ModuleRenderer::Update()
 
 	Light(GetPass("light"));
 
-	for(uint i = 2; i < passes.size() - 1; ++i)
+	for(unsigned int i = 2; i < passes.size() - 1; ++i)
 		Quad(&passes[i].second);
 
 	Quad(&passes.back().second, true);
@@ -38,7 +30,7 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			// check whether file actually changed
-			glDeleteProgram(i->second.Shader); // simply do this in CreateProgram every time?
+			glDeleteProgram(i->second.Shader);
 			i->second.Shader = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
 
@@ -48,7 +40,7 @@ void ModuleRenderer::Listeners()
 	Event->Listen("WindowRecreated", [=]{
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
-			glDeleteFramebuffers(1, &i->second.Framebuffer); // simply do this in SetupFramebuffer every time?
+			glDeleteFramebuffers(1, &i->second.Framebuffer);
 			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Samplers, i->second.Size);
 		}
 

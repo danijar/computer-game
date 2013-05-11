@@ -1,9 +1,11 @@
 #include "module.h"
 
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <string>
+#include <GLEW/glew.h>
 #include <GLM/gtc/type_ptr.hpp>
 #include <SFML/OpenGL.hpp>
-#include <GLEW/glew.h>
+#include <BULLET/btBulletDynamicsCommon.h>
+using namespace std;
 using namespace glm;
 
 #include "settings.h"

@@ -3,8 +3,9 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <GLM/glm.hpp>
-using namespace sf;
+using namespace std;
 using namespace glm;
+using namespace sf;
 
 #include "settings.h"
 #include "transform.h"

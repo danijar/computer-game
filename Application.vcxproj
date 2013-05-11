@@ -94,11 +94,12 @@
     <ClCompile Include="Application\interface\general.cpp" />
     <ClCompile Include="Application\interface\draw.cpp" />
     <ClCompile Include="Application\main.cpp" />
-    <ClCompile Include="Application\model\callback.cpp" />
-    <ClCompile Include="Application\model\module.cpp" />
+    <ClCompile Include="Application\model\callbacks.cpp" />
+    <ClCompile Include="Application\model\create.cpp" />
+    <ClCompile Include="Application\model\general.cpp" />
     <ClCompile Include="Application\model\material.cpp" />
     <ClCompile Include="Application\model\mesh.cpp" />
-    <ClCompile Include="Application\model\shape.cpp" />
+    <ClCompile Include="Application\model\body.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\general.cpp" />
     <ClCompile Include="Application\person\create.cpp" />
@@ -111,7 +112,7 @@
     <ClCompile Include="Application\renderer\effect.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
     <ClCompile Include="Application\renderer\passes.cpp" />
-    <ClCompile Include="Application\renderer\module.cpp" />
+    <ClCompile Include="Application\renderer\general.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
     <ClCompile Include="Application\settings\general.cpp" />
     <ClCompile Include="Application\window\create.cpp" />

@@ -18,7 +18,7 @@ void ModuleModel::Callbacks()
 	Script->Bind("setrotation", jsSetRotation);
 }
 
-v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args) // rotation get passed in degrees from script
+v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args) // rotation is passed in degrees from script
 {
 	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 

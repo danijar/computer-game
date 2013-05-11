@@ -64,9 +64,6 @@
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="Application\main.cpp" />
-    <ClCompile Include="Application\renderer\module.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\draw.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
@@ -79,26 +76,17 @@
     <ClCompile Include="Application\model\texture.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="Application\model\module.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\renderer\passes.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
     <ClCompile Include="Application\renderer\effect.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\model\shape.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\physic\debug.cpp">
       <Filter>physic</Filter>
     </ClCompile>
     <ClCompile Include="Application\camera\create.cpp">
       <Filter>camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\model\callback.cpp">
-      <Filter>model</Filter>
     </ClCompile>
     <ClCompile Include="Application\camera\control.cpp">
       <Filter>camera</Filter>
@@ -156,6 +144,21 @@
     </ClCompile>
     <ClCompile Include="Application\physic\general.cpp">
       <Filter>physic</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\general.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\general.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\body.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\callbacks.cpp">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\create.cpp">
+      <Filter>model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

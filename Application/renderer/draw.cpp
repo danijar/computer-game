@@ -1,18 +1,15 @@
 #include "module.h"
 
-#include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/type_ptr.hpp>
-using namespace std;
 using namespace sf;
 using namespace glm;
 
 #include "settings.h"
 #include "camera.h"
-#include "light.h"
-#include "model.h"
 #include "transform.h"
+#include "model.h"
 #include "light.h"
 
 

@@ -1,6 +1,8 @@
 #include "module.h"
 
+#include <string>
 #include <SFML/Window.hpp>
+using namespace std;
 using namespace sf;
 
 #include "settings.h"

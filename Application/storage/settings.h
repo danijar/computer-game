@@ -1,26 +1,24 @@
 #pragma once
 
 #include <string>
-using namespace std;
-#include <SFML/System/Vector2.hpp>
-using namespace sf;
+#include <SFML/System.hpp>
 
 
 struct StorageSettings
 {
 	StorageSettings() : Fullscreen(false), Mouse(true), Size(640, 480), Title(""), FPS(0), Fieldofview(45.f), Viewdistance(100.f), Wireframe(false), Verticalsync(true) {}
 
-	// Window
-	bool Fullscreen;
-	bool Mouse;
-	Vector2i Position;
-	Vector2u Size;
-	string Title;
-
-	// Debug
+	// settings
 	int FPS;
 
-	// Renderer
+	// window
+	bool Fullscreen;
+	bool Mouse;
+	sf::Vector2i Position;
+	sf::Vector2u Size;
+	std::string Title;
+
+	// renderer
 	float Fieldofview, Viewdistance;
 	bool Wireframe, Verticalsync;
 };

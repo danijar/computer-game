@@ -17,7 +17,7 @@ void ModuleInterface::Draw()
 	const int margin = 4;
 	const int textsize = 15;
 
-	uint offset = margin / 2;
+	unsigned int offset = margin / 2;
 	for(auto i : txs)
 	{
 		string chars = i.second->Text();

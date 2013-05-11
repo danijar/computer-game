@@ -40,7 +40,7 @@ class ModuleModel : public Module
 	void ReloadTextures();
 	void LoadTexture(GLuint &Texture, std::string Path);
 
-	// bodies
+	// body
 	typedef std::tuple<std::string, glm::vec3, bool> shape_key;
 	struct shape_key_hash : public std::unary_function<shape_key, std::size_t>
 	{
@@ -70,7 +70,7 @@ public:
 	unsigned int Model(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), float Mass = 0);
 	unsigned int Light(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT);
 	
-	// scripting
+	// callbacks
 	void Callbacks();
 	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args);

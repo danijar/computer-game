@@ -13,6 +13,7 @@ struct StorageTransform
 	{
 		Body = new btRigidBody(0, new btDefaultMotionState(), new btEmptyShape(), btVector3(0, 0, 0));
 	}
+
 	glm::vec3 Position()
 	{
 		btVector3 origin(Body->getWorldTransform().getOrigin());
@@ -60,6 +61,7 @@ struct StorageTransform
 		glm::quat quaternion(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 		return glm::translate(glm::mat4(1), Position()) * glm::toMat4(quaternion) * glm::scale(glm::mat4(1), Scale());
 	}
+
 	btRigidBody *Body;
 	bool Added;
 };
