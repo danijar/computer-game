@@ -22,7 +22,6 @@ void ModuleCamera::Init()
 
 	focus = true; // how to find out whether window was opened in background?
 	campitch = 0.0f;
-	onground = false;
 
 	Calculate();
 	State();
@@ -58,26 +57,6 @@ void ModuleCamera::Update()
 		Vector2i offset = position - center;
 		Rotate(vec3(offset.y, -offset.x, 0));
 	}
-
-	// whether stay on ground or not
-	btVector3 origin = tsfpsn->Body->getWorldTransform().getOrigin();
-	onground = RayDown(origin, psn->Height / 2).first;
-	const int samples = 8;
-	for (int i = 0; i < samples && !onground; ++i)
-	{
-		float value = glm::pi<float>() * 2 * (float)i / samples;
-		btVector3 direction = btVector3(sin(value), 0, cos(value)).normalize();
-		onground = RayDown(origin + direction * psn->Radius * 0.9f, psn->Height / 2 + 0.1f).first;
-	}
-
-	// move capsule body
-	vec3 move;
-	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
-	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
-	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
-	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
-	if(length(move) > 0 && (onground || Keyboard::isKeyPressed(Keyboard::LShift)))
-		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(move, 20.0f) : Move(move);
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
@@ -123,21 +102,5 @@ void ModuleCamera::Listeners()
 			Mouse::setPosition(center, *wnd);
 		}
 		focus = true;
-	});
-
-	Event->Listen("InputBindJump", [=] {
-		if(Keyboard::isKeyPressed(Keyboard::LShift))
-		{
-			auto tsf = Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person);
-			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
-		}
-		else if(onground)
-		{
-			unsigned int person = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
-			auto tsf = Entity->Get<StorageTransform>(person);
-			auto psn = Entity->Get<StoragePerson>(person);
-
-			tsf->Body->applyCentralImpulse(btVector3(0, 5.5, 0) * psn->Mass);
-		}
 	});
 }

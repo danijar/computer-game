@@ -31,10 +31,7 @@ class ModuleCamera : public Module
 	// conrol
 	float campitch;
 	void Rotate(glm::vec3 Amount, float Sensitivity = 0.002f);
-	void Move(glm::vec3 Amount, float Speed = 5.0f);
-	bool onground;
-	bool Ray(btVector3 &From, btVector3 &To, btVector3 &Point = btVector3(), btVector3 &Normal = btVector3());
-	std::pair<bool, float> RayDown(btVector3 &Position, float Length);
+	float Yaw(unsigned int Id);
 
 	// calculation
 	void Projection();

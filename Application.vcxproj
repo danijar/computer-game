@@ -85,7 +85,7 @@
     <ClCompile Include="Application\camera\calculate.cpp" />
     <ClCompile Include="Application\camera\control.cpp" />
     <ClCompile Include="Application\camera\create.cpp" />
-    <ClCompile Include="Application\camera\module.cpp" />
+    <ClCompile Include="Application\camera\general.cpp" />
     <ClCompile Include="Application\camera\state.cpp" />
     <ClCompile Include="Application\console\module.cpp" />
     <ClCompile Include="Application\input\module.cpp" />
@@ -99,7 +99,9 @@
     <ClCompile Include="Application\model\shape.cpp" />
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\module.cpp" />
-    <ClCompile Include="Application\person\module.cpp" />
+    <ClCompile Include="Application\person\ground.cpp" />
+    <ClCompile Include="Application\person\general.cpp" />
+    <ClCompile Include="Application\person\movement.cpp" />
     <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\module.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />

@@ -88,9 +88,6 @@
     <ClCompile Include="Application\renderer\passes.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\camera\module.cpp">
-      <Filter>camera</Filter>
-    </ClCompile>
     <ClCompile Include="Application\interface\module.cpp">
       <Filter>interface</Filter>
     </ClCompile>
@@ -121,9 +118,6 @@
     <ClCompile Include="Application\input\module.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="Application\person\module.cpp">
-      <Filter>person</Filter>
-    </ClCompile>
     <ClCompile Include="Application\camera\create.cpp">
       <Filter>camera</Filter>
     </ClCompile>
@@ -138,6 +132,18 @@
     </ClCompile>
     <ClCompile Include="Application\camera\state.cpp">
       <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\person\ground.cpp">
+      <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\person\movement.cpp">
+      <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\general.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\person\general.cpp">
+      <Filter>person</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
