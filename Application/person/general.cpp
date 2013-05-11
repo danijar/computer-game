@@ -6,7 +6,7 @@
 using namespace glm;
 using namespace sf;
 
-#include "transform.h"
+#include "form.h"
 #include "person.h"
 #include "camera.h"
 
@@ -18,7 +18,7 @@ void ModulePerson::Init()
 
 void ModulePerson::Update()
 {
-	auto pns = Entity->Get<StoragePerson>();
+	auto pns = Entity->Get<Person>();
 	
 	for(auto i = pns.begin(); i != pns.end(); ++i)
 	{
@@ -32,8 +32,8 @@ void ModulePerson::Update()
 	}
 
 	// move person attached to active camera
-	unsigned int id = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
-	auto psn = Entity->Get<StoragePerson>(id);
+	unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+	auto psn = Entity->Get<Person>(id);
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
@@ -46,17 +46,17 @@ void ModulePerson::Update()
 void ModulePerson::Listeners()
 {
 	Event->Listen("InputBindJump", [=] {
-		unsigned int id = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person;
-		auto psn = Entity->Get<StoragePerson>(id);
+		unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+		auto psn = Entity->Get<Person>(id);
 
 		if(Keyboard::isKeyPressed(Keyboard::LShift))
 		{
-			auto tsf = Entity->Get<StorageTransform>(id);
+			auto tsf = Entity->Get<Form>(id);
 			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
 		}
 		else if(psn->Onground)
 		{
-			auto tsf = Entity->Get<StorageTransform>(id);
+			auto tsf = Entity->Get<Form>(id);
 			tsf->Body->applyCentralImpulse(btVector3(0, 5.5f, 0) * psn->Mass);
 		}
 	});

@@ -1,9 +1,9 @@
 #pragma once
 
 
-struct StoragePerson
+struct Person
 {
-	StoragePerson() : Onground(false), Changed(true) {}
+	Person() : Onground(false), Changed(true) {}
 
 	void Calculate(float Height)
 	{

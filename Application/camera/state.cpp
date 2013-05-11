@@ -9,13 +9,13 @@ using namespace sf;
 
 void ModuleCamera::State()
 {
-	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 	State(cam->Active);
 }
 
 void ModuleCamera::State(bool Active)
 {
-	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	cam->Active = Active;

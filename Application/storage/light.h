@@ -3,9 +3,9 @@
 #include <GLM/glm.hpp>
 
 
-struct StorageLight
+struct Light
 {
-	StorageLight() : Intensity(1.f), Type(POINT) {}
+	Light() : Intensity(1.f), Type(POINT) {}
 	enum Shape{ POINT, SPOT, DIRECTIONAL } Type;
 
 	glm::vec3 Color;

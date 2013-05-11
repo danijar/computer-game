@@ -6,16 +6,16 @@
 using namespace std;
 using namespace glm;
 
-#include "transform.h"
+#include "form.h"
 #include "model.h"
 #include "light.h"
 
 
-unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec3 Rotation, vec3 Scale, float Mass)
+unsigned int ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, vec3 Rotation, vec3 Scale, float Mass)
 {
 	unsigned int id = Entity->New();
-	auto frm = Entity->Add<StorageModel>(id);
-	auto tsf = Entity->Add<StorageTransform>(id);
+	auto frm = Entity->Add<Model>(id);
+	auto tsf = Entity->Add<Form>(id);
 
 	ModuleModel::Mesh mesh = GetMesh(Mesh);
 	frm->Positions = mesh.Positions;
@@ -37,11 +37,11 @@ unsigned int ModuleModel::Model(string Mesh, string Material, vec3 Position, vec
 	return id;
 }
 
-unsigned int ModuleModel::Light(vec3 Position, float Radius, vec3 Color, float Intensity, StorageLight::Shape Type)
+unsigned int ModuleModel::CreateLight(vec3 Position, float Radius, vec3 Color, float Intensity, Light::Shape Type)
 {
 	unsigned int id = Entity->New();
-	auto tsf = Entity->Add<StorageTransform>(id);
-	auto lgh = Entity->Add<StorageLight>(id);
+	auto tsf = Entity->Add<Form>(id);
+	auto lgh = Entity->Add<Light>(id);
 
 	tsf->Position(Position);
 	lgh->Radius = Radius;

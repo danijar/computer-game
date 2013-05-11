@@ -8,12 +8,12 @@ using namespace glm;
 
 #include "settings.h"
 #include "camera.h"
-#include "transform.h"
+#include "form.h"
 #include "model.h"
 #include "light.h"
 
 
-void ModuleRenderer::Quad(Pass *Pass, bool Screen)
+void ModuleRenderer::DrawQuad(Pass *Pass, bool Screen)
 {
 	if(Screen) glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	else       glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
@@ -43,10 +43,10 @@ void ModuleRenderer::Quad(Pass *Pass, bool Screen)
 	glUseProgram(0);
 }
 
-void ModuleRenderer::Forms(Pass *Pass)
+void ModuleRenderer::DrawForms(Pass *Pass)
 {	
-	auto stg = Global->Get<StorageSettings>("settings");
-	auto fms = Entity->Get<StorageModel>();
+	auto stg = Global->Get<Settings>("settings");
+	auto fms = Entity->Get<Model>();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -54,9 +54,9 @@ void ModuleRenderer::Forms(Pass *Pass)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 	glUseProgram(Pass->Shader);
-	glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "view"), 1, GL_FALSE, value_ptr(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->View));
+	glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
 
-	glPolygonMode(GL_FRONT_AND_BACK, Global->Get<StorageSettings>("settings")->Wireframe ? GL_LINE : GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, Global->Get<Settings>("settings")->Wireframe ? GL_LINE : GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
@@ -69,8 +69,8 @@ void ModuleRenderer::Forms(Pass *Pass)
 		// improve by using fallbacks instead of skipping
 		if(!frm->Elements) continue;
 		if(!frm->Diffuse) continue;
-		if(!Entity->Check<StorageTransform>(i.first)) continue;
-		auto tsf = Entity->Get<StorageTransform>(i.first);
+		if(!Entity->Check<Form>(i.first)) continue;
+		auto tsf = Entity->Get<Form>(i.first);
 
 		glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix()));
 
@@ -106,9 +106,9 @@ void ModuleRenderer::Forms(Pass *Pass)
 	glUseProgram(0);
 }
 
-void ModuleRenderer::Light(Pass *Pass)
+void ModuleRenderer::DrawLight(Pass *Pass)
 {
-	auto lis = Entity->Get<StorageLight>();
+	auto lis = Entity->Get<Light>();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -127,12 +127,12 @@ void ModuleRenderer::Light(Pass *Pass)
 		n++;
 	}
 
-	mat4 view = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->View;
+	mat4 view = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View;
 
 	for(auto i : lis)
 	{
-		int type = i.second->Type == StorageLight::DIRECTIONAL ? 0 : 1;
-		vec3 pos = vec3(view * vec4(Entity->Get<StorageTransform>(i.first)->Position(), !type ? 0 : 1));
+		int type = i.second->Type == Light::DIRECTIONAL ? 0 : 1;
+		vec3 pos = vec3(view * vec4(Entity->Get<Form>(i.first)->Position(), !type ? 0 : 1));
 		glUniform1i(glGetUniformLocation(Pass->Shader, "type"),      type);
 		glUniform3f(glGetUniformLocation(Pass->Shader, "light"),     pos.x, pos.y, pos.z);
 		glUniform3f(glGetUniformLocation(Pass->Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);

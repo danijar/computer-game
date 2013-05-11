@@ -14,14 +14,14 @@ void ModuleRenderer::Init()
 
 void ModuleRenderer::Update()
 {
-	Forms(GetPass("form"));
+	DrawForms(GetPass("form"));
 
-	Light(GetPass("light"));
+	DrawLight(GetPass("light"));
 
 	for(unsigned int i = 2; i < passes.size() - 1; ++i)
-		Quad(&passes[i].second);
+		DrawQuad(&passes[i].second);
 
-	Quad(&passes.back().second, true);
+	DrawQuad(&passes.back().second, true);
 }
 
 void ModuleRenderer::Listeners()

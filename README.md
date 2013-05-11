@@ -1,7 +1,7 @@
 Graphics Application
 ====================
 
-This is an OpenGL graphics application using a component and data based [Graphics Architecture](https://github.com/ComputerGame/GraphicsArchitecture) with event manager.
+This is an OpenGL graphics application based on a component and data oriented [architecture](https://github.com/ComputerGame/GraphicsArchitecture) with event manager.
 
 Features
 --------
@@ -13,7 +13,8 @@ Features
 - Screen space ambient occlusion
 - Deferred Lighting
 - Scripting
-- Physics and Collision
+- Physics and collision
+- Dynamic character controller
 
 Libraries
 ---------
@@ -33,9 +34,11 @@ Screenshot
 Instructions
 ------------
 
-There is a precompiled executable for Windows. To use it, download the content of the `Application` folder and run the executable.
+There is a precompiled executable for Windows. To use it, download the content of the `Application` folder and run the executable. You may need a recent Windows version to run this.
 
 ### Key controls
+
+Settings and global actions
 
 - `Esc` Exit the application.
 - `F1` Toggle mouse capture for camera movement.
@@ -43,13 +46,19 @@ There is a precompiled executable for Windows. To use it, download the content o
 - `F3` Toggle collision shapes debug draw.
 - `F4` Toggle vertical sync.
 - `F11` Toggle between fullscreen and windowed mode.
-- `Mouse Left` Shoot a cube in view direction.
-- `Up`, `Down`, `Left`, `Right` or `W`, `A`, `S`, `D` Move camera.
-- `PageUp`, `PageDown` or `Q`, `E` Raise and lower the camera.
-- Hold `Left Shift` to move faster.
-- `F` Let a cube fall down in the center of the world.
-- `Left Shift` + `F` Let twenty cubes fall down in the center of the world with a strong impulse.
 - `Tab` Toggle scripting console.
+
+Movement and orientation
+
+- `W`, `A`, `S`, `D` or `Up`, `Down`, `Left`, `Right` Move camera.
+- `Space` Jump.
+- Hold `Left Shift` to move and jump even in the air and faster.
+
+Interaction with the world
+
+- `Mouse Left` Shoot a cube in view direction.
+- `F` Let a cube fall down in the center of the world.
+- Hold `Left Shift` to insert more and fast cubiods.
 
 Branches
 --------

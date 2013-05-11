@@ -8,17 +8,17 @@ using namespace glm;
 using namespace sf;
 
 #include "settings.h"
-#include "transform.h"
+#include "form.h"
 #include "camera.h"
 #include "person.h"
-#include "text.h"
+#include "print.h"
 
 
 void ModuleCamera::Init()
 {
 	unsigned int id = Create(vec3(0, 5, 0), 1.80f);
 	*Global->Add<unsigned int>("camera") = id;
-	Entity->Get<StorageCamera>(id)->Active = !Global->Get<StorageSettings>("settings")->Mouse;
+	Entity->Get<Camera>(id)->Active = !Global->Get<Settings>("settings")->Mouse;
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	focus = Focus();
@@ -30,8 +30,8 @@ void ModuleCamera::Init()
 	State();
 	Projection();
 
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		ivec3 position = (ivec3)Entity->Get<StorageTransform>(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		ivec3 position = (ivec3)Entity->Get<Form>(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
 		return "X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
 	};
 
@@ -41,13 +41,13 @@ void ModuleCamera::Init()
 void ModuleCamera::Update()
 {
 	unsigned int camera = *Global->Get<unsigned int>("camera");
-	auto cam = Entity->Get<StorageCamera>(camera);
+	auto cam = Entity->Get<Camera>(camera);
 	if(!cam->Active) return;
 
-	auto psn = Entity->Get<StoragePerson>(cam->Person);
+	auto psn = Entity->Get<Person>(cam->Person);
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto tsfcam = Entity->Get<StorageTransform>(camera);
-	auto tsfpsn = Entity->Get<StorageTransform>(cam->Person);
+	auto tsfcam = Entity->Get<Form>(camera);
+	auto tsfpsn = Entity->Get<Form>(cam->Person);
 
 	float delta = clock.restart().asSeconds();
 	
@@ -62,7 +62,7 @@ void ModuleCamera::Update()
 	}
 	
 	// synchronize camera head and capsule body
-	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<StoragePerson>(cam->Person)->Eyes, 0));
+	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
 	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0)); // this doesn't work yet
 
 	Calculate();
@@ -71,7 +71,7 @@ void ModuleCamera::Update()
 void ModuleCamera::Listeners()
 {
 	Event->Listen("InputBindCamera", [=]{
-		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+		auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 		State(!cam->Active);
 	});
 
@@ -95,7 +95,7 @@ void ModuleCamera::Listeners()
 
 	Event->Listen("WindowFocusGained", [=]{
 		auto wnd = Global->Get<RenderWindow>("window");
-		auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+		auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 
 		// recover state
 		if(cam->Active)

@@ -10,7 +10,7 @@ using namespace sf;
 void ModuleWindow::Init()
 {
 	Global->Add<RenderWindow>("window");
-	auto stg = Global->Get<StorageSettings>("settings");
+	auto stg = Global->Get<Settings>("settings");
 
 	VideoMode mde = VideoMode::getDesktopMode();
 	stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
@@ -22,7 +22,7 @@ void ModuleWindow::Init()
 void ModuleWindow::Update()
 {
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto stg = Global->Get<StorageSettings>("settings");
+	auto stg = Global->Get<Settings>("settings");
 		
 	if(wnd->isOpen())
 	{
@@ -79,7 +79,7 @@ void ModuleWindow::Listeners()
 	});
 
 	Event->Listen("InputBindVsync", [=]{
-		auto stg = Global->Get<StorageSettings>("settings");
+		auto stg = Global->Get<Settings>("settings");
 		stg->Verticalsync = !stg->Verticalsync;
 		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Verticalsync);
 	});

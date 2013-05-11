@@ -134,8 +134,8 @@
     <ClInclude Include="Application\storage\model.h" />
     <ClInclude Include="Application\storage\light.h" />
     <ClInclude Include="Application\storage\settings.h" />
-    <ClInclude Include="Application\storage\text.h" />
-    <ClInclude Include="Application\storage\transform.h" />
+    <ClInclude Include="Application\storage\print.h" />
+    <ClInclude Include="Application\storage\form.h" />
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\window\module.h" />
   </ItemGroup>

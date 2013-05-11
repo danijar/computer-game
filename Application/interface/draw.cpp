@@ -6,13 +6,13 @@
 using namespace std;
 using namespace sf;
 
-#include "text.h"
+#include "print.h"
 
 
 void ModuleInterface::Draw()
 {
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto txs = Entity->Get<StorageText>();
+	auto txs = Entity->Get<Print>();
 		
 	const int margin = 4;
 	const int textsize = 15;

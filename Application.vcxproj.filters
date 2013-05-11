@@ -40,9 +40,6 @@
     <Filter Include="window">
       <UniqueIdentifier>{4c051fd7-69f0-4e2a-8034-515bf93ed3e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="storage">
-      <UniqueIdentifier>{153d5050-398b-4c4c-ad7e-23f239bcd1d0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="mod">
       <UniqueIdentifier>{b5900934-b0be-4d79-9923-857ea751353c}</UniqueIdentifier>
     </Filter>
@@ -54,6 +51,9 @@
     </Filter>
     <Filter Include="person">
       <UniqueIdentifier>{b83a8f44-1cf5-429f-b7a1-42cf450f2f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="type">
+      <UniqueIdentifier>{153d5050-398b-4c4c-ad7e-23f239bcd1d0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -163,23 +163,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">
-      <Filter>storage</Filter>
+      <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\light.h">
-      <Filter>storage</Filter>
+      <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\settings.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\text.h">
-      <Filter>storage</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\storage\transform.h">
-      <Filter>storage</Filter>
+      <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\storage\model.h">
-      <Filter>storage</Filter>
+      <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\renderer\module.h">
       <Filter>renderer</Filter>
@@ -215,7 +209,13 @@
       <Filter>person</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\person.h">
-      <Filter>storage</Filter>
+      <Filter>type</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\print.h">
+      <Filter>type</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\storage\form.h">
+      <Filter>type</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

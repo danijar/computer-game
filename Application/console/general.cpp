@@ -4,7 +4,7 @@
 using namespace std;
 using namespace sf;
 
-#include "text.h"
+#include "print.h"
 
 
 void ModuleConsole::Init()
@@ -26,7 +26,7 @@ void ModuleConsole::Update()
 void ModuleConsole::Listeners()
 {
 	Event->Listen("SystemInitialized", [=]{
-		Entity->Add<StorageText>(Entity->New())->Text = [=]{ return "Script console: " + text + (active ? "_" : ""); };
+		Entity->Add<Print>(Entity->New())->Text = [=]{ return "Script console: " + text + (active ? "_" : ""); };
 	});
 
 	Event->Listen("InputBindConsole", [=]{

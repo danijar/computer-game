@@ -7,9 +7,9 @@
 #include <BULLET/btBulletDynamicsCommon.h>
 
 
-struct StorageTransform
+struct Form
 {
-	StorageTransform() : Added(false)
+	Form() : Added(false)
 	{
 		Body = new btRigidBody(0, new btDefaultMotionState(), new btEmptyShape(), btVector3(0, 0, 0));
 	}

@@ -3,7 +3,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 
-#include "text.h"
+#include "print.h"
 
 
 void ModuleInterface::Init()

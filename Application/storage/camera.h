@@ -4,9 +4,9 @@
 #include <GLM/gtc/matrix_transform.hpp>
 
 
-struct StorageCamera
+struct Camera
 {
-	StorageCamera() : Active(false), Person(0)
+	Camera() : Active(false), Person(0)
 	{
 		View = glm::lookAt(
 			glm::vec3(1.2, 1.2, 1.2),

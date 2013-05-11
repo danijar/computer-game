@@ -4,13 +4,13 @@
 using namespace std;
 
 #include "person.h"
-#include "transform.h"
+#include "form.h"
 
 
 void ModulePerson::Ground(unsigned int Id)
 {
-	auto tsf = Entity->Get<StorageTransform>(Id);
-	auto psn = Entity->Get<StoragePerson>(Id);
+	auto tsf = Entity->Get<Form>(Id);
+	auto psn = Entity->Get<Person>(Id);
 
 	btVector3 origin = tsf->Body->getWorldTransform().getOrigin();
 	bool onground = RayDown(origin, psn->Height / 2).first;

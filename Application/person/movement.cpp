@@ -5,21 +5,21 @@
 using namespace glm;
 
 #include "person.h"
-#include "transform.h"
+#include "form.h"
 #include "camera.h" // get rid of that later
 
 
 void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 {
-	auto tsf = Entity->Get<StorageTransform>(Id);
-	auto psn = Entity->Get<StoragePerson>(Id);
+	auto tsf = Entity->Get<Form>(Id);
+	auto psn = Entity->Get<Person>(Id);
 
 	// fetch orientation of person
-	btQuaternion rotation = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"))->Body->getWorldTransform().getRotation();
+	btQuaternion rotation = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Body->getWorldTransform().getRotation();
 	/*
 	 * Do not move in camera direction but in person direction.
 	 * This doesn't work at the moment. Direction is always positive, to it doesn't work on the half of the map.
-	 * btQuaternion rotation = Entity->Get<StorageTransform>(Id)->Body->getWorldTransform().getRotation();
+	 * btQuaternion rotation = Entity->Get<Form>(Id)->Body->getWorldTransform().getRotation();
 	 */
 
 	// create orientation vectors
@@ -45,8 +45,8 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 
 void ModulePerson::Jump(unsigned int Id, float Multiplier)
 {
-	auto tsf = Entity->Get<StorageTransform>(Id);
-	auto psn = Entity->Get<StoragePerson>(Id);
+	auto tsf = Entity->Get<Form>(Id);
+	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
 	tsf->Body->applyCentralImpulse(btVector3(0, 5.5, 0) * psn->Mass * Multiplier);

@@ -5,19 +5,19 @@
 using namespace sf;
 
 #include "settings.h"
-#include "text.h"
+#include "print.h"
 
 
 void ModuleWindow::Create()
 {
-	auto stg = Global->Get<StorageSettings>("settings");
+	auto stg = Global->Get<Settings>("settings");
 	Create(!stg->Fullscreen);
 }
 
 void ModuleWindow::Create(bool Fullscreen)
 {
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto stg = Global->Get<StorageSettings>("settings");
+	auto stg = Global->Get<Settings>("settings");
 
 	stg->Fullscreen = Fullscreen;
 

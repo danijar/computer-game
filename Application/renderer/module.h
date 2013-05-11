@@ -69,9 +69,9 @@ class ModuleRenderer : public Module
 	Pass *GetPass(std::string Name);
 	
 	// draw
-	void Quad (Pass *Pass, bool Screen = false);
-	void Forms(Pass *Pass);
-	void Light(Pass *Pass);
+	void DrawQuad (Pass *Pass, bool Screen = false);
+	void DrawForms(Pass *Pass);
+	void DrawLight(Pass *Pass);
 
 	// effect
 	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);

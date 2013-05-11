@@ -4,9 +4,9 @@
 #include <SFML/System.hpp>
 
 
-struct StorageSettings
+struct Settings
 {
-	StorageSettings() : Fullscreen(false), Mouse(true), Size(640, 480), Title(""), FPS(0), Fieldofview(45.f), Viewdistance(100.f), Wireframe(false), Verticalsync(true) {}
+	Settings() : Fullscreen(false), Mouse(true), Size(640, 480), Title(""), FPS(0), Fieldofview(45.f), Viewdistance(100.f), Wireframe(false), Verticalsync(true) {}
 
 	// settings
 	int FPS;

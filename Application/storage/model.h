@@ -3,7 +3,7 @@
 #include <GLEW/glew.h>
 
 
-struct StorageModel
+struct Model
 {
 	GLuint Positions, Normals, Texcoords, Elements;
 	GLuint Diffuse, Normal, Specular;

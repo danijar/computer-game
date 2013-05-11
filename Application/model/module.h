@@ -19,7 +19,7 @@ class ModuleModel : public Module
 	void Listeners();
 
 	// mesh
-	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; }; // this is redundant to StorageMesh
+	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; }; // this is redundant to Mesh
 	std::unordered_map<std::string, Mesh> meshes;
 	Mesh GetMesh(std::string Path);
 	void ReloadMeshes();
@@ -67,8 +67,8 @@ class ModuleModel : public Module
 
 public:
 	// create
-	unsigned int Model(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), float Mass = 0);
-	unsigned int Light(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, StorageLight::Shape Type = StorageLight::POINT);
+	unsigned int CreateModel(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), float Mass = 0);
+	unsigned int CreateLight(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, Light::Shape Type = Light::POINT);
 	
 	// callbacks
 	void Callbacks();

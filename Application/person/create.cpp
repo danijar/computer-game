@@ -2,14 +2,14 @@
 
 #include <BULLET/btBulletDynamicsCommon.h>
 
-#include "transform.h"
+#include "form.h"
 #include "person.h"
 
 
 void ModulePerson::Setup(unsigned int Id)
 {
-	auto tsf = Entity->Check<StorageTransform>(Id) ? Entity->Get<StorageTransform>(Id) : Entity->Add<StorageTransform>(Id);
-	auto psn = Entity->Get<StoragePerson>(Id);
+	auto tsf = Entity->Check<Form>(Id) ? Entity->Get<Form>(Id) : Entity->Add<Form>(Id);
+	auto psn = Entity->Get<Person>(Id);
 
 	delete tsf->Body->getCollisionShape();
 	delete tsf->Body;

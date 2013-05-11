@@ -6,12 +6,12 @@ using namespace std;
 using namespace sf;
 
 #include "settings.h"
-#include "text.h"
+#include "print.h"
 
 
 void ModuleSettings::Init()
 {
-	auto stg = Global->Add<StorageSettings>("settings");
+	auto stg = Global->Add<Settings>("settings");
 
 	stg->Fullscreen   = false;
 	stg->Mouse		  = false;
@@ -21,7 +21,7 @@ void ModuleSettings::Init()
 	stg->Viewdistance = 1000.f;
 
 	frames = 0;
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
+	Entity->Add<Print>(Entity->New())->Text = [=]{
 		return "FPS " + to_string(stg->FPS);
 	};
 
@@ -33,7 +33,7 @@ void ModuleSettings::Update()
 	if(clock.getElapsedTime().asMilliseconds() >= 1000)
 	{
 		clock.restart();
-		Global->Get<StorageSettings>("settings")->FPS = frames;
+		Global->Get<Settings>("settings")->FPS = frames;
 		frames = 0;
 	}
 	frames++;
@@ -42,7 +42,7 @@ void ModuleSettings::Update()
 void ModuleSettings::Listeners()
 {
 	Event->Listen("InputBindWireframe", [=]{
-		auto stg = Global->Get<StorageSettings>("settings");
+		auto stg = Global->Get<Settings>("settings");
 		stg->Wireframe = !stg->Wireframe;
 	});
 }

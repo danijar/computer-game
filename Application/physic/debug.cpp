@@ -44,7 +44,7 @@ ModulePhysic::DebugDrawer::DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Glo
 
 void ModulePhysic::DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
 {
-	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(shader);

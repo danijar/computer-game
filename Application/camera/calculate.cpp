@@ -7,7 +7,7 @@ using namespace sf;
 
 #include "settings.h"
 #include "camera.h"
-#include "transform.h"
+#include "form.h"
 
 
 void ModuleCamera::Projection()
@@ -17,8 +17,8 @@ void ModuleCamera::Projection()
 
 void ModuleCamera::Projection(Vector2u Size)
 {
-	auto stg = Global->Get<StorageSettings>("settings");
-	auto cam = Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"));
+	auto stg = Global->Get<Settings>("settings");
+	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 
 	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 0.1f, stg->Viewdistance);
 }
@@ -26,8 +26,8 @@ void ModuleCamera::Projection(Vector2u Size)
 void ModuleCamera::Calculate()
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<StorageTransform>(id);
-	auto cam = Entity->Get<StorageCamera>(id);
+	auto tsf = Entity->Get<Form>(id);
+	auto cam = Entity->Get<Camera>(id);
 
 	cam->View = lookAt(tsf->Position(), tsf->Position() + tsf->Direction(), vec3(0, 1, 0));
 }

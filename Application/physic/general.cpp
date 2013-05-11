@@ -2,7 +2,7 @@
 
 #include <BULLET/btBulletDynamicsCommon.h>
 
-#include "transform.h"
+#include "form.h"
 
 
 void ModulePhysic::Init()
@@ -32,7 +32,7 @@ void ModulePhysic::Update()
 {
 	auto world = Global->Get<btDiscreteDynamicsWorld>("world");
 
-	auto tfs = Entity->Get<StorageTransform>();
+	auto tfs = Entity->Get<Form>();
 	for(auto i = tfs.begin(); i != tfs.end(); ++i)
 	{
 		if(!i->second->Added)

@@ -11,8 +11,8 @@ using namespace sf;
 using namespace glm;
 
 #include "model.h"
-#include "transform.h"
-#include "text.h"
+#include "form.h"
+#include "print.h"
 #include "light.h"
 
 
@@ -22,8 +22,8 @@ void ModuleModel::Init()
 
 	Listeners();
 
-	Entity->Add<StorageText>(Entity->New())->Text = [=]{
-		auto fms = Entity->Get<StorageModel>();
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		auto fms = Entity->Get<Model>();
 		return "Forms     " + to_string(fms.size()      ) + '\n'
 			 + "Meshes    " + to_string(meshes.size()   ) + '\n'
 			 + "Materials " + to_string(materials.size()) + '\n'
@@ -33,7 +33,7 @@ void ModuleModel::Init()
 
 	Callbacks();
 
-	Light(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, StorageLight::DIRECTIONAL);
+	CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, Light::DIRECTIONAL);
 	Script->Run("init.js");
 }
 
@@ -59,21 +59,21 @@ void ModuleModel::Listeners()
 			int count((int)cook(10.0f, 25.0f));
 			for(int i = 0; i < count; ++i)
 			{
-				unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 30, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 0.7f), cook(0.3f, 0.7f), cook(0.3f, 0.7f)), 3.0f);
-				Entity->Get<StorageTransform>(id)->Body->applyCentralImpulse(btVector3(cook(-12.5f, 12.5f), -75.0f, cook(-12.5f, 12.5f)));
+				unsigned int id = CreateModel("qube.prim", "magic.mtl", vec3(0, 30, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 0.7f), cook(0.3f, 0.7f), cook(0.3f, 0.7f)), 3.0f);
+				Entity->Get<Form>(id)->Body->applyCentralImpulse(btVector3(cook(-12.5f, 12.5f), -75.0f, cook(-12.5f, 12.5f)));
 			}
 		}
 		else
 		{
-			Model("qube.prim", "magic.mtl", vec3(0, 15, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
+			CreateModel("qube.prim", "magic.mtl", vec3(0, 15, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
 		}
 	});
 
 	// move this into a script
 	Event->Listen("InputBindShoot", [=]{
-		unsigned int id = Model("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(0.5f), 5.0f);
-		auto tsfcam = Entity->Get<StorageTransform>(*Global->Get<unsigned int>("camera"));
-		auto tsfcbe = Entity->Get<StorageTransform>(id);
+		unsigned int id = CreateModel("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(0.5f), 5.0f);
+		auto tsfcam = Entity->Get<Form>(*Global->Get<unsigned int>("camera"));
+		auto tsfcbe = Entity->Get<Form>(id);
 
 		vec3 lookat = tsfcam->Direction();
 		

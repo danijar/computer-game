@@ -24,7 +24,7 @@ ModuleModel::Material ModuleModel::GetMaterial(string Path)
 
 void ModuleModel::ReloadMaterials()
 {
-	auto mds = Entity->Get<StorageModel>();
+	auto mds = Entity->Get<Model>();
 
 	for(auto i = materials.begin(); i != materials.end(); ++i)
 	{

@@ -6,13 +6,13 @@ using namespace std;
 using namespace glm;
 
 #include "camera.h"
-#include "transform.h"
+#include "form.h"
 
 
 void ModuleCamera::Rotate(vec3 Amount, float Time, float Sensitivity)
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<StorageTransform>(id);
+	auto tsf = Entity->Get<Form>(id);
 
 	// apply multipliers
 	Amount *= Time;

@@ -63,7 +63,7 @@ void ModuleRenderer::Uniforms()
 	
 	id = GetPass("form")->Shader;
 	glUseProgram(id);
-	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<StorageCamera>(*Global->Get<unsigned int>("camera"))->Projection));
+	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
 
 	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 

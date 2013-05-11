@@ -3,8 +3,8 @@
 #include <functional>
 
 
-struct StorageText
+struct Print
 {
-	StorageText() : Text([]{ return ""; }) {}
+	Print() : Text([]{ return ""; }) {}
 	std::function<std::string(void)> Text;
 };

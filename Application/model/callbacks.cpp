@@ -5,7 +5,7 @@
 using namespace std;
 using namespace glm;
 
-#include "transform.h"
+#include "form.h"
 
 
 void ModuleModel::Callbacks()
@@ -29,7 +29,7 @@ v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args) // rotatio
 	vec3 scale(args[8]->NumberValue());
 	float mass = (float)args[9]->NumberValue();
 
-	unsigned int id = module->Model(mesh, material, position, radians(rotation), scale, mass);
+	unsigned int id = module->CreateModel(mesh, material, position, radians(rotation), scale, mass);
 	return v8::Uint32::New(id);
 }
 
@@ -42,7 +42,7 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 	vec3 color(args[4]->NumberValue(), args[5]->NumberValue(), args[6]->NumberValue());
 	float intensity  = (float)args[7]->NumberValue();
 
-	unsigned int id = module->Light(position, radius, color, intensity, StorageLight::POINT);
+	unsigned int id = module->CreateLight(position, radius, color, intensity, Light::POINT);
 	return v8::Uint32::New(id);
 }
 
@@ -52,7 +52,7 @@ v8::Handle<v8::Value> ModuleModel::jsGetPosition(const v8::Arguments& args)
 
 	unsigned int id = args[0]->Uint32Value();
 
-	auto tsf = module->Entity->Get<StorageTransform>(id);
+	auto tsf = module->Entity->Get<Form>(id);
 	vec3 position = tsf->Position();
 
 	v8::Handle<v8::Array> result = v8::Array::New(3);
@@ -69,7 +69,7 @@ v8::Handle<v8::Value> ModuleModel::jsSetPosition(const v8::Arguments& args)
 	unsigned int id = args[0]->Uint32Value();
 	vec3 position(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
 
-	auto tsf = module->Entity->Get<StorageTransform>(id);
+	auto tsf = module->Entity->Get<Form>(id);
 	tsf->Position(position);
 	return v8::Undefined();
 }
@@ -80,7 +80,7 @@ v8::Handle<v8::Value> ModuleModel::jsGetRotation(const v8::Arguments& args)
 
 	unsigned int id = args[0]->Uint32Value();
 
-	auto tsf = module->Entity->Get<StorageTransform>(id);
+	auto tsf = module->Entity->Get<Form>(id);
 	vec3 rotation = tsf->Rotation();
 
 	v8::Handle<v8::Array> result = v8::Array::New(3);
@@ -97,7 +97,7 @@ v8::Handle<v8::Value> ModuleModel::jsSetRotation(const v8::Arguments& args)
 	unsigned int id = args[0]->Uint32Value();
 	vec3 rotation(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
 
-	auto tsf = module->Entity->Get<StorageTransform>(id);
+	auto tsf = module->Entity->Get<Form>(id);
 	tsf->Rotation(rotation);
 	return v8::Undefined();
 }
