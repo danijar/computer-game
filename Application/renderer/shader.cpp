@@ -30,7 +30,7 @@ GLuint ModuleRenderer::CreateShader(string Path, GLenum Type)
 {
 	GLuint id = glCreateShader(Type);
 	string source = File->Read("shader/" + Path);
-	const GLchar* chars = source.c_str();
+	const GLchar *chars = source.c_str();
 	glShaderSource(id, 1, &chars, NULL);
 	glCompileShader(id);
 	if(!TestShader(id)) Debug->Fail("... in (" + Path + ")");

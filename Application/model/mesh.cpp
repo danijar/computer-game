@@ -48,7 +48,7 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 
 	for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 	{
-		const aiMesh* mesh = scene->mMeshes[i];
+		const aiMesh *mesh = scene->mMeshes[i];
 
 		vector<GLuint> faces;
 		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)

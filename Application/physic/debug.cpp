@@ -16,13 +16,13 @@ ModulePhysic::DebugDrawer::DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Glo
 {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
 	{ string source = File->Read("shader/shader.vert");
-	const GLchar* chars = source.c_str();
+	const GLchar *chars = source.c_str();
 	glShaderSource(vertex, 1, &chars, NULL);
 	glCompileShader(vertex); }
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	{ string source = File->Read("shader/shader.frag");
-	const GLchar* chars = source.c_str();
+	const GLchar *chars = source.c_str();
 	glShaderSource(fragment, 1, &chars, NULL);
 	glCompileShader(fragment); }
 

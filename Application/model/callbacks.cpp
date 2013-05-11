@@ -20,7 +20,7 @@ void ModuleModel::Callbacks()
 
 v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args) // rotation is passed in degrees from script
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	string mesh = *v8::String::Utf8Value(args[0]);
 	string material = *v8::String::Utf8Value(args[1]);
@@ -35,7 +35,7 @@ v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args) // rotatio
 
 v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	vec3 position(args[0]->NumberValue(), args[1]->NumberValue(), args[2]->NumberValue());
 	float radius = (float)args[3]->NumberValue();
@@ -48,7 +48,7 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 
 v8::Handle<v8::Value> ModuleModel::jsGetPosition(const v8::Arguments& args)
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	unsigned int id = args[0]->Uint32Value();
 
@@ -64,7 +64,7 @@ v8::Handle<v8::Value> ModuleModel::jsGetPosition(const v8::Arguments& args)
 
 v8::Handle<v8::Value> ModuleModel::jsSetPosition(const v8::Arguments& args)
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	unsigned int id = args[0]->Uint32Value();
 	vec3 position(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
@@ -76,7 +76,7 @@ v8::Handle<v8::Value> ModuleModel::jsSetPosition(const v8::Arguments& args)
 
 v8::Handle<v8::Value> ModuleModel::jsGetRotation(const v8::Arguments& args)
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	unsigned int id = args[0]->Uint32Value();
 
@@ -92,7 +92,7 @@ v8::Handle<v8::Value> ModuleModel::jsGetRotation(const v8::Arguments& args)
 
 v8::Handle<v8::Value> ModuleModel::jsSetRotation(const v8::Arguments& args)
 {
-	ModuleModel* module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
 
 	unsigned int id = args[0]->Uint32Value();
 	vec3 rotation(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());

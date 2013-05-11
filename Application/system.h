@@ -201,9 +201,9 @@ private:
 class HelperScript
 {
 public:
-	HelperScript(std::string Name, Module* Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context)
+	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context)
 	{
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 
 		v8::Local<v8::External> handle = v8::External::New(reinterpret_cast<void*>(Module));
@@ -211,17 +211,17 @@ public:
 	}
 	~HelperScript()
 	{
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 		context->Exit();
 	}
 
 	void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
 	{
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 
-		v8::InvocationCallback* function = Function.target<v8::InvocationCallback>();
+		v8::InvocationCallback *function = Function.target<v8::InvocationCallback>();
 		v8::Local<v8::Object> global = context->Global();
 		global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
 	}
@@ -234,7 +234,7 @@ public:
 		}
 		std::string source = HelperFile::Read(name, Path);
 
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 		context->Enter();
 
@@ -246,7 +246,7 @@ public:
 	{
 		if(scripts.find(Path) == scripts.end()) Load(Path);
 
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 
 		v8::Local<v8::Value> result = scripts[Path]->Run();
@@ -255,7 +255,7 @@ public:
 	}
 	v8::Persistent<v8::Value> Inline(std::string Source)
 	{
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);
 
 		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
@@ -370,7 +370,7 @@ public:
 		return ++index;
 	}
 	template <typename T>
-	T* Add(unsigned int id)
+	T *Add(unsigned int id)
 	{
 		if(id > index || id == 0) HelperDebug::Crash("system", "cannot add entity " + std::to_string(id) + " because it is not an entity id. Use 'int New()'.");
 		auto key = std::type_index(typeid(T));
@@ -380,7 +380,7 @@ public:
 			auto value = new std::unordered_map<int, std::shared_ptr<void> >();
 			list.insert(make_pair(key, *value));
 		}
-		T* t = new T();
+		T *t = new T();
 		auto result = list[key].insert(make_pair(id, std::shared_ptr<void>(t)));
 		if (!result.second)
 		{
@@ -404,7 +404,7 @@ public:
 		return output;
 	}
 	template <typename T>
-	T* Get(unsigned int id)
+	T *Get(unsigned int id)
 	{
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, id))
@@ -479,7 +479,7 @@ class ManagerGlobal
 {
 public:
 	template <typename T>
-	T* Add(std::string Name)
+	T *Add(std::string Name)
 	{
 		T *t = new T();
 		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(t)));
@@ -491,7 +491,7 @@ public:
 		return t;
 	}
 	template <typename T>
-	T* Add(std::string Name, T *Instance)
+	T *Add(std::string Name, T *Instance)
 	{
 		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(Instance)));
 		if (!result.second)
@@ -502,7 +502,7 @@ public:
 		return Instance;
 	}
 	template <typename T>
-	T* Get(std::string Name)
+	T *Get(std::string Name)
 	{
 		auto i = list.find(Name);
 		if(i == list.end())
@@ -539,7 +539,7 @@ private:
 class Module
 {
 public:
-	void Set(std::string Name, ManagerEvent* Event, ManagerEntity* Entity, ManagerGlobal* Global, v8::Persistent<v8::Context> Context, std::string* Message)
+	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, v8::Persistent<v8::Context> Context, std::string *Message)
 	{
 		this->name    = Name;
 		this->Event   = Event;
@@ -602,7 +602,7 @@ public:
 		event->Fire("SystemInitialized");
 	}
 
-	void Add(std::string Name, Module* Module)
+	void Add(std::string Name, Module *Module)
 	{
 		for(auto i : list)
 		{

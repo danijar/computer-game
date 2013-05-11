@@ -52,7 +52,7 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 
 	if(Static)
 	{
-		btTriangleMesh* triangles = new btTriangleMesh();
+		btTriangleMesh *triangles = new btTriangleMesh();
 
 		const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 		if(!scene)
@@ -63,7 +63,7 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 
 		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
 		{
-			const aiMesh* mesh = scene->mMeshes[i];
+			const aiMesh *mesh = scene->mMeshes[i];
 
 			vector<vector<int>> faces;
 			for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
