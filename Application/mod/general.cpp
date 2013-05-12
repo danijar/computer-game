@@ -3,6 +3,7 @@
 
 void ModuleMod::Init()
 {
+	Script->Inline("var a = 42; print('inline script like number ' + a);");
 	Script->Run("init.js");
 }
 

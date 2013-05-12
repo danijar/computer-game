@@ -225,43 +225,46 @@ public:
 		v8::Local<v8::Object> global = context->Global();
 		global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
 	}
-	void Load(std::string Path)
+
+	bool Load(std::string Path)
 	{
 		if(scripts.find(Path) != scripts.end())
 		{
-			HelperDebug::Warning("system", "The script " + Path + " is already loaded.");
-			return;
+			HelperDebug::Warning("system", "the script (" + Path + ") is already loaded");
+			return true;
 		}
+
 		std::string source = HelperFile::Read(name, Path);
-
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-		context->Enter();
-
-		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(source.c_str()));
-		v8::Persistent<v8::Script> handle = v8::Persistent<v8::Script>::New(isolate, script);
-		scripts.insert(std::make_pair(Path, handle));
+		v8::Persistent<v8::Script> script = Compile(source);
+		if(script.IsEmpty())
+		{
+			HelperDebug::Warning("system", "the script (" + Path + ") cannot be compiled");
+			return false;
+		}
+		
+		scripts.insert(std::make_pair(Path, script));
+		return true;
 	}
+
 	v8::Persistent<v8::Value> Run(std::string Path)
 	{
-		if(scripts.find(Path) == scripts.end()) Load(Path);
+		if(scripts.find(Path) == scripts.end())
+			if(!Load(Path))
+				return v8::Persistent<v8::Value>(v8::Undefined());
 
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-
-		v8::Local<v8::Value> result = scripts[Path]->Run();
-		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
-		return handle;
+		return Execute(scripts[Path]);
 	}
+
 	v8::Persistent<v8::Value> Inline(std::string Source)
 	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
+		v8::Persistent<v8::Script> script = Compile(Source);
+		if(script.IsEmpty())
+		{
+			HelperDebug::Warning("system", "inline script cannot be compiled");
+			return v8::Persistent<v8::Value>(v8::Undefined());
+		}
 
-		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
-		v8::Local<v8::Value> result = script->Run();
-		v8::Persistent<v8::Value> handle = v8::Persistent<v8::Value>::New(isolate, result);
-		return handle;
+		return Execute(script);
 	}
 
 	static Module *Unwrap(v8::Local<v8::Value> Data)
@@ -280,11 +283,44 @@ public:
 		v8::External *handle = v8::External::Cast(*Data);
 		return static_cast<Module*>(handle->Value());
 	}
+
 private:
 	std::string name;
 	v8::Persistent<v8::Context> context;
 	std::unordered_map<std::string, v8::Persistent<v8::Script> > scripts;
 	v8::Persistent<v8::External> module; // this is only for binding scripts
+
+	v8::Persistent<v8::Script> Compile(std::string Source)
+	{
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
+		v8::HandleScope scope(isolate);
+
+		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
+		return v8::Persistent<v8::Script>::New(isolate, script);
+	}
+
+	v8::Persistent<v8::Value> Execute(v8::Persistent<v8::Script> Script, std::string Name = "")
+	{
+		v8::Isolate *isolate = v8::Isolate::GetCurrent();
+		v8::HandleScope scope(isolate);
+
+		v8::TryCatch trycatch;
+		v8::Local<v8::Value> result = Script->Run();
+		if(result.IsEmpty())
+		{
+			v8::Handle<v8::Value> exception = trycatch.Exception();
+			v8::String::AsciiValue message(exception);
+			if(Name == "")
+				HelperDebug::Fail("system", "script crashed:");
+			else if(Name == "inline")
+				HelperDebug::Fail("system", "inline script crashed:");
+			else
+				HelperDebug::Fail("system", "script (" + Name + ") crashed:");
+			HelperDebug::Inline(std::string(*message) + "\n");
+			return v8::Persistent<v8::Value>(v8::Undefined());
+		}
+		return v8::Persistent<v8::Value>::New(isolate, result);
+	}
 };
 
 
@@ -329,7 +365,7 @@ public:
 		for (auto i = Functions.begin(); i != Functions.end(); ++i)
 		{
 			if(i->second) continue;
-			else          (*(std::function<void()>*)(i->first))();
+			else (*(std::function<void()>*)(i->first))();
 		}
 	}
 	void FireRange(std::string Name, int From, int To)
@@ -372,7 +408,7 @@ public:
 	template <typename T>
 	T *Add(unsigned int id)
 	{
-		if(id > index || id == 0) HelperDebug::Crash("system", "cannot add entity " + std::to_string(id) + " because it is not an entity id. Use 'int New()'.");
+		if(id > index || id == 0) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(id) + ") because it is not an entity id. Use 'int New()'.");
 		auto key = std::type_index(typeid(T));
 
 		if (list.find(key) == list.end())
@@ -384,7 +420,7 @@ public:
 		auto result = list[key].insert(make_pair(id, std::shared_ptr<void>(t)));
 		if (!result.second)
 		{
-			HelperDebug::Warning("system", "cannot add entity " + std::to_string(id) + " to " + std::string(key.name()) + " because it already exists.");
+			HelperDebug::Warning("system", "cannot add entity (" + std::to_string(id) + ") to (" + std::string(key.name()) + ") because it already exists.");
 			return Get<T>(id);
 		}
 		return t;
@@ -409,7 +445,7 @@ public:
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, id))
 		{
-			HelperDebug::Crash("system", "cannot get entity because " + std::to_string(id) + " in " + std::string(key.name()) + " does not exist.");
+			HelperDebug::Crash("system", "cannot get entity because (" + std::to_string(id) + ") in (" + std::string(key.name()) + ") does not exist.");
 			return nullptr;
 		}
 		else return static_cast<T*>(list[key][id].get());
@@ -418,7 +454,7 @@ public:
 	{
 		if(id > index || id == 0)
 		{
-			HelperDebug::Warning("system", "cannot delete entity " + std::to_string(id) + " because it is not an entity id.");
+			HelperDebug::Warning("system", "cannot delete entity (" + std::to_string(id) + ") because it is not an entity id.");
 			return;
 		}
 		for(auto i = list.begin(); i != list.end(); ++i)
@@ -438,7 +474,7 @@ public:
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, id))
 		{
-			HelperDebug::Crash("system", "cannot delete entity because " + std::string(key.name()) + " in " + std::string(key.name()) + " does not exist.");
+			HelperDebug::Crash("system", "cannot delete entity because (" + std::string(key.name()) + ") in (" + std::string(key.name()) + ") does not exist.");
 			return;
 		}
 		auto j = list[key].find(id);
@@ -485,7 +521,7 @@ public:
 		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(t)));
 		if (!result.second)
 		{
-			HelperDebug::Warning("system", "cannot add global " + Name + " because it already exists.");
+			HelperDebug::Warning("system", "cannot add global (" + Name + ") because it already exists.");
 			return Get<T>(Name);
 		}
 		return t;
@@ -496,7 +532,7 @@ public:
 		auto result = list.insert(make_pair(Name, std::shared_ptr<void>(Instance)));
 		if (!result.second)
 		{
-			HelperDebug::Warning("system", "cannot add global " + Name + " because it already exists.");
+			HelperDebug::Warning("system", "cannot add global (" + Name + ") because it already exists.");
 			return Get<T>(Name);
 		}
 		return Instance;
@@ -507,7 +543,7 @@ public:
 		auto i = list.find(Name);
 		if(i == list.end())
 		{
-			HelperDebug::Crash("system", "cannot get global " + Name + " because it does not exists.");
+			HelperDebug::Crash("system", "cannot get global (" + Name + ") because it does not exists.");
 			return nullptr;
 		}
 		return static_cast<T*>(i->second.get());
@@ -517,7 +553,7 @@ public:
 		auto i = list.find(Name);
 		if(i == list.end())
 		{
-			HelperDebug::Warning("system", "cannot delete global " + Name + " because it does not exists");
+			HelperDebug::Warning("system", "cannot delete global (" + Name + ") because it does not exists");
 			return;
 		}
 		delete &i->second; // test this
@@ -608,7 +644,7 @@ public:
 		{
 			if(std::get<0>(i) == Name)
 			{
-				HelperDebug::Crash("system", "cannot add module " + Name + " because the name already exists");
+				HelperDebug::Crash("system", "cannot add module (" + Name + ") because the name already exists");
 				return;
 			}
 		}
@@ -624,27 +660,27 @@ public:
 				return;
 			}
 		}
-		HelperDebug::Warning("system", "cannot remove module " + Name + " because the name was not found");
+		HelperDebug::Warning("system", "cannot remove module (" + Name + ") because the name was not found");
 	}
 	void Pause(std::string Name)
 	{
 		for (auto i : list)
 		{
-			if(std::get<2>(i) == false) HelperDebug::Warning("system", "module " + Name + " is already paused");
+			if(std::get<2>(i) == false) HelperDebug::Warning("system", "module (" + Name + ") is already paused");
 			else std::get<2>(i) = false;
 			return;
 		}
-		HelperDebug::Warning("system", "cannot pause module " + Name + " because the name was not found");
+		HelperDebug::Warning("system", "cannot pause module (" + Name + ") because the name was not found");
 	}
 	void Resume(std::string Name)
 	{
 		for (auto i : list)
 		{
-			if(std::get<2>(i) == true) HelperDebug::Warning("system", "module " + Name + " isn't paused");
+			if(std::get<2>(i) == true) HelperDebug::Warning("system", "module (" + Name + ") isn't paused");
 			else std::get<2>(i) = true;
 			return;
 		}
-		HelperDebug::Warning("system", "cannot resume module " + Name + " because the name was not found");
+		HelperDebug::Warning("system", "cannot resume module (" + Name + ") because the name was not found");
 	}
 	bool Paused(std::string Name)
 	{
@@ -652,7 +688,7 @@ public:
 		{
 			return !std::get<2>(i);
 		}
-		HelperDebug::Warning("system", "cannot find module " + Name);
+		HelperDebug::Warning("system", "cannot find module (" + Name + ")");
 	}
 	bool Update()
 	{
