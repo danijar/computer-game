@@ -48,8 +48,6 @@ void ModuleCamera::Update()
 	auto wnd = Global->Get<RenderWindow>("window");
 	auto tsfcam = Entity->Get<Form>(camera);
 	auto tsfpsn = Entity->Get<Form>(cam->Person);
-
-	float delta = clock.restart().asSeconds();
 	
 	// rotate camera head
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
@@ -58,7 +56,7 @@ void ModuleCamera::Update()
 	{
 		Mouse::setPosition(center, *wnd);
 		Vector2i offset = position - center;
-		Rotate(vec3(offset.y, -offset.x, 0), delta);
+		Rotate(vec3(offset.y, -offset.x, 0));
 	}
 	
 	// synchronize camera head and capsule body

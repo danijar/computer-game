@@ -9,13 +9,12 @@ using namespace glm;
 #include "form.h"
 
 
-void ModuleCamera::Rotate(vec3 Amount, float Time, float Sensitivity)
+void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
 	auto tsf = Entity->Get<Form>(id);
 
 	// apply multipliers
-	Amount *= Time;
 	Amount *= Sensitivity;
 
 	// clamp camera pitch

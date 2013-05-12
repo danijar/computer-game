@@ -9,7 +9,6 @@
 class ModuleCamera : public Module
 {
 	// general
-	sf::Clock clock;
 	void Init();
 	void Update();
 	void Listeners();
@@ -25,7 +24,7 @@ class ModuleCamera : public Module
 
 	// conrol
 	float campitch;
-	void Rotate(glm::vec3 Amount, float Time, float Sensitivity = 0.1f);
+	void Rotate(glm::vec3 Amount, float Sensitivity = 0.0012f);
 
 	// calculate
 	void Projection();
