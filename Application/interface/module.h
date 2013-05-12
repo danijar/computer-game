@@ -12,7 +12,7 @@ class ModuleInterface : public Module
 	void Update();
 	void Listeners();
 
-	// draw
+	// print
 	sf::Font font;
-	void Draw();
+	void DrawPrint();
 };

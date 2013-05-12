@@ -9,16 +9,16 @@ using namespace sf;
 #include "print.h"
 
 
-void ModuleInterface::Draw()
+void ModuleInterface::DrawPrint()
 {
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto txs = Entity->Get<Print>();
-		
+	auto prs = Entity->Get<Print>();
+
 	const int margin = 4;
 	const int textsize = 15;
 
 	unsigned int offset = margin / 2;
-	for(auto i : txs)
+	for(auto i : prs)
 	{
 		string chars = i.second->Text();
 		Text text(chars, font, textsize);

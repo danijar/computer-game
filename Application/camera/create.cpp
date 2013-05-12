@@ -18,6 +18,7 @@ unsigned int ModuleCamera::Create(vec3 Position, float Height)
 	Entity->Add<Form>(person)->Position(Position);
 	Entity->Add<Person>(person)->Calculate(Height);
 	
+	// rotate camera transform to look at the center of the world as cool feature
 	tsf->Body->setActivationState(DISABLE_DEACTIVATION);
 	tsf->Position(Position);
 

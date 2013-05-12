@@ -1,6 +1,6 @@
 
 // bottom
-model("plane.prim", "chess.mtl", 0, 0, 0, 0, 0, 0, 1, 0);
+model("plane.prim", "grass.mtl", 0, 0, 0, 0, 0, 0, 1, 0);
 
 // qubes
 radius = 4;
@@ -18,7 +18,7 @@ for (i = 0; i < 30; ++i)
 	scale = 0.5 + Math.random() / 3;
 	x     = 5 * (Math.random() - 0.5) * 2;
 	z     = 5 * (Math.random() - 0.5) * 2;
-	model("qube.prim", "grass.mtl", x, 2 * (scale + 1.0) + 1.0, z, 0, 0, 0, scale, 0);
+	model("qube.prim", "chess.mtl", x, 2 * (scale + 1.0) + 1.0, z, 0, 0, 0, scale, 0);
 }
 
 // models

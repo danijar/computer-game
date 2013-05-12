@@ -5,7 +5,6 @@ out vec3 image;
 
 uniform sampler2D image_tex;
 uniform sampler2D effect_tex;
-uniform sampler2D edge_tex;
 
 
 void main()
@@ -18,8 +17,6 @@ void main()
 	vec3 effect = texture2D(effect_tex, coord).xyz;
 
 	image = color + vec3(0.3 * dot(effect, vec3(1)) * 0.5 - 0.5);
-	//image = vec4(vec3(0.3 * dot(effect, vec3(1))), 1.0); // only ssao
-	//image = vec4(vec3(blur), 1.0);                       // only blurred ssao
-	//image = vec4(color, 1.0);                            // only image
-	//image = texture2D(edge_tex, coord);                  // only edge
+	//image = vec3(0.3 * dot(effect, vec3(1))); // only ssao
+	//image = color;                            // only image
 }

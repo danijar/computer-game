@@ -8,7 +8,7 @@ using namespace sf;
 
 void ModuleInterface::Init()
 {
-	bool result = font.loadFromFile(Name() + "/text/" + "source.ttf");
+	bool result = font.loadFromFile(Name() + "/font/" + "source.ttf");
 	Debug->PassFail("font loading", result);
 
 	Listeners();
@@ -19,7 +19,7 @@ void ModuleInterface::Update()
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	wnd->pushGLStates();
-	Draw();
+	DrawPrint();
 	wnd->popGLStates();
 }
 

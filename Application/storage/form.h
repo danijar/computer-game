@@ -11,7 +11,9 @@ struct Form
 {
 	Form() : Added(false)
 	{
-		Body = new btRigidBody(0, new btDefaultMotionState(), new btEmptyShape(), btVector3(0, 0, 0));
+		btCollisionShape *shape = new btEmptyShape();
+		shape->setLocalScaling(btVector3(1, 1, 1));
+		Body = new btRigidBody(0, new btDefaultMotionState(), shape, btVector3(0, 0, 0));
 	}
 
 	glm::vec3 Position()

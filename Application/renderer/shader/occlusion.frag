@@ -39,4 +39,7 @@ void main()
 {
 	float effect = ssao();
 	image = vec3(effect < 0.9 ? effect : 0.9);
+
+	// do not add occlusion to sky dome
+	if(1 - texture2D(position_tex, coord).z > 700) image = vec3(1);
 }

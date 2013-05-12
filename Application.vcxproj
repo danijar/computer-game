@@ -92,7 +92,7 @@
     <ClCompile Include="Application\console\history.cpp" />
     <ClCompile Include="Application\input\general.cpp" />
     <ClCompile Include="Application\interface\general.cpp" />
-    <ClCompile Include="Application\interface\draw.cpp" />
+    <ClCompile Include="Application\interface\print.cpp" />
     <ClCompile Include="Application\main.cpp" />
     <ClCompile Include="Application\model\callbacks.cpp" />
     <ClCompile Include="Application\model\create.cpp" />
@@ -115,6 +115,8 @@
     <ClCompile Include="Application\renderer\general.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
     <ClCompile Include="Application\settings\general.cpp" />
+    <ClCompile Include="Application\sky\create.cpp" />
+    <ClCompile Include="Application\sky\general.cpp" />
     <ClCompile Include="Application\window\create.cpp" />
     <ClCompile Include="Application\window\general.cpp" />
   </ItemGroup>
@@ -129,6 +131,7 @@
     <ClInclude Include="Application\physic\module.h" />
     <ClInclude Include="Application\renderer\module.h" />
     <ClInclude Include="Application\settings\module.h" />
+    <ClInclude Include="Application\sky\module.h" />
     <ClInclude Include="Application\storage\person.h" />
     <ClInclude Include="Application\storage\camera.h" />
     <ClInclude Include="Application\storage\model.h" />
@@ -180,7 +183,7 @@
     <Image Include="Application\model\texture\shrine_n.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Application\interface\text\source.ttf" />
+    <Font Include="Application\interface\font\source.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

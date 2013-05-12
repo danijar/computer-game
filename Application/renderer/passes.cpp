@@ -31,6 +31,7 @@ void ModuleRenderer::Pipeline()
 	unordered_map<string, string> combine_samplers;
 	combine_samplers.insert(make_pair("albedo", "albedo"));
 	combine_samplers.insert(make_pair("lights", "light"));
+	combine_samplers.insert(make_pair("position", "position"));
 	CreatePass("combine", "combine.frag", "image", combine_samplers);
 
 	unordered_map<string, string> occlusion_samplers;
@@ -42,7 +43,6 @@ void ModuleRenderer::Pipeline()
 	unordered_map<string, string> apply_samplers;
 	apply_samplers.insert(make_pair("image_tex",  "image"));
 	apply_samplers.insert(make_pair("effect_tex", "occlusion"));
-	apply_samplers.insert(make_pair("edge_tex",   "edge"));
 	CreatePass("apply", "apply.frag", "result", apply_samplers);
 
 	CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));

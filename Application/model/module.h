@@ -19,7 +19,7 @@ class ModuleModel : public Module
 	void Listeners();
 
 	// mesh
-	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; }; // this is redundant to Mesh
+	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
 	std::unordered_map<std::string, Mesh> meshes;
 	Mesh GetMesh(std::string Path);
 	void ReloadMeshes();

@@ -34,9 +34,6 @@
     <Filter Include="settings">
       <UniqueIdentifier>{883db618-8abf-4916-885e-47faeea539c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="interface\text">
-      <UniqueIdentifier>{accc5f3a-5441-43b6-8a80-c580a1c5e799}</UniqueIdentifier>
-    </Filter>
     <Filter Include="window">
       <UniqueIdentifier>{4c051fd7-69f0-4e2a-8034-515bf93ed3e7}</UniqueIdentifier>
     </Filter>
@@ -52,8 +49,17 @@
     <Filter Include="person">
       <UniqueIdentifier>{b83a8f44-1cf5-429f-b7a1-42cf450f2f3a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="type">
+    <Filter Include="types">
       <UniqueIdentifier>{153d5050-398b-4c4c-ad7e-23f239bcd1d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sky">
+      <UniqueIdentifier>{5b556611-8c67-48af-a56e-55890990733f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sky\texture">
+      <UniqueIdentifier>{36bc7b0f-71d8-4973-8641-5fed8eb63af7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interface\font">
+      <UniqueIdentifier>{accc5f3a-5441-43b6-8a80-c580a1c5e799}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -109,9 +115,6 @@
     <ClCompile Include="Application\person\general.cpp">
       <Filter>person</Filter>
     </ClCompile>
-    <ClCompile Include="Application\interface\draw.cpp">
-      <Filter>interface</Filter>
-    </ClCompile>
     <ClCompile Include="Application\mod\general.cpp">
       <Filter>mod</Filter>
     </ClCompile>
@@ -160,20 +163,29 @@
     <ClCompile Include="Application\model\create.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\interface\print.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\sky\create.cpp">
+      <Filter>sky</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\sky\general.cpp">
+      <Filter>sky</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\light.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\settings.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\storage\model.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\renderer\module.h">
       <Filter>renderer</Filter>
@@ -209,13 +221,16 @@
       <Filter>person</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\person.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\print.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
     </ClInclude>
     <ClInclude Include="Application\storage\form.h">
-      <Filter>type</Filter>
+      <Filter>types</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\sky\module.h">
+      <Filter>sky</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -331,8 +346,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Application\interface\text\source.ttf">
-      <Filter>interface\text</Filter>
+    <Font Include="Application\interface\font\source.ttf">
+      <Filter>interface\font</Filter>
     </Font>
   </ItemGroup>
 </Project>

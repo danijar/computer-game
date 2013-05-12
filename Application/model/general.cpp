@@ -33,7 +33,7 @@ void ModuleModel::Init()
 
 	Callbacks();
 
-	CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.2f, Light::DIRECTIONAL);
+	CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.7f, Light::DIRECTIONAL);
 	Script->Run("init.js");
 }
 
