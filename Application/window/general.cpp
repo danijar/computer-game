@@ -17,6 +17,7 @@ void ModuleWindow::Init()
 	Create(stg->Fullscreen);
 
 	Listeners();
+	Callbacks();
 }
 
 void ModuleWindow::Update()

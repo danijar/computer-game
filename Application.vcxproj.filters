@@ -178,6 +178,12 @@
     <ClCompile Include="Application\model\create.cpp">
       <Filter>model</Filter>
     </ClCompile>
+    <ClCompile Include="Application\window\callbacks.cpp">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\renderer\callbacks.cpp">
+      <Filter>renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">
@@ -317,6 +323,9 @@
     </None>
     <None Include="Application\physic\shader\shader.vert">
       <Filter>physic\shader</Filter>
+    </None>
+    <None Include="Application\mod\update.js">
+      <Filter>mod</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

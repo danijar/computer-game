@@ -110,6 +110,7 @@
     <ClCompile Include="Application\physic\callbacks.cpp" />
     <ClCompile Include="Application\physic\debug.cpp" />
     <ClCompile Include="Application\physic\general.cpp" />
+    <ClCompile Include="Application\renderer\callbacks.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
     <ClCompile Include="Application\renderer\effect.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
@@ -119,6 +120,7 @@
     <ClCompile Include="Application\settings\general.cpp" />
     <ClCompile Include="Application\sky\create.cpp" />
     <ClCompile Include="Application\sky\general.cpp" />
+    <ClCompile Include="Application\window\callbacks.cpp" />
     <ClCompile Include="Application\window\create.cpp" />
     <ClCompile Include="Application\window\general.cpp" />
   </ItemGroup>
@@ -157,6 +159,7 @@
     <None Include="Application\model\mesh\shrine.3ds" />
     <None Include="Application\model\update.js" />
     <None Include="Application\mod\init.js" />
+    <None Include="Application\mod\update.js" />
     <None Include="Application\physic\shader\shader.frag" />
     <None Include="Application\physic\shader\shader.vert" />
     <None Include="Application\renderer\shader\antialiasing.frag" />

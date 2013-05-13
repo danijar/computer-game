@@ -8,7 +8,7 @@ void ModuleMod::Init()
 
 void ModuleMod::Update()
 {
-
+	Script->Run("update.js");
 }
 
 void ModuleMod::Listeners()

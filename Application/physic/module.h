@@ -39,7 +39,7 @@ class ModulePhysic : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsImpulse(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsForce(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsImpulse (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsForce   (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsVelocity(const v8::Arguments& args);
 };

@@ -14,6 +14,7 @@ class ModuleRenderer : public Module
 	void Init();
 	void Update();
 	void Listeners();
+	void Callbacks();
 
 	// shader
 	GLuint GetShader(std::string Vertex, std::string Fragment);
@@ -75,4 +76,8 @@ class ModuleRenderer : public Module
 
 	// effect
 	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
+
+public:
+	// callbacks
+	static v8::Handle<v8::Value> jsWireframe(const v8::Arguments& args);
 };

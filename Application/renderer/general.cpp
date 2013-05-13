@@ -7,9 +7,12 @@ using namespace sf;
 void ModuleRenderer::Init()
 {
 	Opengl->Init();
+
 	Pipeline();
 	Uniforms();
+
 	Listeners();
+	Callbacks();
 }
 
 void ModuleRenderer::Update()
