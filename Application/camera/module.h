@@ -12,6 +12,7 @@ class ModuleCamera : public Module
 	void Init();
 	void Update();
 	void Listeners();
+	void Callbacks();
 
 	// create
 	unsigned int Create(glm::vec3 Position = glm::vec3(0), float Height = 2.0f);
@@ -30,4 +31,8 @@ class ModuleCamera : public Module
 	void Projection();
 	void Projection(sf::Vector2u Size);
 	void Calculate();
+
+public:
+	// callbacks
+	static v8::Handle<v8::Value> jsCamera(const v8::Arguments& args);
 };

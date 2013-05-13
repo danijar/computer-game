@@ -17,6 +17,7 @@ class ModuleModel : public Module
 	void Init();
 	void Update();
 	void Listeners();
+	void Callbacks();
 
 	// mesh
 	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
@@ -69,11 +70,14 @@ public:
 	// create
 	unsigned int CreateModel(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), float Mass = 0);
 	unsigned int CreateLight(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, Light::Shape Type = Light::POINT);
-	
+
 	// callbacks
-	void Callbacks();
-	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPosition(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRotation(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsModel    (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsLight    (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPosition (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRotation (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsScale    (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRadius   (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsIntensity(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsColor    (const v8::Arguments& args);
 };

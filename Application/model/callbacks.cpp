@@ -10,10 +10,14 @@ using namespace glm;
 
 void ModuleModel::Callbacks()
 {
-	Script->Bind("model", jsModel);
-	Script->Bind("light", jsLight);
-	Script->Bind("position", jsPosition);
-	Script->Bind("rotation", jsRotation);
+	Script->Bind("model",     jsModel    );
+	Script->Bind("light",     jsLight    );
+	Script->Bind("position",  jsPosition );
+	Script->Bind("rotation",  jsRotation );
+	Script->Bind("scale",     jsScale    );
+	Script->Bind("radius",    jsRadius   );
+	Script->Bind("intensity", jsIntensity);
+	Script->Bind("color",     jsColor    );
 }
 
 v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args)
@@ -77,6 +81,7 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 		if     (name == "point"      ) shape = Light::POINT;
 		else if(name == "spot"       ) shape = Light::SPOT;
 		else if(name == "directional") shape = Light::DIRECTIONAL;
+		else HelperDebug::Fail("script", "light unknown type");
 	}
 
 	unsigned int id = module->CreateLight(position, radius, color, intensity, shape);
@@ -151,6 +156,124 @@ v8::Handle<v8::Value> ModuleModel::jsRotation(const v8::Arguments& args)
 		result->Set(0, v8::Number::New(rotation.x));
 		result->Set(1, v8::Number::New(rotation.y));
 		result->Set(2, v8::Number::New(rotation.z));
+		return result;
+	}
+}
+
+v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
+{
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	if(!args[0]->IsUint32())
+		return v8::Undefined();
+	unsigned int id = args[0]->Uint32Value();
+	auto tsf = module->Entity->Get<Form>(id);
+
+	// set scale, buggy because changes all identical shapes
+	if(args.Length() > 1)
+	{
+		vec3 scale;
+		if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+			scale = vec3(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
+		// else if scale passed as array
+			// scale = ...
+		else if(1 < args.Length() && args[1]->IsNumber())
+			scale = vec3(args[1]->NumberValue());
+		else
+			return v8::Undefined();
+
+		tsf->Scale(scale);
+		return v8::Undefined();
+	}
+	// get scale
+	else
+	{
+		vec3 scale = tsf->Scale();
+
+		v8::Handle<v8::Array> result = v8::Array::New(3);
+		result->Set(0, v8::Number::New(scale.x));
+		result->Set(1, v8::Number::New(scale.y));
+		result->Set(2, v8::Number::New(scale.z));
+		return result;
+	}
+}
+
+v8::Handle<v8::Value> ModuleModel::jsRadius(const v8::Arguments& args)
+{
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	if(!args[0]->IsUint32())
+		return v8::Undefined();
+	unsigned int id = args[0]->Uint32Value();
+	auto lgt = module->Entity->Get<Light>(id);
+
+	if(args.Length() > 1)
+	{
+		if(args[1]->IsNumber())
+			lgt->Radius = (float)args[1]->NumberValue();
+		return v8::Undefined();
+	}
+	else
+	{
+		return v8::Number::New(lgt->Radius);
+	}
+}
+
+v8::Handle<v8::Value> ModuleModel::jsIntensity(const v8::Arguments& args)
+{
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	if(!args[0]->IsUint32())
+		return v8::Undefined();
+	unsigned int id = args[0]->Uint32Value();
+	auto lgt = module->Entity->Get<Light>(id);
+
+	if(args.Length() > 1)
+	{
+		if(args[1]->IsNumber())
+			lgt->Intensity = (float)args[1]->NumberValue();
+		return v8::Undefined();
+	}
+	else
+	{
+		return v8::Number::New(lgt->Intensity);
+	}
+}
+
+v8::Handle<v8::Value> ModuleModel::jsColor(const v8::Arguments& args)
+{
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	if(!args[0]->IsUint32())
+		return v8::Undefined();
+	unsigned int id = args[0]->Uint32Value();
+	auto lgt = module->Entity->Get<Light>(id);
+
+	// set color
+	if(args.Length() > 1)
+	{
+		vec3 color;
+		if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
+			color = vec3(args[1]->NumberValue(), args[2]->NumberValue(), args[3]->NumberValue());
+		// else if color passed as array
+			// color = ...
+		else if(1 < args.Length() && args[1]->IsNumber())
+			color = vec3(args[1]->NumberValue());
+		else
+			return v8::Undefined();
+
+		lgt->Color = color;
+		return v8::Undefined();
+	}
+	// get color
+	else
+	{
+		vec3 color = lgt->Color;
+
+		v8::Handle<v8::Array> result = v8::Array::New(3);
+		result->Set(0, v8::Number::New(color.x));
+		result->Set(1, v8::Number::New(color.y));
+		result->Set(2, v8::Number::New(color.z));
 		return result;
 	}
 }

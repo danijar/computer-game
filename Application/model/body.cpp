@@ -28,7 +28,7 @@ btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 	return body;
 }
 
-btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static)
+btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static) // later on deep copy shapes to allow different scaling
 {
 	shape_key key = make_tuple(Path, Scale, Static);
 	auto i = shapes.find(key);

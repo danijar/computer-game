@@ -8,17 +8,17 @@ for (X = -radius; X <= radius; ++X)
 for (Z = -radius; Z <= radius; ++Z)
 if(X * X + Z * Z <= radius * radius)
 {
-	scale = 0.4 + Math.random() / 3;
-	x     = 2 * (Math.random() - 0.5) * 2 + 2 * X;
-	z     = 2 * (Math.random() - 0.5) * 2 + 2 * Z;
-	model("qube.prim", "dirt.mtl", x, scale, z, 0, 0, 0, scale, 0);
+	size = 0.4 + Math.random() / 3;
+	x    = 2 * (Math.random() - 0.5) * 2 + 2 * X;
+	z    = 2 * (Math.random() - 0.5) * 2 + 2 * Z;
+	model("qube.prim", "dirt.mtl", x, size, z, 0, 0, 0, size, 0);
 }
 for (i = 0; i < 30; ++i)
 {
-	scale = 0.5 + Math.random() / 3;
-	x     = 5 * (Math.random() - 0.5) * 2;
-	z     = 5 * (Math.random() - 0.5) * 2;
-	model("qube.prim", "chess.mtl", x, 2 * (scale + 1.0) + 1.0, z, 0, 0, 0, scale, 0);
+	size = 0.5 + Math.random() / 3;
+	x    = 5 * (Math.random() - 0.5) * 2;
+	z    = 5 * (Math.random() - 0.5) * 2;
+	model("qube.prim", "chess.mtl", x, 2 * (size + 1.0) + 1.0, z, 0, 0, 0, size, 0);
 }
 
 // models
@@ -32,11 +32,12 @@ var pos = position(cube);
 print("position of rotating cube is " + pos[0] + ", " + pos[1] + ", " + pos[2]);
 
 // lights
-light(-5, 8, -8, 50, 1.0, 1.0, 1.0, 1.0, true); // white
-light(-5, 8, 8, 40, 0.2, 1.0, 0.2, 2.0, true); // green
-light(20, 5, -5, 50, 1.0, 1.0, 1.0, 2.5, true); // white
+light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional'); // sun
+light(-5, 8, -8, 50, 1.0, 1.0, 1.0, 1); // white
+light(-5, 8, 8, 40, 0.2, 1.0, 0.2, 2); // green
+light(20, 5, -5, 50, 1.0, 1.0, 1.0, 2.5); // white
 
 // moving objects
-var spark = light(0, 3, 0, 10, 1.0, 1.0, 1.0, 3.0, false);
-var blue = light(25, 10, 25, 60, 0.0, 0.4, 1.0, 5.0, false);
-var red = light(15, 4, 18, 15, 1.0, 0.0, 0.0, 7.0, false);
+var spark = light(0, 3, 0, 10, 1.0, 1.0, 1.0, 3.0);
+var blue = light(25, 10, 25, 60, 0.0, 0.4, 1.0, 5.0);
+var red = light(15, 4, 18, 15, 1.0, 0.0, 0.0, 7.0);

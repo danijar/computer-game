@@ -83,6 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application\camera\calculate.cpp" />
+    <ClCompile Include="Application\camera\callbacks.cpp" />
     <ClCompile Include="Application\camera\control.cpp" />
     <ClCompile Include="Application\camera\create.cpp" />
     <ClCompile Include="Application\camera\general.cpp" />

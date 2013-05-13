@@ -21,6 +21,7 @@ void ModuleModel::Init()
 	Opengl->Init();
 
 	Listeners();
+	Callbacks();
 
 	Entity->Add<Print>(Entity->New())->Text = [=]{
 		auto fms = Entity->Get<Model>();
@@ -31,9 +32,7 @@ void ModuleModel::Init()
 			 + "Shapes    " + to_string(shapes.size()   );
 	};
 
-	Callbacks();
-
-	CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.7f, Light::DIRECTIONAL);
+	// CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.7f, Light::DIRECTIONAL);
 	Script->Run("init.js");
 }
 

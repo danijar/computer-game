@@ -36,6 +36,7 @@ void ModuleCamera::Init()
 	};
 
 	Listeners();
+	Callbacks();
 }
 
 void ModuleCamera::Update()

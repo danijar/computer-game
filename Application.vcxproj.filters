@@ -160,9 +160,6 @@
     <ClCompile Include="Application\model\callbacks.cpp">
       <Filter>model</Filter>
     </ClCompile>
-    <ClCompile Include="Application\model\create.cpp">
-      <Filter>model</Filter>
-    </ClCompile>
     <ClCompile Include="Application\interface\print.cpp">
       <Filter>interface</Filter>
     </ClCompile>
@@ -174,6 +171,12 @@
     </ClCompile>
     <ClCompile Include="Application\physic\callbacks.cpp">
       <Filter>physic</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\callbacks.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\model\create.cpp">
+      <Filter>model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
