@@ -23,6 +23,7 @@ struct Form
 	}
 	void Position(glm::vec3 Coordinates)
 	{
+		Body->activate();
 		btTransform transform(Body->getWorldTransform());
 		transform.setOrigin(btVector3(Coordinates.x, Coordinates.y, Coordinates.z));
 		Body->setWorldTransform(transform);
@@ -34,6 +35,7 @@ struct Form
 	}
 	void Rotation(glm::vec3 Angles)
 	{
+		Body->activate();
 		btTransform transform(Body->getWorldTransform());
 		transform.setRotation(btQuaternion(Angles.y, Angles.x, Angles.z));
 		Body->setWorldTransform(transform);
@@ -50,6 +52,7 @@ struct Form
 	}
 	void Scale(glm::vec3 Factors)
 	{
+		Body->activate();
 		Body->getCollisionShape()->setLocalScaling(btVector3(Factors.x, Factors.y, Factors.z));
 	}
 	glm::vec3 Direction()

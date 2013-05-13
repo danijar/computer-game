@@ -3,14 +3,10 @@
 model("plane.prim", "grass.mtl", 0, 0, 0, 0, 0, 0, 1, 0);
 
 // qubes
-radius = 4;
-for (X = -radius; X <= radius; ++X)
-for (Z = -radius; Z <= radius; ++Z)
-if(X * X + Z * Z <= radius * radius)
-{
-	size = 0.4 + Math.random() / 3;
-	x    = 2 * (Math.random() - 0.5) * 2 + 2 * X;
-	z    = 2 * (Math.random() - 0.5) * 2 + 2 * Z;
+for (i = 0; i < 30; ++i) {
+	size = 0.5 + Math.random() / 3;
+	x = 6 * (Math.random() - 0.5) * 2;
+	z = 6 * (Math.random() - 0.5) * 2;
 	model("qube.prim", "dirt.mtl", x, size, z, 0, 0, 0, size, 0);
 }
 for (i = 0; i < 30; ++i)

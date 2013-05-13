@@ -27,7 +27,8 @@ v8::Handle<v8::Value> ModulePhysic::jsImpulse(const v8::Arguments& args)
 	else if (1 < args.Length() && args[1]->IsNumber())
 		impulse = btVector3(0, (float)args[1]->NumberValue(), 0);
 	else return v8::Undefined();
-		
+	
+	tsf->Body->activate();
 	tsf->Body->applyCentralImpulse(impulse);
 
 	return v8::Undefined();
@@ -49,6 +50,7 @@ v8::Handle<v8::Value> ModulePhysic::jsForce(const v8::Arguments& args)
 		force = btVector3(0, (float)args[1]->NumberValue(), 0);
 	else return v8::Undefined();
 		
+	tsf->Body->activate();
 	tsf->Body->applyCentralForce(force);
 
 	return v8::Undefined();
@@ -74,6 +76,7 @@ v8::Handle<v8::Value> ModulePhysic::jsVelocity(const v8::Arguments& args)
 			velocity = btVector3(0, (float)args[1]->NumberValue(), 0);
 		else return v8::Undefined();
 		
+		tsf->Body->activate();
 		tsf->Body->setLinearVelocity(velocity);
 		return v8::Undefined();
 	}
