@@ -69,7 +69,7 @@ class ModuleModel : public Module
 public:
 	// create
 	unsigned int CreateModel(std::string Mesh, std::string Material, glm::vec3 Position = glm::vec3(0), glm::vec3 Rotation = glm::vec3(0), glm::vec3 Scale = glm::vec3(1), float Mass = 0);
-	unsigned int CreateLight(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.f, Light::Shape Type = Light::POINT);
+	unsigned int CreateLight(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.0f, Light::Shape Type = Light::POINT);
 
 	// callbacks
 	static v8::Handle<v8::Value> jsModel    (const v8::Arguments& args);

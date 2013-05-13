@@ -182,6 +182,7 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 		else
 			return v8::Undefined();
 
+		tsf->Body->activate();
 		tsf->Scale(scale);
 		return v8::Undefined();
 	}
