@@ -16,6 +16,7 @@ void ModulePhysic::Init()
 	world->setGravity(btVector3(0, -9.81f, 0));
 	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Debug));
 
+	Callbacks();
 	Listeners();
 }
 

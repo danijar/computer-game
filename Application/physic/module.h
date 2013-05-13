@@ -35,4 +35,9 @@ class ModulePhysic : public Module
 		GLuint shader;
 		int mode;
 	};
+
+public:
+	// callbacks
+	void Callbacks();
+	static v8::Handle<v8::Value> jsImpulse(const v8::Arguments& args);
 };

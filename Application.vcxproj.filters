@@ -172,6 +172,9 @@
     <ClCompile Include="Application\sky\general.cpp">
       <Filter>sky</Filter>
     </ClCompile>
+    <ClCompile Include="Application\physic\callbacks.cpp">
+      <Filter>physic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

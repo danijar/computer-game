@@ -74,8 +74,6 @@ public:
 	void Callbacks();
 	static v8::Handle<v8::Value> jsModel(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsLight(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsGetPosition(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsSetPosition(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsGetRotation(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsSetRotation(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPosition(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRotation(const v8::Arguments& args);
 };

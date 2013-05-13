@@ -28,8 +28,8 @@ model("rock.obj", "rock.mtl", 13, 1, 12, -90, 0, 0, 3, 0);
 model("barrel.3ds", "barrel.mtl", 8, 0, 4, -90, 0, 0, 2, 0);
 
 var cube = model("qube.prim", "rock.mtl", 0, 8, 0, 0, 0, 0, 1.5, 0);
-var position = getposition(cube);
-print("position of rotating cube is " + position[0] + ", " + position[1] + ", " + position[2]);
+var pos = position(cube);
+print("position of rotating cube is " + pos[0] + ", " + pos[1] + ", " + pos[2]);
 
 // lights
 light(-5, 8, -8, 50, 1.0, 1.0, 1.0, 1.0, true); // white
