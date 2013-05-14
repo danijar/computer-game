@@ -60,7 +60,7 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 
 	if(args.Length() < 3 || !args[0]->IsNumber() || !args[1]->IsNumber() || !args[2]->IsNumber())
 		return v8::Undefined();
-	vec3 position(args[2]->NumberValue(), args[3]->NumberValue(), args[4]->NumberValue());
+	vec3 position(args[0]->NumberValue(), args[1]->NumberValue(), args[2]->NumberValue());
 
 	if(args.Length() < 4 || !args[3]->IsNumber())
 		return v8::Undefined();
@@ -182,7 +182,7 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 		else
 			return v8::Undefined();
 
-		tsf->Body->activate();
+		tsf->Body->activate(); // is done by Scale() already but is needed for some reason
 		tsf->Scale(scale);
 		return v8::Undefined();
 	}

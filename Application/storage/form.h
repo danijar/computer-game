@@ -52,7 +52,7 @@ struct Form
 	}
 	void Scale(glm::vec3 Factors)
 	{
-		Body->activate();
+		Body->activate(); // doesn't work for some reason
 		Body->getCollisionShape()->setLocalScaling(btVector3(Factors.x, Factors.y, Factors.z));
 	}
 	glm::vec3 Direction()
