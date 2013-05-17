@@ -4,8 +4,10 @@
 #include <atomic>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
+#include <SFML/OpenGL.hpp>
 using namespace std;
 using namespace glm;
+using namespace sf;
 
 #include "terrain.h"
 #include "form.h"
@@ -17,73 +19,49 @@ void ModuleTerrain::Loading()
 {
 	Debug->Pass("started loading thread");
 
-	while(!cancle)
-	{
-		if(!loading) continue;
+	Context context;
 
-		loading_id = Load(loading_chunk);
-		loading = false;
-	}
+	while(running)
+		if(loading)
+		{
+			// just remesh updated chunk
+			if(terrain->Changed)
+			{
+				Mesh(model, terrain);
+			}
+			// load or generate new chunk
+			else
+			{
+				Generate(terrain);
+				Mesh(model, terrain);
+			}
 
-	Debug->Pass("cancled loading thread");
+			loading = false;
+		}
+
+	Debug->Pass("canceled loading thread");
 }
 
-unsigned int ModuleTerrain::Load(ivec3 Chunk)
-{
-	unsigned int id = GetChunk(Chunk);
-	if(id)
-	{
-		Debug->Warning("chunk (" + to_string(Chunk.x) + ", " + to_string(Chunk.y) + ", " + to_string(Chunk.z) + ") was already loaded");
-		return id;
-	}
-
-	Terrain *terrain;
-
-	terrain->Chunk = Chunk;
-	Generate(terrain);
-
-	id = Entity->New();
-	Mesh(id, terrain);
-	
-	Entity->Add<Terrain>(id, terrain);
-	Entity->Add<Form>(id)->Position(vec3(Chunk * CHUNK));
-
-	return id;
-}
-
-void ModuleTerrain::Update(ivec3 Chunk)
-{
-	unsigned int id = GetChunk(Chunk);
-	auto trn = Entity->Get<Terrain>(id);
-
-	Mesh(id, trn);
-
-	Debug->Pass("updated a chunk");
-}
-
-void ModuleTerrain::Generate(Terrain *Data)
+void ModuleTerrain::Generate(Terrain *Terrain)
 {
 	for(int x = 0; x < CHUNK_X; ++x)
 	{
-		const float i = Data->Chunk.x + (float)x / CHUNK_X;
+		const float i = Terrain->Chunk.x + (float)x / CHUNK_X;
 		for(int z = 0; z < CHUNK_Z; ++z)
 		{
-			const float j = Data->Chunk.z + (float)z / CHUNK_Z;
+			const float j = Terrain->Chunk.z + (float)z / CHUNK_Z;
 
 			double height_bias = 0.30;
 			double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
 			double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
 			int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
-			for(int y = 0; y < height && y < CHUNK.y; ++y) Data->Blocks[x][y][z] = rand() % 2 + 1;
+			for(int y = 0; y < height && y < CHUNK.y; ++y) Terrain->Blocks[x][y][z] = rand() % 2 + 1;
 		}
 	}
 }
 
-void ModuleTerrain::Mesh(unsigned int Id, Terrain *Data)
+void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain)
 {
-	auto mdl = Entity->Check<Model>(Id) ? Entity->Get<Model>(Id) : Entity->Add<Model>(Id);
-
-	// meshing
 	vector<float> positions, normals, texcoords; vector<int> elements;
 
 	int n = 0;
@@ -91,14 +69,14 @@ void ModuleTerrain::Mesh(unsigned int Id, Terrain *Data)
 	for(int Y = 0; Y < CHUNK.y; ++Y)
 	for(int Z = 0; Z < CHUNK.z; ++Z) {
 
-		uint8_t type = Data->Blocks[X][Y][Z];
+		uint8_t type = Terrain->Blocks[X][Y][Z];
 		if(!type) continue;
 
 		for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 			ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
 			if(Inside(neigh, ivec3(0), CHUNK - 1))
-				if(Data->Blocks[neigh.x][neigh.y][neigh.z])
+				if(Terrain->Blocks[neigh.x][neigh.y][neigh.z])
 					goto skip;
 
 			{
@@ -134,26 +112,25 @@ void ModuleTerrain::Mesh(unsigned int Id, Terrain *Data)
 		skip: dir *= -1; } while(dir > 0); }
 	}
 
-	// buffering
-	if(!mdl->Positions) glGenBuffers(1, &mdl->Positions);
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
+	if(!Model->Positions) glGenBuffers(1, &Model->Positions);
+	glBindBuffer(GL_ARRAY_BUFFER, Model->Positions);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
 
-	if(!mdl->Normals  ) glGenBuffers(1, &mdl->Normals  );
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
+	if(!Model->Normals  ) glGenBuffers(1, &Model->Normals  );
+	glBindBuffer(GL_ARRAY_BUFFER, Model->Normals);
 	glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
 
-	if(!mdl->Texcoords) glGenBuffers(1, &mdl->Texcoords);
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
+	if(!Model->Texcoords) glGenBuffers(1, &Model->Texcoords);
+	glBindBuffer(GL_ARRAY_BUFFER, Model->Texcoords);
 	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
 
-	if(!mdl->Elements ) glGenBuffers(1, &mdl->Elements );
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
+	if(!Model->Elements ) glGenBuffers(1, &Model->Elements );
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Model->Elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
 
-	mdl->Diffuse = texture;
+	Model->Diffuse = texture;
 
-	Debug->Pass("meshed a chunk with " + to_string(positions.size()) + " vertices");
+	Debug->Pass("meshed a chunk with " + to_string(positions.size()) + " vertices and " + to_string(elements.size()) + " elements.");
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)

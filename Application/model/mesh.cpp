@@ -108,7 +108,7 @@ void ModuleModel::LoadMeshCube(Mesh &Mesh)
 
 void ModuleModel::LoadMeshPlane(Mesh &Mesh)
 {
-	const float l = 100;
+	const float l = 5;
 	const GLfloat positions[] = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
 	const GLfloat normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
 	const GLfloat texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };

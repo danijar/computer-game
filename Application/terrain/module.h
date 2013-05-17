@@ -10,6 +10,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "terrain.h"
+#include "model.h"
 
 
 #define TILES_U 4
@@ -35,16 +36,11 @@ private:
 	inline sf::Color TextureAverage(sf::Color A, sf::Color B, sf::Color C, sf::Color D);
 
 	// loading
-	std::atomic<bool> cancle;
-	std::atomic<bool> loading;
-	std::atomic<glm::ivec3> loading_chunk;
-	std::atomic<unsigned int> loading_id;
-	std::future<void> task;
+	std::atomic<bool> loading, running; std::future<void> task;
+	Terrain *terrain; Model *model;
 	void Loading();
-	unsigned int Load(glm::ivec3 Chunk);
-	void Update(glm::ivec3 Chunk);
-	void Generate(Terrain *Data);
-	void Mesh(unsigned int Id, Terrain *Data);
+	void Generate(Terrain *Terrain);
+	void Mesh(Model *Model, Terrain *Terrain);
 	inline bool Inside(glm::ivec3 Position, glm::ivec3 Min, glm::ivec3 Max);
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
 
