@@ -1,45 +1,42 @@
 #pragma once
 
 #include "system.h"
-#include "debug.h"
 
 #include <string>
 using namespace std;
 
-#include "settings.cpp"
-#include "window.cpp"
-#include "input.cpp"
-#include "form.cpp"
-#include "terrain.cpp"
-#include "texture.cpp"
-#include "movement.cpp"
-#include "animation.cpp"
-#include "camera.cpp"
-#include "shader.cpp"
-#include "framebuffer.cpp"
-#include "pipeline.cpp"
-#include "renderer.cpp"
-#include "text.cpp"
+#include  "settings/module.h"
+#include   "console/module.h"
+#include    "window/module.h"
+#include     "input/module.h"
+#include     "model/module.h"
+#include   "terrain/module.h"
+#include       "sky/module.h"
+#include    "physic/module.h"
+#include    "person/module.h"
+#include    "camera/module.h"
+#include  "renderer/module.h"
+#include "interface/module.h"
+#include       "mod/module.h"
 
 
 int main()
 {
 	System World;
 
-	World.Add(0, "settings",    new ModuleSettings());
-	World.Add(1, "window",      new ModuleWindow());
-	World.Add(2, "input",       new ModuleInput());
-	World.Add(2, "form",        new ModuleForm());
-	World.Add(2, "terrain",     new ModuleTerrain());
-	World.Add(2, "texture",     new ModuleTexture());
-	World.Add(2, "camera",      new ModuleCamera());
-	World.Add(3, "movement",    new ModuleMovement());
-	World.Add(3, "animation",   new ModuleAnimation());
-	World.Add(3, "shader",      new ModuleShader());
-	World.Add(3, "framebuffer", new ModuleFramebuffer());
-	World.Add(4, "pipeline",    new ModulePipeline());
-	World.Add(5, "renderer",    new ModuleRenderer());
-	World.Add(6, "text",        new ModuleText());
+	World.Add("settings",  new ModuleSettings() );
+	World.Add("console",   new ModuleConsole()  );
+	World.Add("window",    new ModuleWindow()   );
+	World.Add("input",     new ModuleInput()    );
+	World.Add("model",     new ModuleModel()    );
+	World.Add("terrain",   new ModuleTerrain()  );
+	World.Add("sky",       new ModuleSky()      );
+	World.Add("person",    new ModulePerson()   );
+	World.Add("camera",    new ModuleCamera()   );
+	World.Add("renderer",  new ModuleRenderer() );
+	World.Add("physic",    new ModulePhysic()   );
+	World.Add("interface", new ModuleInterface());
+	World.Add("mod",       new ModuleMod()      );
 
 	World.Init();
 

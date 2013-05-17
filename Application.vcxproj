@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{88647751-F8F5-40F6-B4AC-78FC3548C06D}</ProjectGuid>
+    <RootNamespace>Application</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(ProjectDir)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\Build\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(SolutionDir)\Build\</IntDir>
+    <OutDir>$(ProjectDir)\$(ProjectName)\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-d.lib;assimp-d.lib;v8-d.lib;bullet-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml.lib;assimp.lib;v8.lib;bullet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>$(SolutionDir)\Build\$(ProjectName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Application\camera\calculate.cpp" />
+    <ClCompile Include="Application\camera\callbacks.cpp" />
+    <ClCompile Include="Application\camera\control.cpp" />
+    <ClCompile Include="Application\camera\create.cpp" />
+    <ClCompile Include="Application\camera\general.cpp" />
+    <ClCompile Include="Application\camera\state.cpp" />
+    <ClCompile Include="Application\console\callbacks.cpp" />
+    <ClCompile Include="Application\console\general.cpp" />
+    <ClCompile Include="Application\console\history.cpp" />
+    <ClCompile Include="Application\input\general.cpp" />
+    <ClCompile Include="Application\interface\general.cpp" />
+    <ClCompile Include="Application\interface\print.cpp" />
+    <ClCompile Include="Application\main.cpp" />
+    <ClCompile Include="Application\model\callbacks.cpp" />
+    <ClCompile Include="Application\model\create.cpp" />
+    <ClCompile Include="Application\model\general.cpp" />
+    <ClCompile Include="Application\model\material.cpp" />
+    <ClCompile Include="Application\model\mesh.cpp" />
+    <ClCompile Include="Application\model\body.cpp" />
+    <ClCompile Include="Application\model\texture.cpp" />
+    <ClCompile Include="Application\mod\general.cpp" />
+    <ClCompile Include="Application\person\create.cpp" />
+    <ClCompile Include="Application\person\ground.cpp" />
+    <ClCompile Include="Application\person\general.cpp" />
+    <ClCompile Include="Application\person\movement.cpp" />
+    <ClCompile Include="Application\physic\callbacks.cpp" />
+    <ClCompile Include="Application\physic\debug.cpp" />
+    <ClCompile Include="Application\physic\general.cpp" />
+    <ClCompile Include="Application\renderer\callbacks.cpp" />
+    <ClCompile Include="Application\renderer\draw.cpp" />
+    <ClCompile Include="Application\renderer\effect.cpp" />
+    <ClCompile Include="Application\renderer\framebuffer.cpp" />
+    <ClCompile Include="Application\renderer\passes.cpp" />
+    <ClCompile Include="Application\renderer\general.cpp" />
+    <ClCompile Include="Application\renderer\shader.cpp" />
+    <ClCompile Include="Application\settings\general.cpp" />
+    <ClCompile Include="Application\sky\create.cpp" />
+    <ClCompile Include="Application\sky\general.cpp" />
+    <ClCompile Include="Application\terrain\block.cpp" />
+    <ClCompile Include="Application\terrain\callbacks.cpp" />
+    <ClCompile Include="Application\terrain\general.cpp" />
+    <ClCompile Include="Application\terrain\loading.cpp" />
+    <ClCompile Include="Application\terrain\select.cpp" />
+    <ClCompile Include="Application\terrain\texture.cpp" />
+    <ClCompile Include="Application\window\callbacks.cpp" />
+    <ClCompile Include="Application\window\create.cpp" />
+    <ClCompile Include="Application\window\general.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Application\camera\module.h" />
+    <ClInclude Include="Application\console\module.h" />
+    <ClInclude Include="Application\input\module.h" />
+    <ClInclude Include="Application\interface\module.h" />
+    <ClInclude Include="Application\model\module.h" />
+    <ClInclude Include="Application\mod\module.h" />
+    <ClInclude Include="Application\person\module.h" />
+    <ClInclude Include="Application\physic\module.h" />
+    <ClInclude Include="Application\renderer\module.h" />
+    <ClInclude Include="Application\settings\module.h" />
+    <ClInclude Include="Application\sky\module.h" />
+    <ClInclude Include="Application\storage\person.h" />
+    <ClInclude Include="Application\storage\camera.h" />
+    <ClInclude Include="Application\storage\model.h" />
+    <ClInclude Include="Application\storage\light.h" />
+    <ClInclude Include="Application\storage\settings.h" />
+    <ClInclude Include="Application\storage\print.h" />
+    <ClInclude Include="Application\storage\form.h" />
+    <ClInclude Include="Application\storage\terrain.h" />
+    <ClInclude Include="Application\system.h" />
+    <ClInclude Include="Application\terrain\module.h" />
+    <ClInclude Include="Application\window\module.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Application\model\init.js" />
+    <None Include="Application\model\material\barrel.mtl" />
+    <None Include="Application\model\material\chess.mtl" />
+    <None Include="Application\model\material\dirt.mtl" />
+    <None Include="Application\model\material\grass.mtl" />
+    <None Include="Application\model\material\magic.mtl" />
+    <None Include="Application\model\material\rock.mtl" />
+    <None Include="Application\model\material\shrine.mtl" />
+    <None Include="Application\model\mesh\barrel.3ds" />
+    <None Include="Application\model\mesh\shrine.3ds" />
+    <None Include="Application\model\update.js" />
+    <None Include="Application\mod\init.js" />
+    <None Include="Application\mod\update.js" />
+    <None Include="Application\physic\shader\shader.frag" />
+    <None Include="Application\physic\shader\shader.vert" />
+    <None Include="Application\renderer\shader\antialiasing.frag" />
+    <None Include="Application\renderer\shader\apply.frag" />
+    <None Include="Application\renderer\shader\blur_u.frag" />
+    <None Include="Application\renderer\shader\blur_v.frag" />
+    <None Include="Application\renderer\shader\combine.frag" />
+    <None Include="Application\renderer\shader\edge.frag" />
+    <None Include="Application\renderer\shader\forms.frag" />
+    <None Include="Application\renderer\shader\forms.vert" />
+    <None Include="Application\renderer\shader\light.frag" />
+    <None Include="Application\renderer\shader\occlusion.frag" />
+    <None Include="Application\renderer\shader\quad.vert" />
+    <None Include="Application\renderer\shader\screen.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Application\model\texture\barrel_d.jpg" />
+    <Image Include="Application\model\texture\barrel_n.jpg" />
+    <Image Include="Application\model\texture\bottom.jpg" />
+    <Image Include="Application\model\texture\dirt.jpg" />
+    <Image Include="Application\model\texture\grass.jpg" />
+    <Image Include="Application\model\texture\magic.jpg" />
+    <Image Include="Application\model\texture\noise.png" />
+    <Image Include="Application\model\texture\rock.jpg" />
+    <Image Include="Application\model\texture\shrine_d.jpg" />
+    <Image Include="Application\model\texture\shrine_n.jpg" />
+    <Image Include="Application\terrain\texture\terrain.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Application\interface\font\source.ttf" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
