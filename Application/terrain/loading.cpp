@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <atomic>
+#include <mutex>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
 #include <SFML/OpenGL.hpp>
@@ -20,26 +20,25 @@ void ModuleTerrain::Loading()
 {
 	Context context;
 
-	while(running)
+	while(running.load())
 	{
-		if(loading.load())
+		if(loading.load() && access.try_lock())
 		{
 			// just remesh updated chunk
-			if(terrain.load()->Changed)
+			if(terrain->Changed)
 			{
-				Debug->Pass("remesh updated chunk");
-				Mesh(model.load(), terrain.load(), form.load());
+				Mesh(model, terrain, form);
 			}
 
 			// load or generate new chunk
 			else
 			{
-				Debug->Pass("generate new chunk");
-				Generate(terrain.load());
-				Mesh(model.load(), terrain.load(), form.load());
+				Generate(terrain);
+				Mesh(model, terrain, form);
 			}
 
 			loading.store(false);
+			access.unlock();
 		}
 	}
 }
@@ -131,8 +130,6 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 	if(!Model->Elements ) glGenBuffers(1, &Model->Elements );
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Model->Elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
-
-	// Model->Diffuse = texture;
 
 	btTriangleMesh *triangles = new btTriangleMesh();
 

@@ -16,7 +16,7 @@ using namespace sf;
 
 void ModuleCamera::Init()
 {
-	unsigned int id = Create(vec3(14, 5, 4), 1.80f);
+	unsigned int id = Create(vec3(0), 1.80f);
 	*Global->Add<unsigned int>("camera") = id;
 	Entity->Get<Camera>(id)->Active = !Global->Get<Settings>("settings")->Mouse;
 	auto wnd = Global->Get<RenderWindow>("window");

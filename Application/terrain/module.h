@@ -37,8 +37,8 @@ private:
 	inline sf::Color TextureAverage(sf::Color A, sf::Color B, sf::Color C, sf::Color D);
 
 	// loading
-	std::atomic<bool> loading, running; std::future<void> task;
-	std::atomic<Terrain*> terrain; std::atomic<Model*> model; std::atomic<Form*> form;
+	std::atomic<bool> running, loading; std::mutex access; std::future<void> task;
+	Terrain *terrain; Model *model; Form *form;
 	void Loading();
 	void Generate(Terrain *Terrain);
 	void Mesh(Model *Model, Terrain *Terrain, Form *Form);

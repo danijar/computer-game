@@ -2,6 +2,7 @@
 
 #include <string>
 #include <future>
+#include <mutex>
 #include <GLM/glm.hpp>
 using namespace glm;
 using namespace std;
@@ -16,8 +17,8 @@ void ModuleTerrain::Init()
 {
 	texture = Texture();
 
-	loading.store(false), running.store(true);
-	terrain.store(NULL), model.store(NULL);
+	running.store(true); loading.store(false);
+	terrain = NULL, model = NULL, form = NULL;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
 	Listeners();
@@ -28,7 +29,7 @@ ModuleTerrain::~ModuleTerrain()
 {
 	glDeleteTextures(1, &texture);
 
-	running = false;
+	running.store(false);
 	task.get();
 }
 
@@ -37,68 +38,71 @@ void ModuleTerrain::Update()
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
 	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK)); camera.y = 0;
+	const int distance = (int)stg->Viewdistance / CHUNK / 10;
 
 	// add loaded threads to entity system
-	if(!loading.load() && terrain.load() && model.load())
+	if(terrain && model && form && access.try_lock())
 	{
-		bool newone = !terrain.load()->Changed;
-
+		bool newone = !terrain->Changed;
 		if(newone)
 		{
 			unsigned int id = Entity->New();
-			Entity->Add<Terrain>(id, terrain.load());
-			Entity->Add<Model>(id, model.load())->Diffuse = texture;
-			Entity->Add<Form>(id, form.load())->Position(vec3(terrain.load()->Chunk * CHUNK));
+			Entity->Add<Terrain>(id, terrain);
+			Entity->Add<Model>(id, model)->Diffuse = texture;
+			Entity->Add<Form>(id, form)->Position(vec3(terrain->Chunk * CHUNK));
 		}
 		else
 		{
 			Debug->Pass("updated a chunk");
 		}
 
-		terrain.store(NULL), model.store(NULL);
+		terrain = NULL, model = NULL, form = NULL;
+		access.unlock();
 	}
 
 	/*
 	// remesh changed chunks
-	if(!loading && !terrain && !model)
+	if(!terrain && !model && !form && access.try_lock())
 	{
-		for(auto i = tns.begin(); i != tns.end() && !loading; ++i)
+		for(auto i = tns.begin(); i != tns.end(); ++i)
 		{
 			if(i->second->Changed)
 			{
 				terrain = i->second;
 				model = Entity->Get<Model>(i->first);
-				loading = true;
+				form = Entity->Get<Form>(i->first); // make loader ready for that
+				loading.store(true);
+				break;
 			}
 		}
+		access.unlock();
 	}
 	*/
-
 	
 	// mesh new in range chunks
-	const int distance = (int)stg->Viewdistance / CHUNK / 10;
-	if(!loading.load() && !terrain.load() && !model.load())
+	if(access.try_lock() && !terrain && !model && !form)
 	{
 		ivec3 i;
-		for(i.x = -distance; i.x < distance && !loading; ++i.x)
-		for(i.z = -distance; i.z < distance && !loading; ++i.z)
+		bool found = false;
+		for(i.x = -distance; i.x < distance && !found; ++i.x)
+		for(i.z = -distance; i.z < distance && !found; ++i.z)
 		{
 			ivec3 key = i + camera;
 			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
 			bool loaded = GetChunk(key) ? true : false;
 
-			/*
 			if(inrange && !loaded)
 			{
-				terrain.store(new Terrain());
-				model.store(new Model());
-				form.store(new Form());
-				terrain.load()->Chunk = key;
+				terrain = new Terrain();
+				model = new Model();
+				form = new Form();
+				terrain->Chunk = key;
 
+				found = true;
 				loading.store(true);
 			}
-			*/
 		}
+		access.unlock();
 	}
 
 	// free out of range chunks
