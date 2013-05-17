@@ -4,8 +4,10 @@
 #include <stdint.h>
 #include <GLM/glm.hpp>
 
+#include <iostream>
 
-#define CHUNK 32
+
+#define CHUNK 16
 
 struct Terrain
 {

@@ -17,11 +17,10 @@ using namespace sf;
 
 void ModuleTerrain::Loading()
 {
-	Debug->Pass("started loading thread");
-
 	Context context;
 
 	while(running)
+	{
 		if(loading)
 		{
 			// just remesh updated chunk
@@ -29,6 +28,7 @@ void ModuleTerrain::Loading()
 			{
 				Mesh(model, terrain);
 			}
+
 			// load or generate new chunk
 			else
 			{
@@ -38,8 +38,7 @@ void ModuleTerrain::Loading()
 
 			loading = false;
 		}
-
-	Debug->Pass("canceled loading thread");
+	}
 }
 
 void ModuleTerrain::Generate(Terrain *Terrain)
@@ -130,9 +129,7 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Model->Elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
 
-	Model->Diffuse = texture;
-
-	Debug->Pass("meshed a chunk with " + to_string(positions.size()) + " vertices and " + to_string(elements.size()) + " elements.");
+	// Model->Diffuse = texture;
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)

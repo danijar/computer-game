@@ -45,14 +45,10 @@ void ModuleTerrain::Update()
 
 		if(newone)
 		{
-			model->Diffuse = texture;
-
 			unsigned int id = Entity->New();
 			Entity->Add<Terrain>(id, terrain);
-			Entity->Add<Model>(id, model);
+			Entity->Add<Model>(id, model)->Diffuse = texture;
 			Entity->Add<Form>(id)->Position(vec3(terrain->Chunk * CHUNK));
-
-			Debug->Pass("added a chunk to entity system");
 		}
 		else
 		{
@@ -78,7 +74,7 @@ void ModuleTerrain::Update()
 	*/
 
 	// mesh new in range chunks
-	const int distance = (int)stg->Viewdistance / CHUNK / 7;
+	const int distance = (int)stg->Viewdistance / CHUNK / 10;
 	if(!loading && !terrain && !model)
 	{
 		ivec3 i;
@@ -100,22 +96,25 @@ void ModuleTerrain::Update()
 		}
 	}
 
-	/*
 	// free out of range chunks
-	ivec3 distance = ivec3(1000) / CHUNK;
+	int tolerance = 2;
+	vector<unsigned int> ids;
 	for(auto i : tns)
-		if(!Inside(i.second->Chunk - camera, -distance, distance))
-		{
-			auto mdl = Entity->Get<Model>(i.first);
-			glDeleteBuffers(1, &mdl->Positions);
-			glDeleteBuffers(1, &mdl->Normals);
-			glDeleteBuffers(1, &mdl->Texcoords);
-			glDeleteBuffers(1, &mdl->Elements);
-			Entity->Delete(i.first);
+		if(!Inside(abs(i.second->Chunk - camera), ivec3(0), ivec3(distance + tolerance)))
+			ids.push_back(i.first);
 
-			Debug->Print("chunk (" + to_string(i.second->Chunk.x) + ", " + to_string(i.second->Chunk.y) + ", " + to_string(i.second->Chunk.z) + ") out of range");
-		}
-	*/
+	for(unsigned int i : ids)
+	{
+		auto mdl = Entity->Get<Model>(i);
+		glDeleteBuffers(1, &mdl->Positions);
+		glDeleteBuffers(1, &mdl->Normals);
+		glDeleteBuffers(1, &mdl->Texcoords);
+		glDeleteBuffers(1, &mdl->Elements);
+
+		Entity->Delete(i); // why does this crash?
+
+		Debug->Print("chunk " + to_string(i) + " out of range");
+	}
 }
 
 void ModuleTerrain::Listeners()
