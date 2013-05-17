@@ -1,5 +1,5 @@
 
-// bottom
+// bottom just for collision
 model("plane.prim", "grass.mtl", 0, 0, 0, 0, 0, 0, 1, 0);
 
 // sun

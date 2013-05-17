@@ -9,6 +9,7 @@ using namespace std;
 #include "terrain.h"
 #include "form.h"
 #include "model.h"
+#include "settings.h"
 
 
 void ModuleTerrain::Init()
@@ -33,33 +34,33 @@ ModuleTerrain::~ModuleTerrain()
 
 void ModuleTerrain::Update()
 {
-	/*
+	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = (ivec3)Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position();
-	*/
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK));
 
 	// add loaded threads to entity system
-	if(!loading)
-		if(terrain != NULL && model != NULL)
+	if(!loading && terrain && model)
+	{
+		bool newone = !terrain->Changed;
+
+		if(newone)
 		{
-			if(!terrain->Changed)
-			{
-				model->Diffuse = texture;
+			model->Diffuse = texture;
 
-				unsigned int id = Entity->New();
-				Entity->Add<Terrain>(id, terrain);
-				Entity->Add<Model>(id, model);
-				Entity->Add<Form>(id);
+			unsigned int id = Entity->New();
+			Entity->Add<Terrain>(id, terrain);
+			Entity->Add<Model>(id, model);
+			Entity->Add<Form>(id)->Position(vec3(terrain->Chunk * CHUNK));
 
-				Debug->Pass("added a chunk to entity system");
-			}
-			else
-			{
-				Debug->Pass("updated a chunk");
-			}
-
-			terrain = NULL, model = NULL;
+			Debug->Pass("added a chunk to entity system");
 		}
+		else
+		{
+			Debug->Pass("updated a chunk");
+		}
+
+		terrain = NULL, model = NULL;
+	}
 
 	/*
 	// remesh changed chunks
@@ -74,13 +75,32 @@ void ModuleTerrain::Update()
 					break;
 				}
 
-	// mesh new in range chunks
-	if(!loading)
-		if(terrain == NULL && model == NULL)
-		{
-			// ...
-		}
+	*/
 
+	// mesh new in range chunks
+	const int distance = (int)stg->Viewdistance / CHUNK / 7;
+	if(!loading && !terrain && !model)
+	{
+		ivec3 i;
+		for(i.x = -distance; i.x < distance && !loading; ++i.x)
+		for(i.z = -distance; i.z < distance && !loading; ++i.z)
+		{
+			ivec3 key = i + ivec3(camera.x, 0, camera.z);
+			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
+			bool loaded = GetChunk(key) ? true : false;
+
+			if(inrange && !loaded)
+			{
+				terrain = new Terrain();
+				model = new Model();
+				terrain->Chunk = key;
+
+				loading = true;
+			}
+		}
+	}
+
+	/*
 	// free out of range chunks
 	ivec3 distance = ivec3(1000) / CHUNK;
 	for(auto i : tns)

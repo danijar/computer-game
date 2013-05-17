@@ -44,18 +44,18 @@ void ModuleTerrain::Loading()
 
 void ModuleTerrain::Generate(Terrain *Terrain)
 {
-	for(int x = 0; x < CHUNK_X; ++x)
+	for(int x = 0; x < CHUNK; ++x)
 	{
-		const float i = Terrain->Chunk.x + (float)x / CHUNK_X;
-		for(int z = 0; z < CHUNK_Z; ++z)
+		const float i = Terrain->Chunk.x + (float)x / CHUNK;
+		for(int z = 0; z < CHUNK; ++z)
 		{
-			const float j = Terrain->Chunk.z + (float)z / CHUNK_Z;
+			const float j = Terrain->Chunk.z + (float)z / CHUNK;
 
 			double height_bias = 0.30;
 			double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
 			double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
-			int height = (int)((height_bias + height_base + height_fine) * CHUNK_Y);
-			for(int y = 0; y < height && y < CHUNK.y; ++y) Terrain->Blocks[x][y][z] = rand() % 2 + 1;
+			int height = (int)((height_bias + height_base + height_fine) * CHUNK);
+			for(int y = 0; y < height && y < CHUNK; ++y) Terrain->Blocks[x][y][z] = rand() % 2 + 1;
 		}
 	}
 }
@@ -65,51 +65,53 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain)
 	vector<float> positions, normals, texcoords; vector<int> elements;
 
 	int n = 0;
-	for(int X = 0; X < CHUNK.x; ++X)
-	for(int Y = 0; Y < CHUNK.y; ++Y)
-	for(int Z = 0; Z < CHUNK.z; ++Z) {
+	for(int X = 0; X < CHUNK; ++X)
+	for(int Y = 0; Y < CHUNK; ++Y)
+	for(int Z = 0; Z < CHUNK; ++Z)
+	{
+		if(Terrain->Blocks[X][Y][Z])
+		{
+			uint8_t tile = clamp((int)Terrain->Blocks[X][Y][Z], 0, TILES_U * TILES_V - 1);
+			for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
+				ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-		uint8_t type = Terrain->Blocks[X][Y][Z];
-		if(!type) continue;
+				if(Inside(neigh, ivec3(0), ivec3(CHUNK) - 1))
+					if(Terrain->Blocks[neigh.x][neigh.y][neigh.z])
+						goto skip;
 
-		for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
-			ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
-
-			if(Inside(neigh, ivec3(0), CHUNK - 1))
-				if(Terrain->Blocks[neigh.x][neigh.y][neigh.z])
-					goto skip;
-
-			{
-				for(float i = 0; i <= 1; ++i)
-				for(float j = 0; j <= 1; ++j)
 				{
-					vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir + 1) / 2, i, j)));
-					positions.push_back(vertex.x); positions.push_back(vertex.y); positions.push_back(vertex.z);
+					for(float i = 0; i <= 1; ++i)
+					for(float j = 0; j <= 1; ++j)
+					{
+						vec3 vertex = vec3(X, Y, Z) + vec3(Shift(dim, ivec3((dir+1)/2, i, j)));
+						positions.push_back(vertex.x); positions.push_back(vertex.y); positions.push_back(vertex.z);
+					}
+
+					vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
+					for(int i = 0; i < 4; ++i)
+					{
+						normals.push_back(normal.x); normals.push_back(normal.y); normals.push_back(normal.z);
+					}
+
+					vec2 coords(tile % TILES_U, tile / TILES_U);
+					vec2 position = coords * GRID;
+					texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y          + GAP);
+					texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y          + GAP);
+					texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y + GRID.y - GAP);
+					texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y + GRID.y - GAP);
+
+					if(dir == -1) {
+						elements.push_back(n+0); elements.push_back(n+1); elements.push_back(n+2);
+						elements.push_back(n+1); elements.push_back(n+3); elements.push_back(n+2);
+					} else {
+						elements.push_back(n+0); elements.push_back(n+2); elements.push_back(n+1);
+						elements.push_back(n+1); elements.push_back(n+2); elements.push_back(n+3);
+					}
+					n += 4;
 				}
 
-				vec3 normal = normalize(vec3(Shift(dim, ivec3(dir, 0, 0))));
-				for(int i = 0; i < 4; ++i)
-				{
-					normals.push_back(normal.x); normals.push_back(normal.y); normals.push_back(normal.z);
-				}
-
-				vec2 position = vec2(type % TILES_U, type / TILES_U) * GRID;
-				texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y          + GAP);
-				texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y          + GAP);
-				texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y + GRID.y - GAP);
-				texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y + GRID.y - GAP);
-
-				if(dir == -1) {
-					elements.push_back(n+0); elements.push_back(n+1); elements.push_back(n+2);
-					elements.push_back(n+1); elements.push_back(n+3); elements.push_back(n+2);
-				} else {
-					elements.push_back(n+0); elements.push_back(n+2); elements.push_back(n+1);
-					elements.push_back(n+1); elements.push_back(n+2); elements.push_back(n+3);
-				}
-				n += 4;
-			}
-
-		skip: dir *= -1; } while(dir > 0); }
+			skip: dir *= -1; } while(dir > 0); }
+		}
 	}
 
 	if(!Model->Positions) glGenBuffers(1, &Model->Positions);
