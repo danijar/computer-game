@@ -36,7 +36,7 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK));
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK)); camera.y = 0;
 
 	// add loaded threads to entity system
 	if(!loading && terrain && model)
@@ -60,17 +60,18 @@ void ModuleTerrain::Update()
 
 	/*
 	// remesh changed chunks
-	if(!loading)
-		if(terrain == NULL && model == NULL)
-			for(auto i = tns.begin(); i != tns.end(); ++i)
-				if(i->second->Changed)
-				{
-					terrain = i->second;
-					model = Entity->Get<Model>(i->first);
-					loading = true;
-					break;
-				}
-
+	if(!loading && !terrain && !model)
+	{
+		for(auto i = tns.begin(); i != tns.end() && !loading; ++i)
+		{
+			if(i->second->Changed)
+			{
+				terrain = i->second;
+				model = Entity->Get<Model>(i->first);
+				loading = true;
+			}
+		}
+	}
 	*/
 
 	// mesh new in range chunks
@@ -81,7 +82,7 @@ void ModuleTerrain::Update()
 		for(i.x = -distance; i.x < distance && !loading; ++i.x)
 		for(i.z = -distance; i.z < distance && !loading; ++i.z)
 		{
-			ivec3 key = i + ivec3(camera.x, 0, camera.z);
+			ivec3 key = i + camera;
 			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
 			bool loaded = GetChunk(key) ? true : false;
 
@@ -97,23 +98,19 @@ void ModuleTerrain::Update()
 	}
 
 	// free out of range chunks
-	int tolerance = 2;
-	vector<unsigned int> ids;
+	int tolerance = 1;
 	for(auto i : tns)
-		if(!Inside(abs(i.second->Chunk - camera), ivec3(0), ivec3(distance + tolerance)))
-			ids.push_back(i.first);
-
-	for(unsigned int i : ids)
 	{
-		auto mdl = Entity->Get<Model>(i);
-		glDeleteBuffers(1, &mdl->Positions);
-		glDeleteBuffers(1, &mdl->Normals);
-		glDeleteBuffers(1, &mdl->Texcoords);
-		glDeleteBuffers(1, &mdl->Elements);
+		if(!Inside(abs(i.second->Chunk - camera), ivec3(0), ivec3(distance + tolerance)))
+		{
+			auto mdl = Entity->Get<Model>(i.first);
+			glDeleteBuffers(1, &mdl->Positions);
+			glDeleteBuffers(1, &mdl->Normals);
+			glDeleteBuffers(1, &mdl->Texcoords);
+			glDeleteBuffers(1, &mdl->Elements);
 
-		Entity->Delete(i); // why does this crash?
-
-		Debug->Print("chunk " + to_string(i) + " out of range");
+			Entity->Delete(i.first);
+		}
 	}
 }
 
