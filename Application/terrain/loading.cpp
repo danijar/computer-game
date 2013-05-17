@@ -5,6 +5,7 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/noise.hpp>
 #include <SFML/OpenGL.hpp>
+#include <BULLET/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
 using namespace sf;
@@ -21,22 +22,24 @@ void ModuleTerrain::Loading()
 
 	while(running)
 	{
-		if(loading)
+		if(loading.load())
 		{
 			// just remesh updated chunk
-			if(terrain->Changed)
+			if(terrain.load()->Changed)
 			{
-				Mesh(model, terrain);
+				Debug->Pass("remesh updated chunk");
+				Mesh(model.load(), terrain.load(), form.load());
 			}
 
 			// load or generate new chunk
 			else
 			{
-				Generate(terrain);
-				Mesh(model, terrain);
+				Debug->Pass("generate new chunk");
+				Generate(terrain.load());
+				Mesh(model.load(), terrain.load(), form.load());
 			}
 
-			loading = false;
+			loading.store(false);
 		}
 	}
 }
@@ -59,7 +62,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 	}
 }
 
-void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain)
+void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 {
 	vector<float> positions, normals, texcoords; vector<int> elements;
 
@@ -130,6 +133,25 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
 
 	// Model->Diffuse = texture;
+
+	btTriangleMesh *triangles = new btTriangleMesh();
+
+	GLfloat coords[9];
+	for(unsigned int i = 0; i < elements.size(); i += 3)
+	{
+		for(int n = 0, j = 0; j < 3; ++j)
+			for(int k = 0; k < 3; ++k, ++n)
+				coords[n] = positions[3 * elements[i + j] + k];
+
+		triangles->addTriangle(
+			btVector3(coords[0], coords[1], coords[2]),
+			btVector3(coords[3], coords[4], coords[5]),
+			btVector3(coords[6], coords[7], coords[8])
+		);
+	}
+
+	btCollisionShape *shape = new btBvhTriangleMeshShape(triangles, true, true);
+	Form->Body->setCollisionShape(shape);
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)

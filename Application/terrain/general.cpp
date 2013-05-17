@@ -16,8 +16,8 @@ void ModuleTerrain::Init()
 {
 	texture = Texture();
 
-	loading = false, running = true;
-	terrain = NULL, model = NULL;
+	loading.store(false), running.store(true);
+	terrain.store(NULL), model.store(NULL);
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
 	Listeners();
@@ -39,23 +39,23 @@ void ModuleTerrain::Update()
 	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK)); camera.y = 0;
 
 	// add loaded threads to entity system
-	if(!loading && terrain && model)
+	if(!loading.load() && terrain.load() && model.load())
 	{
-		bool newone = !terrain->Changed;
+		bool newone = !terrain.load()->Changed;
 
 		if(newone)
 		{
 			unsigned int id = Entity->New();
-			Entity->Add<Terrain>(id, terrain);
-			Entity->Add<Model>(id, model)->Diffuse = texture;
-			Entity->Add<Form>(id)->Position(vec3(terrain->Chunk * CHUNK));
+			Entity->Add<Terrain>(id, terrain.load());
+			Entity->Add<Model>(id, model.load())->Diffuse = texture;
+			Entity->Add<Form>(id, form.load())->Position(vec3(terrain.load()->Chunk * CHUNK));
 		}
 		else
 		{
 			Debug->Pass("updated a chunk");
 		}
 
-		terrain = NULL, model = NULL;
+		terrain.store(NULL), model.store(NULL);
 	}
 
 	/*
@@ -74,9 +74,10 @@ void ModuleTerrain::Update()
 	}
 	*/
 
+	
 	// mesh new in range chunks
 	const int distance = (int)stg->Viewdistance / CHUNK / 10;
-	if(!loading && !terrain && !model)
+	if(!loading.load() && !terrain.load() && !model.load())
 	{
 		ivec3 i;
 		for(i.x = -distance; i.x < distance && !loading; ++i.x)
@@ -86,14 +87,17 @@ void ModuleTerrain::Update()
 			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
 			bool loaded = GetChunk(key) ? true : false;
 
+			/*
 			if(inrange && !loaded)
 			{
-				terrain = new Terrain();
-				model = new Model();
-				terrain->Chunk = key;
+				terrain.store(new Terrain());
+				model.store(new Model());
+				form.store(new Form());
+				terrain.load()->Chunk = key;
 
-				loading = true;
+				loading.store(true);
 			}
+			*/
 		}
 	}
 

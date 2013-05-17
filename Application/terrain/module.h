@@ -11,6 +11,7 @@
 
 #include "terrain.h"
 #include "model.h"
+#include "form.h"
 
 
 #define TILES_U 4
@@ -37,10 +38,10 @@ private:
 
 	// loading
 	std::atomic<bool> loading, running; std::future<void> task;
-	Terrain *terrain; Model *model;
+	std::atomic<Terrain*> terrain; std::atomic<Model*> model; std::atomic<Form*> form;
 	void Loading();
 	void Generate(Terrain *Terrain);
-	void Mesh(Model *Model, Terrain *Terrain);
+	void Mesh(Model *Model, Terrain *Terrain, Form *Form);
 	inline bool Inside(glm::ivec3 Position, glm::ivec3 Min, glm::ivec3 Max);
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
 
