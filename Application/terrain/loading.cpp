@@ -148,8 +148,8 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 		);
 	}
 
-	btCollisionShape *shape = new btBvhTriangleMeshShape(triangles, true, true);
-	Form->Body->setCollisionShape(shape);
+	delete Form->Body->getCollisionShape();
+	Form->Body->setCollisionShape(new btBvhTriangleMeshShape(triangles, true, true));
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)
