@@ -61,6 +61,9 @@ void ModuleInput::Listeners()
 		case Mouse::Left:
 			this->Event->Fire("InputBindShoot");
 			break;
+		case Mouse::Right:
+			this->Event->Fire("InputBindMine");
+			break;
 		}
 	});
 }

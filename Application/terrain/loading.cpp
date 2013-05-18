@@ -28,6 +28,7 @@ void ModuleTerrain::Loading()
 			if(terrain->Changed)
 			{
 				Mesh(model, terrain, form);
+				terrain->Changed = false;
 			}
 
 			// load or generate new chunk

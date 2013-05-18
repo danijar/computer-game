@@ -42,7 +42,7 @@ void ModuleTerrain::Update()
 	const int distance = (int)stg->Viewdistance / CHUNK / 10;
 
 	// add loaded threads to entity system
-	if(terrain && model && form && access.try_lock())
+	if(!loading.load() && terrain && model && form && access.try_lock())
 	{
 		bool newone = !terrain->Changed;
 		if(newone)
@@ -61,9 +61,8 @@ void ModuleTerrain::Update()
 		access.unlock();
 	}
 
-	/*
 	// remesh changed chunks
-	if(!terrain && !model && !form && access.try_lock())
+	if(!loading.load() && !terrain && !model && !form && access.try_lock())
 	{
 		for(auto i = tns.begin(); i != tns.end(); ++i)
 		{
@@ -71,17 +70,17 @@ void ModuleTerrain::Update()
 			{
 				terrain = i->second;
 				model = Entity->Get<Model>(i->first);
-				form = Entity->Get<Form>(i->first); // make loader ready for that
+				form = Entity->Get<Form>(i->first);
+
 				loading.store(true);
 				break;
 			}
 		}
 		access.unlock();
 	}
-	*/
 	
 	// mesh new in range chunks
-	if(access.try_lock() && !terrain && !model && !form)
+	if(!loading.load() && !terrain && !model && !form && access.try_lock())
 	{
 		ivec3 i;
 		bool found = false;
@@ -98,9 +97,9 @@ void ModuleTerrain::Update()
 				model = new Model();
 				form = new Form();
 				terrain->Chunk = key;
-
-				found = true;
+				
 				loading.store(true);
+				found = true;
 			}
 		}
 		access.unlock();
@@ -130,5 +129,8 @@ void ModuleTerrain::Update()
 
 void ModuleTerrain::Listeners()
 {
-
+	Event->Listen("InputBindMine", [=]{
+		auto sel = Selection();
+		SetBlock(sel.first, 0);
+	});
 }
