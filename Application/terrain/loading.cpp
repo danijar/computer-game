@@ -63,6 +63,8 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 {
+	// generate vertices
+
 	vector<float> positions, normals, texcoords; vector<int> elements;
 
 	int n = 0;
@@ -115,21 +117,34 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 		}
 	}
 
-	if(!Model->Positions) glGenBuffers(1, &Model->Positions);
-	glBindBuffer(GL_ARRAY_BUFFER, Model->Positions);
+
+	// switch opengl buffers
+
+	GLuint oldpositions = Model->Positions, oldnormals = Model->Normals, oldtexcoords = Model->Texcoords, oldelements = Model->Elements;
+
+	GLuint newpositions, newnormals, newtexcoords, newelements;
+	glGenBuffers(1, &newpositions);
+	glBindBuffer(GL_ARRAY_BUFFER, newpositions);
 	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
-
-	if(!Model->Normals  ) glGenBuffers(1, &Model->Normals  );
-	glBindBuffer(GL_ARRAY_BUFFER, Model->Normals);
+	glGenBuffers(1, &newnormals);
+	glBindBuffer(GL_ARRAY_BUFFER, newnormals);
 	glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
-
-	if(!Model->Texcoords) glGenBuffers(1, &Model->Texcoords);
-	glBindBuffer(GL_ARRAY_BUFFER, Model->Texcoords);
+	glGenBuffers(1, &newtexcoords);
+	glBindBuffer(GL_ARRAY_BUFFER, newtexcoords);
 	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
-
-	if(!Model->Elements ) glGenBuffers(1, &Model->Elements );
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Model->Elements);
+	glGenBuffers(1, &newelements);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newelements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
+	
+	Model->Positions = newpositions, Model->Normals = newnormals, Model->Texcoords = newtexcoords, Model->Elements = newelements;
+
+	if(oldpositions) glDeleteBuffers(1, &oldpositions);
+	if(oldnormals  ) glDeleteBuffers(1, &oldnormals  );
+	if(oldtexcoords) glDeleteBuffers(1, &oldtexcoords);
+	if(oldelements ) glDeleteBuffers(1, &oldelements );
+
+
+	// switch collision shape
 
 	btTriangleMesh *triangles = new btTriangleMesh();
 
