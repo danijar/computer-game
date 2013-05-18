@@ -57,6 +57,7 @@ private:
 	std::pair<glm::ivec3, uint8_t> Selection();
 	float Intbound(float s, float ds);
 	int Signum(float x);
+	GLuint Marker();
 
 public:
 	// callbacks

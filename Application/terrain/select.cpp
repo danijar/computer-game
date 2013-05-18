@@ -75,6 +75,12 @@ pair<ivec3, uint8_t> ModuleTerrain::Selection()
 				tMaxZ += tDeltaZ;
 			}
 		}
+
+		// chunk isn't loaded yet
+		if(!GetChunk(PosChunk(ivec3(x, y, z))))
+			break;
+		
+		// fetch block
 		material = GetBlock(ivec3(x, y, z));
 	}
 
@@ -94,4 +100,49 @@ float ModuleTerrain::Intbound(float s, float ds)
 int ModuleTerrain::Signum(float x)
 {
 	return x > 0 ? 1 : x < 0 ? -1 : 0;
+}
+
+
+#include <GLEW/glew.h>
+#include <SFML/Graphics.hpp>
+
+GLuint ModuleTerrain::Marker()
+{
+	unsigned int id = Entity->New();
+	auto mdl = Entity->Add<Model>(id);
+	auto frm = Entity->Add<Form>(id);
+
+	const GLfloat Vertices[]  = {-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f};
+	glGenBuffers(1, &mdl->Positions);
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
+	glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);
+	const GLfloat Normals[]   = {0,0,1,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,1,0,0,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,-1,0,0,-1,0,0,-1,0,0,-1,0,0,1,0,0,1,0,0,1,0,0,1,0,0};
+	glGenBuffers(1, &mdl->Normals);
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
+	glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Normals, GL_STATIC_DRAW);
+	const GLfloat Texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
+	glGenBuffers(1, &mdl->Texcoords);
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
+	glBufferData(GL_ARRAY_BUFFER, 48 * sizeof(GLfloat), Texcoords, GL_STATIC_DRAW);
+	const GLuint  Elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
+	glGenBuffers(1, &mdl->Elements);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Elements, GL_STATIC_DRAW);
+
+	Image image;
+	if(!image.loadFromFile(Name() + "/texture/marker.jpg"))
+		Debug->Fail("marker texture cannot be loaded");
+
+	glGenTextures(1, &mdl->Diffuse);
+	glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.getPixelsPtr());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return id;
 }

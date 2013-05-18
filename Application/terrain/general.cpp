@@ -16,6 +16,7 @@ using namespace std;
 void ModuleTerrain::Init()
 {
 	texture = Texture();
+	marker = Marker();
 
 	running.store(true); loading.store(false);
 	terrain = NULL, model = NULL, form = NULL;
@@ -120,6 +121,11 @@ void ModuleTerrain::Update()
 			Entity->Delete(i.first);
 		}
 	}
+
+	// selection
+	auto sel = Selection();
+	if(sel.second)
+		Entity->Get<Form>(marker)->Position(vec3(sel.first));
 }
 
 void ModuleTerrain::Listeners()
