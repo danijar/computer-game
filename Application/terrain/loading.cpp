@@ -28,7 +28,6 @@ void ModuleTerrain::Loading()
 			if(terrain->Changed)
 			{
 				Mesh(model, terrain, form);
-				terrain->Changed = false;
 			}
 
 			// load or generate new chunk
@@ -148,8 +147,9 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 		);
 	}
 
-	delete Form->Body->getCollisionShape();
+	btCollisionShape *oldshape = Form->Body->getCollisionShape();
 	Form->Body->setCollisionShape(new btBvhTriangleMeshShape(triangles, true, true));
+	delete oldshape;
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)

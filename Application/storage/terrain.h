@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-#define CHUNK 16
+#define CHUNK 8
 
 struct Terrain
 {
