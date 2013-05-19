@@ -161,7 +161,8 @@ void ModuleTerrain::Buffer(unsigned int Id)
 	positions.clear(); normals.clear(); texcoords.clear(); elements.clear();
 
 	btCollisionShape *oldshape = frm->Body->getCollisionShape();
-	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(new btTriangleMesh(triangles), true, true));
+	btTriangleMesh trianglescopy = triangles;
+	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(new btTriangleMesh(trianglescopy), true, true));
 	triangles = btTriangleMesh();
 	delete oldshape;
 

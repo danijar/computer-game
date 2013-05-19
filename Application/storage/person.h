@@ -20,7 +20,8 @@ struct Person
 	float Eyes; // distance from center to eyes
 	float Step; // maximum height difference for a step
 
-	bool Onground;
+	bool Touching, Onground; // touching is enough for moving,
+	                         // onground is needed for jumping
 
 	bool Changed;
 };
