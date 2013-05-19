@@ -18,8 +18,7 @@ void ModuleTerrain::Init()
 	texture = Texture();
 	marker = Marker();
 
-	running.store(true); loading.store(false);
-	terrain = NULL, model = NULL, form = NULL;
+	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
 	Listeners();
@@ -42,51 +41,51 @@ void ModuleTerrain::Update()
 	const int distance = (int)stg->Viewdistance / CHUNK / 20;
 
 	// add loaded threads to entity system
-	if(!loading.load() && terrain && model && form && access.try_lock())
+	if(!loading && !null && access.try_lock())
 	{
-		bool newone = !terrain->Changed;
-		if(newone)
+		if(current.Changed)
 		{
-			unsigned int id = Entity->New();
-			Entity->Add<Terrain>(id, terrain);
-			Entity->Add<Model>(id, model)->Diffuse = texture;
-			Entity->Add<Form>(id, form)->Position(vec3(terrain->Chunk * CHUNK));
+			unsigned int id = GetChunk(current.Chunk);
+
+			Buffer(id);
+			Entity->Get<Terrain>(id)->Changed = false;
+
+			Debug->Pass("updated a chunk");
 		}
 		else
 		{
-			terrain->Changed = false;
-			Debug->Pass("updated a chunk");
-		}
+			unsigned int id = Entity->New();
+			Entity->Add<Terrain>(id, new Terrain(current));
+			Entity->Add<Model>(id)->Diffuse = texture;
+			Entity->Add<Form>(id)->Position(vec3(current.Chunk * CHUNK));
 
-		terrain = NULL, model = NULL, form = NULL;
+			Buffer(id);
+		}
 		access.unlock();
 	}
 
 	// remesh changed chunks
-	if(!loading.load() && !terrain && !model && !form && access.try_lock())
+	if(!loading)
 	{
 		for(auto i = tns.begin(); i != tns.end(); ++i)
 		{
 			if(i->second->Changed)
 			{
-				terrain = i->second;
-				model = Entity->Get<Model>(i->first);
-				form = Entity->Get<Form>(i->first);
-
-				loading.store(true);
+				current = Terrain(*i->second);
+				null = false;
+				loading = true;
 				break;
 			}
 		}
-		access.unlock();
 	}
 	
 	// mesh new in range chunks
-	if(!loading.load() && !terrain && !model && !form && access.try_lock())
+	if(!loading && access.try_lock())
 	{
 		ivec3 i;
-		bool found = false;
-		for(i.x = -distance; i.x < distance && !found; ++i.x)
-		for(i.z = -distance; i.z < distance && !found; ++i.z)
+		bool loop = true;
+		for(i.x = -distance; i.x < distance && loop; ++i.x)
+		for(i.z = -distance; i.z < distance && loop; ++i.z)
 		{
 			ivec3 key = i + camera;
 			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
@@ -94,13 +93,12 @@ void ModuleTerrain::Update()
 
 			if(inrange && !loaded)
 			{
-				terrain = new Terrain();
-				model = new Model();
-				form = new Form();
-				terrain->Chunk = key;
-				
-				loading.store(true);
-				found = true;
+				current = Terrain();
+				current.Chunk = key;
+				null = false;
+				loading = true;
+
+				loop = false;
 			}
 		}
 		access.unlock();

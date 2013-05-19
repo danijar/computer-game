@@ -18,27 +18,25 @@ using namespace sf;
 
 void ModuleTerrain::Loading()
 {
-	Context context;
-
-	while(running.load())
+	while(running)
 	{
-		if(loading.load() && access.try_lock())
+		if(loading && access.try_lock())
 		{
 			// just remesh updated chunk
-			if(terrain->Changed)
+			if(current.Changed)
 			{
-				Mesh(model, terrain, form);
+				Mesh(&current);
 			}
-
+			
 			// load or generate new chunk
 			else
 			{
-				Generate(terrain);
-				Mesh(model, terrain, form);
+				Generate(&current);
+				Mesh(&current);
 			}
 
-			loading.store(false);
 			access.unlock();
+			loading = false;
 		}
 	}
 }
@@ -61,12 +59,8 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 	}
 }
 
-void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
+void ModuleTerrain::Mesh(Terrain *Terrain)
 {
-	// generate vertices
-
-	vector<float> positions, normals, texcoords; vector<int> elements;
-
 	int n = 0;
 	for(int X = 0; X < CHUNK; ++X)
 	for(int Y = 0; Y < CHUNK; ++Y)
@@ -117,37 +111,6 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 		}
 	}
 
-
-	// switch opengl buffers
-
-	GLuint oldpositions = Model->Positions, oldnormals = Model->Normals, oldtexcoords = Model->Texcoords, oldelements = Model->Elements;
-
-	GLuint newpositions, newnormals, newtexcoords, newelements;
-	glGenBuffers(1, &newpositions);
-	glBindBuffer(GL_ARRAY_BUFFER, newpositions);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
-	glGenBuffers(1, &newnormals);
-	glBindBuffer(GL_ARRAY_BUFFER, newnormals);
-	glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
-	glGenBuffers(1, &newtexcoords);
-	glBindBuffer(GL_ARRAY_BUFFER, newtexcoords);
-	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
-	glGenBuffers(1, &newelements);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, newelements);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
-	
-	Model->Positions = newpositions, Model->Normals = newnormals, Model->Texcoords = newtexcoords, Model->Elements = newelements;
-
-	if(oldpositions) glDeleteBuffers(1, &oldpositions);
-	if(oldnormals  ) glDeleteBuffers(1, &oldnormals  );
-	if(oldtexcoords) glDeleteBuffers(1, &oldtexcoords);
-	if(oldelements ) glDeleteBuffers(1, &oldelements );
-
-
-	// switch collision shape
-
-	btTriangleMesh *triangles = new btTriangleMesh();
-
 	GLfloat coords[9];
 	for(unsigned int i = 0; i < elements.size(); i += 3)
 	{
@@ -155,16 +118,13 @@ void ModuleTerrain::Mesh(Model *Model, Terrain *Terrain, Form *Form)
 			for(int k = 0; k < 3; ++k, ++n)
 				coords[n] = positions[3 * elements[i + j] + k];
 
-		triangles->addTriangle(
+		triangles.addTriangle(
 			btVector3(coords[0], coords[1], coords[2]),
 			btVector3(coords[3], coords[4], coords[5]),
-			btVector3(coords[6], coords[7], coords[8])
+			btVector3(coords[6], coords[7], coords[8]),
+			true
 		);
 	}
-
-	btCollisionShape *oldshape = Form->Body->getCollisionShape();
-	Form->Body->setCollisionShape(new btBvhTriangleMeshShape(triangles, true, true));
-	delete oldshape;
 }
 
 bool ModuleTerrain::Inside(ivec3 Position, ivec3 Min, ivec3 Max)
@@ -179,4 +139,32 @@ ivec3 ModuleTerrain::Shift(int Dimension, ivec3 Vector)
 	if      (Dimension % 3 == 1) return ivec3(Vector.z, Vector.x, Vector.y);
 	else if (Dimension % 3 == 2) return ivec3(Vector.y, Vector.z, Vector.x);
 	else                         return Vector;
+}
+
+void ModuleTerrain::Buffer(unsigned int Id)
+{
+	auto mdl = Entity->Get<Model>(Id);
+	auto frm = Entity->Get<Form>(Id);
+
+	if(!mdl->Positions) glGenBuffers(1, &mdl->Positions);
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
+	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
+	if(!mdl->Normals  ) glGenBuffers(1, &mdl->Normals  );
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
+	glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
+	if(!mdl->Texcoords) glGenBuffers(1, &mdl->Texcoords);
+	glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
+	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
+	if(!mdl->Elements ) glGenBuffers(1, &mdl->Elements );
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
+
+	positions.clear(); normals.clear(); texcoords.clear(); elements.clear();
+
+	auto *oldshape = frm->Body->getCollisionShape();
+	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(&triangles, true, true));
+	triangles = btTriangleMesh();
+	delete oldshape;
+
+	null = true;
 }

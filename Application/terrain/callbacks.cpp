@@ -23,21 +23,19 @@ v8::Handle<v8::Value> ModuleTerrain::jsChunk(const v8::Arguments& args)
 		return v8::Undefined();
 	}
 	*/
-
+	/*
 	if(2 < args.Length() && args[0]->IsInt32() && args[1]->IsInt32() && args[2]->IsInt32())
 	{
-		Terrain *terrain = new Terrain();
-		Model *model = new Model();
-		Form *form = new Form();
-		terrain->Chunk = ivec3(args[0]->Int32Value(), args[1]->Int32Value(), args[2]->Int32Value());
+		ivec3 key(args[0]->Int32Value(), args[1]->Int32Value(), args[2]->Int32Value());
 
-		module->terrain = terrain;
-		module->model = model;
-		module->form = form;
+		module->terrain = Terrain();
+		module->model = Model();
+		module->form = Form();
+		module->terrain.Chunk = key;
 
-		// module->access.unlock();
+		module->null.store(false);
 		module->loading.store(true);
 	}
-
+	*/
 	return v8::Undefined();
 }
