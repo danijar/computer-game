@@ -45,19 +45,17 @@ void ModuleTerrain::Update()
 	{
 		if(current.Changed)
 		{
-			unsigned int id = GetChunk(current.Chunk);
-
-			Buffer(id);
+			unsigned int id = GetChunk(current.Key);
 			Entity->Get<Terrain>(id)->Changed = false;
 
-			Debug->Pass("updated a chunk");
+			Buffer(id);
 		}
 		else
 		{
 			unsigned int id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
 			Entity->Add<Model>(id)->Diffuse = texture;
-			Entity->Add<Form>(id)->Position(vec3(current.Chunk * CHUNK));
+			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK));
 
 			Buffer(id);
 		}
@@ -94,7 +92,7 @@ void ModuleTerrain::Update()
 			if(inrange && !loaded)
 			{
 				current = Terrain();
-				current.Chunk = key;
+				current.Key = key;
 				null = false;
 				loading = true;
 
@@ -108,7 +106,7 @@ void ModuleTerrain::Update()
 	int tolerance = 1;
 	for(auto i : tns)
 	{
-		if(!Inside(abs(i.second->Chunk - camera), ivec3(0), ivec3(distance + tolerance)))
+		if(!Inside(abs(i.second->Key - camera), ivec3(0), ivec3(distance + tolerance)))
 		{
 			auto mdl = Entity->Get<Model>(i.first);
 			glDeleteBuffers(1, &mdl->Positions);

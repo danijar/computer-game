@@ -38,7 +38,7 @@ void ModuleTerrain::SetBlock(ivec3 Block, uint8_t Type)
 unsigned int ModuleTerrain::GetChunk(ivec3 Chunk)
 {
 	for(auto i : Entity->Get<Terrain>())
-		if(i.second->Chunk == Chunk)
+		if(i.second->Key == Chunk)
 			return i.first;
 	return 0;
 }

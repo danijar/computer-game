@@ -92,7 +92,7 @@ float ModuleTerrain::Intbound(float s, float ds)
 	if (ds < 0) {
 		return Intbound(-s, -ds);
 	} else {
-		s = fmod((fmod(s, 1) + 1), 1);
+		s = fmod((fmod(s, 1.0f) + 1), 1.0f);
 		return (1-s) / ds;
 	}
 }

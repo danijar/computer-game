@@ -18,7 +18,7 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 	Amount *= Sensitivity;
 
 	// clamp camera pitch
-	const float clamp = 1.25f;
+	const float clamp = 1.3f;
 	if     (campitch + Amount.x >  clamp) Amount.x =  clamp - campitch;
 	else if(campitch + Amount.x < -clamp) Amount.x = -clamp - campitch;
 	campitch += Amount.x;

@@ -63,4 +63,5 @@ private:
 public:
 	// callbacks
 	static v8::Handle<v8::Value> jsChunk(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsBlock(const v8::Arguments& args);
 };

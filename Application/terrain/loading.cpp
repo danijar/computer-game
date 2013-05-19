@@ -44,10 +44,10 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 {
 	for(int x = 0; x < CHUNK; ++x)
 	{
-		const float i = Terrain->Chunk.x + (float)x / CHUNK;
+		const float i = Terrain->Key.x + (float)x / CHUNK;
 		for(int z = 0; z < CHUNK; ++z)
 		{
-			const float j = Terrain->Chunk.z + (float)z / CHUNK;
+			const float j = Terrain->Key.z + (float)z / CHUNK;
 
 			double height_bias = 0.30;
 			double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;

@@ -12,6 +12,6 @@ struct Terrain
 	Terrain() : Changed(false) { memset(Blocks, 0, sizeof Blocks); }
 
 	uint8_t Blocks[CHUNK][CHUNK][CHUNK];
-	glm::ivec3 Chunk;
+	glm::ivec3 Key;
 	bool Changed;
 };
