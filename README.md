@@ -9,7 +9,7 @@ Features
 - Random terrain generation using [Simplex noise](http://en.wikipedia.org/wiki/Simplex_noise)
 - Culled mesh generation from voxel data
 - Different block looks using a texture atlas
-- Fog fading out far landscapes
+- Block modification at runtime
 
 Screenshot
 ----------
@@ -27,5 +27,4 @@ Upcoming Features
 -----------------
 
 - Generation of more simple meshes with adjacent face merging
-- Block modification at runtime
 - Terrain smoothing by a particular algorithm
