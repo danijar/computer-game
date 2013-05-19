@@ -117,11 +117,12 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 			for(int k = 0; k < 3; ++k, ++n)
 				coords[n] = positions[3 * elements[i + j] + k];
 
-		triangles.addTriangle(
-			btVector3(coords[0], coords[1], coords[2]),
-			btVector3(coords[3], coords[4], coords[5]),
-			btVector3(coords[6], coords[7], coords[8]),
-			true
+		triangles.push_back(
+			tuple<btVector3, btVector3, btVector3>(
+				btVector3(coords[0], coords[1], coords[2]),
+				btVector3(coords[3], coords[4], coords[5]),
+				btVector3(coords[6], coords[7], coords[8])
+			)
 		);
 	}
 }
@@ -159,11 +160,14 @@ void ModuleTerrain::Buffer(unsigned int Id)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
 
 	positions.clear(); normals.clear(); texcoords.clear(); elements.clear();
+	
+	btTriangleMesh *mesh = new btTriangleMesh();
+	for(auto i = triangles.begin(); i != triangles.end(); ++i)
+		mesh->addTriangle(get<0>(*i), get<1>(*i), get<2>(*i));
+	triangles.clear();
 
 	btCollisionShape *oldshape = frm->Body->getCollisionShape();
-	btTriangleMesh trianglescopy = triangles;
-	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(new btTriangleMesh(trianglescopy), true, true));
-	triangles = btTriangleMesh();
+	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(mesh, true, true));
 	delete oldshape;
 
 	null = true;

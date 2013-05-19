@@ -38,7 +38,7 @@ private:
 
 	// loading
 	std::atomic<bool> running, loading; std::mutex access; std::future<void> task;
-	Terrain current; std::vector<GLfloat> positions, normals, texcoords; std::vector<GLuint> elements; btTriangleMesh triangles; bool null;
+	Terrain current; std::vector<GLfloat> positions, normals, texcoords; std::vector<GLuint> elements; std::vector<std::tuple<btVector3, btVector3, btVector3>> triangles; bool null;
 	void Loading();
 	void Generate(Terrain *Terrain);
 	void Mesh(Terrain *Terrain);
