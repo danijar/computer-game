@@ -79,6 +79,7 @@ void ModuleTerrain::Update()
 		}
 	}
 	
+	/*
 	// mesh new in range chunks
 	if(!loading && access.try_lock())
 	{
@@ -103,6 +104,7 @@ void ModuleTerrain::Update()
 		}
 		access.unlock();
 	}
+	*/
 
 	// free out of range chunks
 	int tolerance = 1;
