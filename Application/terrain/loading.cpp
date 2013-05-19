@@ -15,7 +15,6 @@ using namespace sf;
 #include "model.h"
 
 
-
 void ModuleTerrain::Loading()
 {
 	while(running)
@@ -161,8 +160,8 @@ void ModuleTerrain::Buffer(unsigned int Id)
 
 	positions.clear(); normals.clear(); texcoords.clear(); elements.clear();
 
-	auto *oldshape = frm->Body->getCollisionShape();
-	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(&triangles, true, true));
+	btCollisionShape *oldshape = frm->Body->getCollisionShape();
+	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(new btTriangleMesh(triangles), true, true));
 	triangles = btTriangleMesh();
 	delete oldshape;
 

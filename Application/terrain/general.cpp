@@ -38,7 +38,7 @@ void ModuleTerrain::Update()
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
 	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK)); camera.y = 0;
-	const int distance = (int)stg->Viewdistance / CHUNK / 20;
+	const int distance = (int)stg->Viewdistance / CHUNK / 10;
 
 	// add loaded threads to entity system
 	if(!loading && !null && access.try_lock())
