@@ -395,6 +395,9 @@
     <Image Include="Application\terrain\texture\terrain.png">
       <Filter>terrain\texture</Filter>
     </Image>
+    <Image Include="Application\terrain\texture\marker.jpg">
+      <Filter>terrain\texture</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Application\interface\font\source.ttf">

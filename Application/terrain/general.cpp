@@ -4,8 +4,10 @@
 #include <future>
 #include <mutex>
 #include <GLM/glm.hpp>
-using namespace glm;
+#include <SFML/Window.hpp>
 using namespace std;
+using namespace glm;
+using namespace sf;
 
 #include "terrain.h"
 #include "form.h"
@@ -15,11 +17,10 @@ using namespace std;
 
 void ModuleTerrain::Init()
 {
-	marker  = Marker();
-	side    = Marker();
 	texture = Texture();
-	Entity->Get<Form>(marker)->Scale(vec3(1.1f));
-	Entity->Get<Form>(side  )->Scale(vec3( .5f));
+
+	marker = Marker();
+	Entity->Get<Form>(marker)->Scale(vec3(.5f));
 
 	show = true; type = 1;
 
@@ -128,15 +129,9 @@ void ModuleTerrain::Update()
 	{
 		auto sel = Selection();
 		if(get<2>(sel))
-		{
-			Entity->Get<Form>(marker)->Position(vec3(get<0>(sel))                           + vec3((1.0f - 1.1f) / 2));
-			Entity->Get<Form>(side  )->Position(vec3(get<0>(sel)) + .5f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
-		}
+			Entity->Get<Form>(marker)->Position(vec3(get<0>(sel)) + .3f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
 		else
-		{
-			Entity->Get<Form>(marker)->Position(vec3(0, -1000, 0));
-			Entity->Get<Form>(side  )->Position(vec3(0, -1000, 0));
-		}
+			Entity->Get<Form>(marker)->Position(vec3(0, -9999, 0));
 	}
 }
 
@@ -150,5 +145,45 @@ void ModuleTerrain::Listeners()
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
 		SetBlock(get<0>(sel) + get<1>(sel), type);
+	});
+
+	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
+		bool changed = true;
+
+		switch(Code)
+		{
+		case Keyboard::Num1:
+			type = 1;
+			break;
+		case Keyboard::Num2:
+			type = 2;
+			break;
+		case Keyboard::Num3:
+			type = 3;
+			break;
+		case Keyboard::Num4:
+			type = 4;
+			break;
+		case Keyboard::Num5:
+			type = 5;
+			break;
+		case Keyboard::Num6:
+			type = 6;
+			break;
+		case Keyboard::Num7:
+			type = 7;
+			break;
+		case Keyboard::Num8:
+			type = 8;
+			break;
+		case Keyboard::Num9:
+			type = 9;
+			break;
+		default:
+			changed = false;
+		}
+
+		if(changed)
+			Debug->Print("changed placing type to " + to_string(type));
 	});
 }

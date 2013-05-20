@@ -109,10 +109,7 @@ v8::Handle<v8::Value> ModuleTerrain::jsPlacemarker(const v8::Arguments& args)
 	module->show = !module->show;
 
 	if(!module->show)
-	{
 		module->Entity->Get<Form>(module->marker)->Position(vec3(0, -9999, 0));
-		module->Entity->Get<Form>(module->side  )->Position(vec3(0, -9999, 0));
-	}
 
 	HelperDebug::Print("script", string(module->show ? "enabled" : "disabled") + " placing marker");
 	return v8::Undefined();

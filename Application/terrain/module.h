@@ -54,8 +54,7 @@ private:
 	glm::ivec3 PosLocal(glm::ivec3 Block);
 
 	// select
-	bool show;
-	GLuint marker, side;
+	bool show; GLuint marker;
 	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection();
 	float Intbound(float s, float ds);
 	int Signum(float x);
