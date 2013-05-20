@@ -1,6 +1,8 @@
 #include "module.h"
 
+#include <string>
 #include <GLM/glm.hpp>
+using namespace std;
 using namespace glm;
 
 #include "terrain.h"
@@ -9,8 +11,9 @@ using namespace glm;
 
 void ModuleTerrain::Callbacks()
 {
-	Script->Bind("chunk", jsChunk);
-	Script->Bind("block", jsBlock);
+	Script->Bind("chunk",     jsChunk    );
+	Script->Bind("block",     jsBlock    );
+	Script->Bind("placetype", jsPlacetype);
 }
 
 v8::Handle<v8::Value> ModuleTerrain::jsChunk(const v8::Arguments& args)
@@ -64,5 +67,35 @@ v8::Handle<v8::Value> ModuleTerrain::jsBlock(const v8::Arguments& args)
 	{
 		uint8_t type = module->GetBlock(block);
 		return v8::Uint32::New(type);
+	}
+}
+
+v8::Handle<v8::Value> ModuleTerrain::jsPlacetype(const v8::Arguments& args)
+{
+	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
+
+	// set place type
+	if(0 < args.Length())
+	{
+		if(args[0]->IsUint32())
+		{
+			module->type = args[0]->Uint32Value();
+		}
+		else if(args[0]->IsString())
+		{
+			string name = *v8::String::Utf8Value(args[0]);
+			if(name == "air")
+				module->type = 0;
+			else if(name == "dirt")
+				module->type = 1;
+			else if(name == "grass")
+				module->type = 2;
+		}
+		return v8::Undefined();
+	}
+	// get place type
+	else
+	{
+		return v8::Uint32::New(module->type);
 	}
 }

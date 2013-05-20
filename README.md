@@ -21,10 +21,33 @@ Instructions
 
 There is a precompiled executable for Windows. To use it, download the content of the `Application` folder and run the executable. You may need a recent Windows version to run this.
 
-Also see the [key controls](https://github.com/ComputerGame/GraphicsApplication/#key-controls) of the main application.
+### Key controls
+
+Settings and global actions
+
+- `Esc` Exit the application.
+- `F1` Toggle mouse capture for camera movement.
+- `F2` Toggle wire frame mode.
+- `F3` Toggle collision shapes debug draw.
+- `F4` Toggle vertical sync.
+- `F11` Toggle between fullscreen and windowed mode.
+- `Tab` Toggle scripting console.
+
+Movement and orientation
+
+- `W`, `A`, `S`, `D` or `Up`, `Down`, `Left`, `Right` Move camera.
+- `Space` Jump.
+- Hold `Left Shift` to move and jump even in the air and faster.
+
+Interaction with the world
+
+- `Mouse Left` Mine selected block.
+- `Mouse Right` Place a block.
+- `F` Shoot a cube in view direction.
 
 Upcoming Features
 -----------------
 
+- Advanced terrain generator
 - Generation of more simple meshes with adjacent face merging
 - Terrain smoothing by a particular algorithm

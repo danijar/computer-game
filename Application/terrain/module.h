@@ -59,9 +59,11 @@ private:
 	float Intbound(float s, float ds);
 	int Signum(float x);
 	GLuint Marker();
+	uint8_t type;
 
 public:
 	// callbacks
 	static v8::Handle<v8::Value> jsChunk(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsBlock(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPlacetype(const v8::Arguments& args);
 };

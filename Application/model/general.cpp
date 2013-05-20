@@ -52,23 +52,6 @@ void ModuleModel::Listeners()
 	auto cook = [](float from, float to){ return (rand() % (int)((to - from) * 10) / 10.f) + from; };
 
 	// move this into a script
-	Event->Listen("InputBindCreate", [=]{		
-		if(Keyboard::isKeyPressed(Keyboard::LShift))
-		{
-			int count((int)cook(10.0f, 25.0f));
-			for(int i = 0; i < count; ++i)
-			{
-				unsigned int id = CreateModel("qube.prim", "magic.mtl", vec3(0, 30, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 0.7f), cook(0.3f, 0.7f), cook(0.3f, 0.7f)), 3.0f);
-				Entity->Get<Form>(id)->Body->applyCentralImpulse(btVector3(cook(-12.5f, 12.5f), -75.0f, cook(-12.5f, 12.5f)));
-			}
-		}
-		else
-		{
-			CreateModel("qube.prim", "magic.mtl", vec3(0, 15, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
-		}
-	});
-
-	// move this into a script
 	Event->Listen("InputBindShoot", [=]{
 		unsigned int id = CreateModel("qube.prim", "magic.mtl", vec3(0, 10, 0), vec3(0), vec3(0.5f), 5.0f);
 		auto tsfcam = Entity->Get<Form>(*Global->Get<unsigned int>("camera"));

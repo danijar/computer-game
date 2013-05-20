@@ -21,6 +21,8 @@ void ModuleTerrain::Init()
 	Entity->Get<Form>(marker)->Scale(vec3(1.1f));
 	Entity->Get<Form>(side  )->Scale(vec3( .5f));
 
+	type = 1;
+
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
@@ -128,6 +130,11 @@ void ModuleTerrain::Update()
 		Entity->Get<Form>(marker)->Position(vec3(get<0>(sel))                           + vec3((1.0f - 1.1f) / 2));
 		Entity->Get<Form>(side  )->Position(vec3(get<0>(sel)) + .5f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
 	}
+	else
+	{
+		Entity->Get<Form>(marker)->Position(vec3(0, -1000, 0));
+		Entity->Get<Form>(side  )->Position(vec3(0, -1000, 0));
+	}
 }
 
 void ModuleTerrain::Listeners()
@@ -135,5 +142,10 @@ void ModuleTerrain::Listeners()
 	Event->Listen("InputBindMine", [=]{
 		auto sel = Selection();
 		SetBlock(get<0>(sel), 0);
+	});
+
+	Event->Listen("InputBindPlace", [=]{
+		auto sel = Selection();
+		SetBlock(get<0>(sel) + get<1>(sel), type);
 	});
 }

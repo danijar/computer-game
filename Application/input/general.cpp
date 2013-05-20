@@ -23,7 +23,7 @@ void ModuleInput::Listeners()
 			this->Event->Fire("InputBindJump");
 			break;
 		case Keyboard::F:
-			this->Event->Fire("InputBindCreate");
+			this->Event->Fire("InputBindShoot");
 			break;
 		}
 	});
@@ -59,10 +59,10 @@ void ModuleInput::Listeners()
 		switch(Code)
 		{
 		case Mouse::Left:
-			this->Event->Fire("InputBindShoot");
+			this->Event->Fire("InputBindMine");
 			break;
 		case Mouse::Right:
-			this->Event->Fire("InputBindMine");
+			this->Event->Fire("InputBindPlace");
 			break;
 		}
 	});

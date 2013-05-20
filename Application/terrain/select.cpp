@@ -58,7 +58,7 @@ tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 			}
 			else
 			{
-				if (tMaxZ > reach) break; // wasn't here until now
+				if (tMaxZ > reach) break;
 				z += stepZ;
 				tMaxZ += tDeltaZ;
 				normal = vec3(0, 0, -stepZ);
