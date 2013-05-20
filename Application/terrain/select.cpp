@@ -11,7 +11,7 @@ using namespace sf;
 #include "camera.h"
 
 
-pair<ivec3, uint8_t> ModuleTerrain::Selection()
+tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 {
 	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -44,6 +44,7 @@ pair<ivec3, uint8_t> ModuleTerrain::Selection()
 	reach /= length(vec3(dx, dy, dz));
 
 	uint8_t material = 0;
+	ivec3 position, normal;
 	while(!material)
 	{
 		if (tMaxX < tMaxY)
@@ -53,11 +54,14 @@ pair<ivec3, uint8_t> ModuleTerrain::Selection()
 				if (tMaxX > reach) break;
 				x += stepX;
 				tMaxX += tDeltaX;
+				normal = vec3(-stepX, 0, 0);
 			}
 			else
 			{
+				if (tMaxZ > reach) break; // wasn't here until now
 				z += stepZ;
 				tMaxZ += tDeltaZ;
+				normal = vec3(0, 0, -stepZ);
 			}
 		}
 		else
@@ -67,24 +71,28 @@ pair<ivec3, uint8_t> ModuleTerrain::Selection()
 				if (tMaxY > reach) break;
 				y += stepY;
 				tMaxY += tDeltaY;
+				normal = vec3(0, -stepY, 0);
 			}
-			else
+			else // repeated second case for easier conditionals
 			{
 				if (tMaxZ > reach) break;
 				z += stepZ;
 				tMaxZ += tDeltaZ;
+				normal = vec3(0, 0, -stepZ);
 			}
 		}
 
+		position = ivec3(x, y, z);
+
 		// chunk isn't loaded yet
-		if(!GetChunk(PosChunk(ivec3(x, y, z))))
+		if(!GetChunk(PosChunk(position)))
 			break;
 		
 		// fetch block
-		material = GetBlock(ivec3(x, y, z));
+		material = GetBlock(position);
 	}
 
-	return make_pair(ivec3(x, y, z), material);
+	return make_tuple(position, normal, material);
 }
 
 float ModuleTerrain::Intbound(float s, float ds)
@@ -112,7 +120,7 @@ GLuint ModuleTerrain::Marker()
 	auto mdl = Entity->Add<Model>(id);
 	auto frm = Entity->Add<Form>(id);
 
-	const GLfloat Vertices[]  = {-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,1.1f,-.1f,-.1f,1.1f,-.1f,-.1f,-.1f,-.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,1.1f,-.1f,1.1f,-.1f,1.1f,1.1f,-.1f,-.1f,1.1f,1.1f,-.1f,1.1f,1.1f,1.1f};
+	const GLfloat Vertices[]  = {0,0,1.f,1.f,0,1.f,1.f,1.f,1.f,0,1.f,1.f,0,1.f,1.f,1.f,1.f,1.f,1.f,1.f,0,0,1.f,0,1.f,0,0,0,0,0,0,1.f,0,1.f,1.f,0,0,0,0,1.f,0,0,1.f,0,1.f,0,0,1.f,0,0,0,0,0,1.f,0,1.f,1.f,0,1.f,0,1.f,0,1.f,1.f,0,0,1.f,1.f,0,1.f,1.f,1.f};
 	glGenBuffers(1, &mdl->Positions);
 	glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
 	glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), Vertices, GL_STATIC_DRAW);

@@ -15,8 +15,11 @@ using namespace std;
 
 void ModuleTerrain::Init()
 {
+	marker  = Marker();
+	side    = Marker();
 	texture = Texture();
-	marker = Marker();
+	Entity->Get<Form>(marker)->Scale(vec3(1.1f));
+	Entity->Get<Form>(side  )->Scale(vec3( .5f));
 
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
@@ -120,14 +123,17 @@ void ModuleTerrain::Update()
 
 	// selection
 	auto sel = Selection();
-	if(sel.second)
-		Entity->Get<Form>(marker)->Position(vec3(sel.first));
+	if(get<2>(sel))
+	{
+		Entity->Get<Form>(marker)->Position(vec3(get<0>(sel))                           + vec3((1.0f - 1.1f) / 2));
+		Entity->Get<Form>(side  )->Position(vec3(get<0>(sel)) + .5f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
+	}
 }
 
 void ModuleTerrain::Listeners()
 {
 	Event->Listen("InputBindMine", [=]{
 		auto sel = Selection();
-		SetBlock(sel.first, 0);
+		SetBlock(get<0>(sel), 0);
 	});
 }
