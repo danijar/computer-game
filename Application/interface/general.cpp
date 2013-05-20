@@ -11,11 +11,16 @@ void ModuleInterface::Init()
 	bool result = font.loadFromFile(Name() + "/font/" + "source.ttf");
 	Debug->PassFail("font loading", result);
 
+	show = true;
+
 	Listeners();
+	Callbacks();
 }
 
 void ModuleInterface::Update()
 {
+	if(!show) return;
+
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	wnd->pushGLStates();

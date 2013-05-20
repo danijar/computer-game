@@ -92,6 +92,7 @@
     <ClCompile Include="Application\console\general.cpp" />
     <ClCompile Include="Application\console\history.cpp" />
     <ClCompile Include="Application\input\general.cpp" />
+    <ClCompile Include="Application\interface\callbacks.cpp" />
     <ClCompile Include="Application\interface\general.cpp" />
     <ClCompile Include="Application\interface\print.cpp" />
     <ClCompile Include="Application\main.cpp" />

@@ -54,6 +54,7 @@ private:
 	glm::ivec3 PosLocal(glm::ivec3 Block);
 
 	// select
+	bool show;
 	GLuint marker, side;
 	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection();
 	float Intbound(float s, float ds);
@@ -66,4 +67,5 @@ public:
 	static v8::Handle<v8::Value> jsChunk(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsBlock(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsPlacetype(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPlacemarker(const v8::Arguments& args);
 };

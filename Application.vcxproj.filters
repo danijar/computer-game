@@ -208,6 +208,9 @@
     <ClCompile Include="Application\terrain\callbacks.cpp">
       <Filter>terrain</Filter>
     </ClCompile>
+    <ClCompile Include="Application\interface\callbacks.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

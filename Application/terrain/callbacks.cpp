@@ -7,13 +7,15 @@ using namespace glm;
 
 #include "terrain.h"
 #include "model.h"
+#include "form.h"
 
 
 void ModuleTerrain::Callbacks()
 {
-	Script->Bind("chunk",     jsChunk    );
-	Script->Bind("block",     jsBlock    );
-	Script->Bind("placetype", jsPlacetype);
+	Script->Bind("chunk",       jsChunk      );
+	Script->Bind("block",       jsBlock      );
+	Script->Bind("placetype",   jsPlacetype  );
+	Script->Bind("placemarker", jsPlacemarker);
 }
 
 v8::Handle<v8::Value> ModuleTerrain::jsChunk(const v8::Arguments& args)
@@ -98,4 +100,20 @@ v8::Handle<v8::Value> ModuleTerrain::jsPlacetype(const v8::Arguments& args)
 	{
 		return v8::Uint32::New(module->type);
 	}
+}
+
+v8::Handle<v8::Value> ModuleTerrain::jsPlacemarker(const v8::Arguments& args)
+{
+	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
+
+	module->show = !module->show;
+
+	if(!module->show)
+	{
+		module->Entity->Get<Form>(module->marker)->Position(vec3(0, -9999, 0));
+		module->Entity->Get<Form>(module->side  )->Position(vec3(0, -9999, 0));
+	}
+
+	HelperDebug::Print("script", string(module->show ? "enabled" : "disabled") + " placing marker");
+	return v8::Undefined();
 }
