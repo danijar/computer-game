@@ -43,6 +43,7 @@ Interaction with the world
 
 - `Mouse Left` Mine selected block.
 - `Mouse Right` Place a block.
+- `1` to `9` Change type of block getting placed.
 - `F` Shoot a cube in view direction.
 
 Upcoming Features
