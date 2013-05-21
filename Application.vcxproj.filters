@@ -67,6 +67,9 @@
     <Filter Include="terrain\texture">
       <UniqueIdentifier>{a4ac5742-175d-485f-9017-0c88efae81fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="interface\texture">
+      <UniqueIdentifier>{bbcdc003-81db-403a-aafb-1d6176332aa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\renderer\framebuffer.cpp">
@@ -209,6 +212,9 @@
       <Filter>terrain</Filter>
     </ClCompile>
     <ClCompile Include="Application\interface\callbacks.cpp">
+      <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\interface\crosshair.cpp">
       <Filter>interface</Filter>
     </ClCompile>
   </ItemGroup>
@@ -397,6 +403,9 @@
     </Image>
     <Image Include="Application\terrain\texture\marker.jpg">
       <Filter>terrain\texture</Filter>
+    </Image>
+    <Image Include="Application\interface\texture\crosshair.png">
+      <Filter>interface\texture</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

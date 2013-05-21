@@ -11,6 +11,10 @@ void ModuleInterface::Init()
 	bool result = font.loadFromFile(Name() + "/font/" + "source.ttf");
 	Debug->PassFail("font loading", result);
 
+	crosshair = LoadImage("texture/crosshair.png");
+	crosshair.second->setOrigin((Vector2f)crosshair.first->getSize() / 2.0f);
+	Resize();
+
 	show = true;
 
 	Listeners();
@@ -24,6 +28,7 @@ void ModuleInterface::Update()
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	wnd->pushGLStates();
+	DrawCrosshair();
 	DrawPrint();
 	wnd->popGLStates();
 }
@@ -31,6 +36,15 @@ void ModuleInterface::Update()
 void ModuleInterface::Listeners()
 {
 	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-		Global->Get<RenderWindow>("window")->setView(View(FloatRect(0, 0, (float)Size.x, (float)Size.y)));
+		Resize();
 	});
+}
+
+void ModuleInterface::Resize()
+{
+	Vector2f size = (Vector2f)Global->Get<RenderWindow>("window")->getSize();
+
+	Global->Get<RenderWindow>("window")->setView(View(FloatRect(0, 0, size.x, size.y)));
+
+	crosshair.second->setPosition(size / 2.0f);
 }

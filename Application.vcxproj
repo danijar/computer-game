@@ -93,6 +93,7 @@
     <ClCompile Include="Application\console\history.cpp" />
     <ClCompile Include="Application\input\general.cpp" />
     <ClCompile Include="Application\interface\callbacks.cpp" />
+    <ClCompile Include="Application\interface\crosshair.cpp" />
     <ClCompile Include="Application\interface\general.cpp" />
     <ClCompile Include="Application\interface\print.cpp" />
     <ClCompile Include="Application\main.cpp" />
@@ -185,6 +186,7 @@
     <None Include="Application\renderer\shader\screen.frag" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Application\interface\texture\crosshair.png" />
     <Image Include="Application\model\texture\barrel_d.jpg" />
     <Image Include="Application\model\texture\barrel_n.jpg" />
     <Image Include="Application\model\texture\bottom.jpg" />

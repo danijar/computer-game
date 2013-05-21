@@ -13,10 +13,16 @@ class ModuleInterface : public Module
 	void Update();
 	void Listeners();
 	void Callbacks();
+	void Resize();
 
 	// print
 	sf::Font font;
 	void DrawPrint();
+	
+	// crosshair
+	std::pair<sf::Texture*, sf::Sprite*> crosshair;
+	std::pair<sf::Texture*, sf::Sprite*> LoadImage(std::string Path);
+	void DrawCrosshair();
 
 public:
 	// callbacks
