@@ -16,8 +16,6 @@
 
 #define TILES_U 4
 #define TILES_V 4
-#define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
-#define GAP float(0.0001)
 
 class ModuleTerrain : public Module
 {	

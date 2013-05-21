@@ -58,6 +58,9 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 	}
 }
 
+#define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
+#define GAP float(0.000/*1*/)
+
 void ModuleTerrain::Mesh(Terrain *Terrain)
 {
 	int n = 0;
@@ -71,10 +74,7 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 			for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 				ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-				if(Inside(neigh, ivec3(0), ivec3(CHUNK) - 1))
-					if(Terrain->Blocks[neigh.x][neigh.y][neigh.z])
-						goto skip;
-
+				if(!(Inside(neigh, ivec3(0), ivec3(CHUNK) - 1) && Terrain->Blocks[neigh.x][neigh.y][neigh.z]))
 				{
 					for(float i = 0; i <= 1; ++i)
 					for(float j = 0; j <= 1; ++j)
@@ -106,7 +106,7 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 					n += 4;
 				}
 
-			skip: dir *= -1; } while(dir > 0); }
+			dir *= -1; } while(dir > 0); }
 		}
 	}
 
