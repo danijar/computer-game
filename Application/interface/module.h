@@ -14,6 +14,7 @@ class ModuleInterface : public Module
 	void Listeners();
 	void Callbacks();
 	void Resize();
+	void Resize(sf::Vector2u Size);
 
 	// print
 	sf::Font font;

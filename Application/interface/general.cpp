@@ -36,13 +36,23 @@ void ModuleInterface::Update()
 void ModuleInterface::Listeners()
 {
 	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
+		Resize(Size);
+	});
+
+	Event->Listen("WindowRecreated", [=]{
 		Resize();
 	});
 }
 
 void ModuleInterface::Resize()
 {
-	Vector2f size = (Vector2f)Global->Get<RenderWindow>("window")->getSize();
+	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+	Resize(size);
+}
+
+void ModuleInterface::Resize(Vector2u Size)
+{
+	Vector2f size = Vector2f(Size);
 
 	Global->Get<RenderWindow>("window")->setView(View(FloatRect(0, 0, size.x, size.y)));
 
