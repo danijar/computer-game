@@ -14,23 +14,42 @@ bool ModulePerson::Ground(unsigned int Id)
 	auto tsf = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
+	// fetch person's origin
 	btVector3 origin = tsf->Body->getWorldTransform().getOrigin();
 
+	// cast ray at the center
 	bool hit = RayDown(origin, psn->Height / 2).first;
 
+	// circularly cast rays until hit
 	const int samples = 8;
 	for (int i = 0; i < samples && !hit; ++i)
 	{
 		float value = glm::pi<float>() * 2 * (float)i / samples;
 		btVector3 direction = btVector3(sin(value), 0, cos(value)).normalize();
-		hit = RayDown(origin + direction * psn->Radius * 0.99f, psn->Height / 2 + GROUND_TOLECANRE + 0.01f).first;
+		hit = RayDown(origin + direction * psn->Radius * 0.99f, psn->Height / 2 + GROUND_TOLERANCE + 0.01f).first;
 	}
 	return hit;
 }
 
 bool ModulePerson::Edge(unsigned int Id, vec3 Direction)
 {
-	return false;
+	auto tsf = Entity->Get<Form>(Id);
+	auto psn = Entity->Get<Person>(Id);
+
+	// fetch person's origin and rotation
+	btTransform transform = tsf->Body->getWorldTransform();
+	btQuaternion rotation = transform.getRotation();
+	btVector3 origin = transform.getOrigin();
+
+	// create orientation vectors
+	btVector3 lookat = quatRotate(rotation, btVector3(0, 0, 1));
+	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
+
+	// cast rays to detect edge with air above
+	bool hitabove  = RayDown(origin + forward * (psn->Radius + psn->Step) + btVector3(0,  psn->Height/2, 0), psn->Height + GROUND_TOLERANCE).first;
+	bool hitbottom = RayDown(origin + forward * (psn->Radius + psn->Step) + btVector3(0, -psn->Height/2, 0), psn->Step   - GROUND_TOLERANCE).first;
+
+	return (hitabove == false && hitbottom == true);
 }
 
 pair<bool, float> ModulePerson::RayDown(btVector3 &Position, float Length)

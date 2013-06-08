@@ -18,7 +18,7 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	btQuaternion rotation = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Body->getWorldTransform().getRotation();
 	/*
 	 * Do not move in camera direction but in person direction.
-	 * This doesn't work at the moment. Direction is always positive, to it doesn't work on the half of the map.
+	 * This doesn't work at the moment. Direction is always positive, though it doesn't work on the half of the map.
 	 * btQuaternion rotation = Entity->Get<Form>(Id)->Body->getWorldTransform().getRotation();
 	 */
 
@@ -49,5 +49,5 @@ void ModulePerson::Jump(unsigned int Id, float Multiplier)
 	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
-	tsf->Body->applyCentralImpulse(btVector3(0, 5.5, 0) * psn->Mass * Multiplier);
+	tsf->Body->applyCentralImpulse(btVector3(0, 6.5f, 0) * psn->Mass * Multiplier);
 }

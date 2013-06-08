@@ -1,7 +1,7 @@
 #pragma once
 
 
-#define GROUND_TOLECANRE 0.2f
+#define GROUND_TOLERANCE 0.1f
 
 struct Person
 {
@@ -11,10 +11,10 @@ struct Person
 	{
 		this->Height =            Height;
 		this->Step   =   0.25f *  Height;
-		this->Eyes   =   1.1f  *  Height / 2;
-		this->Mass   = 100.0f  * (Height - 1);
+		this->Eyes   =   1.10f *  Height / 2;
+		this->Mass   = 100.00f * (Height - 1);
 		this->Radius =            Height / 4;
-		this->Step   =   0.15f *  Height;
+		this->Step   =   0.25f *  Height;
 	}
 
 	float Mass;
