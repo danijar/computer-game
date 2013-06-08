@@ -35,6 +35,7 @@ void ModulePerson::Update()
 	// move person attached to active camera
 	unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
 	auto psn = Entity->Get<Person>(id);
+	auto tsf = Entity->Get<Form>(id);
 
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
@@ -47,8 +48,17 @@ void ModulePerson::Update()
 			Move(id, move, 20.0f);
 		else if(Ground(id))
 			Move(id, move);
-		else if (Edge(id, move))
+		else if(Edge(id, move))
 			Move(id, move);
+
+		psn->Walking = true;
+	}
+	else if(psn->Walking)
+	{
+		if(Ground(id))
+			tsf->Body->setLinearVelocity(btVector3(0, 0, 0));
+
+		psn->Walking = false;
 	}
 
 	if(psn->Jumping && !Keyboard::isKeyPressed(Keyboard::Space) && Ground(id))
@@ -60,6 +70,7 @@ void ModulePerson::Listeners()
 	Event->Listen("InputBindJump", [=] {
 		unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
 		auto psn = Entity->Get<Person>(id);
+		auto tsf = Entity->Get<Form>(id);
 
 		if(Keyboard::isKeyPressed(Keyboard::LShift))
 		{
@@ -68,7 +79,6 @@ void ModulePerson::Listeners()
 		}
 		else if(Ground(id))
 		{
-			auto tsf = Entity->Get<Form>(id);
 			tsf->Body->applyCentralImpulse(btVector3(0.0f, 5.0f, 0.0f) * psn->Mass);
 		}
 	});
