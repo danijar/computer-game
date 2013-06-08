@@ -62,7 +62,7 @@ void ModuleCamera::Update()
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
-	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0)); // this doesn't work yet
+	tsfpsn->Rotation(vec3(0, Yaw(), 0));
 
 	Calculate();
 }

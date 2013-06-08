@@ -1,9 +1,11 @@
 #pragma once
 
 
+#define GROUND_TOLECANRE 0.2f
+
 struct Person
 {
-	Person() : Onground(false), Changed(true) {}
+	Person() : Changed(true) {}
 
 	void Calculate(float Height)
 	{
@@ -19,9 +21,6 @@ struct Person
 	float Radius, Height;
 	float Eyes; // distance from center to eyes
 	float Step; // maximum height difference for a step
-
-	bool Touching, Onground; // touching is enough for moving,
-	                         // onground is needed for jumping
 
 	bool Changed;
 };

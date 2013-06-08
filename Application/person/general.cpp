@@ -28,19 +28,26 @@ void ModulePerson::Update()
 			Setup(i->first);
 			psn->Changed = false;
 		}
+
 		Ground(i->first);
 	}
 
 	// move person attached to active camera
 	unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
-	auto psn = Entity->Get<Person>(id);
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
 	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
 	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
-	if(length(move) > 0 && (psn->Touching || Keyboard::isKeyPressed(Keyboard::LShift)))
-		Keyboard::isKeyPressed(Keyboard::LShift) ? Move(id, move, 20.0f) : Move(id, move);
+	if(length(move))
+	{
+		if(Keyboard::isKeyPressed(Keyboard::LShift))
+			Move(id, move, 20.0f);
+		else if(Ground(id))
+			Move(id, move);
+		else if (Edge(id, move))
+			Move(id, move);
+	}
 }
 
 void ModulePerson::Listeners()
@@ -54,10 +61,10 @@ void ModulePerson::Listeners()
 			auto tsf = Entity->Get<Form>(id);
 			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
 		}
-		else if(psn->Onground)
+		else if(Ground(id))
 		{
 			auto tsf = Entity->Get<Form>(id);
-			tsf->Body->applyCentralImpulse(btVector3(0, 4, 0) * psn->Mass);
+			tsf->Body->applyCentralImpulse(btVector3(0.0f, 5.0f, 0.0f) * psn->Mass);
 		}
 	});
 }

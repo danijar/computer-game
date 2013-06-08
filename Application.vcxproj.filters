@@ -112,9 +112,6 @@
     <ClCompile Include="Application\camera\state.cpp">
       <Filter>camera</Filter>
     </ClCompile>
-    <ClCompile Include="Application\person\ground.cpp">
-      <Filter>person</Filter>
-    </ClCompile>
     <ClCompile Include="Application\person\movement.cpp">
       <Filter>person</Filter>
     </ClCompile>
@@ -216,6 +213,12 @@
     </ClCompile>
     <ClCompile Include="Application\interface\crosshair.cpp">
       <Filter>interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\person\checks.cpp">
+      <Filter>person</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\camera\synchronization.cpp">
+      <Filter>camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
