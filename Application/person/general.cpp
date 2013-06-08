@@ -34,6 +34,8 @@ void ModulePerson::Update()
 
 	// move person attached to active camera
 	unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+	auto psn = Entity->Get<Person>(id);
+
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
 	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
@@ -48,6 +50,9 @@ void ModulePerson::Update()
 		else if (Edge(id, move))
 			Move(id, move);
 	}
+
+	if(psn->Jumping && !Keyboard::isKeyPressed(Keyboard::Space) && Ground(id))
+		psn->Jumping = false;
 }
 
 void ModulePerson::Listeners()

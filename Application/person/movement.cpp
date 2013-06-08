@@ -49,5 +49,9 @@ void ModulePerson::Jump(unsigned int Id, float Multiplier)
 	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
-	tsf->Body->applyCentralImpulse(btVector3(0, 6.5f, 0) * psn->Mass * Multiplier);
+	if(!psn->Jumping)
+	{
+		tsf->Body->applyCentralImpulse(btVector3(0, 6.5f, 0) * psn->Mass * Multiplier);
+		psn->Jumping = true;
+	}
 }

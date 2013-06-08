@@ -5,7 +5,7 @@
 
 struct Person
 {
-	Person() : Changed(true) {}
+	Person() : Jumping(false), Changed(true) {}
 
 	void Calculate(float Height)
 	{
@@ -21,6 +21,8 @@ struct Person
 	float Radius, Height;
 	float Eyes; // distance from center to eyes
 	float Step; // maximum height difference for a step
+
+	bool Jumping;
 
 	bool Changed;
 };
