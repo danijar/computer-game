@@ -79,6 +79,8 @@ void ModulePerson::Listeners()
 		}
 		else if(Ground(id))
 		{
+			btVector3 velocity = tsf->Body->getLinearVelocity();
+			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
 			tsf->Body->applyCentralImpulse(btVector3(0.0f, 5.0f, 0.0f) * psn->Mass);
 		}
 	});
