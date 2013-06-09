@@ -73,15 +73,8 @@ void ModulePerson::Listeners()
 		auto tsf = Entity->Get<Form>(id);
 
 		if(Keyboard::isKeyPressed(Keyboard::LShift))
-		{
-			auto tsf = Entity->Get<Form>(id);
-			tsf->Body->applyCentralImpulse(btVector3(0, 1000, 0));
-		}
+			Jump(id, 15.0f, true);
 		else if(Ground(id))
-		{
-			btVector3 velocity = tsf->Body->getLinearVelocity();
-			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
-			tsf->Body->applyCentralImpulse(btVector3(0.0f, 4.8f, 0.0f) * psn->Mass);
-		}
+			Jump(id);
 	});
 }

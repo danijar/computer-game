@@ -51,15 +51,21 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	tsf->Body->setLinearVelocity(velocity);
 }
 
-void ModulePerson::Jump(unsigned int Id, float Multiplier)
+void ModulePerson::Jump(unsigned int Id, float Multiplier, bool Force)
 {
 	auto tsf = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
-	if(!psn->Jumping)
+	if(!psn->Jumping || Force)
 	{
-		tsf->Body->applyCentralImpulse(btVector3(0, 6.5f, 0) * psn->Mass * Multiplier);
+		if(!Force)
+		{
+			btVector3 velocity = tsf->Body->getLinearVelocity();
+			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
+		}
+		float amount = psn->Mass * Multiplier;
+		tsf->Body->applyCentralImpulse(btVector3(0, amount, 0));
 		psn->Jumping = true;
 	}
 }

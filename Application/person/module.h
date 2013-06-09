@@ -17,8 +17,8 @@ class ModulePerson : public Module
 	void Setup(unsigned int Id);
 
 	// movement
-	void Move(unsigned int Id, glm::vec3 Amount, float Multiplier = 4.5f);
-	void Jump(unsigned int Id, float Multiplier = 1.0f);
+	void Move(unsigned int Id, glm::vec3 Amount, float Multiplier = 4.3f);
+	void Jump(unsigned int Id, float Multiplier = 4.8f, bool Force = false);
 
 	// checks
 	bool Ground(unsigned int Id);
