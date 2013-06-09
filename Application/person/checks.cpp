@@ -42,12 +42,17 @@ bool ModulePerson::Edge(unsigned int Id, vec3 Direction)
 	btVector3 origin = transform.getOrigin();
 
 	// create orientation vectors
-	btVector3 lookat = quatRotate(rotation, btVector3(0, 0, 1));
+	btVector3 up(0, 1, 0);
+	btVector3 lookat  = quatRotate(rotation, btVector3(0, 0, 1));
 	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
+	btVector3 side    = btCross(up, forward);
+
+	// get move direction
+	btVector3 offset = btVector3(forward * Direction.x + up * Direction.y + side * Direction.z) * (psn->Radius + psn->Step);
 
 	// cast rays to detect edge with air above
-	bool hitabove  = RayDown(origin + forward * (psn->Radius + psn->Step) + btVector3(0,  psn->Height/2, 0), psn->Height + GROUND_TOLERANCE).first;
-	bool hitbottom = RayDown(origin + forward * (psn->Radius + psn->Step) + btVector3(0, -psn->Height/2, 0), psn->Step   - GROUND_TOLERANCE).first;
+	bool hitabove  = RayDown(origin + offset + btVector3(0,  psn->Height/2, 0), psn->Height + GROUND_TOLERANCE).first;
+	bool hitbottom = RayDown(origin + offset + btVector3(0, -psn->Height/2, 0), psn->Step   - GROUND_TOLERANCE).first;
 
 	return (hitabove == false && hitbottom == true);
 }
@@ -56,9 +61,8 @@ pair<bool, float> ModulePerson::RayDown(btVector3 &Position, float Length)
 {
 	btVector3 Point;
 	bool hit = Ray(Position, Position - btVector3(0, Length, 0), Point);
-	return make_pair(hit, Point.getY() - Position.getY());
+	return make_pair(hit, Position.getY() - Point.getY());
 }
-
 
 bool ModulePerson::Ray(btVector3 &From, btVector3 &To, btVector3 &Point, btVector3 &Normal)
 {

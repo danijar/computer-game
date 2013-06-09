@@ -28,10 +28,18 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
 	btVector3 side    = btCross(up, forward);
 
+	/*
 	// adapt to surface angle
 	float distance = 0;
 	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
 	if(result.first) distance = result.second + psn->Step;
+	Amount.y += distance;
+	*/
+
+	// adapt to surface angle
+	float distance = 0;
+	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
+	if(result.first) distance = -1 * (result.second - psn->Step);
 	Amount.y += distance;
 
 	// sum walking orientations together

@@ -38,10 +38,10 @@ void ModulePerson::Update()
 	auto tsf = Entity->Get<Form>(id);
 
 	vec3 move;
-	if (Keyboard::isKeyPressed(Keyboard::Up      ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
-	if (Keyboard::isKeyPressed(Keyboard::Down    ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
-	if (Keyboard::isKeyPressed(Keyboard::Left    ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
-	if (Keyboard::isKeyPressed(Keyboard::Right   ) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
+	if (Keyboard::isKeyPressed(Keyboard::Up   ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
+	if (Keyboard::isKeyPressed(Keyboard::Down ) || Keyboard::isKeyPressed(Keyboard::S)) move.x--;
+	if (Keyboard::isKeyPressed(Keyboard::Left ) || Keyboard::isKeyPressed(Keyboard::A)) move.z++;
+	if (Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D)) move.z--;
 	if(length(move))
 	{
 		if(Keyboard::isKeyPressed(Keyboard::LShift))
@@ -81,7 +81,7 @@ void ModulePerson::Listeners()
 		{
 			btVector3 velocity = tsf->Body->getLinearVelocity();
 			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
-			tsf->Body->applyCentralImpulse(btVector3(0.0f, 5.0f, 0.0f) * psn->Mass);
+			tsf->Body->applyCentralImpulse(btVector3(0.0f, 4.8f, 0.0f) * psn->Mass);
 		}
 	});
 }
