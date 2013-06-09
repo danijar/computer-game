@@ -64,6 +64,9 @@ void ModuleInput::Listeners()
 		case Mouse::Right:
 			this->Event->Fire("InputBindPlace");
 			break;
+		case Mouse::Middle:
+			this->Event->Fire("InputBindPick");
+			break;
 		}
 	});
 }

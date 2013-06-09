@@ -147,6 +147,11 @@ void ModuleTerrain::Listeners()
 		SetBlock(get<0>(sel) + get<1>(sel), type);
 	});
 
+	Event->Listen("InputBindPick", [=]{
+		auto sel = Selection();
+		type = get<2>(sel);
+	});
+
 	Event->Listen<Keyboard::Key>("InputKeyReleased", [=](Keyboard::Key Code){
 		bool changed = true;
 
