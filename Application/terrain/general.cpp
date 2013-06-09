@@ -144,7 +144,8 @@ void ModuleTerrain::Listeners()
 
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
-		SetBlock(get<0>(sel) + get<1>(sel), type);
+		if(get<2>(sel))
+			SetBlock(get<0>(sel) + get<1>(sel), type);
 	});
 
 	Event->Listen("InputBindPick", [=]{
