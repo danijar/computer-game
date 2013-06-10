@@ -37,7 +37,8 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 				vector<float> densities;
 				if(y > heightmap * maxground && y < heightmap * maxground * 1.2f)
 					densities.push_back(0.5f * simplex(1.5f / maxground * vec3(offset + ivec3(x, y, z))));
-				densities.push_back(0.2f * (simplex(0.9f / maxground * vec3(offset.x + x, offset.y + y, offset.z + z)) / 1.5f + 0.3f));
+				if(y > heightmap * maxground * 0.9f && y < heightmap * maxground * 1.3f)
+					densities.push_back(0.4f * (simplex(0.9f / maxground * vec3(offset.x + x, offset.y + y, offset.z + z)) / 1.5f + 0.3f));
 				densities.push_back(0.2f * (simplex(2.0f / maxground * vec3(offset.x + x, offset.y + y, offset.z + z)) / 2));
 				float density = 0; for(auto i : densities) density += i;
 
