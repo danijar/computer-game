@@ -45,6 +45,7 @@ private:
 
 	// generation
 	void Generate(Terrain *Terrain);
+	inline float Noise();
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);
