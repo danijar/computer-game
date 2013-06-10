@@ -45,7 +45,10 @@ private:
 
 	// generation
 	void Generate(Terrain *Terrain);
-	inline float Noise();
+	inline float NoiseNormal  (float Zoom, glm::vec2 Sample); // add optional parameters for value range
+	inline float NoiseNormal  (float Zoom, glm::vec3 Sample);
+	inline float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
+	inline float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);
