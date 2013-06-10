@@ -126,6 +126,7 @@
     <ClCompile Include="Application\terrain\block.cpp" />
     <ClCompile Include="Application\terrain\callbacks.cpp" />
     <ClCompile Include="Application\terrain\general.cpp" />
+    <ClCompile Include="Application\terrain\generation.cpp" />
     <ClCompile Include="Application\terrain\loading.cpp" />
     <ClCompile Include="Application\terrain\select.cpp" />
     <ClCompile Include="Application\terrain\texture.cpp" />

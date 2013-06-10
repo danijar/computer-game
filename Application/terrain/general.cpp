@@ -43,8 +43,8 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position() / vec3(CHUNK)); camera.y = 0;
-	const int distance = (int)stg->Viewdistance / CHUNK / 10;
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; camera.y = 0;
+	ivec3 distance = (int)(stg->Viewdistance * stg->Chunkdistance) / CHUNK_SIZE;
 
 	// add loaded threads to entity system
 	if(!loading && !null && access.try_lock())
@@ -61,7 +61,7 @@ void ModuleTerrain::Update()
 			unsigned int id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
 			Entity->Add<Model>(id)->Diffuse = texture;
-			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK));
+			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK_SIZE));
 
 			Buffer(id);
 		}
@@ -88,11 +88,11 @@ void ModuleTerrain::Update()
 	{
 		ivec3 i;
 		bool loop = true;
-		for(i.x = -distance; i.x < distance && loop; ++i.x)
-		for(i.z = -distance; i.z < distance && loop; ++i.z)
+		for(i.x = -distance.x; i.x < distance.x && loop; ++i.x)
+		for(i.z = -distance.z; i.z < distance.z && loop; ++i.z)
 		{
 			ivec3 key = i + camera;
-			bool inrange = i.x * i.x + i.z * i.z < distance * distance;
+			bool inrange = i.x*i.x + i.z*i.z < distance.x * distance.z;
 			bool loaded = GetChunk(key) ? true : false;
 
 			if(inrange && !loaded)
@@ -112,7 +112,7 @@ void ModuleTerrain::Update()
 	int tolerance = 1;
 	for(auto i : tns)
 	{
-		if(!Inside(abs(i.second->Key - camera), ivec3(0), ivec3(distance + tolerance)))
+		if(!Inside(abs(i.second->Key - camera), ivec3(0), distance + ivec3(tolerance)))
 		{
 			auto mdl = Entity->Get<Model>(i.first);
 			glDeleteBuffers(1, &mdl->Positions);

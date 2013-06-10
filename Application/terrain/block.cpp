@@ -45,20 +45,20 @@ unsigned int ModuleTerrain::GetChunk(ivec3 Chunk)
 
 ivec3 ModuleTerrain::PosChunk(ivec3 Block)
 {
-	ivec3 chunk = Block / ivec3(CHUNK);
-	ivec3 local = Block % ivec3(CHUNK);
-	if (local.x < 0) { chunk.x--; local.x += CHUNK; }
-	if (local.y < 0) { chunk.y--; local.y += CHUNK; }
-	if (local.z < 0) { chunk.z--; local.z += CHUNK; }
+	ivec3 chunk = Block / CHUNK_SIZE;
+	ivec3 local = Block % CHUNK_SIZE;
+	if (local.x < 0) { chunk.x--; local.x += CHUNK_SIZE.x; }
+	if (local.y < 0) { chunk.y--; local.y += CHUNK_SIZE.y; }
+	if (local.z < 0) { chunk.z--; local.z += CHUNK_SIZE.z; }
 	return chunk;
 }
 
 ivec3 ModuleTerrain::PosLocal(ivec3 Block)
 {
-	ivec3 chunk = Block / ivec3(CHUNK);
-	ivec3 local = Block % ivec3(CHUNK);
-	if (local.x < 0) { chunk.x--; local.x += CHUNK; }
-	if (local.y < 0) { chunk.y--; local.y += CHUNK; }
-	if (local.z < 0) { chunk.z--; local.z += CHUNK; }
+	ivec3 chunk = Block / CHUNK_SIZE;
+	ivec3 local = Block % CHUNK_SIZE;
+	if (local.x < 0) { chunk.x--; local.x += CHUNK_SIZE.x; }
+	if (local.y < 0) { chunk.y--; local.y += CHUNK_SIZE.y; }
+	if (local.z < 0) { chunk.z--; local.z += CHUNK_SIZE.z; }
 	return local;
 }

@@ -40,33 +40,15 @@ void ModuleTerrain::Loading()
 	}
 }
 
-void ModuleTerrain::Generate(Terrain *Terrain)
-{
-	for(int x = 0; x < CHUNK; ++x)
-	{
-		const float i = Terrain->Key.x + (float)x / CHUNK;
-		for(int z = 0; z < CHUNK; ++z)
-		{
-			const float j = Terrain->Key.z + (float)z / CHUNK;
-
-			double height_bias = 0.30;
-			double height_base = 0.50 * (simplex(0.2f * vec2(i, j)) + 1) / 2;
-			double height_fine = 0.20 * (simplex(1.5f * vec2(i, j)) + 1) / 2;
-			int height = (int)((height_bias + height_base + height_fine) * CHUNK);
-			for(int y = 0; y < height && y < CHUNK; ++y) Terrain->Blocks[x][y][z] = rand() % 2 + 1;
-		}
-	}
-}
-
 #define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
 #define GAP float(0.000/*1*/)
 
 void ModuleTerrain::Mesh(Terrain *Terrain)
 {
 	int n = 0;
-	for(int X = 0; X < CHUNK; ++X)
-	for(int Y = 0; Y < CHUNK; ++Y)
-	for(int Z = 0; Z < CHUNK; ++Z)
+	for(int X = 0; X < CHUNK_SIZE.x;  ++X)
+	for(int Y = 0; Y < CHUNK_SIZE.y; ++Y)
+	for(int Z = 0; Z < CHUNK_SIZE.z;  ++Z)
 	{
 		if(Terrain->Blocks[X][Y][Z])
 		{
@@ -74,7 +56,7 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 			for(int dim = 0; dim < 3; ++dim) { int dir = -1; do {
 				ivec3 neigh = Shift(dim, ivec3(dir, 0, 0)) + ivec3(X, Y, Z);
 
-				if(!(Inside(neigh, ivec3(0), ivec3(CHUNK) - 1) && Terrain->Blocks[neigh.x][neigh.y][neigh.z]))
+				if(!(Inside(neigh, ivec3(0), CHUNK_SIZE - 1) && Terrain->Blocks[neigh.x][neigh.y][neigh.z]))
 				{
 					for(float i = 0; i <= 1; ++i)
 					for(float j = 0; j <= 1; ++j)

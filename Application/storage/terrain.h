@@ -5,13 +5,13 @@
 #include <GLM/glm.hpp>
 
 
-#define CHUNK 16
+#define CHUNK_SIZE ivec3(16, 16, 16)
 
 struct Terrain
 {
 	Terrain() : Changed(false) { memset(Blocks, 0, sizeof Blocks); }
 
-	uint8_t Blocks[CHUNK][CHUNK][CHUNK];
+	uint8_t Blocks[16][16][16];
 	glm::ivec3 Key;
 	bool Changed;
 };

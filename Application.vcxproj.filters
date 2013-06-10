@@ -220,6 +220,9 @@
     <ClCompile Include="Application\camera\synchronization.cpp">
       <Filter>camera</Filter>
     </ClCompile>
+    <ClCompile Include="Application\terrain\generation.cpp">
+      <Filter>terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

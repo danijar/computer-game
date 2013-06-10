@@ -21,4 +21,7 @@ struct Settings
 	// renderer
 	float Fieldofview, Viewdistance;
 	bool Wireframe, Verticalsync;
+
+	// terrain
+	float Chunkdistance;
 };

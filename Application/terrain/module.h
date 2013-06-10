@@ -38,11 +38,13 @@ private:
 	std::atomic<bool> running, loading; std::mutex access; std::future<void> task;
 	Terrain current; std::vector<GLfloat> positions, normals, texcoords; std::vector<GLuint> elements; std::vector<std::tuple<btVector3, btVector3, btVector3>> triangles; bool null;
 	void Loading();
-	void Generate(Terrain *Terrain);
 	void Mesh(Terrain *Terrain);
 	inline bool Inside(glm::ivec3 Position, glm::ivec3 Min, glm::ivec3 Max);
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
 	void Buffer(unsigned int Id);
+
+	// generation
+	void Generate(Terrain *Terrain);
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);
