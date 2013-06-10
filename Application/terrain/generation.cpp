@@ -9,7 +9,7 @@ using namespace std;
 #include "terrain.h"
 
 
-#define MAX_GROUNDLEVEL std::min(15, CHUNK_SIZE.y)
+#define SEALEVEL std::min(15, CHUNK_SIZE.y)
 
 void ModuleTerrain::Generate(Terrain *Terrain)
 {
@@ -30,7 +30,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 			// heightmap
 			vector<float> heightmaps;
-			heightmaps.push_back(1.3f); // should be only 0.3f
+			heightmaps.push_back(1.3f);
 			heightmaps.push_back(0.25f * amount_rough * NoiseNormal(0.4f, sample));
 			heightmaps.push_back(0.10f * amount_rough * NoiseNormal(1.5f, sample));
 			float heightmap = 0; for(auto i : heightmaps) heightmap += i;
@@ -43,21 +43,23 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 				vec3 sample = vec3(offset.x + x, offset.y + y, offset.z + z);
 
 				// heightmap
-				float gradient = -y / heightmap / MAX_GROUNDLEVEL + 1;
+				float gradient = -y / heightmap / SEALEVEL + 1;
 				if(gradient < 0) gradient = -(gradient * gradient);
 
 				// rocks
 				vector<float> rocks;
 				if(AroundGroundlevel(y, heightmap, 1.0f, 1.2f))
 					rocks.push_back(0.5f * amount_rocks * amount_rough * NoiseNormal(1.5f, sample));
-				if(AroundGroundlevel(y, heightmap, 0.9f, 1.3f))
+				else if(AroundGroundlevel(y, heightmap, 0.8f, 1.0f))
+					rocks.push_back(std::max(2.0f * amount_rocks * amount_rough * NoiseNormal(1.5f, sample), 0.0f));
+				if(AroundGroundlevel(y, heightmap, 0.8f, 1.3f))
 					rocks.push_back(0.4f * amount_rocks * amount_rough * (NoiseNormal(0.9f, sample) / 1.5f + 0.3f));
 				rocks.push_back(0.1f * amount_rocks * NoiseNormal(2.0f, sample));
 				float density = 0; for(auto i : rocks) density += i;
 
 				// combination
 				if(0.0f < gradient + density)
-					Terrain->Blocks[x][y][z] = gradient > 0 ? rand() % 2 + 1 : 3;
+					Terrain->Blocks[x][y][z] = gradient > density ? rand() % 2 + 1 : 3;
 			}
 		}
 	}
@@ -65,25 +67,25 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 float ModuleTerrain::NoiseNormal(float Zoom, glm::vec2 Sample)
 {
-	return simplex(Zoom / MAX_GROUNDLEVEL * Sample);
+	return simplex(Zoom / SEALEVEL * Sample);
 }
 
 float ModuleTerrain::NoiseNormal(float Zoom, glm::vec3 Sample)
 {
-	return simplex(Zoom / MAX_GROUNDLEVEL * Sample);
+	return simplex(Zoom / SEALEVEL * Sample);
 }
 
 float ModuleTerrain::NoisePositive(float Zoom, glm::vec2 Sample)
 {
-	return (simplex(Zoom / MAX_GROUNDLEVEL * Sample) + 1) / 2;
+	return (simplex(Zoom / SEALEVEL * Sample) + 1) / 2;
 }
 
 float ModuleTerrain::NoiseSigmoid(float Zoom, glm::vec2 Sample, float Shift, float Sharp)
 {
-	return 1 / (1 + (float)pow(10, (Sharp * (simplex(Zoom / MAX_GROUNDLEVEL * Sample) - Shift))));
+	return 1 / (1 + (float)pow(10, (Sharp * (simplex(Zoom / SEALEVEL * Sample) - Shift))));
 }
 
 bool ModuleTerrain::AroundGroundlevel(int Sample, float Heightmap, float From, float To)
 {
-	return (Heightmap * MAX_GROUNDLEVEL * From) < Sample && Sample < (Heightmap * MAX_GROUNDLEVEL * To);
+	return (Heightmap * SEALEVEL * From) < Sample && Sample < (Heightmap * SEALEVEL * To);
 }
