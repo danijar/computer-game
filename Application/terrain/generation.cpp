@@ -30,9 +30,9 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 			// heightmap
 			vector<float> heightmaps;
-			heightmaps.push_back(0.3f);
-			heightmaps.push_back(0.25f * amount_rough * NoiseNormal(0.4f, sample) + 0.5f); // get rid of the + 0.5f at the end
-			heightmaps.push_back(0.10f * amount_rough * NoiseNormal(1.5f, sample) + 0.5f); // same here...
+			heightmaps.push_back(1.3f); // should be only 0.3f
+			heightmaps.push_back(0.25f * amount_rough * NoiseNormal(0.4f, sample));
+			heightmaps.push_back(0.10f * amount_rough * NoiseNormal(1.5f, sample));
 			float heightmap = 0; for(auto i : heightmaps) heightmap += i;
 
 			for(int y = 0; y < CHUNK_SIZE.y; ++y)
@@ -48,11 +48,11 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 				// rocks
 				vector<float> rocks;
-				if(y > heightmap * MAX_GROUNDLEVEL && y < heightmap * MAX_GROUNDLEVEL * 1.2f)
+				if(AroundGroundlevel(y, heightmap, 1.0f, 1.2f))
 					rocks.push_back(0.5f * amount_rocks * amount_rough * NoiseNormal(1.5f, sample));
-				if(y > heightmap * MAX_GROUNDLEVEL * 0.9f && y < heightmap * MAX_GROUNDLEVEL * 1.3f)
+				if(AroundGroundlevel(y, heightmap, 0.9f, 1.3f))
 					rocks.push_back(0.4f * amount_rocks * amount_rough * (NoiseNormal(0.9f, sample) / 1.5f + 0.3f));
-				rocks.push_back(0.2f * amount_rocks * (simplex(2.0f / MAX_GROUNDLEVEL * sample) / 2));
+				rocks.push_back(0.1f * amount_rocks * NoiseNormal(2.0f, sample));
 				float density = 0; for(auto i : rocks) density += i;
 
 				// combination
@@ -81,4 +81,9 @@ float ModuleTerrain::NoisePositive(float Zoom, glm::vec2 Sample)
 float ModuleTerrain::NoiseSigmoid(float Zoom, glm::vec2 Sample, float Shift, float Sharp)
 {
 	return 1 / (1 + (float)pow(10, (Sharp * (simplex(Zoom / MAX_GROUNDLEVEL * Sample) - Shift))));
+}
+
+bool ModuleTerrain::AroundGroundlevel(int Sample, float Heightmap, float From, float To)
+{
+	return (Heightmap * MAX_GROUNDLEVEL * From) < Sample && Sample < (Heightmap * MAX_GROUNDLEVEL * To);
 }
