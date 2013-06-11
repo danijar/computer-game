@@ -61,26 +61,56 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 				if(0.0f < gradient + density)
 					Terrain->Blocks[x][y][z] = gradient > density ? rand() % 2 + 1 : 3;
 			}
+
+			// cover rocks with grass partly
+			if(0 < NoiseNormal(0.5f, vec2(x, z)) && (0.5f < amount_rough || 0.5f < amount_rocks))
+			{
+				for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
+				{
+					if(Terrain->Blocks[x][y][z])
+					{
+						Terrain->Blocks[x][y][z] = 2;
+						break;
+					}
+				}
+			}
+
+
 		}
 	}
 }
 
-float ModuleTerrain::NoiseNormal(float Zoom, glm::vec2 Sample)
+float ModuleTerrain::NoiseNormal(float Zoom, vec2 Sample)
 {
 	return simplex(Zoom / SEALEVEL * Sample);
 }
 
-float ModuleTerrain::NoiseNormal(float Zoom, glm::vec3 Sample)
+float ModuleTerrain::NoiseNormal(float Zoom, vec3 Sample)
 {
 	return simplex(Zoom / SEALEVEL * Sample);
 }
 
-float ModuleTerrain::NoisePositive(float Zoom, glm::vec2 Sample)
+float ModuleTerrain::NoiseLayered(float Zoom, vec2 Sample, int Layers)
+{
+	int primes[] = { 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 43 };
+	Layers = std::min(Layers, (int)(sizeof(primes) / sizeof(float)));
+
+	float value = 0;
+	for(int i = 0; i < Layers; ++i)
+	{
+		float zoom = 0.1f * primes[i] + 1.0f;
+		vec2 offset = vec2(1.0f / (primes[i + 0] * i), 1.0f / (primes[i + 1] * i));
+		value += (-i / Layers + 1) * simplex(Zoom * zoom / SEALEVEL * (Sample + offset));
+	}
+	return value;
+}
+
+float ModuleTerrain::NoisePositive(float Zoom, vec2 Sample)
 {
 	return (simplex(Zoom / SEALEVEL * Sample) + 1) / 2;
 }
 
-float ModuleTerrain::NoiseSigmoid(float Zoom, glm::vec2 Sample, float Shift, float Sharp)
+float ModuleTerrain::NoiseSigmoid(float Zoom, vec2 Sample, float Shift, float Sharp)
 {
 	return 1 / (1 + (float)pow(10, (Sharp * (simplex(Zoom / SEALEVEL * Sample) - Shift))));
 }

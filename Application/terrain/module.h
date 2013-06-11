@@ -47,6 +47,7 @@ private:
 	void Generate(Terrain *Terrain);
 	inline float NoiseNormal  (float Zoom, glm::vec2 Sample); // add optional parameters for value range
 	inline float NoiseNormal  (float Zoom, glm::vec3 Sample);
+	inline float NoiseLayered (float Zoom, glm::vec2 Sample, int Layers = 3);
 	inline float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
 	inline float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
 	inline bool AroundGroundlevel(int Sample, float Heightmap, float From, float To);
