@@ -28,7 +28,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			float amount_rocks      = NoiseSigmoid(0.3f, sample, -0.5f, 5.0f),
 			      amount_plain      = NoiseSigmoid(0.2f, sample, -0.3f, 10.0f),
 			      amount_rough      = 1 - amount_plain,
-				  amount_vegetation = NoiseLayered(0.5f, sample, 5) / 2 + 0.5f /*NoisePositive(0.5f, sample)*/;
+				  amount_vegetation = NoiseLayered(0.5f, sample, 5) / 2 + 0.5f;
 
 			// heightmap
 			vector<float> heightmaps;
