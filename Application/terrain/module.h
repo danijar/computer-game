@@ -51,6 +51,7 @@ private:
 	inline float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
 	inline float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
 	inline bool AroundGroundlevel(int Sample, float Heightmap, float From, float To);
+	bool StructureTree(Terrain *Terrain, glm::ivec3 Position, int Size = 6, bool Simulate = false);
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);
