@@ -21,6 +21,7 @@ class ModuleTerrain : public Module
 {	
 	// general
 public:
+	ModuleTerrain();
 	~ModuleTerrain();
 private:
 	void Init();
@@ -44,14 +45,18 @@ private:
 	void Buffer(unsigned int Id);
 
 	// generation
+	const int SEALEVEL;
 	void Generate(Terrain *Terrain);
-	inline float NoiseNormal  (float Zoom, glm::vec2 Sample); // add optional parameters for value range
-	inline float NoiseNormal  (float Zoom, glm::vec3 Sample);
-	inline float NoiseLayered (float Zoom, glm::vec2 Sample, int Layers = 3);
-	inline float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
-	inline float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
-	inline bool AroundGroundlevel(int Sample, float Heightmap, float From, float To);
-	bool StructureTree(Terrain *Terrain, glm::ivec3 Position, int Size = 6, bool Simulate = false);
+	void GenerateGrass(Terrain *Terrain);
+	void GenerateTrees(Terrain *Terrain);
+
+	// noise
+	float NoiseNormal  (float Zoom, glm::vec2 Sample); // add optional parameters for value range
+	float NoiseNormal  (float Zoom, glm::vec3 Sample);
+	float NoiseLayered (float Zoom, glm::vec2 Sample, int Layers = 3);
+	float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
+	float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
+	bool AroundGroundlevel(int Sample, float Heightmap, float From, float To);
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);

@@ -10,8 +10,6 @@ using namespace std;
 #include "terrain.h"
 
 
-#define SEALEVEL std::min(15, CHUNK_SIZE.y)
-
 void ModuleTerrain::Generate(Terrain *Terrain)
 {
 	const ivec3 offset = Terrain->Key * CHUNK_SIZE;
@@ -19,9 +17,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 	{
 		for(int z = 0; z < CHUNK_SIZE.z; ++z)
 		{
-			////////////////////////////////////////////////////////////
 			// two dimensional
-			////////////////////////////////////////////////////////////
 			vec2 sample(offset.x + x, offset.z + z);
 
 			// area characteristics
@@ -44,9 +40,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 			for(int y = 0; y < CHUNK_SIZE.y; ++y)
 			{
-				////////////////////////////////////////////////////////////
 				// three dimensional
-				////////////////////////////////////////////////////////////
 				vec3 sample(offset.x + x, offset.y + y, offset.z + z);
 
 				// heightmap
@@ -68,38 +62,18 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 				if(0.0f < gradient + density)
 					Terrain->Blocks[x][y][z] = gradient > density ? rand() % 2 + 1 : 3;
 			}
-
-			/*
-			// place trees
-			vector<ivec3> trees;
-			if(0.4f < amount_vegetation - NoisePositive(0.2f, sample))
-			{
-				srand(hash<float>()(sample.x) + 17 * hash<float>()(sample.y));
-				if(0.05f > (rand() % 1000) / 1000.0f)
-				{
-					for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
-					{
-						if(Terrain->Blocks[x][y][z] == 2)
-						{
-							ivec3 position(x, y + 1, z);
-							if(StructureTree(Terrain, position, 6, true))
-								trees.push_back(position);
-							break;
-						}
-					}
-				}
-			}
-			for(auto i : trees)
-				StructureTree(Terrain, i, 6);
-			*/
-
-			// add other structures
-			// ...
-
 		}
 	}
 
-	// cover rocks with grass partly
+	GenerateGrass(Terrain);
+
+	GenerateTrees(Terrain);
+
+	// ...
+}
+
+void ModuleTerrain::GenerateGrass(Terrain *Terrain)
+{
 	for(int x = 0; x < CHUNK_SIZE.x; ++x)
 	for(int z = 0; z < CHUNK_SIZE.z; ++z)
 	{
@@ -116,8 +90,13 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			}
 		}
 	}
+}
 
-	// place trees
+void ModuleTerrain::GenerateTrees(Terrain *Terrain)
+{
+	const ivec3 offset = Terrain->Key * CHUNK_SIZE;
+
+	// spread tree locations
 	vector<ivec3> trees;
 	for(int x = 0; x < CHUNK_SIZE.x; ++x)
 	for(int z = 0; z < CHUNK_SIZE.z; ++z)
@@ -139,80 +118,34 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			}
 		}
 	}
+
 	for(auto i : trees)
-		if(StructureTree(Terrain, i, 6, true))
-			StructureTree(Terrain, i, 6);
-
-	// add other structures
-	// ...
-
-}
-
-float ModuleTerrain::NoiseNormal(float Zoom, vec2 Sample)
-{
-	return simplex(Zoom / SEALEVEL * Sample);
-}
-
-float ModuleTerrain::NoiseNormal(float Zoom, vec3 Sample)
-{
-	return simplex(Zoom / SEALEVEL * Sample);
-}
-
-float ModuleTerrain::NoiseLayered(float Zoom, vec2 Sample, int Layers)
-{
-	int primes[] = { 0, 1, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 43 };
-	Layers = std::min(Layers, (int)(sizeof(primes) / sizeof(float)));
-
-	float value = 0;
-	for(int i = 0; i < Layers; ++i)
 	{
-		float zoom = 0.1f * primes[i] + 1.0f;
-		value += simplex(Zoom * zoom / SEALEVEL * Sample) / i;
-	}
-	return value;
-}
+		int height = 6,
+		    radius = 2;
 
-float ModuleTerrain::NoisePositive(float Zoom, vec2 Sample)
-{
-	return (simplex(Zoom / SEALEVEL * Sample) + 1) / 2;
-}
+		// check for enough space
+		if(!(height / 2 < i.x && i.x < CHUNK_SIZE.x - height / 2)) continue;
+		if(!(height / 2 < i.z && i.z < CHUNK_SIZE.z - height / 2)) continue;
+		if(!(0          < i.z && i.z < CHUNK_SIZE.z - height    )) continue;
+		bool intersection = false;
+		for(int x = -radius; x < radius && !intersection; ++x)
+		for(int y = -radius; y < radius && !intersection; ++y)
+		for(int z = -radius; z < radius && !intersection; ++z)
+			if(Terrain->Blocks[i.x + x][i.y + height - radius + y][i.z + z])
+				intersection = true;
+		if(intersection) continue;
 
-float ModuleTerrain::NoiseSigmoid(float Zoom, vec2 Sample, float Shift, float Sharp)
-{
-	return 1 / (1 + (float)pow(10, (Sharp * (simplex(Zoom / SEALEVEL * Sample) - Shift))));
-}
-
-bool ModuleTerrain::AroundGroundlevel(int Sample, float Heightmap, float From, float To)
-{
-	return (Heightmap * SEALEVEL * From) < Sample && Sample < (Heightmap * SEALEVEL * To);
-}
-
-bool ModuleTerrain::StructureTree(Terrain *Terrain, ivec3 Position, int Size, bool Simulate)
-{
-	int height = Size,
-	    radius = Size / 2 - 1;
-
-	// test for space
-	if(!Inside(Position, ivec3(radius, 0, radius), CHUNK_SIZE - ivec3(radius, height, radius))) return false;
-	for(int x = -radius; x < radius; ++x)
-	for(int y = -radius; y < radius; ++y)
-	for(int z = -radius; z < radius; ++z)
-		if(Terrain->Blocks[Position.x + x][Position.y + height - radius + y][Position.z + z])
-			return false;
-
-	if(Simulate) return true;
-
-	// place trunk
-	for(int y = 0; y < height - 2; ++y)
-		Terrain->Blocks[Position.x][Position.y + y][Position.z] = 5;
+		// place trunk
+		for(int y = 0; y < height - 2; ++y)
+			Terrain->Blocks[i.x][i.y + y][i.z] = 5;
 	
-	// place leafes
-	for(int x = -radius; x <= radius; ++x)
-	for(int y = -radius; y <= radius; ++y)
-	for(int z = -radius; z <= radius; ++z)
-		if(x * x + y * y + z * z <= radius * radius)
-			if(!Terrain->Blocks[Position.x + x][Position.y + height - radius + y][Position.z + z])
-				Terrain->Blocks[Position.x + x][Position.y + height - radius + y][Position.z + z] = 7;
-
-	return true;
+		// place leafes
+		for(int x = -radius; x <= radius; ++x)
+		for(int y = -radius; y <= radius; ++y)
+		for(int z = -radius; z <= radius; ++z)
+			if(x * x + y * y + z * z <= radius * radius)
+				if(!Terrain->Blocks[i.x + x][i.y + height - radius + y][i.z + z])
+					Terrain->Blocks[i.x + x][i.y + height - radius + y][i.z + z] = 7;
+	}
 }

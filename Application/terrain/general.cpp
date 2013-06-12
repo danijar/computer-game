@@ -15,6 +15,11 @@ using namespace sf;
 #include "settings.h"
 
 
+ModuleTerrain::ModuleTerrain() : SEALEVEL(std::min(15, CHUNK_SIZE.y))
+{
+
+}
+
 void ModuleTerrain::Init()
 {
 	texture = Texture();
