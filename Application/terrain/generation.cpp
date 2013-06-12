@@ -22,13 +22,18 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			////////////////////////////////////////////////////////////
 			// two dimensional
 			////////////////////////////////////////////////////////////
-			vec2 sample = vec2(offset.x + x, offset.z + z);
+			vec2 sample(offset.x + x, offset.z + z);
 
 			// area characteristics
 			float amount_rocks      = NoiseSigmoid(0.3f, sample, -0.5f, 5.0f),
 			      amount_plain      = NoiseSigmoid(0.2f, sample, -0.3f, 10.0f),
 			      amount_rough      = 1 - amount_plain,
 				  amount_vegetation = NoiseLayered(0.5f, sample, 5) / 2 + 0.5f;
+
+			Terrain->Details[x][z][Terrain::ROCKS]      = amount_rocks;
+			Terrain->Details[x][z][Terrain::PLAIN]      = amount_plain;
+			Terrain->Details[x][z][Terrain::ROUGH]      = amount_rough;
+			Terrain->Details[x][z][Terrain::VEGETATION] = amount_vegetation;
 
 			// heightmap
 			vector<float> heightmaps;
@@ -42,7 +47,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 				////////////////////////////////////////////////////////////
 				// three dimensional
 				////////////////////////////////////////////////////////////
-				vec3 sample = vec3(offset.x + x, offset.y + y, offset.z + z);
+				vec3 sample(offset.x + x, offset.y + y, offset.z + z);
 
 				// heightmap
 				float gradient = -y / heightmap / SEALEVEL + 1;
@@ -64,20 +69,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 					Terrain->Blocks[x][y][z] = gradient > density ? rand() % 2 + 1 : 3;
 			}
 
-			// cover rocks with grass partly
-			if(0.2f < amount_vegetation)
-			{
-				for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
-				{
-					uint8_t type = Terrain->Blocks[x][y][z];
-					if(type == 1 || type == 3)
-					{
-						Terrain->Blocks[x][y][z] = 2;
-						break;
-					}
-				}
-			}
-
+			/*
 			// place trees
 			vector<ivec3> trees;
 			if(0.4f < amount_vegetation - NoisePositive(0.2f, sample))
@@ -99,12 +91,61 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			}
 			for(auto i : trees)
 				StructureTree(Terrain, i, 6);
+			*/
 
 			// add other structures
 			// ...
 
 		}
 	}
+
+	// cover rocks with grass partly
+	for(int x = 0; x < CHUNK_SIZE.x; ++x)
+	for(int z = 0; z < CHUNK_SIZE.z; ++z)
+	{
+		if(0.2f < Terrain->Details[x][z][Terrain::VEGETATION])
+		{
+			for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
+			{
+				uint8_t type = Terrain->Blocks[x][y][z];
+				if(type == 1 || type == 3)
+				{
+					Terrain->Blocks[x][y][z] = 2;
+					break;
+				}
+			}
+		}
+	}
+
+	// place trees
+	vector<ivec3> trees;
+	for(int x = 0; x < CHUNK_SIZE.x; ++x)
+	for(int z = 0; z < CHUNK_SIZE.z; ++z)
+	{
+		vec2 sample(offset.x + x, offset.z + z);
+		if(0.4f < Terrain->Details[x][z][Terrain::VEGETATION] - NoisePositive(0.2f, sample))
+		{
+			srand(hash<float>()(sample.x) + 17 * hash<float>()(sample.y));
+			if(0.05f > (rand() % 1000) / 1000.0f)
+			{
+				for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
+				{
+					if(Terrain->Blocks[x][y][z] == 2)
+					{
+						trees.push_back(ivec3(x, y + 1, z));
+						break;
+					}
+				}
+			}
+		}
+	}
+	for(auto i : trees)
+		if(StructureTree(Terrain, i, 6, true))
+			StructureTree(Terrain, i, 6);
+
+	// add other structures
+	// ...
+
 }
 
 float ModuleTerrain::NoiseNormal(float Zoom, vec2 Sample)
