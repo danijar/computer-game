@@ -105,7 +105,7 @@ void ModuleTerrain::GenerateTrees(Terrain *Terrain)
 		if(0.4f < Terrain->Details[x][z][Terrain::VEGETATION] - NoisePositive(0.2f, sample))
 		{
 			srand(hash<float>()(sample.x) + 17 * hash<float>()(sample.y));
-			if(0.05f > (rand() % 1000) / 1000.0f)
+			if(0.1f > (rand() % 1000) / 1000.0f)
 			{
 				for(int y = CHUNK_SIZE.y - 1; y > 0 - 1; --y)
 				{
@@ -121,13 +121,13 @@ void ModuleTerrain::GenerateTrees(Terrain *Terrain)
 
 	for(auto i : trees)
 	{
-		int height = 6,
-		    radius = 2;
+		int height = 4 + rand() % 3,
+		    radius = clamp(height / 2 - 1 + (rand() % 1), 1, 3);
 
 		// check for enough space
-		if(!(height / 2 < i.x && i.x < CHUNK_SIZE.x - height / 2)) continue;
-		if(!(height / 2 < i.z && i.z < CHUNK_SIZE.z - height / 2)) continue;
-		if(!(0          < i.z && i.z < CHUNK_SIZE.z - height    )) continue;
+		if(!(radius < i.x && i.x < CHUNK_SIZE.x - radius)) continue;
+		if(!(radius < i.z && i.z < CHUNK_SIZE.z - radius)) continue;
+		if(!(0      < i.y && i.y < CHUNK_SIZE.y - height)) continue;
 		bool intersection = false;
 		for(int x = -radius; x < radius && !intersection; ++x)
 		for(int y = -radius; y < radius && !intersection; ++y)
@@ -144,7 +144,7 @@ void ModuleTerrain::GenerateTrees(Terrain *Terrain)
 		for(int x = -radius; x <= radius; ++x)
 		for(int y = -radius; y <= radius; ++y)
 		for(int z = -radius; z <= radius; ++z)
-			if(x * x + y * y + z * z <= radius * radius)
+			if(x * x + y * y + z * z <= radius * radius + 1)
 				if(!Terrain->Blocks[i.x + x][i.y + height - radius + y][i.z + z])
 					Terrain->Blocks[i.x + x][i.y + height - radius + y][i.z + z] = 7;
 	}
