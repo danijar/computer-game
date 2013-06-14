@@ -6,7 +6,7 @@ using namespace std;
 using namespace sf;
 
 
-GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLenum>> Targets, unordered_map<string, GLuint> Samplers, float Size)
+GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLenum>> Targets, float Size)
 {
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 

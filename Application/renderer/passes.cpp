@@ -134,7 +134,7 @@ ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, stri
 	pass.Fragment    = Fragment;
 	pass.Size        = Size;
 	pass.Shader      = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Samplers, pass.Size);
+	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Size);
 
 	passes.push_back(make_pair(Name, pass));
 	return pass;

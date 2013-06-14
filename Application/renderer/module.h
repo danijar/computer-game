@@ -28,9 +28,7 @@ class ModuleRenderer : public Module
 
 	// framebuffer
 	std::unordered_map<std::string, GLuint> targets;
-	GLuint CreateFramebuffer(std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets,
-		std::unordered_map<std::string, GLuint> Samplers,
-		float Size);
+	GLuint CreateFramebuffer(std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets, float Size);
 	void TextureResize(GLuint Id, GLenum Type);
 	void TextureResize(GLuint Id, GLenum Type, sf::Vector2u Size);
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
