@@ -1,12 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <GLM/glm.hpp>
 using namespace std;
-using namespace glm;
-
-#include "terrain.h"
-#include "model.h"
 
 
 void ModuleInterface::Callbacks()
