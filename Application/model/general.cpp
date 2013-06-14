@@ -32,7 +32,6 @@ void ModuleModel::Init()
 			 + "Shapes    " + to_string(shapes.size()   );
 	};
 
-	// CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.7f, Light::DIRECTIONAL);
 	Script->Run("init.js");
 }
 

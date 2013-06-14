@@ -59,7 +59,13 @@ void ModuleInput::Listeners()
 		switch(Code)
 		{
 		case Mouse::Left:
+			// ...
+			break;
+		case Mouse::Right:
 			this->Event->Fire("InputBindShoot");
+			break;
+		case Mouse::Middle:
+			// ...
 			break;
 		}
 	});

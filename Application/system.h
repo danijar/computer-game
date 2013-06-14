@@ -467,7 +467,6 @@ public:
 			if (Check(i->first, Id))
 			{
 				auto j = i->second.find(Id);
-				delete &j->second; // test this
 				j->second.reset();
 				i->second.erase(j);
 			}
@@ -483,7 +482,6 @@ public:
 			return;
 		}
 		auto j = list[key].find(Id);
-		delete &j->second; // test this
 		j->second.reset();
 		list[key].erase(j);
 	}

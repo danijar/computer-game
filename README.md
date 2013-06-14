@@ -56,7 +56,7 @@ Movement and orientation
 
 Interaction with the world
 
-- `Mouse Left` Shoot a cube in view direction.
+- `Mouse Right` Shoot a cube in view direction.
 - `F` Let a cube fall down in the center of the world.
 - Hold `Left Shift` to insert more and fast cubiods.
 

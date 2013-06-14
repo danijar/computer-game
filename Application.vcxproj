@@ -88,10 +88,13 @@
     <ClCompile Include="Application\camera\create.cpp" />
     <ClCompile Include="Application\camera\general.cpp" />
     <ClCompile Include="Application\camera\state.cpp" />
+    <ClCompile Include="Application\camera\synchronization.cpp" />
     <ClCompile Include="Application\console\callbacks.cpp" />
     <ClCompile Include="Application\console\general.cpp" />
     <ClCompile Include="Application\console\history.cpp" />
     <ClCompile Include="Application\input\general.cpp" />
+    <ClCompile Include="Application\interface\callbacks.cpp" />
+    <ClCompile Include="Application\interface\crosshair.cpp" />
     <ClCompile Include="Application\interface\general.cpp" />
     <ClCompile Include="Application\interface\print.cpp" />
     <ClCompile Include="Application\main.cpp" />
@@ -104,7 +107,7 @@
     <ClCompile Include="Application\model\texture.cpp" />
     <ClCompile Include="Application\mod\general.cpp" />
     <ClCompile Include="Application\person\create.cpp" />
-    <ClCompile Include="Application\person\ground.cpp" />
+    <ClCompile Include="Application\person\checks.cpp" />
     <ClCompile Include="Application\person\general.cpp" />
     <ClCompile Include="Application\person\movement.cpp" />
     <ClCompile Include="Application\physic\callbacks.cpp" />
@@ -176,6 +179,7 @@
     <None Include="Application\renderer\shader\screen.frag" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Application\interface\texture\crosshair.png" />
     <Image Include="Application\model\texture\barrel_d.jpg" />
     <Image Include="Application\model\texture\barrel_n.jpg" />
     <Image Include="Application\model\texture\bottom.jpg" />

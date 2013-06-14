@@ -18,7 +18,7 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	btQuaternion rotation = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Body->getWorldTransform().getRotation();
 	/*
 	 * Do not move in camera direction but in person direction.
-	 * This doesn't work at the moment. Direction is always positive, to it doesn't work on the half of the map.
+	 * This doesn't work at the moment. Direction is always positive, though it doesn't work on the half of the map.
 	 * btQuaternion rotation = Entity->Get<Form>(Id)->Body->getWorldTransform().getRotation();
 	 */
 
@@ -28,10 +28,18 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	btVector3 forward = btVector3(lookat.getX(), 0, lookat.getZ()).normalize();
 	btVector3 side    = btCross(up, forward);
 
+	/*
 	// adapt to surface angle
 	float distance = 0;
 	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
 	if(result.first) distance = result.second + psn->Step;
+	Amount.y += distance;
+	*/
+
+	// adapt to surface angle
+	float distance = 0;
+	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
+	if(result.first) distance = -1 * (result.second - psn->Step);
 	Amount.y += distance;
 
 	// sum walking orientations together
@@ -43,11 +51,21 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	tsf->Body->setLinearVelocity(velocity);
 }
 
-void ModulePerson::Jump(unsigned int Id, float Multiplier)
+void ModulePerson::Jump(unsigned int Id, float Multiplier, bool Force)
 {
 	auto tsf = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
-	tsf->Body->applyCentralImpulse(btVector3(0, 5.5, 0) * psn->Mass * Multiplier);
+	if(!psn->Jumping || Force)
+	{
+		if(!Force)
+		{
+			btVector3 velocity = tsf->Body->getLinearVelocity();
+			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
+		}
+		float amount = psn->Mass * Multiplier;
+		tsf->Body->applyCentralImpulse(btVector3(0, amount, 0));
+		psn->Jumping = true;
+	}
 }

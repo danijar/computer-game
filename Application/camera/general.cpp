@@ -16,7 +16,7 @@ using namespace sf;
 
 void ModuleCamera::Init()
 {
-	unsigned int id = Create(vec3(14, 5, 4), 1.80f);
+	unsigned int id = Create(vec3(0), 1.80f);
 	*Global->Add<unsigned int>("camera") = id;
 	Entity->Get<Camera>(id)->Active = !Global->Get<Settings>("settings")->Mouse;
 	auto wnd = Global->Get<RenderWindow>("window");
@@ -62,7 +62,7 @@ void ModuleCamera::Update()
 	
 	// synchronize camera head and capsule body
 	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
-	tsfpsn->Rotation(vec3(0, tsfcam->Rotation().y, 0)); // this doesn't work yet
+	tsfpsn->Rotation(vec3(0, Yaw(), 0));
 
 	Calculate();
 }

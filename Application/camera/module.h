@@ -27,6 +27,9 @@ class ModuleCamera : public Module
 	float campitch;
 	void Rotate(glm::vec3 Amount, float Sensitivity = 0.0012f);
 
+	// synchronization
+	float Yaw();
+
 	// calculate
 	void Projection();
 	void Projection(sf::Vector2u Size);

@@ -13,17 +13,18 @@ void ModulePerson::Ground(unsigned int Id)
 	auto psn = Entity->Get<Person>(Id);
 
 	btVector3 origin = tsf->Body->getWorldTransform().getOrigin();
-	bool onground = RayDown(origin, psn->Height / 2).first;
-	const int samples = 8;
 
-	for (int i = 0; i < samples && !onground; ++i)
+	bool hit = RayDown(origin, psn->Height / 2).first;
+	psn->Onground = hit;
+
+	const int samples = 8;
+	for (int i = 0; i < samples && !hit; ++i)
 	{
 		float value = glm::pi<float>() * 2 * (float)i / samples;
 		btVector3 direction = btVector3(sin(value), 0, cos(value)).normalize();
-		onground = RayDown(origin + direction * psn->Radius * 0.9f, psn->Height / 2 + 0.1f).first;
+		hit = RayDown(origin + direction * psn->Radius * 1.01f, psn->Height / 2 + 0.1f).first;
 	}
-
-	psn->Onground = onground;
+	psn->Touching = hit;
 }
 
 bool ModulePerson::Ray(btVector3 &From, btVector3 &To, btVector3 &Point, btVector3 &Normal)

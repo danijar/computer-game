@@ -96,9 +96,6 @@ ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
 		}
 	}
 
-	// debug
-	Debug->Pass("created with " + to_string(vertices.size()) + " vertices and " + to_string(elements.size()) + " elements");
-
 	// create buffers
 	Mesh mesh;
 	glGenBuffers(1, &mesh.Positions);

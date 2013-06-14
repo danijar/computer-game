@@ -47,7 +47,6 @@ v8::Handle<v8::Value> ModuleCamera::jsFov(const v8::Arguments& args)
 	// get field of view
 	else
 	{
-		//stg->Fieldofview = 
 		return v8::Number::New(stg->Fieldofview);
 	}
 }
