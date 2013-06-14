@@ -11,13 +11,13 @@ using namespace sf;
 GLuint ModuleModel::GetTexture(string Path)
 {
 	auto i = textures.find(Path);
-	if(i != textures.end()) return i->second;
+	if(i != textures.end()) return i->second.first;
 
 	GLuint texture;
 	glGenTextures(1, &texture);
 	LoadTexture(texture, Path);
 
-	textures.insert(make_pair(Path, texture));
+	textures.insert(make_pair(Path, make_pair(texture, Hash(Name() + "/texture/" + Path))));
 	return texture;
 }
 
@@ -25,8 +25,13 @@ void ModuleModel::ReloadTextures()
 {
 	for(auto i = textures.begin(); i != textures.end(); ++i)
 	{
-		// check if the file actually changed
-		LoadTexture(i->second, i->first);
+		int hash = Hash(Name() + "/texture/" + i->first);
+		if(i->second.second != hash)
+		{
+			i->second.second = hash;
+			LoadTexture(i->second.first, i->first);
+			Debug->Pass("texture (" + i->first + ") reloaded");
+		}
 	}
 }
 

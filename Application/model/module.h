@@ -3,7 +3,6 @@
 #include "system.h"
 
 #include <unordered_map>
-#include <ctime>
 #include <SFML/OpenGL.hpp>
 #include <GLM/glm.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
@@ -23,7 +22,7 @@ class ModuleModel : public Module
 
 	// mesh
 	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
-	std::unordered_map<std::string, std::pair<Mesh, std::time_t>> meshes;
+	std::unordered_map<std::string, std::pair<Mesh, int>> meshes;
 	Mesh GetMesh(std::string Path);
 	void ReloadMeshes();
 	void LoadMesh(Mesh &Mesh, std::string Path);
@@ -32,13 +31,13 @@ class ModuleModel : public Module
 
 	// material
 	struct Material { std::string Name; std::string Diffuse, Normal, Specular; };
-	std::unordered_map<std::string, Material> materials;
+	std::unordered_map<std::string, std::pair<Material, int>> materials;
 	Material GetMaterial(std::string Path);
 	void ReloadMaterials();
 	void LoadMaterial(Material &Material, std::string Path);
 
 	// texture
-	std::unordered_map<std::string, GLuint> textures;
+	std::unordered_map<std::string, std::pair<GLuint, int>> textures;
 	GLuint GetTexture(std::string Path);
 	void ReloadTextures();
 	void LoadTexture(GLuint &Texture, std::string Path);
@@ -61,9 +60,10 @@ class ModuleModel : public Module
 	};
 	struct shape_key_equal : public std::binary_function<shape_key, shape_key, bool> { bool operator()(const shape_key& v0, const shape_key& v1) const { return v0 == v1; } };
 
-	std::unordered_map<shape_key, btCollisionShape*, shape_key_hash> shapes;
+	std::unordered_map<shape_key, std::pair<btCollisionShape*, int>, shape_key_hash> shapes;
 	btRigidBody *CreateBody(std::string Path, glm::vec3 Scale = glm::vec3(1), float Mass = 0);
 	btCollisionShape *GetShape(std::string Path, glm::vec3 Scale = glm::vec3(1), bool Static = true);
+	void ReloadShapes();
 	void LoadShape(btCollisionShape *&Shape, std::string Path, glm::vec3 Scale = glm::vec3(1), bool Static = true);
 	void LoadShapeCube(btCollisionShape *&Shape, glm::vec3 Scale = glm::vec3(1));
 	void LoadShapePlane(btCollisionShape *&Shape);

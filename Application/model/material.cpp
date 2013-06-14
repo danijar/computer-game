@@ -13,12 +13,12 @@ using namespace std;
 ModuleModel::Material ModuleModel::GetMaterial(string Path)
 {
 	auto i = materials.find(Path);
-	if(i != materials.end()) return i->second;
+	if(i != materials.end()) return i->second.first;
 
 	Material material;
 	LoadMaterial(material, Path);
 
-	materials.insert(make_pair(Path, material));
+	materials.insert(make_pair(Path, make_pair(material, Hash(Name() + "/material/" + Path))));
 	return material;
 }
 
@@ -28,16 +28,25 @@ void ModuleModel::ReloadMaterials()
 
 	for(auto i = materials.begin(); i != materials.end(); ++i)
 	{
-		// check if the file actually changed
+		int hash = Hash(Name() + "/material/" + i->first);
+		if(i->second.second != hash)
+		{
+			auto mtl = i->second.first;
+			pair<string, GLuint> previous = make_pair(mtl.Diffuse, GetTexture(mtl.Diffuse));
 
-		pair<string, GLuint> previous(make_pair(i->second.Diffuse, GetTexture(i->second.Diffuse)));
-		LoadMaterial(i->second, i->first);
-		if(i->second.Diffuse == previous.first) continue;
+			i->second.second = hash;
+			LoadMaterial(mtl, i->first);
+			Debug->Pass("material (" + i->first + ") reloaded");
 
-		pair<string, GLuint> fresh(make_pair(i->second.Diffuse, GetTexture(i->second.Diffuse)));
-		for(auto j = mds.begin(); j != mds.end(); ++j)
-			if(j->second->Diffuse == previous.second)
-				j->second->Diffuse = fresh.second;
+			if(mtl.Diffuse != previous.first)
+			{
+				auto fresh = make_pair(mtl.Diffuse, GetTexture(mtl.Diffuse));
+				for(auto j = mds.begin(); j != mds.end(); ++j)
+					if(j->second->Diffuse == previous.second)
+						j->second->Diffuse = fresh.second;
+			}
+			
+		}
 	}
 }
 

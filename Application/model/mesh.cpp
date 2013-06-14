@@ -32,9 +32,9 @@ void ModuleModel::ReloadMeshes()
 		int hash = Hash(Name() + "/mesh/" + i->first);
 		if(i->second.second != hash)
 		{
-			Debug->Pass("mesh (" + i->first + ") reloaded");
-			LoadMesh(i->second.first, i->first);
 			i->second.second = hash;
+			LoadMesh(i->second.first, i->first);
+			Debug->Pass("mesh (" + i->first + ") reloaded");
 		}
 	}
 }

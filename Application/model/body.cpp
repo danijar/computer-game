@@ -32,14 +32,19 @@ btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static) //
 {
 	shape_key key = make_tuple(Path, Scale, Static);
 	auto i = shapes.find(key);
-	if(i != shapes.end()) return i->second;
+	if(i != shapes.end()) return i->second.first;
 
 	btCollisionShape *shape = NULL;
 	LoadShape(shape, Path, Scale, Static);
 
-	shapes.insert(make_pair(key, shape));
+	shapes.insert(make_pair(key, make_pair(shape, Hash(Name() + "/mesh/" + Path))));
 
 	return shape;
+}
+
+void ModuleModel::ReloadShapes()
+{
+
 }
 
 void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, bool Static)

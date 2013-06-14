@@ -48,6 +48,7 @@ void ModuleModel::Listeners()
 		ReloadMeshes();
 		ReloadMaterials();
 		ReloadTextures();
+		ReloadShapes();
 	});
 
 	auto cook = [](float from, float to){ return (rand() % (int)((to - from) * 10) / 10.f) + from; };
