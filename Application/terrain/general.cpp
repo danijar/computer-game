@@ -91,24 +91,26 @@ void ModuleTerrain::Update()
 	// mesh new in range chunks
 	if(!loading && access.try_lock())
 	{
-		ivec3 i;
-		bool loop = true;
-		for(i.x = -distance.x; i.x < distance.x && loop; ++i.x)
-		for(i.z = -distance.z; i.z < distance.z && loop; ++i.z)
+		bool found = false;
+		ivec3 i, nearest;
+		for(i.x = -distance.x; i.x < distance.x; ++i.x)
+		for(i.z = -distance.z; i.z < distance.z; ++i.z)
 		{
-			ivec3 key = i + camera;
 			bool inrange = i.x*i.x + i.z*i.z < distance.x * distance.z;
-			bool loaded = GetChunk(key) ? true : false;
-
-			if(inrange && !loaded)
+			bool nearer = found ? length(vec3(i)) < length(vec3(nearest)) : true;
+			bool loaded = GetChunk(camera + i) ? true : false;
+			if(inrange && nearer && !loaded)
 			{
-				current = Terrain();
-				current.Key = key;
-				null = false;
-				loading = true;
-
-				loop = false;
+				nearest = camera + i;
+				found = true;
 			}
+		}
+		if(found)
+		{
+			current = Terrain();
+			current.Key = nearest;
+			null = false;
+			loading = true;
 		}
 		access.unlock();
 	}
