@@ -16,9 +16,6 @@
     <Filter Include="model\material">
       <UniqueIdentifier>{b0c5005b-7785-438a-b5d5-e8f6e2c6f826}</UniqueIdentifier>
     </Filter>
-    <Filter Include="model\mesh">
-      <UniqueIdentifier>{0aa1bf98-0d3e-4a62-ad38-7c838749181a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="model\texture">
       <UniqueIdentifier>{2a7d6224-e017-4bc9-9dbc-53bc4bd44676}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,9 @@
     </Filter>
     <Filter Include="interface\texture">
       <UniqueIdentifier>{bbcdc003-81db-403a-aafb-1d6176332aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model\material\mesh">
+      <UniqueIdentifier>{0aa1bf98-0d3e-4a62-ad38-7c838749181a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -286,10 +286,10 @@
       <Filter>model\material</Filter>
     </None>
     <None Include="Application\model\mesh\barrel.3ds">
-      <Filter>model\mesh</Filter>
+      <Filter>model\material\mesh</Filter>
     </None>
     <None Include="Application\model\mesh\shrine.3ds">
-      <Filter>model\mesh</Filter>
+      <Filter>model\material\mesh</Filter>
     </None>
     <None Include="Application\renderer\shader\antialiasing.frag">
       <Filter>renderer\shader</Filter>

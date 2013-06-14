@@ -2,11 +2,13 @@
 
 #include <unordered_map>
 #include <cstdlib>
+#include <filesystem>
 #include <GLEW/glew.h>
 #include <GLM/glm.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
 using namespace std;
+using namespace std::tr2::sys;
 using namespace sf;
 using namespace glm;
 
@@ -79,4 +81,13 @@ void ModuleModel::Listeners()
 		tsfcbe->Position(tsfcam->Position() + lookat);
 		tsfcbe->Body->applyCentralImpulse(200.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
+}
+
+int ModuleModel::Hash(string Path)
+{
+	path filepath(Path);
+	time_t timestamp = last_write_time(filepath);
+	unsigned long long filesize = file_size(filepath);
+
+	return hash<time_t>()(timestamp) + 37 * hash<unsigned long long>()(filesize);
 }

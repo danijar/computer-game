@@ -3,6 +3,7 @@
 #include "system.h"
 
 #include <unordered_map>
+#include <ctime>
 #include <SFML/OpenGL.hpp>
 #include <GLM/glm.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
@@ -18,10 +19,11 @@ class ModuleModel : public Module
 	void Update();
 	void Listeners();
 	void Callbacks();
+	int Hash(std::string Path);
 
 	// mesh
 	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
-	std::unordered_map<std::string, Mesh> meshes;
+	std::unordered_map<std::string, std::pair<Mesh, std::time_t>> meshes;
 	Mesh GetMesh(std::string Path);
 	void ReloadMeshes();
 	void LoadMesh(Mesh &Mesh, std::string Path);
