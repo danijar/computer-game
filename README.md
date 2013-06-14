@@ -62,7 +62,7 @@ Interaction with the world
 
 ### Scripting
 
-The scripting language use is JavaScript.
+The scripting language used is JavaScript.
 
 As described under above, the scripting console can be accessed by pressing the `Tab` key. Though it is only visible in debug mode. There is a scripting function to enter debug mode, which you'll have to type in blindly since the console isn't visible yet.
 
