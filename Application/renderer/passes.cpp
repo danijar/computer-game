@@ -20,28 +20,28 @@ void ModuleRenderer::Pipeline()
 	
 	unordered_map<string, string> light_samplers;
 	light_samplers.insert(make_pair("positions", "position"));
-	light_samplers.insert(make_pair("normals",   "normal"));
+	light_samplers.insert(make_pair("normals",   "normal"  ));
 	CreatePass("light", "light.frag", "light", light_samplers);
 
 	unordered_map<string, string> edge_samplers;
-	edge_samplers.insert(make_pair("position_tex", "position"));
-	edge_samplers.insert(make_pair("normal_tex",   "normal"));
+	edge_samplers.insert(make_pair("depth_tex",  "depth" ));
+	edge_samplers.insert(make_pair("normal_tex", "normal"));
 	CreatePass("edge", "edge.frag", "edge", edge_samplers);
 
 	unordered_map<string, string> combine_samplers;
 	combine_samplers.insert(make_pair("albedo", "albedo"));
-	combine_samplers.insert(make_pair("lights", "light"));
-	combine_samplers.insert(make_pair("position", "position"));
+	combine_samplers.insert(make_pair("lights", "light" ));
+	combine_samplers.insert(make_pair("depth",  "depth" ));
 	CreatePass("combine", "combine.frag", "image", combine_samplers);
 
 	unordered_map<string, string> occlusion_samplers;
-	occlusion_samplers.insert(make_pair("position_tex", "position"));
-	occlusion_samplers.insert(make_pair("normal_tex",   "normal"));
+	occlusion_samplers.insert(make_pair("depth_tex",  "depth" ));
+	occlusion_samplers.insert(make_pair("normal_tex", "normal"));
 	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.75);
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
 	unordered_map<string, string> apply_samplers;
-	apply_samplers.insert(make_pair("image_tex",  "image"));
+	apply_samplers.insert(make_pair("image_tex",  "image"    ));
 	apply_samplers.insert(make_pair("effect_tex", "occlusion"));
 	CreatePass("apply", "apply.frag", "result", apply_samplers);
 
@@ -134,7 +134,7 @@ ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, stri
 	pass.Fragment    = Fragment;
 	pass.Size        = Size;
 	pass.Shader      = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Samplers, pass.Size);
+	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Size);
 
 	passes.push_back(make_pair(Name, pass));
 	return pass;

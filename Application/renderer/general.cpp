@@ -44,7 +44,7 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
-			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Samplers, i->second.Size);
+			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Size);
 		}
 
 		Uniforms();

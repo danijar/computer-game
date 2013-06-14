@@ -12,7 +12,7 @@ using namespace std;
 ModuleModel::Mesh ModuleModel::GetMesh(string Path)
 {
 	auto i = meshes.find(Path);
-	if(i != meshes.end()) return i->second;
+	if(i != meshes.end()) return i->second.first;
 
 	Mesh mesh;
 	glGenBuffers(1, &mesh.Positions);
@@ -21,7 +21,7 @@ ModuleModel::Mesh ModuleModel::GetMesh(string Path)
 	glGenBuffers(1, &mesh.Elements);
 	LoadMesh(mesh, Path);
 
-	meshes.insert(make_pair(Path, mesh));
+	meshes.insert(make_pair(Path, make_pair(mesh, Hash(Name() + "/mesh/" + Path))));
 	return mesh;
 }
 
@@ -29,8 +29,13 @@ void ModuleModel::ReloadMeshes()
 {
 	for(auto i = meshes.begin(); i != meshes.end(); ++i)
 	{
-		// check if the file actually changed
-		LoadMesh(i->second, i->first);
+		int hash = Hash(Name() + "/mesh/" + i->first);
+		if(i->second.second != hash)
+		{
+			i->second.second = hash;
+			LoadMesh(i->second.first, i->first);
+			Debug->Pass("mesh (" + i->first + ") reloaded");
+		}
 	}
 }
 
@@ -108,7 +113,7 @@ void ModuleModel::LoadMeshCube(Mesh &Mesh)
 
 void ModuleModel::LoadMeshPlane(Mesh &Mesh)
 {
-	const float l = 5;
+	const float l = 200;
 	const GLfloat positions[] = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
 	const GLfloat normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
 	const GLfloat texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };

@@ -2,11 +2,13 @@
 
 #include <unordered_map>
 #include <cstdlib>
+#include <filesystem>
 #include <GLEW/glew.h>
 #include <GLM/glm.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
 using namespace std;
+using namespace std::tr2::sys;
 using namespace sf;
 using namespace glm;
 
@@ -32,7 +34,6 @@ void ModuleModel::Init()
 			 + "Shapes    " + to_string(shapes.size()   );
 	};
 
-	// CreateLight(vec3(0.5f, 1.0f, 1.5f), 0.0f, vec3(0.75f, 0.74f, 0.67f), 0.7f, Light::DIRECTIONAL);
 	Script->Run("init.js");
 }
 
@@ -47,9 +48,27 @@ void ModuleModel::Listeners()
 		ReloadMeshes();
 		ReloadMaterials();
 		ReloadTextures();
+		ReloadShapes();
 	});
 
 	auto cook = [](float from, float to){ return (rand() % (int)((to - from) * 10) / 10.f) + from; };
+
+	// move this into a script
+	Event->Listen("InputBindCreate", [=]{		
+		if(Keyboard::isKeyPressed(Keyboard::LShift))
+		{
+			int count((int)cook(10.0f, 25.0f));
+			for(int i = 0; i < count; ++i)
+			{
+				unsigned int id = CreateModel("qube.prim", "magic.mtl", vec3(0, 30, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 0.7f), cook(0.3f, 0.7f), cook(0.3f, 0.7f)), 3.0f);
+				Entity->Get<Form>(id)->Body->applyCentralImpulse(btVector3(cook(-12.5f, 12.5f), -75.0f, cook(-12.5f, 12.5f)));
+			}
+		}
+		else
+		{
+			CreateModel("qube.prim", "magic.mtl", vec3(0, 15, 0), vec3(cook(0.0f, 6.28f), cook(0.0f, 6.28f), cook(0.0f, 6.28f)), vec3(cook(0.3f, 1.0f), cook(0.3f, 1.0f), cook(0.3f, 1.0f)), 3.0f);
+		}
+	});
 
 	// move this into a script
 	Event->Listen("InputBindShoot", [=]{
@@ -63,4 +82,13 @@ void ModuleModel::Listeners()
 		tsfcbe->Position(tsfcam->Position() + lookat);
 		tsfcbe->Body->applyCentralImpulse(200.0f * btVector3(lookat.x, lookat.y, lookat.z));
 	});
+}
+
+int ModuleModel::Hash(string Path)
+{
+	path filepath(Path);
+	time_t timestamp = last_write_time(filepath);
+	unsigned long long filesize = file_size(filepath);
+
+	return hash<time_t>()(timestamp) + 37 * hash<unsigned long long>()(filesize);
 }

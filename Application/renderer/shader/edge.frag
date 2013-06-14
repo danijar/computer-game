@@ -3,13 +3,13 @@
 in vec2 coord;
 out vec3 image;
 
-uniform sampler2D position_tex;
+uniform sampler2D depth_tex;
 uniform sampler2D normal_tex;
 uniform vec2 frame_size;
 
 float depth(in vec2 offset)
 {
-	return texture2D(position_tex, coord + offset / frame_size).z;
+	return 1500.0 * texture2D(depth_tex, coord + offset / frame_size).r;
 }
 
 vec3 normal(in vec2 offset)
