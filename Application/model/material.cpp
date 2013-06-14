@@ -45,7 +45,6 @@ void ModuleModel::ReloadMaterials()
 			}
 
 			Debug->Pass("material (" + i->first + ") reloaded");
-			
 		}
 	}
 }

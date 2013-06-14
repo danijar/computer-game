@@ -8,6 +8,8 @@
 using namespace std;
 using namespace glm;
 
+#include "form.h"
+
 
 btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 {
@@ -28,7 +30,7 @@ btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 	return body;
 }
 
-btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static) // later on deep copy shapes to allow different scaling
+btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static)
 {
 	shape_key key = make_tuple(Path, Scale, Static);
 	auto i = shapes.find(key);
@@ -44,14 +46,28 @@ btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static) //
 
 void ModuleModel::ReloadShapes()
 {
+	auto fms = Entity->Get<Form>();
 
+	for(auto i = shapes.begin(); i != shapes.end(); ++i)
+	{
+		int hash = Hash(Name() + "/mesh/" + get<0>(i->first));
+		if(i->second.second != hash)
+		{
+			i->second.second = hash;
+			btCollisionShape *previous = i->second.first;
+			LoadShape(i->second.first, get<0>(i->first), get<1>(i->first), get<2>(i->first));
+			Debug->Pass("shape (" + get<0>(i->first) + ") reloaded");
+
+			btCollisionShape *shape = GetShape(get<0>(i->first), get<1>(i->first), get<2>(i->first));
+			for(auto j = fms.begin(); j != fms.end(); ++j)
+				if(j->second->Body->getCollisionShape() == previous)
+					j->second->Body->setCollisionShape(shape);
+		}
+	}
 }
 
 void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, bool Static)
 {
-	delete Shape;
-	Shape = NULL;
-
 	if(Path == "qube.prim")  return LoadShapeCube (Shape, Scale);
 	if(Path == "plane.prim") return LoadShapePlane(Shape);
 
@@ -98,7 +114,9 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 
 		Debug->Pass("collision shape with " + to_string(triangles->getNumTriangles()) + " triangles");
 
+		auto oldshape = Shape;
 		Shape = new btBvhTriangleMeshShape(triangles, true, true);
+		delete oldshape;
 	}
 	else
 	{
@@ -110,11 +128,15 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 
 void ModuleModel::LoadShapeCube(btCollisionShape *&Shape, vec3 Scale)
 {
+	auto oldshape = Shape;
 	Shape = new btBoxShape(btVector3(1.0f, 1.0f, 1.0f));
 	Shape->setLocalScaling(btVector3(Scale.x, Scale.y, Scale.z));
+	delete oldshape;
 }
 
 void ModuleModel::LoadShapePlane(btCollisionShape *&Shape)
 {
+	auto oldshape = Shape;
 	Shape = new btStaticPlaneShape(btVector3(0, 1, 0), 0);
+	delete oldshape;
 }
