@@ -16,6 +16,7 @@ void ModuleInterface::Init()
 	Resize();
 
 	show = true;
+	debug = false;
 
 	Listeners();
 	Callbacks();
@@ -28,8 +29,16 @@ void ModuleInterface::Update()
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	wnd->pushGLStates();
+
+	// normal interface
 	DrawCrosshair();
-	DrawPrint();
+
+	if(debug)
+	{
+		// debug interface
+		DrawPrint();
+	}
+
 	wnd->popGLStates();
 }
 

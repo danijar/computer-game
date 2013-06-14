@@ -8,7 +8,7 @@
 class ModuleInterface : public Module
 {
 	// general
-	bool show;
+	bool show, debug;
 	void Init();
 	void Update();
 	void Listeners();
@@ -28,4 +28,5 @@ class ModuleInterface : public Module
 public:
 	// callbacks
 	static v8::Handle<v8::Value> jsInterface(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsDebug    (const v8::Arguments& args);
 };
