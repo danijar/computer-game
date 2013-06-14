@@ -20,7 +20,7 @@ for (i = 0; i < 30; ++i)
 // models
 model('qube.prim', 'magic.mtl', 10, 4, -3, 27, 31, 57, 0.5, 1.0);
 model("shrine.3ds", "shrine.mtl", 20, 0, -5, -90, 0, -30, 1, 0);
-model("rock.obj", "rock.mtl", 13, 1, 12, -90, 0, 0, 3, 0);
+var rock = model("rock.obj", "rock.mtl", 13, 2, 12, -90, 0, 0, 3, 0);
 model("barrel.3ds", "barrel.mtl", 8, 0, 4, -90, 0, 0, 2, 0);
 
 var cube = model("qube.prim", "rock.mtl", 0, 8, 0, 0, 0, 0, 1.5, 0);
