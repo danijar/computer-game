@@ -60,6 +60,16 @@ Interaction with the world
 - `F` Let a cube fall down in the center of the world.
 - Hold `Left Shift` to insert more and fast cubiods.
 
+### Scripting
+
+The scripting language use is JavaScript.
+
+As described under above, the scripting console can be accessed by pressing the `Tab` key. Though it is only visible in debug mode. There is a scripting function to enter debug mode, which you'll have to type in blindly since the console isn't visible yet.
+
+To enable debug mode, blindly press `Tab`, type in `debug()` and hit `Enter`. You can now see debug information on the screen like the scripting console, frames per second, number of loaded meshes, coordinates of the camera, and so on.
+
+For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/ComputerGame/GraphicsApplication/wiki/List-of-Scripting-Functions).
+
 Branches
 --------
 
