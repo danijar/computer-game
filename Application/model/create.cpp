@@ -27,6 +27,7 @@ unsigned int ModuleModel::CreateModel(string Mesh, string Material, vec3 Positio
 	frm->Diffuse     = GetTexture(material.Diffuse);
 	//frm->Normal   = textures.Get(material.Normal);
 	//frm->Specular = textures.Get(material.Specular);
+	frm->Material = Material;
 
 	delete tsf->Body;
 	tsf->Body = CreateBody(Mesh, Scale, Mass);

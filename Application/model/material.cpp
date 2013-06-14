@@ -31,20 +31,20 @@ void ModuleModel::ReloadMaterials()
 		int hash = Hash(Name() + "/material/" + i->first);
 		if(i->second.second != hash)
 		{
-			auto mtl = i->second.first;
-			pair<string, GLuint> previous = make_pair(mtl.Diffuse, GetTexture(mtl.Diffuse));
-
 			i->second.second = hash;
-			LoadMaterial(mtl, i->first);
-			Debug->Pass("material (" + i->first + ") reloaded");
 
-			if(mtl.Diffuse != previous.first)
+			Material previous(i->second.first);
+			LoadMaterial(i->second.first, i->first);
+
+			if(i->second.first.Diffuse != previous.Diffuse)
 			{
-				auto fresh = make_pair(mtl.Diffuse, GetTexture(mtl.Diffuse));
+				GLuint diffuse = GetTexture(i->second.first.Diffuse);
 				for(auto j = mds.begin(); j != mds.end(); ++j)
-					if(j->second->Diffuse == previous.second)
-						j->second->Diffuse = fresh.second;
+					if(j->second->Material == i->first)
+						j->second->Diffuse = diffuse;
 			}
+
+			Debug->Pass("material (" + i->first + ") reloaded");
 			
 		}
 	}
