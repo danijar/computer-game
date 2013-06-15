@@ -68,8 +68,10 @@ class ModuleRenderer : public Module
 	Pass *GetPass(std::string Name);
 	
 	// draw
-	void DrawQuad (Pass *Pass, bool Screen = false);
+	void DrawQuad(Pass *Pass, bool Screen = false);
+	void DrawQuadStenciled(Pass *Pass);
 	void DrawForms(Pass *Pass);
+	void DrawSky(Pass *Pass);
 	void DrawLight(Pass *Pass);
 
 	// effect

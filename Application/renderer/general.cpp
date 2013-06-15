@@ -18,11 +18,10 @@ void ModuleRenderer::Init()
 void ModuleRenderer::Update()
 {
 	DrawForms(GetPass("form"));
-
 	DrawLight(GetPass("light"));
 
 	for(unsigned int i = 2; i < passes.size() - 1; ++i)
-		DrawQuad(&passes[i].second);
+		DrawQuadStenciled(&passes[i].second);
 
 	DrawQuad(&passes.back().second, true);
 }

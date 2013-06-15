@@ -45,5 +45,5 @@ void main()
 	if(texture2D(depth_tex, coord).r > 0.9999){ image = vec3(1); return; }
 
 	float effect = ssao();
-	image = vec3(effect < 0.9 ? effect : 0.9);
+	image = vec3(min(abs(effect), 0.9));
 }

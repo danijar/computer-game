@@ -17,6 +17,6 @@ void main()
 	vec3 effect = texture2D(effect_tex, coord).xyz;
 
 	image = color + vec3(0.3 * dot(effect, vec3(1)) * 0.5 - 0.5);
-	//image = vec3(0.3 * dot(effect, vec3(1))); // only ssao
-	//image = color;                            // only image
+	// image = vec3(0.3 * dot(effect, vec3(1))); // only ssao
+	// image = color;                            // only image
 }

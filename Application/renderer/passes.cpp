@@ -1,5 +1,6 @@
 #include "module.h"
 
+#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace std;
@@ -15,9 +16,9 @@ void ModuleRenderer::Pipeline()
 	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("position", GL_RGB16F)));
 	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT1, make_pair("normal",   GL_RGB16F)));
 	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT2, make_pair("albedo",   GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_DEPTH_ATTACHMENT,  make_pair("depth",    GL_DEPTH_COMPONENT24)));
+	forms_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", GL_DEPTH24_STENCIL8)));
 	CreatePass("form", "forms.vert", "forms.frag", forms_targets);
-	
+
 	unordered_map<string, string> light_samplers;
 	light_samplers.insert(make_pair("positions", "position"));
 	light_samplers.insert(make_pair("normals",   "normal"  ));
