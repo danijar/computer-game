@@ -19,21 +19,27 @@ void ModuleRenderer::Pipeline()
 	forms_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", GL_DEPTH24_STENCIL8)));
 	CreatePass("form", "forms.vert", "forms.frag", forms_targets);
 
+	unordered_map<GLenum, pair<string, GLenum>> light_targets;
 	unordered_map<string, string> light_samplers;
 	light_samplers.insert(make_pair("positions", "position"));
 	light_samplers.insert(make_pair("normals",   "normal"  ));
-	CreatePass("light", "light.frag", "light", light_samplers);
+	light_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("light", GL_RGB16F)));
+	light_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", 0)));
+	CreatePass("light", "quad.vert", "light.frag", light_targets, light_samplers);
 
 	unordered_map<string, string> edge_samplers;
 	edge_samplers.insert(make_pair("depth_tex",  "depth" ));
 	edge_samplers.insert(make_pair("normal_tex", "normal"));
 	CreatePass("edge", "edge.frag", "edge", edge_samplers);
 
+	unordered_map<GLenum, pair<string, GLenum>> combine_targets;
 	unordered_map<string, string> combine_samplers;
 	combine_samplers.insert(make_pair("albedo", "albedo"));
 	combine_samplers.insert(make_pair("lights", "light" ));
 	combine_samplers.insert(make_pair("depth",  "depth" ));
-	CreatePass("combine", "combine.frag", "image", combine_samplers);
+	combine_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("image", GL_RGB16F)));
+	//combine_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", 0)));
+	CreatePass("combine", "quad.vert", "combine.frag", combine_targets, combine_samplers);
 
 	unordered_map<string, string> occlusion_samplers;
 	occlusion_samplers.insert(make_pair("depth_tex",  "depth" ));

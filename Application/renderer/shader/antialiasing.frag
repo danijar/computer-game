@@ -17,5 +17,5 @@ void main()
 	result = mix(image, blur, presence);
 	//result = vec4(vec3(presence), 1.0); // only aliasing
 	//result = blur;                      // only blur
-	//result = image;                     // only image
+	result = image;                     // only image
 }

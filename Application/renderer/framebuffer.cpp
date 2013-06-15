@@ -39,11 +39,7 @@ void ModuleRenderer::TextureResize(GLuint Id, GLenum Type, Vector2u Size)
 {
 	auto format = TextureFormat(Type);
 	glBindTexture(GL_TEXTURE_2D, Id);
-
-	Opengl->Test("before");
 	glTexImage2D(GL_TEXTURE_2D, 0, Type, Size.x, Size.y, 0, format.first, format.second, NULL);
-	Opengl->Test("after");
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -59,24 +55,20 @@ pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 	case GL_RGB16:
 	case GL_RGB16F:
 	case GL_RGB32F:
-		Debug->Inline("GL_RGB");
 		type = GL_RGB;
 		break;
 	case GL_RGBA16:
 	case GL_RGBA16F:
 	case GL_RGBA32F:
-		Debug->Inline("GL_RGBA");
 		type = GL_RGBA;
 		break;
 	case GL_DEPTH_COMPONENT24:
 	case GL_DEPTH_COMPONENT32:
 	case GL_DEPTH_COMPONENT32F:
-		Debug->Inline("GL_DEPTH_COMPONENT");
 		type = GL_DEPTH_COMPONENT;
 		break;
 	case GL_DEPTH24_STENCIL8:
 	case GL_DEPTH32F_STENCIL8:
-		Debug->Inline("GL_DEPTH_STENCIL");
 		type = GL_DEPTH_STENCIL;
 		break;
 	}

@@ -45,13 +45,15 @@ void ModuleRenderer::DrawQuad(Pass *Pass, bool Screen)
 
 void ModuleRenderer::DrawQuadStenciled(Pass *Pass)
 {
-	//glEnable(GL_STENCIL_TEST);
-	//glStencilFunc(GL_GREATER, 0, 1);
-	//glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glDisable(GL_DEPTH_TEST);
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_GREATER, 0, 1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 	DrawQuad(Pass);
 
-	//glDisable(GL_STENCIL_TEST);
+	glDisable(GL_STENCIL_TEST);
 }
 
 void ModuleRenderer::DrawForms(Pass *Pass)
