@@ -34,38 +34,41 @@ class ModuleRenderer : public Module
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
 
 	// passes
+	typedef std::unordered_map<GLenum, std::pair<std::string, GLenum> > TargetList;
+	typedef std::unordered_map<std::string, std::string> SamplerList;
 	struct Pass
 	{
 		GLuint Framebuffer;
 		GLuint Shader;
 		std::string Vertex, Fragment;
-		std::unordered_map<std::string, GLuint> Samplers;
 		std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets;
+		std::unordered_map<std::string, GLuint> Samplers;
 		float Size;
+		GLenum StencilFunction;
+		GLint StencilReference;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
 	void Pipeline();
 	void Uniforms();
-	Pass CreatePass(
-		std::string Name,
+	Pass CreatePass(std::string Name,
 		std::string Fragment,
-		std::string Target,
-		std::pair<std::string, std::string> Sampler,
-		float Size = 1.0);
-	Pass CreatePass(
-		std::string Name,
-		std::string Fragment,
-		std::string Target,
-		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
-		float Size = 1.0);
-	Pass CreatePass(
-		std::string Name,
-		std::string Vertex,
-		std::string Fragment,
-		std::unordered_map<GLenum, std::pair<std::string, GLenum> > Targets,
-		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
-		float Size = 1.0);
+		TargetList Targets, SamplerList Samplers = SamplerList(),
+		float Size = 1.0,
+		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
+	Pass CreatePass(std::string Name,
+		std::string Vertex, std::string Fragment,
+		TargetList Targets, SamplerList Samplers = SamplerList(),
+		float Size = 1.0,
+		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
 	Pass *GetPass(std::string Name);
+	TargetList Targets(GLenum attachment1 = 0, std::string texture1 = "", GLenum type1 = GL_RGB16,
+	                   GLenum attachment2 = 0, std::string texture2 = "", GLenum type2 = GL_RGB16,
+	                   GLenum attachment3 = 0, std::string texture3 = "", GLenum type3 = GL_RGB16,
+	                   GLenum attachment4 = 0, std::string texture4 = "", GLenum type4 = GL_RGB16);
+	SamplerList Samplers(std::string sampler1 = "", std::string texture1 = "",
+	                     std::string sampler2 = "", std::string texture2 = "",
+	                     std::string sampler3 = "", std::string texture3 = "",
+	                     std::string sampler4 = "", std::string texture4 = "");
 	
 	// draw
 	void DrawQuad(Pass *Pass, bool Screen = false);

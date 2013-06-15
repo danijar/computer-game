@@ -12,56 +12,64 @@ using namespace glm;
 
 void ModuleRenderer::Pipeline()
 {
-	unordered_map<GLenum, pair<string, GLenum>> forms_targets;
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("position", GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT1, make_pair("normal",   GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT2, make_pair("albedo",   GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", GL_DEPTH24_STENCIL8)));
-	CreatePass("form", "forms.vert", "forms.frag", forms_targets);
+	CreatePass("form", "forms.vert", "forms.frag", Targets(
+		GL_COLOR_ATTACHMENT0,        "position", GL_RGB16F,
+		GL_COLOR_ATTACHMENT1,        "normal",   GL_RGB16F,
+		GL_COLOR_ATTACHMENT2,        "albedo",   GL_RGB16F,
+		GL_DEPTH_STENCIL_ATTACHMENT, "depth",    GL_DEPTH24_STENCIL8
+	));
 
-	unordered_map<GLenum, pair<string, GLenum>> light_targets;
-	unordered_map<string, string> light_samplers;
-	light_samplers.insert(make_pair("positions", "position"));
-	light_samplers.insert(make_pair("normals",   "normal"  ));
-	light_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("light", GL_RGB16F)));
-	light_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", 0)));
-	CreatePass("light", "quad.vert", "light.frag", light_targets, light_samplers);
+	CreatePass("light", "light.frag", Targets(
+		GL_COLOR_ATTACHMENT0,        "light", GL_RGB16F,
+		GL_DEPTH_STENCIL_ATTACHMENT, "depth", GL_DEPTH24_STENCIL8
+	), Samplers(
+		"positions", "position",
+		"normals",   "normal"
+	));
 
-	unordered_map<string, string> edge_samplers;
-	edge_samplers.insert(make_pair("depth_tex",  "depth" ));
-	edge_samplers.insert(make_pair("normal_tex", "normal"));
-	CreatePass("edge", "edge.frag", "edge", edge_samplers);
+	CreatePass("edge", "edge.frag", Targets(
+		GL_COLOR_ATTACHMENT0, "edge"
+	), Samplers(
+		"depth_tex",  "depth",
+		"normal_tex", "normal"
+	));
 
-	unordered_map<GLenum, pair<string, GLenum>> combine_targets;
-	unordered_map<string, string> combine_samplers;
-	combine_samplers.insert(make_pair("albedo", "albedo"));
-	combine_samplers.insert(make_pair("lights", "light" ));
-	combine_samplers.insert(make_pair("depth",  "depth" ));
-	combine_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("image", GL_RGB16F)));
-	//combine_targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, make_pair("depth", 0)));
-	CreatePass("combine", "quad.vert", "combine.frag", combine_targets, combine_samplers);
+	CreatePass("combine", "combine.frag", Targets(
+		GL_COLOR_ATTACHMENT0, "image"//, GL_RGB16,
+		//GL_DEPTH_STENCIL_ATTACHMENT, "depth", GL_DEPTH24_STENCIL8
+	), Samplers(
+		"albedo", "albedo",
+		"lights", "light",
+		"depth",  "depth"
+	));
 
-	unordered_map<string, string> occlusion_samplers;
-	occlusion_samplers.insert(make_pair("depth_tex",  "depth" ));
-	occlusion_samplers.insert(make_pair("normal_tex", "normal"));
-	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.75);
+	CreatePass("occlusion", "occlusion.frag", Targets(
+		GL_COLOR_ATTACHMENT0, "occlusion"
+	), Samplers(
+		"depth_tex",  "depth",
+		"normal_tex", "normal"
+	), 0.75);
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
-	unordered_map<string, string> apply_samplers;
-	apply_samplers.insert(make_pair("image_tex",  "image"    ));
-	apply_samplers.insert(make_pair("effect_tex", "occlusion"));
-	CreatePass("apply", "apply.frag", "result", apply_samplers);
+	CreatePass("apply", "apply.frag", Targets(
+		GL_COLOR_ATTACHMENT0, "result"
+	), Samplers(
+		"image_tex",  "image",
+		"effect_tex", "occlusion"
+	));
 
-	CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));
-	CreatePass("blur_v", "blur_v.frag", "blur", make_pair("image_tex", "temp"));
+	CreatePass("blur_u", "blur_u.frag", Targets(GL_COLOR_ATTACHMENT0, "temp", GL_RGB16), Samplers("image_tex", "result"));
+	CreatePass("blur_v", "blur_v.frag", Targets(GL_COLOR_ATTACHMENT0, "blur", GL_RGB16), Samplers("image_tex", "temp"));
 
-	unordered_map<string, string> antialiasing_samplers;
-	antialiasing_samplers.insert(make_pair("image_tex", "result"));
-	antialiasing_samplers.insert(make_pair("blur_tex",  "blur"));
-	antialiasing_samplers.insert(make_pair("edge_tex",  "edge"));
-	CreatePass("antialiasing", "antialiasing.frag", "antialiasing", antialiasing_samplers);
+	CreatePass("antialiasing", "antialiasing.frag", Targets(
+		GL_COLOR_ATTACHMENT0, "antialiasing"
+	), Samplers(
+		"image_tex", "result",
+		"blur_tex",  "blur",
+		"edge_tex",  "edge"
+	));
 
-	CreatePass("screen", "screen.frag", "screen", make_pair("image_tex", "antialiasing"));
+	CreatePass("screen", "screen.frag", Targets(GL_COLOR_ATTACHMENT0, "screen"), Samplers("image_tex", "antialiasing"));
 }
 
 void ModuleRenderer::Uniforms()
@@ -96,21 +104,16 @@ void ModuleRenderer::Uniforms()
 	glUseProgram(0);
 }
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, string Target, pair<string, string> Sampler, float Size)
+
+
+
+
+ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, TargetList Targets, SamplerList Samplers, float Size, GLenum StencilFunction, GLint StencilReference)
 {
-	unordered_map<string, string> samplers;
-	samplers.insert(Sampler);
-	return CreatePass(Name, Fragment, Target, samplers, Size);
+	return CreatePass(Name, "quad.vert", Fragment, Targets, Samplers, Size, StencilFunction, StencilReference);
 }
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, string Target, unordered_map<string, string> Samplers, float Size)
-{
-	unordered_map<GLenum, pair<string, GLenum>> targets;
-	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair(Target, GL_RGB16F)));
-	return CreatePass(Name, "quad.vert", Fragment, targets, Samplers, Size);
-}
-
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, unordered_map<GLenum, pair<string, GLenum>> Targets, unordered_map<string, string> Samplers, float Size)
+ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, TargetList Targets, SamplerList Samplers, float Size, GLenum StencilFunction, GLint StencilReference)
 {
 	Pass pass;
 
@@ -137,11 +140,13 @@ ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, stri
 		pass.Targets.insert(make_pair(i.first, make_pair(id, i.second.second)));
 	}
 
-	pass.Vertex      = Vertex;
-	pass.Fragment    = Fragment;
-	pass.Size        = Size;
-	pass.Shader      = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Size);
+	pass.Vertex           = Vertex;
+	pass.Fragment         = Fragment;
+	pass.Size             = Size;
+	pass.Shader           = CreateProgram(Vertex, Fragment);
+	pass.Framebuffer      = CreateFramebuffer(pass.Targets, pass.Size);
+	pass.StencilFunction  = StencilFunction;
+	pass.StencilReference = StencilReference;
 
 	passes.push_back(make_pair(Name, pass));
 	return pass;
@@ -155,4 +160,24 @@ ModuleRenderer::Pass *ModuleRenderer::GetPass(string Name)
 
 	Debug->Fail("cannot get pass because " + Name + " doesn't exist.");
 	return new Pass();
+}
+
+ModuleRenderer::TargetList ModuleRenderer::Targets(GLenum attachment1, string texture1, GLenum type1, GLenum attachment2, string texture2, GLenum type2, GLenum attachment3, string texture3, GLenum type3, GLenum attachment4, string texture4, GLenum type4)
+{
+	TargetList list;
+	if(attachment1 && texture1 != "") list.insert(std::make_pair(attachment1, std::make_pair(texture1, type1)));
+	if(attachment2 && texture2 != "") list.insert(std::make_pair(attachment2, std::make_pair(texture2, type2)));
+	if(attachment3 && texture3 != "") list.insert(std::make_pair(attachment3, std::make_pair(texture3, type3)));
+	if(attachment4 && texture4 != "") list.insert(std::make_pair(attachment4, std::make_pair(texture4, type4)));
+	return list;
+}
+
+ModuleRenderer::SamplerList ModuleRenderer::Samplers(string sampler1, string texture1, string sampler2, string texture2, string sampler3, string texture3, string sampler4, string texture4)
+{
+	SamplerList list;
+	if(sampler1 != "" && texture1 != "") list.insert(std::make_pair(sampler1, texture1));
+	if(sampler2 != "" && texture2 != "") list.insert(std::make_pair(sampler2, texture2));
+	if(sampler3 != "" && texture3 != "") list.insert(std::make_pair(sampler3, texture3));
+	if(sampler4 != "" && texture4 != "") list.insert(std::make_pair(sampler4, texture4));
+	return list;
 }
