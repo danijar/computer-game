@@ -10,7 +10,6 @@ uniform vec3      unKernel[16] = vec3[](vec3(0.53812504, 0.18565957, -0.43192),v
 uniform vec2      frame_size;
 uniform vec2      noise_size = vec2(64, 64);
 uniform int       noise_tiling = 5;
-uniform float     bias = 0.1;
 
 
 float depth(in vec2 coords)
@@ -34,7 +33,7 @@ float ssao()
 	{
 		vec3  of = orientate(reflect(unKernel[i], ref * 0.6 + 0.3), nor);
 		float sz = depth(coord + 0.03 * of.xy);
-		float zd = (sz - z + bias) * 0.4;
+		float zd = (sz - z) * 0.4;
 		bl += clamp(zd * 10.0, 0.1, 1.0) * (1.0 - clamp((zd - 1.0) / 5.0, 0.0, 1.0));
 	}
 	return 1.0 - bl / 16.0;
@@ -44,6 +43,5 @@ void main()
 {
 	if(texture2D(depth_tex, coord).r > 0.9999){ image = vec3(1); return; }
 
-	float effect = ssao();
-	image = vec3(min(abs(effect), 0.9));
+	image.x = clamp(ssao() + 0.2, 0.0, 1.0) - 0.2;
 }
