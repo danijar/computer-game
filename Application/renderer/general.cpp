@@ -17,6 +17,7 @@ void ModuleRenderer::Init()
 
 void ModuleRenderer::Update()
 {
+	/*
 	DrawForms(GetPass("form"));
 	DrawLight(GetPass("light"));
 
@@ -24,6 +25,10 @@ void ModuleRenderer::Update()
 		DrawQuadStenciled(&passes[i].second);
 
 	DrawQuad(&passes.back().second, true);
+	*/
+
+	for(auto i = passes.begin(); i != passes.end(); ++i)
+		i->second.Drawfunction(&i->second);
 }
 
 void ModuleRenderer::Listeners()

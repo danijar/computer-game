@@ -13,10 +13,9 @@ using namespace glm;
 #include "light.h"
 
 
-void ModuleRenderer::DrawQuad(Pass *Pass, bool Screen)
+void ModuleRenderer::DrawQuad(Pass *Pass)
 {
-	if(Screen) glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	else       glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 	glViewport(0, 0, (int)(size.x * Pass->Size), (int)(size.y * Pass->Size));
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -54,6 +53,35 @@ void ModuleRenderer::DrawQuadStenciled(Pass *Pass)
 	DrawQuad(Pass);
 
 	glDisable(GL_STENCIL_TEST);
+}
+
+void ModuleRenderer::DrawQuadScreen(Pass *Pass)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+	glViewport(0, 0, (int)(size.x), (int)(size.y));
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(Pass->Shader);
+	int n = 0; for(auto i : Pass->Samplers)
+	{
+		glActiveTexture(GL_TEXTURE0 + n);
+		glBindTexture(GL_TEXTURE_2D, i.second);
+		glUniform1i(glGetUniformLocation(Pass->Shader, i.first.c_str()), n);
+		n++;
+	}
+
+	glBegin(GL_QUADS);
+		glVertex2i(0, 0);
+		glVertex2i(1, 0);
+		glVertex2i(1, 1);
+		glVertex2i(0, 1);
+	glEnd();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);		
+	glUseProgram(0);
 }
 
 void ModuleRenderer::DrawForms(Pass *Pass)

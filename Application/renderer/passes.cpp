@@ -17,7 +17,7 @@ void ModuleRenderer::Pipeline()
 		GL_COLOR_ATTACHMENT1,        "normal",   GL_RGB16F,
 		GL_COLOR_ATTACHMENT2,        "albedo",   GL_RGB16F,
 		GL_DEPTH_STENCIL_ATTACHMENT, "depth",    GL_DEPTH24_STENCIL8
-	));
+		), Samplers(), bind(&ModuleRenderer::DrawForms, this, std::placeholders::_1) /*[=](Pass *p){ DrawForms(p); }*/);
 
 	CreatePass("light", "light.frag", Targets(
 		GL_COLOR_ATTACHMENT0,        "light", GL_RGB16F,
@@ -25,14 +25,14 @@ void ModuleRenderer::Pipeline()
 	), Samplers(
 		"positions", "position",
 		"normals",   "normal"
-	));
+	), [=](Pass *p){ DrawLight(p); });
 
 	CreatePass("edge", "edge.frag", Targets(
 		GL_COLOR_ATTACHMENT0, "edge"
 	), Samplers(
 		"depth_tex",  "depth",
 		"normal_tex", "normal"
-	));
+	), [=](Pass *p){ DrawQuadStenciled(p); });
 
 	CreatePass("combine", "combine.frag", Targets(
 		GL_COLOR_ATTACHMENT0, "image"//, GL_RGB16,
@@ -41,14 +41,14 @@ void ModuleRenderer::Pipeline()
 		"albedo", "albedo",
 		"lights", "light",
 		"depth",  "depth"
-	));
+	), [=](Pass *p){ DrawQuadStenciled(p); });
 
 	CreatePass("occlusion", "occlusion.frag", Targets(
 		GL_COLOR_ATTACHMENT0, "occlusion"
 	), Samplers(
 		"depth_tex",  "depth",
 		"normal_tex", "normal"
-	), 0.75);
+	), [=](Pass *p){ DrawQuadStenciled(p); }, 0.75);
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
 	CreatePass("apply", "apply.frag", Targets(
@@ -56,10 +56,10 @@ void ModuleRenderer::Pipeline()
 	), Samplers(
 		"image_tex",  "image",
 		"effect_tex", "occlusion"
-	));
+	), [=](Pass *p){ DrawQuadStenciled(p); });
 
-	CreatePass("blur_u", "blur_u.frag", Targets(GL_COLOR_ATTACHMENT0, "temp", GL_RGB16), Samplers("image_tex", "result"));
-	CreatePass("blur_v", "blur_v.frag", Targets(GL_COLOR_ATTACHMENT0, "blur", GL_RGB16), Samplers("image_tex", "temp"));
+	CreatePass("blur_u", "blur_u.frag", Targets(GL_COLOR_ATTACHMENT0, "temp", GL_RGB16), Samplers("image_tex", "result"), [=](Pass *p){ DrawQuadStenciled(p); });
+	CreatePass("blur_v", "blur_v.frag", Targets(GL_COLOR_ATTACHMENT0, "blur", GL_RGB16), Samplers("image_tex", "temp"), [=](Pass *p){ DrawQuadStenciled(p); });
 
 	CreatePass("antialiasing", "antialiasing.frag", Targets(
 		GL_COLOR_ATTACHMENT0, "antialiasing"
@@ -67,9 +67,9 @@ void ModuleRenderer::Pipeline()
 		"image_tex", "result",
 		"blur_tex",  "blur",
 		"edge_tex",  "edge"
-	));
+	), [=](Pass *p){ DrawQuadStenciled(p); });
 
-	CreatePass("screen", "screen.frag", Targets(GL_COLOR_ATTACHMENT0, "screen"), Samplers("image_tex", "antialiasing"));
+	CreatePass("screen", "screen.frag", Targets(GL_COLOR_ATTACHMENT0, "screen"), Samplers("image_tex", "antialiasing"), [=](Pass *p){ DrawQuadScreen(p); });
 }
 
 void ModuleRenderer::Uniforms()
@@ -108,12 +108,12 @@ void ModuleRenderer::Uniforms()
 
 
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, TargetList Targets, SamplerList Samplers, float Size, GLenum StencilFunction, GLint StencilReference)
+ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, TargetList Targets, SamplerList Samplers, function<void(Pass*)> Drawfunction, float Size, GLenum StencilFunction, GLint StencilReference)
 {
-	return CreatePass(Name, "quad.vert", Fragment, Targets, Samplers, Size, StencilFunction, StencilReference);
+	return CreatePass(Name, "quad.vert", Fragment, Targets, Samplers, Drawfunction, Size, StencilFunction, StencilReference);
 }
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, TargetList Targets, SamplerList Samplers, float Size, GLenum StencilFunction, GLint StencilReference)
+ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, TargetList Targets, SamplerList Samplers, function<void(Pass*)> Drawfunction, float Size, GLenum StencilFunction, GLint StencilReference)
 {
 	Pass pass;
 
@@ -145,6 +145,7 @@ ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, stri
 	pass.Size             = Size;
 	pass.Shader           = CreateProgram(Vertex, Fragment);
 	pass.Framebuffer      = CreateFramebuffer(pass.Targets, pass.Size);
+	pass.Drawfunction     = Drawfunction;
 	pass.StencilFunction  = StencilFunction;
 	pass.StencilReference = StencilReference;
 

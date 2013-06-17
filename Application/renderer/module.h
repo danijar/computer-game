@@ -4,6 +4,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <functional>
 #include <GLM/glm.hpp>
 #include <SFML/System.hpp>
 
@@ -44,6 +45,7 @@ class ModuleRenderer : public Module
 		std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets;
 		std::unordered_map<std::string, GLuint> Samplers;
 		float Size;
+		std::function<void(Pass*)> Drawfunction;
 		GLenum StencilFunction;
 		GLint StencilReference;
 	};
@@ -52,27 +54,30 @@ class ModuleRenderer : public Module
 	void Uniforms();
 	Pass CreatePass(std::string Name,
 		std::string Fragment,
-		TargetList Targets, SamplerList Samplers = SamplerList(),
+		TargetList Targets, SamplerList Samplers,
+		std::function<void(Pass*)> Drawfunction,
 		float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
 	Pass CreatePass(std::string Name,
 		std::string Vertex, std::string Fragment,
-		TargetList Targets, SamplerList Samplers = SamplerList(),
+		TargetList Targets, SamplerList Samplers,
+		std::function<void(Pass*)> Drawfunction,
 		float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
 	Pass *GetPass(std::string Name);
 	TargetList Targets(GLenum attachment1 = 0, std::string texture1 = "", GLenum type1 = GL_RGB16,
-	                   GLenum attachment2 = 0, std::string texture2 = "", GLenum type2 = GL_RGB16,
-	                   GLenum attachment3 = 0, std::string texture3 = "", GLenum type3 = GL_RGB16,
-	                   GLenum attachment4 = 0, std::string texture4 = "", GLenum type4 = GL_RGB16);
+		GLenum attachment2 = 0, std::string texture2 = "", GLenum type2 = GL_RGB16,
+		GLenum attachment3 = 0, std::string texture3 = "", GLenum type3 = GL_RGB16,
+		GLenum attachment4 = 0, std::string texture4 = "", GLenum type4 = GL_RGB16);
 	SamplerList Samplers(std::string sampler1 = "", std::string texture1 = "",
-	                     std::string sampler2 = "", std::string texture2 = "",
-	                     std::string sampler3 = "", std::string texture3 = "",
-	                     std::string sampler4 = "", std::string texture4 = "");
+		std::string sampler2 = "", std::string texture2 = "",
+		std::string sampler3 = "", std::string texture3 = "",
+		std::string sampler4 = "", std::string texture4 = "");
 	
 	// draw
-	void DrawQuad(Pass *Pass, bool Screen = false);
+	void DrawQuad(Pass *Pass);
 	void DrawQuadStenciled(Pass *Pass);
+	void DrawQuadScreen(Pass *Pass);
 	void DrawForms(Pass *Pass);
 	void DrawSky(Pass *Pass);
 	void DrawLight(Pass *Pass);
