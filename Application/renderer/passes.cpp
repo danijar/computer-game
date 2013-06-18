@@ -104,10 +104,6 @@ void ModuleRenderer::Uniforms()
 	glUseProgram(0);
 }
 
-
-
-
-
 ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, TargetList Targets, SamplerList Samplers, function<void(Pass*)> Drawfunction, float Size, GLenum StencilFunction, GLint StencilReference)
 {
 	return CreatePass(Name, "quad.vert", Fragment, Targets, Samplers, Drawfunction, Size, StencilFunction, StencilReference);

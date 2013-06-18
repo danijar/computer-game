@@ -87,5 +87,6 @@ class ModuleRenderer : public Module
 
 public:
 	// callbacks
+	static v8::Handle<v8::Value> jsPass     (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsWireframe(const v8::Arguments& args);
 };
