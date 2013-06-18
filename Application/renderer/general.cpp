@@ -1,6 +1,8 @@
 #include "module.h"
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+using namespace std;
 using namespace sf;
 
 
@@ -17,18 +19,31 @@ void ModuleRenderer::Init()
 
 void ModuleRenderer::Update()
 {
-	/*
-	DrawForms(GetPass("form"));
-	DrawLight(GetPass("light"));
+	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-	for(unsigned int i = 2; i < passes.size() - 1; ++i)
-		DrawQuadStenciled(&passes[i].second);
+	glEnable(GL_STENCIL_TEST);
 
-	DrawQuad(&passes.back().second, true);
-	*/
+	for(auto i : passes)
+	{
+		Pass pass = i.second;
 
-	for(auto i = passes.begin(); i != passes.end(); ++i)
-		i->second.Drawfunction(&i->second);
+		if(pass.Enabled)
+		{
+			glUseProgram(pass.Program);
+			glStencilFunc(pass.StencilFunction, pass.StencilReference, 1);
+			glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
+			glViewport(0, 0, (int)(size.x * pass.Size), (int)(size.y * pass.Size));
+
+			pass.Function(&pass);
+		}
+		else
+		{
+			// apply fallbacks
+		}
+	}
+
+	glDisable(GL_STENCIL_TEST);
+	glUseProgram(0);
 }
 
 void ModuleRenderer::Listeners()
@@ -37,10 +52,9 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			// check whether file actually changed
-			glDeleteProgram(i->second.Shader);
-			i->second.Shader = CreateProgram(i->second.Vertex, i->second.Fragment);
+			glDeleteProgram(i->second.Program);
+			i->second.Program = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
-
 		Uniforms();
 	});
 
@@ -48,17 +62,14 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
-			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Size);
+			i->second.Framebuffer = CreateFramebuffer(i->second.Targets);
 		}
-
 		Uniforms();
 	});
 
-	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-		for(auto i : passes)
-			for(auto j : i.second.Targets)
-				TextureResize(j.second.first, j.second.second, Vector2u(Vector2f(Size) * i.second.Size));
-
+	Event->Listen("WindowResize", [=]{
+		for(auto i : textures)
+			TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 		Uniforms();
 	});
 

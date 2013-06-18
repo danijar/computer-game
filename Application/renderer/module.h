@@ -28,59 +28,48 @@ class ModuleRenderer : public Module
 	void Uniform(GLuint Program, std::string Name, glm::vec2 Value);
 
 	// framebuffer
-	std::unordered_map<std::string, GLuint> targets;
-	GLuint CreateFramebuffer(std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets, float Size);
-	void TextureResize(GLuint Id, GLenum Type);
-	void TextureResize(GLuint Id, GLenum Type, sf::Vector2u Size);
+	std::unordered_map<std::string, std::tuple<GLuint, GLenum, float>> textures; // name to id, format, size
+	GLuint CreateFramebuffer(std::unordered_map<GLenum, GLuint> Targets);
+	void TextureCreate(std::string Name, GLenum Type, float Size = 1.0f);
+	GLuint TextureGet(std::string Name);
+	void TextureResize(GLuint Id, GLenum Type, float Size);
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
 
 	// passes
-	typedef std::unordered_map<GLenum, std::pair<std::string, GLenum> > TargetList;
-	typedef std::unordered_map<std::string, std::string> SamplerList;
+	enum Function{ FORMS, LIGHTS, QUAD, SCREEN };
 	struct Pass
 	{
+		Pass() : Enabled(true) {}
 		GLuint Framebuffer;
-		GLuint Shader;
+		GLuint Program;
 		std::string Vertex, Fragment;
-		std::unordered_map<GLenum, std::pair<GLuint, GLenum>> Targets;
+		std::unordered_map<GLenum, GLuint> Targets;
 		std::unordered_map<std::string, GLuint> Samplers;
+		std::unordered_map<GLuint, GLuint> Fallbacks;
 		float Size;
-		std::function<void(Pass*)> Drawfunction;
-		GLenum StencilFunction;
-		GLint StencilReference;
+		std::function<void(Pass*)> Function;
+		GLenum StencilFunction, StencilOperation; GLint StencilReference;
+		bool Enabled;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
 	void Pipeline();
 	void Uniforms();
-	Pass CreatePass(std::string Name,
-		std::string Fragment,
-		TargetList Targets, SamplerList Samplers,
-		std::function<void(Pass*)> Drawfunction,
-		float Size = 1.0,
-		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
-	Pass CreatePass(std::string Name,
+	void CreatePass(std::string Name,
 		std::string Vertex, std::string Fragment,
-		TargetList Targets, SamplerList Samplers,
-		std::function<void(Pass*)> Drawfunction,
-		float Size = 1.0,
-		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0);
+		std::unordered_map<GLenum,      std::string> Targets,
+		std::unordered_map<std::string, std::string> Samplers,
+		std::unordered_map<std::string, std::string> Fallbacks,
+		Function Function = QUAD, float Size = 1.0,
+		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
 	Pass *GetPass(std::string Name);
-	TargetList Targets(GLenum attachment1 = 0, std::string texture1 = "", GLenum type1 = GL_RGB16,
-		GLenum attachment2 = 0, std::string texture2 = "", GLenum type2 = GL_RGB16,
-		GLenum attachment3 = 0, std::string texture3 = "", GLenum type3 = GL_RGB16,
-		GLenum attachment4 = 0, std::string texture4 = "", GLenum type4 = GL_RGB16);
-	SamplerList Samplers(std::string sampler1 = "", std::string texture1 = "",
-		std::string sampler2 = "", std::string texture2 = "",
-		std::string sampler3 = "", std::string texture3 = "",
-		std::string sampler4 = "", std::string texture4 = "");
 	
 	// draw
 	void DrawQuad(Pass *Pass);
 	void DrawQuadStenciled(Pass *Pass);
-	void DrawQuadScreen(Pass *Pass);
+	void DrawScreen(Pass *Pass);
 	void DrawForms(Pass *Pass);
 	void DrawSky(Pass *Pass);
-	void DrawLight(Pass *Pass);
+	void DrawLights(Pass *Pass);
 
 	// effect
 	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);

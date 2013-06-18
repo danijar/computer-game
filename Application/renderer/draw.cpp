@@ -16,16 +16,13 @@ using namespace glm;
 void ModuleRenderer::DrawQuad(Pass *Pass)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-	glViewport(0, 0, (int)(size.x * Pass->Size), (int)(size.y * Pass->Size));
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glUseProgram(Pass->Shader);
 	int n = 0; for(auto i : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, i.second);
-		glUniform1i(glGetUniformLocation(Pass->Shader, i.first.c_str()), n);
+		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
 		n++;
 	}
 
@@ -39,35 +36,18 @@ void ModuleRenderer::DrawQuad(Pass *Pass)
 	glActiveTexture(GL_TEXTURE0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);		
-	glUseProgram(0);
 }
 
-void ModuleRenderer::DrawQuadStenciled(Pass *Pass)
-{
-	glDisable(GL_DEPTH_TEST);
-
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_GREATER, 0, 1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-	DrawQuad(Pass);
-
-	glDisable(GL_STENCIL_TEST);
-}
-
-void ModuleRenderer::DrawQuadScreen(Pass *Pass)
+void ModuleRenderer::DrawScreen(Pass *Pass)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-	glViewport(0, 0, (int)(size.x), (int)(size.y));
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glUseProgram(Pass->Shader);
 	int n = 0; for(auto i : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, i.second);
-		glUniform1i(glGetUniformLocation(Pass->Shader, i.first.c_str()), n);
+		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
 		n++;
 	}
 
@@ -81,7 +61,6 @@ void ModuleRenderer::DrawQuadScreen(Pass *Pass)
 	glActiveTexture(GL_TEXTURE0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);		
-	glUseProgram(0);
 }
 
 void ModuleRenderer::DrawForms(Pass *Pass)
@@ -90,23 +69,14 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	auto fms = Entity->Get<Model>();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-	glViewport(0, 0, (int)(size.x * Pass->Size), (int)(size.y * Pass->Size));
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
-	glUseProgram(Pass->Shader);
-	glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
+	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
 
 	glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
-
-	// fill stencil buffer with ones where geometry is
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glStencilMask(0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
@@ -121,7 +91,7 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		if(!Entity->Check<Form>(i.first)) continue;
 		auto tsf = Entity->Get<Form>(i.first);
 
-		glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix()));
+		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix()));
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
@@ -151,8 +121,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glStencilMask(0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	DrawSky(Pass);
-
-	glDisable(GL_STENCIL_TEST);
 	
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);
@@ -161,7 +129,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glUseProgram(0);
 }
 
 void ModuleRenderer::DrawSky(Pass *Pass)
@@ -172,7 +139,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 		vec3 position = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position();
 		mat4 matrix = translate(mat4(1), position);
 
-		glUniformMatrix4fv(glGetUniformLocation(Pass->Shader, "model"), 1, GL_FALSE, value_ptr(matrix));
+		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(matrix));
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
@@ -196,24 +163,21 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 	}
 }
 
-void ModuleRenderer::DrawLight(Pass *Pass)
+void ModuleRenderer::DrawLights(Pass *Pass)
 {
 	auto lis = Entity->Get<Light>();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-	glViewport(0, 0, (int)(size.x * Pass->Size), (int)(size.y * Pass->Size));
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	glUseProgram(Pass->Shader);
+	glUseProgram(Pass->Program);
 	int n = 0; for(auto j : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, j.second);
-		glUniform1i(glGetUniformLocation(Pass->Shader, j.first.c_str()), n);
+		glUniform1i(glGetUniformLocation(Pass->Program, j.first.c_str()), n);
 		n++;
 	}
 
@@ -223,11 +187,11 @@ void ModuleRenderer::DrawLight(Pass *Pass)
 	{
 		int type = i.second->Type == Light::DIRECTIONAL ? 0 : 1;
 		vec3 pos = vec3(view * vec4(Entity->Get<Form>(i.first)->Position(), !type ? 0 : 1));
-		glUniform1i(glGetUniformLocation(Pass->Shader, "type"),      type);
-		glUniform3f(glGetUniformLocation(Pass->Shader, "light"),     pos.x, pos.y, pos.z);
-		glUniform3f(glGetUniformLocation(Pass->Shader, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);
-		glUniform1f(glGetUniformLocation(Pass->Shader, "radius"),    i.second->Radius);
-		glUniform1f(glGetUniformLocation(Pass->Shader, "intensity"), i.second->Intensity);
+		glUniform1i(glGetUniformLocation(Pass->Program, "type"),      type);
+		glUniform3f(glGetUniformLocation(Pass->Program, "light"),     pos.x, pos.y, pos.z);
+		glUniform3f(glGetUniformLocation(Pass->Program, "color"),     i.second->Color.x, i.second->Color.y, i.second->Color.z);
+		glUniform1f(glGetUniformLocation(Pass->Program, "radius"),    i.second->Radius);
+		glUniform1f(glGetUniformLocation(Pass->Program, "intensity"), i.second->Intensity);
 
 		glBegin(GL_QUADS);
 			glVertex2i(0, 0);
@@ -240,6 +204,5 @@ void ModuleRenderer::DrawLight(Pass *Pass)
 	glDisable(GL_BLEND);
 	glActiveTexture(GL_TEXTURE0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);		
-	glUseProgram(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

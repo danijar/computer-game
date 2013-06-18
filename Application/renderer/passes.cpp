@@ -12,141 +12,184 @@ using namespace glm;
 
 void ModuleRenderer::Pipeline()
 {
-	CreatePass("form", "forms.vert", "forms.frag", Targets(
-		GL_COLOR_ATTACHMENT0,        "position", GL_RGB16F,
-		GL_COLOR_ATTACHMENT1,        "normal",   GL_RGB16F,
-		GL_COLOR_ATTACHMENT2,        "albedo",   GL_RGB16F,
-		GL_DEPTH_STENCIL_ATTACHMENT, "depth",    GL_DEPTH24_STENCIL8
-		), Samplers(), bind(&ModuleRenderer::DrawForms, this, std::placeholders::_1) /*[=](Pass *p){ DrawForms(p); }*/);
+	unordered_map<GLenum, string> targets;
+	unordered_map<string, string> samplers;
+	unordered_map<string, string> fallbacks;
 
-	CreatePass("light", "light.frag", Targets(
-		GL_COLOR_ATTACHMENT0,        "light", GL_RGB16F,
-		GL_DEPTH_STENCIL_ATTACHMENT, "depth", GL_DEPTH24_STENCIL8
-	), Samplers(
-		"positions", "position",
-		"normals",   "normal"
-	), [=](Pass *p){ DrawLight(p); });
+	TextureCreate("position", GL_RGB16F);
+	TextureCreate("normal", GL_RGB16F);
+	TextureCreate("albedo", GL_RGB16F);
+	TextureCreate("depth", GL_DEPTH24_STENCIL8);
 
-	CreatePass("edge", "edge.frag", Targets(
-		GL_COLOR_ATTACHMENT0, "edge"
-	), Samplers(
-		"depth_tex",  "depth",
-		"normal_tex", "normal"
-	), [=](Pass *p){ DrawQuadStenciled(p); });
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "position"));
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT1, "normal"));
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT2, "albedo"));
+	targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, "depth"));
+	CreatePass("form", "forms.vert", "forms.frag", targets, samplers, fallbacks, FORMS, 1.0f, GL_ALWAYS, 1, GL_REPLACE);
+	targets.clear();
 
-	CreatePass("combine", "combine.frag", Targets(
-		GL_COLOR_ATTACHMENT0, "image"//, GL_RGB16,
-		//GL_DEPTH_STENCIL_ATTACHMENT, "depth", GL_DEPTH24_STENCIL8
-	), Samplers(
-		"albedo", "albedo",
-		"lights", "light",
-		"depth",  "depth"
-	), [=](Pass *p){ DrawQuadStenciled(p); });
+	TextureCreate("light", GL_RGB16F);
 
-	CreatePass("occlusion", "occlusion.frag", Targets(
-		GL_COLOR_ATTACHMENT0, "occlusion"
-	), Samplers(
-		"depth_tex",  "depth",
-		"normal_tex", "normal"
-	), [=](Pass *p){ DrawQuadStenciled(p); }, 0.75);
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "light"));
+	targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, "depth"));
+	samplers.insert(make_pair("positions", "position"));
+	samplers.insert(make_pair("normals",   "normal"));
+	CreatePass("light", "quad.vert", "light.frag", targets, samplers, fallbacks, LIGHTS);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("edge", GL_RGB16F);
+
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "edge"));
+	samplers.insert(make_pair("depth_tex", "depth"));
+	samplers.insert(make_pair("normal_tex", "normal"));
+	CreatePass("edge", "quad.vert", "edge.frag", targets, samplers, fallbacks, QUAD, 1.0f, GL_GEQUAL, 1);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("image", GL_RGB16F);
+
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "image"));
+	samplers.insert(make_pair("albedo", "albedo"));
+	samplers.insert(make_pair("lights", "light"));
+	samplers.insert(make_pair("depth", "depth"));
+	CreatePass("combine", "quad.vert", "combine.frag", targets, samplers, fallbacks, QUAD, 1.0f, GL_GEQUAL, 1);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("occlusion", GL_RGB16F);
+
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "occlusion"));
+	samplers.insert(make_pair("depth_tex", "albedo"));
+	samplers.insert(make_pair("lights", "depth"));
+	samplers.insert(make_pair("normal_tex", "normal"));
+	CreatePass("occlusion", "quad.vert", "occlusion.frag", targets, samplers, fallbacks, QUAD, 0.75f, GL_GEQUAL, 1);
+	targets.clear();
+	samplers.clear();
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
-	CreatePass("apply", "apply.frag", Targets(
-		GL_COLOR_ATTACHMENT0, "result"
-	), Samplers(
-		"image_tex",  "image",
-		"effect_tex", "occlusion"
-	), [=](Pass *p){ DrawQuadStenciled(p); });
+	TextureCreate("result", GL_RGB16F);
 
-	CreatePass("blur_u", "blur_u.frag", Targets(GL_COLOR_ATTACHMENT0, "temp", GL_RGB16), Samplers("image_tex", "result"), [=](Pass *p){ DrawQuadStenciled(p); });
-	CreatePass("blur_v", "blur_v.frag", Targets(GL_COLOR_ATTACHMENT0, "blur", GL_RGB16), Samplers("image_tex", "temp"), [=](Pass *p){ DrawQuadStenciled(p); });
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "result"));
+	samplers.insert(make_pair("image_tex", "image"));
+	samplers.insert(make_pair("effect_tex", "occlusion"));
+	CreatePass("apply", "quad.vert", "apply.frag", targets, samplers, fallbacks, QUAD);
+	targets.clear();
+	samplers.clear();
 
-	CreatePass("antialiasing", "antialiasing.frag", Targets(
-		GL_COLOR_ATTACHMENT0, "antialiasing"
-	), Samplers(
-		"image_tex", "result",
-		"blur_tex",  "blur",
-		"edge_tex",  "edge"
-	), [=](Pass *p){ DrawQuadStenciled(p); });
+	TextureCreate("temp", GL_RGB16F);
 
-	CreatePass("screen", "screen.frag", Targets(GL_COLOR_ATTACHMENT0, "screen"), Samplers("image_tex", "antialiasing"), [=](Pass *p){ DrawQuadScreen(p); });
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "temp"));
+	samplers.insert(make_pair("image_tex", "result"));
+	CreatePass("blur_u", "quad.vert", "blur_u.frag", targets, samplers, fallbacks, QUAD);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("blur", GL_RGB16F);
+
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "blur"));
+	samplers.insert(make_pair("image_tex", "temp"));
+	CreatePass("blur_v", "quad.vert", "blur_v.frag", targets, samplers, fallbacks, QUAD);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("antialiasing", GL_RGB16F);
+
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "antialiasing"));
+	samplers.insert(make_pair("image_tex", "result"));
+	samplers.insert(make_pair("blur_tex", "blur"));
+	samplers.insert(make_pair("edge_tex", "edge"));
+	CreatePass("screen", "quad.vert", "antialiasing.frag", targets, samplers, fallbacks, QUAD);
+	targets.clear();
+	samplers.clear();
+
+	TextureCreate("screen", GL_RGB16F);
+	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "screen"));
+	samplers.insert(make_pair("image_tex", "antialiasing"));
+	CreatePass("screen", "quad.vert", "screen.frag", targets, samplers, fallbacks, SCREEN);
 }
 
 void ModuleRenderer::Uniforms()
 {
 	GLuint id;
 	
-	id = GetPass("form")->Shader;
+	id = GetPass("form")->Program;
 	glUseProgram(id);
 	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
 
 	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 
-	id = GetPass("edge")->Shader;
+	id = GetPass("edge")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
-	id = GetPass("combine")->Shader;
+	id = GetPass("combine")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
-	id = GetPass("occlusion")->Shader;
+	id = GetPass("occlusion")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 	
-	id = GetPass("blur_u")->Shader;
+	id = GetPass("blur_u")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
-	id = GetPass("blur_v")->Shader;
+	id = GetPass("blur_v")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
 	glUseProgram(0);
 }
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, TargetList Targets, SamplerList Samplers, function<void(Pass*)> Drawfunction, float Size, GLenum StencilFunction, GLint StencilReference)
-{
-	return CreatePass(Name, "quad.vert", Fragment, Targets, Samplers, Drawfunction, Size, StencilFunction, StencilReference);
-}
-
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, TargetList Targets, SamplerList Samplers, function<void(Pass*)> Drawfunction, float Size, GLenum StencilFunction, GLint StencilReference)
+void ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Fallbacks, Function Function, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
 	Pass pass;
 
-	for(auto i : Samplers)
-	{
-		auto sampler = targets.find(i.second);
-		if(sampler == targets.end())
-			Debug->Fail("sampler (" + i.second + ") not found");
-		else
-			pass.Samplers.insert(make_pair(i.first, sampler->second));
-	}
-
 	for(auto i : Targets)
 	{
-		GLuint id;
-		auto target = targets.find(i.second.first);
-		if(target == targets.end())
-		{
-			glGenTextures(1, &id);
-			targets.insert(make_pair(i.second.first, id));
-		}
-		else
-			id = target->second;
-		pass.Targets.insert(make_pair(i.first, make_pair(id, i.second.second)));
+		GLuint id = TextureGet(i.second);
+		if(id) pass.Targets.insert(make_pair(i.first, id));
+	}
+
+	for(auto i : Samplers)
+	{
+		GLuint id = TextureGet(i.second);
+		if(id)  pass.Samplers.insert(make_pair(i.first, id));
+	}
+
+	for(auto i : Fallbacks)
+	{
+		GLuint from = TextureGet(i.second),
+			   to   = TextureGet(i.first);
+		if(from && to) pass.Fallbacks.insert(make_pair(from, to));
+	}
+
+	switch(Function)
+	{
+	case FORMS:
+		pass.Function = bind(&ModuleRenderer::DrawForms, this, std::placeholders::_1);
+		break;
+	case LIGHTS:
+		pass.Function = bind(&ModuleRenderer::DrawLights, this, std::placeholders::_1);
+		break;
+	case QUAD:
+		pass.Function = bind(&ModuleRenderer::DrawQuad, this, std::placeholders::_1);
+		break;
+	case SCREEN:
+		pass.Function = bind(&ModuleRenderer::DrawScreen, this, std::placeholders::_1);
+		break;
 	}
 
 	pass.Vertex           = Vertex;
 	pass.Fragment         = Fragment;
 	pass.Size             = Size;
-	pass.Shader           = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer      = CreateFramebuffer(pass.Targets, pass.Size);
-	pass.Drawfunction     = Drawfunction;
+	pass.Program          = CreateProgram(Vertex, Fragment);
+	pass.Framebuffer      = CreateFramebuffer(pass.Targets);
 	pass.StencilFunction  = StencilFunction;
 	pass.StencilReference = StencilReference;
+	pass.StencilOperation = StencilOperation;
 
 	passes.push_back(make_pair(Name, pass));
-	return pass;
 }
 
 ModuleRenderer::Pass *ModuleRenderer::GetPass(string Name)
@@ -157,24 +200,4 @@ ModuleRenderer::Pass *ModuleRenderer::GetPass(string Name)
 
 	Debug->Fail("cannot get pass because " + Name + " doesn't exist.");
 	return new Pass();
-}
-
-ModuleRenderer::TargetList ModuleRenderer::Targets(GLenum attachment1, string texture1, GLenum type1, GLenum attachment2, string texture2, GLenum type2, GLenum attachment3, string texture3, GLenum type3, GLenum attachment4, string texture4, GLenum type4)
-{
-	TargetList list;
-	if(attachment1 && texture1 != "") list.insert(std::make_pair(attachment1, std::make_pair(texture1, type1)));
-	if(attachment2 && texture2 != "") list.insert(std::make_pair(attachment2, std::make_pair(texture2, type2)));
-	if(attachment3 && texture3 != "") list.insert(std::make_pair(attachment3, std::make_pair(texture3, type3)));
-	if(attachment4 && texture4 != "") list.insert(std::make_pair(attachment4, std::make_pair(texture4, type4)));
-	return list;
-}
-
-ModuleRenderer::SamplerList ModuleRenderer::Samplers(string sampler1, string texture1, string sampler2, string texture2, string sampler3, string texture3, string sampler4, string texture4)
-{
-	SamplerList list;
-	if(sampler1 != "" && texture1 != "") list.insert(std::make_pair(sampler1, texture1));
-	if(sampler2 != "" && texture2 != "") list.insert(std::make_pair(sampler2, texture2));
-	if(sampler3 != "" && texture3 != "") list.insert(std::make_pair(sampler3, texture3));
-	if(sampler4 != "" && texture4 != "") list.insert(std::make_pair(sampler4, texture4));
-	return list;
 }

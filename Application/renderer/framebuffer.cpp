@@ -7,7 +7,7 @@ using namespace std;
 using namespace sf;
 
 
-GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLenum>> Targets, float Size)
+GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, GLuint> Targets)
 {
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
@@ -18,8 +18,7 @@ GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLen
 	vector<GLenum> buffers;
 	for(auto i : Targets)
 	{
-		TextureResize(i.second.first, i.second.second, Vector2u(Vector2f(size) * Size));
-		glFramebufferTexture2D(GL_FRAMEBUFFER, i.first, GL_TEXTURE_2D, i.second.first, 0); // GL_INVALID_ENUM
+		glFramebufferTexture2D(GL_FRAMEBUFFER, i.first, GL_TEXTURE_2D, i.second, 0);
 		if(GL_COLOR_ATTACHMENT0 <= i.first && i.first <= GL_COLOR_ATTACHMENT15)
 			buffers.push_back(i.first);
 	}
@@ -30,16 +29,33 @@ GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, pair<GLuint, GLen
 	return framebuffer;
 }
 
-void ModuleRenderer::TextureResize(GLuint Id, GLenum Type)
+void ModuleRenderer::TextureCreate(string Name, GLenum Type, float Size)
 {
-	TextureResize(Id, Type, Global->Get<RenderWindow>("window")->getSize());
+	GLuint id;
+	glGenTextures(1, &id);
+	TextureResize(id, Type, Size);
+	textures.insert(make_pair(Name, make_tuple(id, Type, Size)));
 }
 
-void ModuleRenderer::TextureResize(GLuint Id, GLenum Type, Vector2u Size)
+GLuint ModuleRenderer::TextureGet(string Name)
 {
+	auto i = textures.find(Name);
+	if(i != textures.end())
+		return get<0>(i->second);
+	else
+	{
+		Debug->Fail("texture (" + Name + ") was not found");
+		return 0;
+	}
+}
+
+void ModuleRenderer::TextureResize(GLuint Id, GLenum Type, float Size)
+{
+	auto size = Global->Get<RenderWindow>("window")->getSize();
+
 	auto format = TextureFormat(Type);
 	glBindTexture(GL_TEXTURE_2D, Id);
-	glTexImage2D(GL_TEXTURE_2D, 0, Type, Size.x, Size.y, 0, format.first, format.second, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, Type, int(size.x * Size), int(size.y * Size), 0, format.first, format.second, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

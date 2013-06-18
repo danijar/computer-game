@@ -40,7 +40,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		string fragment;
 		if(object->Has(v8str("fragment")))
 			fragment = stdstr(object->Get(v8str("fragment")));
-		else return v8::Undefined();
+		else { HelperDebug::Fail("script", "fragment shader path needed"); return v8::Undefined(); }
 
 		// tagets as attachment to texture name
 		unordered_map<GLenum, string> targets;
@@ -60,7 +60,11 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 			if(obj->Has(v8str("DEPTH_STENCIL_ATTACHMENT")))
 				targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, stdstr(obj->Get(v8str("DEPTH_STENCIL_ATTACHMENT")))));
 		}
-		else return v8::Undefined();
+		else
+		{
+			HelperDebug::Fail("script", "at least one target needed");
+			return v8::Undefined();
+		}
 
 		// samplers as shader location to texture name
 		unordered_map<string, string> samplers;
@@ -76,7 +80,6 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 				samplers.insert(make_pair(location, texture));
 			}
 		}
-		else return v8::Undefined();
 
 		// fallbacks as target to texture name or clear value
 		unordered_map<string, string> fallbacks;
@@ -96,6 +99,24 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 			}
 		}
 
+		// choose draw function
+		Function function = QUAD;
+		if(object->Has(v8str("function")))
+		{
+			string func = stdstr(object->Get(v8str("function")));
+			if     (func == "FORMS" ) function = FORMS;
+			else if(func == "LIGHTS") function = LIGHTS;
+			else if(func == "QUAD"  ) function = QUAD;
+			else if(func == "SCREEN") function = SCREEN;
+			else HelperDebug::Warning("script", "function is invalid");
+		}
+
+		// resolution relative to window size
+		float size = 1.0f;
+		if(object->Has(v8str("size")) && object->Get(v8str("stencil"))->IsNumber())
+			size = (float)object->Get(v8str("stencil"))->NumberValue();
+
+		// stencil parameters
 		GLenum stencilfunc = GL_ALWAYS;
 		GLint  stencilref  = 0;
 		GLenum stencilop   = GL_KEEP;
@@ -126,6 +147,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 			}
 		}
 
+		/*
 		// dump collected values
 		string output = "pass details:";
 		output += "vertex path is (" + vertex + ")\n";
@@ -137,19 +159,21 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		output += "stencil reference " + to_string(stencilref) + "\n";
 		output += "stencil operation " + string(stencilfunc == GL_KEEP ? "keep" : (stencilfunc == GL_REPLACE ? "replace" : "other")) + "\n";
 		HelperDebug::Print("script", output);
+		*/
 
 		// create pass
-		// ...
+		module->CreatePass(name, vertex, fragment, targets, samplers, fallbacks, function, size, stencilfunc, stencilref, stencilop);
 	}
 	// toggle existing pass
 	else
 	{
-		//HelperDebug::Print("script", string(stg->Wireframe ? "enabled" : "disabled") + " wireframe mode");
+		Pass *pass = module->GetPass(name);
+		pass->Enabled = !pass->Enabled;
+		HelperDebug::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
 	}
 	
 	return v8::Undefined();
 }
-
 
 v8::Handle<v8::Value> ModuleRenderer::jsWireframe(const v8::Arguments& args)
 {
