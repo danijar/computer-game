@@ -143,7 +143,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 	glActiveTexture(GL_TEXTURE0);
 
 	glEnable(GL_DEPTH_TEST);
-	//glDepthMask(GL_TRUE);
+	glDepthMask(GL_FALSE);
 
 	Model *frm = Global->Get<Model>("sky");
 	if(frm->Elements && frm->Diffuse)
@@ -175,7 +175,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 	}
 
 	glDisable(GL_DEPTH_TEST);
-	//glDepthMask(GL_FALSE);
+	glDepthMask(GL_TRUE);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);

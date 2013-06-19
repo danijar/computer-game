@@ -52,7 +52,6 @@ class ModuleRenderer : public Module
 		bool Enabled;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
-	void Pipeline();
 	void Uniforms();
 	void PassCreate(std::string Name,
 		std::string Vertex, std::string Fragment,
@@ -61,7 +60,7 @@ class ModuleRenderer : public Module
 		std::unordered_map<std::string, std::string> Fallbacks,
 		Function Function = QUAD, float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
-	Pass *PassGet(std::string Name);
+	Pass *PassGet(std::string Name, bool Output = true);
 	
 	// draw
 	void DrawForms(Pass *Pass);
@@ -71,10 +70,12 @@ class ModuleRenderer : public Module
 	void DrawScreen(Pass *Pass);
 
 	// effect
-	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
+	void TextureLoad(std::string Name, std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsPass     (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsWireframe(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRenderpass  (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRendertarget(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRendertargetload(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsWireframe   (const v8::Arguments& args);
 };

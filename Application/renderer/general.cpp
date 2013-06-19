@@ -9,12 +9,13 @@ using namespace sf;
 void ModuleRenderer::Init()
 {
 	Opengl->Init();
+	
+	Callbacks();
 
-	Pipeline();
+	Script->Run("pipeline.js");
 	Uniforms();
 
 	Listeners();
-	Callbacks();
 }
 
 void ModuleRenderer::Update()
@@ -34,11 +35,12 @@ void ModuleRenderer::Update()
 			glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
 			glViewport(0, 0, int(size.x * pass.Size), int(size.y * pass.Size));
 
-			pass.Function(&pass); // later on bind pass pointer, too
+			pass.Function(&pass);
 		}
 		else
 		{
 			// apply fallbacks
+			// ...
 		}
 	}
 
@@ -62,7 +64,8 @@ void ModuleRenderer::Listeners()
 
 	Event->Listen("WindowRecreated", [=]{
 		for(auto i : textures)
-			TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
+			if(get<2>(i.second))
+				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
@@ -73,7 +76,8 @@ void ModuleRenderer::Listeners()
 
 	Event->Listen("WindowResize", [=]{
 		for(auto i : textures)
-			TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
+			if(get<2>(i.second))
+				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 		Uniforms();
 	});
 

@@ -23,7 +23,7 @@ Model ModuleSky::CreateSky()
 	model.Texcoords = mesh.Texcoords;
 	model.Elements  = mesh.Elements;
 
-	GLuint texture = CreateTexture("sky.jpg");
+	GLuint texture = TextureLoad("sky.jpg");
 	model.Diffuse = texture;
 
 	return model;
@@ -112,7 +112,7 @@ ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
 	return mesh;
 }
 
-GLuint ModuleSky::CreateTexture(string Path)
+GLuint ModuleSky::TextureLoad(string Path)
 {
 	Image image;
 	bool result = image.loadFromFile(Name() + "/texture/" + Path);

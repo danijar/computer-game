@@ -39,7 +39,8 @@ void ModuleRenderer::TextureCreate(string Name, GLenum Type, float Size)
 {
 	GLuint id;
 	glGenTextures(1, &id);
-	TextureResize(id, Type, Size);
+	if(Size)
+		TextureResize(id, Type, Size);
 	textures.insert(make_pair(Name, make_tuple(id, Type, Size)));
 }
 
@@ -51,8 +52,57 @@ tuple<GLuint, GLenum, float> ModuleRenderer::TextureGet(string Name)
 	else
 	{
 		Debug->Fail("texture (" + Name + ") was not found");
-		return make_tuple(0, 0, 0);
+		return make_tuple(0, 0, 0.0f);
 	}
+}
+
+void ModuleRenderer::TextureLoad(string Name, string Path, bool Repeat, bool Filtering, bool Mipmapping)
+{
+	Image image;
+	bool result = image.loadFromFile(this->Name() + "/texture/" + Path);
+	if(!result)
+	{
+		Debug->Fail("texture (" + Path + ") cannot be loaded.");
+		return;
+	}
+	image.flipVertically();
+
+	auto texture = TextureGet(Name);
+	if(get<0>(texture) == 0) return;
+	auto format = TextureFormat(get<1>(texture));
+
+	glBindTexture(GL_TEXTURE_2D, get<0>(texture));
+	glTexImage2D(GL_TEXTURE_2D, 0, get<1>(texture), image.getSize().x, image.getSize().y, 0, format.first, format.second, image.getPixelsPtr());
+	if(Repeat)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	}
+	if(Filtering)
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if(Mipmapping)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		if(Mipmapping)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	}
+	if(Mipmapping)
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void ModuleRenderer::TextureResize(GLuint Id, GLenum Type, float Size)

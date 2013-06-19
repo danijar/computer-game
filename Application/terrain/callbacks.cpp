@@ -51,11 +51,9 @@ v8::Handle<v8::Value> ModuleTerrain::jsBlock(const v8::Arguments& args)
 		return v8::Undefined();
 	ivec3 block(args[0]->Int32Value(), args[1]->Int32Value(), args[2]->Int32Value());
 
+	// containing chunk is not loaded
 	if(!module->GetChunk(module->PosChunk(block)))
-	{
-		HelperDebug::Fail("script", "the chunk containing that block is not loaded");
 		return v8::Undefined();
-	}
 
 	// set block
 	if(3 < args.Length() && args[3]->IsUint32())

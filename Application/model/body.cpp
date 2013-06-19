@@ -78,7 +78,7 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 		const aiScene *scene = aiImportFile((Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 		if(!scene)
 		{
-			Debug->Fail("mesh " + Path + " cannot be loaded for collision");
+			Debug->Fail("mesh (" + Path + ") cannot be loaded for collision");
 			return;
 		}
 

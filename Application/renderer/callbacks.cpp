@@ -8,11 +8,52 @@ using namespace std;
 
 void ModuleRenderer::Callbacks()
 {
-	Script->Bind("pass",      jsPass     );
-	Script->Bind("wireframe", jsWireframe);
+	Script->Bind("rendertarget",     jsRendertarget    );
+	Script->Bind("renderpass",       jsRenderpass      );
+	Script->Bind("rendertargetload", jsRendertargetload);
+	Script->Bind("wireframe",        jsWireframe       );
 }
 
-v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
+v8::Handle<v8::Value> ModuleRenderer::jsRendertarget(const v8::Arguments& args)
+{
+	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return v8::Undefined();
+	string name = *v8::String::Utf8Value(args[0]);
+
+	GLenum type = GL_RGB16F;
+	if(1 < args.Length() && args[1]->IsString())
+	{
+		string ty = *v8::String::Utf8Value(args[1]);
+
+		if     (ty == "RGB16")              type = GL_RGB16;
+		else if(ty == "RGB16F")             type = GL_RGB16F;
+		else if(ty == "RGB32F")             type = GL_RGB32F;
+
+		else if(ty == "RGBA16")             type = GL_RGBA16;
+		else if(ty == "RGBA16F")            type = GL_RGBA16F;
+		else if(ty == "RGBA32F")            type = GL_RGBA32F;
+
+		else if(ty == "DEPTH_COMPONENT24")  type = GL_DEPTH_COMPONENT24;
+		else if(ty == "DEPTH_COMPONENT32")  type = GL_DEPTH_COMPONENT32;
+		else if(ty == "DEPTH_COMPONENT32F") type = GL_DEPTH_COMPONENT32F;
+
+		else if(ty == "DEPTH24_STENCIL8")   type = GL_DEPTH24_STENCIL8;
+
+		else HelperDebug::Warning("script", "unknown texture type");
+	}
+
+	float size = 1.0f;
+	if(2 < args.Length() && args[2]->IsNumber())
+		size = (float)args[2]->NumberValue();
+
+	module->TextureCreate(name, type, size);
+
+	return v8::Undefined();
+}
+
+v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 
@@ -85,7 +126,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		unordered_map<string, string> fallbacks;
 		if(object->Has(v8str("fallbacks")))
 		{
-			v8::Handle<v8::Object> obj = object->Get(v8str("samplers"))->ToObject();
+			v8::Handle<v8::Object> obj = object->Get(v8str("fallbacks"))->ToObject();
 
 			v8::Handle<v8::Array> targets = obj->GetPropertyNames();
 			for(unsigned int i = 0; i < targets->Length(); ++i)
@@ -95,15 +136,15 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 				if(fallback->IsString())
 					fallbacks.insert(make_pair(target, stdstr(fallback)));
 				else if(fallback->IsNumber())
-					; // how to store clear value?
+					; // how to store clean value?
 			}
 		}
 
 		// choose draw function
 		Function function = QUAD;
-		if(object->Has(v8str("function")))
+		if(object->Has(v8str("draw")))
 		{
-			string func = stdstr(object->Get(v8str("function")));
+			string func = stdstr(object->Get(v8str("draw")));
 			if     (func == "FORMS" ) function = FORMS;
 			else if(func == "SKY"   ) function = SKY;
 			else if(func == "LIGHTS") function = LIGHTS;
@@ -114,8 +155,8 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 
 		// resolution relative to window size
 		float size = 1.0f;
-		if(object->Has(v8str("size")) && object->Get(v8str("stencil"))->IsNumber())
-			size = (float)object->Get(v8str("stencil"))->NumberValue();
+		if(object->Has(v8str("size")) && object->Get(v8str("size"))->IsNumber())
+			size = (float)object->Get(v8str("size"))->NumberValue();
 
 		// stencil parameters
 		GLenum stencilfunc = GL_ALWAYS;
@@ -123,11 +164,11 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		GLenum stencilop   = GL_KEEP;
 		if(object->Has(v8str("stencil")))
 		{
-			v8::Handle<v8::Object> obj = object->Get(v8str("stencil"))->ToObject();
+			v8::Handle<v8::Array> array = v8::Handle<v8::Array>::Cast(object->Get(v8str("stencil")));
 
-			if(0 < obj->GetPropertyNames()->Length() && obj->Get(0)->IsString())
+			if(0 < array->Length() && array->Get(0)->IsString())
 			{
-				string func = stdstr(obj->Get(0));
+				string func = stdstr(array->Get(0));
 				if     (func == "ALWAYS" ) stencilfunc = GL_ALWAYS;
 				else if(func == "EQUAL"  ) stencilfunc = GL_EQUAL;
 				else if(func == "GREATER") stencilfunc = GL_GREATER;
@@ -135,32 +176,18 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 				else if(func == "GEQUAL" ) stencilfunc = GL_GEQUAL;
 				else if(func == "LEQUAL" ) stencilfunc = GL_LEQUAL;
 			}
-			if(1 < obj->GetPropertyNames()->Length() && obj->Get(1)->IsInt32())
+			if(1 < array->Length() && array->Get(1)->IsInt32())
 			{
-				stencilref = obj->Get(1)->Int32Value();
+				stencilref = array->Get(1)->Int32Value();
 			}
-			if(2 < obj->GetPropertyNames()->Length() && obj->Get(2)->IsString())
+			if(2 < array->Length() && array->Get(2)->IsString())
 			{
-				string op = stdstr(obj->Get(2));
+				string op = stdstr(array->Get(2));
 				if     (op == "KEEP"   ) stencilop = GL_KEEP;
 				else if(op == "REPLACE") stencilop = GL_REPLACE;
 				else if(op == "INCR"   ) stencilop = GL_INCR;
 			}
 		}
-
-		/*
-		// dump collected values
-		string output = "pass details:";
-		output += "vertex path is (" + vertex + ")\n";
-		output += "fragment path is (" + fragment + ")\n";
-		for(auto i : targets) output += "target " + i.second + " at " + to_string(i.first) + "\n";
-		for(auto i : samplers) output += "sampler " + i.second + " at " + i.first + "\n";
-		for(auto i : fallbacks) output += "fallback " + i.second + " for " + i.first + "\n";
-		output += "stencil function " + string(stencilfunc == GL_ALWAYS ? "always" : (stencilfunc == GL_EQUAL ? "equal" : "other")) + "\n";
-		output += "stencil reference " + to_string(stencilref) + "\n";
-		output += "stencil operation " + string(stencilfunc == GL_KEEP ? "keep" : (stencilfunc == GL_REPLACE ? "replace" : "other")) + "\n";
-		HelperDebug::Print("script", output);
-		*/
 
 		// create pass
 		module->PassCreate(name, vertex, fragment, targets, samplers, fallbacks, function, size, stencilfunc, stencilref, stencilop);
@@ -173,6 +200,35 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		HelperDebug::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
 	}
 	
+	return v8::Undefined();
+}
+
+v8::Handle<v8::Value> ModuleRenderer::jsRendertargetload(const v8::Arguments& args)
+{
+	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return v8::Undefined();
+	string name = *v8::String::Utf8Value(args[0]);
+
+	if(args.Length() < 2 || !args[1]->IsString())
+		return v8::Undefined();
+	string path = *v8::String::Utf8Value(args[1]);
+
+	bool repeat = true;
+	if(2 < args.Length() && args[2]->IsBoolean())
+		repeat = args[2]->BooleanValue();
+
+	bool filtering = true;
+	if(3 < args.Length() && args[3]->IsBoolean())
+		filtering = args[3]->BooleanValue();
+
+	bool mipmapping = true;
+	if(4 < args.Length() && args[4]->IsBoolean())
+		mipmapping = args[4]->BooleanValue();
+
+	module->TextureLoad(name, path, repeat, filtering, mipmapping);
+
 	return v8::Undefined();
 }
 

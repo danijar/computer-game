@@ -19,5 +19,5 @@ class ModuleSky : public Module
 	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
 	Model CreateSky();
 	Mesh CreateMesh(int Steps = 10, float Radius = 999.0f);
-	GLuint CreateTexture(std::string Path);
+	GLuint TextureLoad(std::string Path);
 };

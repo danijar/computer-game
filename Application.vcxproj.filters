@@ -94,9 +94,6 @@
     <ClCompile Include="Application\renderer\passes.cpp">
       <Filter>renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Application\renderer\effect.cpp">
-      <Filter>renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Application\physic\debug.cpp">
       <Filter>physic</Filter>
     </ClCompile>
@@ -374,6 +371,9 @@
     </None>
     <None Include="Application\mod\update.js">
       <Filter>mod</Filter>
+    </None>
+    <None Include="Application\renderer\pipeline.js">
+      <Filter>renderer</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
