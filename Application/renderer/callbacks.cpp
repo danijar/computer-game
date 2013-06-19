@@ -105,6 +105,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		{
 			string func = stdstr(object->Get(v8str("function")));
 			if     (func == "FORMS" ) function = FORMS;
+			else if(func == "SKY"   ) function = SKY;
 			else if(func == "LIGHTS") function = LIGHTS;
 			else if(func == "QUAD"  ) function = QUAD;
 			else if(func == "SCREEN") function = SCREEN;
@@ -162,12 +163,12 @@ v8::Handle<v8::Value> ModuleRenderer::jsPass(const v8::Arguments& args)
 		*/
 
 		// create pass
-		module->CreatePass(name, vertex, fragment, targets, samplers, fallbacks, function, size, stencilfunc, stencilref, stencilop);
+		module->PassCreate(name, vertex, fragment, targets, samplers, fallbacks, function, size, stencilfunc, stencilref, stencilop);
 	}
 	// toggle existing pass
 	else
 	{
-		Pass *pass = module->GetPass(name);
+		Pass *pass = module->PassGet(name);
 		pass->Enabled = !pass->Enabled;
 		HelperDebug::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
 	}

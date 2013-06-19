@@ -119,10 +119,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glDisable(GL_DEPTH_TEST);
 	//glDepthMask(GL_FALSE);
 
-	glStencilFunc(GL_EQUAL, 0, 0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	DrawSky(Pass);
-
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
@@ -134,6 +130,21 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 
 void ModuleRenderer::DrawSky(Pass *Pass)
 {	
+	auto stg = Global->Get<Settings>("settings");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
+		
+	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
+
+	glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+	glEnable(GL_CULL_FACE);
+
+	glEnable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
+
+	glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_TRUE);
+
 	Model *frm = Global->Get<Model>("sky");
 	if(frm->Elements && frm->Diffuse)
 	{
@@ -162,6 +173,17 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 		glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
 	}
+
+	glDisable(GL_DEPTH_TEST);
+	//glDepthMask(GL_FALSE);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void ModuleRenderer::DrawLights(Pass *Pass)

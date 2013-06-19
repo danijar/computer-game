@@ -36,7 +36,7 @@ class ModuleRenderer : public Module
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
 
 	// passes
-	enum Function{ FORMS, LIGHTS, QUAD, SCREEN };
+	enum Function{ FORMS, SKY, LIGHTS, QUAD, SCREEN };
 	struct Pass
 	{
 		Pass() : Enabled(true) {}
@@ -54,22 +54,21 @@ class ModuleRenderer : public Module
 	std::vector<std::pair<std::string, Pass>> passes;
 	void Pipeline();
 	void Uniforms();
-	void CreatePass(std::string Name,
+	void PassCreate(std::string Name,
 		std::string Vertex, std::string Fragment,
 		std::unordered_map<GLenum,      std::string> Targets,
 		std::unordered_map<std::string, std::string> Samplers,
 		std::unordered_map<std::string, std::string> Fallbacks,
 		Function Function = QUAD, float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
-	Pass *GetPass(std::string Name);
+	Pass *PassGet(std::string Name);
 	
 	// draw
-	void DrawQuad(Pass *Pass);
-	void DrawQuadStenciled(Pass *Pass);
-	void DrawScreen(Pass *Pass);
 	void DrawForms(Pass *Pass);
 	void DrawSky(Pass *Pass);
 	void DrawLights(Pass *Pass);
+	void DrawQuad(Pass *Pass);
+	void DrawScreen(Pass *Pass);
 
 	// effect
 	GLuint CreateTexture(std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);
