@@ -36,6 +36,6 @@ void main()
 	}
 	else if(type == 2) // spot light
 	{
-
+		// not implemented yet
 	}
 }

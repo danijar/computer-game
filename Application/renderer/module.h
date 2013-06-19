@@ -30,8 +30,8 @@ class ModuleRenderer : public Module
 	// framebuffer
 	std::unordered_map<std::string, std::tuple<GLuint, GLenum, float>> textures; // name to id, format, size
 	GLuint CreateFramebuffer(std::unordered_map<GLenum, GLuint> Targets);
-	void TextureCreate(std::string Name, GLenum Type, float Size = 1.0f);
-	GLuint TextureGet(std::string Name);
+	void TextureCreate(std::string Name, GLenum Type = GL_RGB16F, float Size = 1.0f);
+	std::tuple<GLuint, GLenum, float> TextureGet(std::string Name);
 	void TextureResize(GLuint Id, GLenum Type, float Size);
 	std::pair<GLenum, GLenum> TextureFormat(GLenum InternalType);
 

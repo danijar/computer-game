@@ -16,59 +16,58 @@ void ModuleRenderer::Pipeline()
 	unordered_map<string, string> samplers;
 	unordered_map<string, string> fallbacks;
 
-	TextureCreate("position", GL_RGB16F);
-	TextureCreate("normal", GL_RGB16F);
-	TextureCreate("albedo", GL_RGB16F);
-	TextureCreate("depth", GL_DEPTH24_STENCIL8);
+	TextureCreate("position");
+	TextureCreate("normal");
+	TextureCreate("albedo");
 
+	TextureCreate("depth", GL_DEPTH24_STENCIL8);
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "position"));
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT1, "normal"));
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT2, "albedo"));
 	targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, "depth"));
-	CreatePass("form", "forms.vert", "forms.frag", targets, samplers, fallbacks, FORMS, 1.0f, GL_ALWAYS, 1, GL_REPLACE);
+	CreatePass("forms", "forms.vert", "forms.frag", targets, samplers, fallbacks, FORMS, 1.0f, GL_ALWAYS, 1, GL_REPLACE);
 	targets.clear();
 
-	TextureCreate("light", GL_RGB16F);
+	TextureCreate("light");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "light"));
 	targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, "depth"));
 	samplers.insert(make_pair("positions", "position"));
-	samplers.insert(make_pair("normals",   "normal"));
-	CreatePass("light", "quad.vert", "light.frag", targets, samplers, fallbacks, LIGHTS);
+	samplers.insert(make_pair("normals", "normal"));
+	CreatePass("lights", "quad.vert", "light.frag", targets, samplers, fallbacks, LIGHTS, 1.0f, GL_GEQUAL, 1);
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("edge", GL_RGB16F);
+	TextureCreate("edge");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "edge"));
 	samplers.insert(make_pair("depth_tex", "depth"));
 	samplers.insert(make_pair("normal_tex", "normal"));
-	CreatePass("edge", "quad.vert", "edge.frag", targets, samplers, fallbacks, QUAD, 1.0f, GL_GEQUAL, 1);
+	CreatePass("edge", "quad.vert", "edge.frag", targets, samplers, fallbacks, QUAD);
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("image", GL_RGB16F);
+	TextureCreate("image");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "image"));
 	samplers.insert(make_pair("albedo", "albedo"));
 	samplers.insert(make_pair("lights", "light"));
 	samplers.insert(make_pair("depth", "depth"));
-	CreatePass("combine", "quad.vert", "combine.frag", targets, samplers, fallbacks, QUAD, 1.0f, GL_GEQUAL, 1);
+	CreatePass("combine", "quad.vert", "combine.frag", targets, samplers, fallbacks, QUAD);
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("occlusion", GL_RGB16F);
+	TextureCreate("occlusion", GL_RGB16F, 0.75f);
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "occlusion"));
-	samplers.insert(make_pair("depth_tex", "albedo"));
-	samplers.insert(make_pair("lights", "depth"));
+	samplers.insert(make_pair("depth_tex", "depth"));
 	samplers.insert(make_pair("normal_tex", "normal"));
 	CreatePass("occlusion", "quad.vert", "occlusion.frag", targets, samplers, fallbacks, QUAD, 0.75f, GL_GEQUAL, 1);
 	targets.clear();
 	samplers.clear();
 	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
 
-	TextureCreate("result", GL_RGB16F);
+	TextureCreate("result");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "result"));
 	samplers.insert(make_pair("image_tex", "image"));
@@ -77,7 +76,7 @@ void ModuleRenderer::Pipeline()
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("temp", GL_RGB16F);
+	TextureCreate("temp");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "temp"));
 	samplers.insert(make_pair("image_tex", "result"));
@@ -85,7 +84,7 @@ void ModuleRenderer::Pipeline()
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("blur", GL_RGB16F);
+	TextureCreate("blur");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "blur"));
 	samplers.insert(make_pair("image_tex", "temp"));
@@ -93,7 +92,7 @@ void ModuleRenderer::Pipeline()
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("antialiasing", GL_RGB16F);
+	TextureCreate("antialiasing");
 
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "antialiasing"));
 	samplers.insert(make_pair("image_tex", "result"));
@@ -103,7 +102,8 @@ void ModuleRenderer::Pipeline()
 	targets.clear();
 	samplers.clear();
 
-	TextureCreate("screen", GL_RGB16F);
+	TextureCreate("screen");
+
 	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, "screen"));
 	samplers.insert(make_pair("image_tex", "antialiasing"));
 	CreatePass("screen", "quad.vert", "screen.frag", targets, samplers, fallbacks, SCREEN);
@@ -113,7 +113,7 @@ void ModuleRenderer::Uniforms()
 {
 	GLuint id;
 	
-	id = GetPass("form")->Program;
+	id = GetPass("forms")->Program;
 	glUseProgram(id);
 	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
 
@@ -147,20 +147,26 @@ void ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, uno
 
 	for(auto i : Targets)
 	{
-		GLuint id = TextureGet(i.second);
+		auto texture = TextureGet(i.second);
+		if(get<2>(texture) != Size)
+		{
+			Debug->Fail("size of pass (" + Name + ") and target (" + i.second + ") must match");
+			continue;
+		}
+		GLuint id = get<0>(texture);
 		if(id) pass.Targets.insert(make_pair(i.first, id));
 	}
 
 	for(auto i : Samplers)
 	{
-		GLuint id = TextureGet(i.second);
-		if(id)  pass.Samplers.insert(make_pair(i.first, id));
+		GLuint id = get<0>(TextureGet(i.second));
+		if(id) pass.Samplers.insert(make_pair(i.first, id));
 	}
 
 	for(auto i : Fallbacks)
 	{
-		GLuint from = TextureGet(i.second),
-			   to   = TextureGet(i.first);
+		GLuint from = get<0>(TextureGet(i.second)),
+			   to   = get<0>(TextureGet(i.first));
 		if(from && to) pass.Fallbacks.insert(make_pair(from, to));
 	}
 
@@ -178,6 +184,8 @@ void ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, uno
 	case SCREEN:
 		pass.Function = bind(&ModuleRenderer::DrawScreen, this, std::placeholders::_1);
 		break;
+	default:
+		Debug->Fail("pass (" + Name + ") invalid drawing function");
 	}
 
 	pass.Vertex           = Vertex;

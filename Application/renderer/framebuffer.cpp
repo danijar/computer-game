@@ -9,8 +9,6 @@ using namespace sf;
 
 GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, GLuint> Targets)
 {
-	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
-
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -18,9 +16,17 @@ GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, GLuint> Targets)
 	vector<GLenum> buffers;
 	for(auto i : Targets)
 	{
+		// bind target to framebuffer
 		glFramebufferTexture2D(GL_FRAMEBUFFER, i.first, GL_TEXTURE_2D, i.second, 0);
-		if(GL_COLOR_ATTACHMENT0 <= i.first && i.first <= GL_COLOR_ATTACHMENT15)
+
+		// keep track of draw buffers
+		if(GL_COLOR_ATTACHMENT0 <= i.first && i.first <= GL_COLOR_ATTACHMENT0 + GL_MAX_COLOR_ATTACHMENTS - 1)
 			buffers.push_back(i.first);
+
+		// check if it is really bound
+		GLint type;
+		glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, i.first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
+		if(type != GL_TEXTURE) Debug->Fail("framebuffer target could not be attached");
 	}
 	glDrawBuffers(buffers.size(), &buffers[0]);
 
@@ -37,15 +43,15 @@ void ModuleRenderer::TextureCreate(string Name, GLenum Type, float Size)
 	textures.insert(make_pair(Name, make_tuple(id, Type, Size)));
 }
 
-GLuint ModuleRenderer::TextureGet(string Name)
+tuple<GLuint, GLenum, float> ModuleRenderer::TextureGet(string Name)
 {
 	auto i = textures.find(Name);
 	if(i != textures.end())
-		return get<0>(i->second);
+		return i->second;
 	else
 	{
 		Debug->Fail("texture (" + Name + ") was not found");
-		return 0;
+		return make_tuple(0, 0, 0);
 	}
 }
 
@@ -65,7 +71,7 @@ void ModuleRenderer::TextureResize(GLuint Id, GLenum Type, float Size)
 
 pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 {
-	GLenum type;
+	GLenum type = 0;
 	switch (InternalType)
 	{
 	case GL_RGB16:
@@ -89,7 +95,7 @@ pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 		break;
 	}
 
-	GLenum format;
+	GLenum format = 0;
 	switch (InternalType)
 	{
 	case GL_RGB16:
@@ -112,6 +118,9 @@ pair<GLenum, GLenum> ModuleRenderer::TextureFormat(GLenum InternalType)
 		format = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
 		break;
 	}
+
+	if(!type || !format)
+		Debug->Fail("havn't found type of texture");
 
 	return make_pair(type, format);
 }

@@ -59,8 +59,8 @@ void ModuleRenderer::DrawScreen(Pass *Pass)
 	glEnd();
 
 	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);		
 }
 
 void ModuleRenderer::DrawForms(Pass *Pass)
@@ -75,8 +75,10 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 
 	glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
+
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
+	//glUniform1i(glGetUniformLocation(Pass->Program, "tex"), 0); // shouldn't be necessary
 
 	glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
@@ -117,11 +119,12 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glDisable(GL_DEPTH_TEST);
 	//glDepthMask(GL_FALSE);
 
-	glStencilFunc(GL_EQUAL, 0, 0xFF);
-	glStencilMask(0xFF);
+	/*
+	glStencilFunc(GL_EQUAL, 0, 1);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	DrawSky(Pass);
-	
+	*/
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
@@ -167,17 +170,17 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 {
 	auto lis = Entity->Get<Light>();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	glUseProgram(Pass->Program);
-	int n = 0; for(auto j : Pass->Samplers)
+	int n = 0; for(auto i : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
-		glBindTexture(GL_TEXTURE_2D, j.second);
-		glUniform1i(glGetUniformLocation(Pass->Program, j.first.c_str()), n);
+		glBindTexture(GL_TEXTURE_2D, i.second);
+		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
 		n++;
 	}
 
@@ -202,7 +205,7 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 	}
 
 	glDisable(GL_BLEND);
-	glActiveTexture(GL_TEXTURE0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
