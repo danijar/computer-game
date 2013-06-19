@@ -21,7 +21,7 @@ void ModuleRenderer::Update()
 {
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-	//glEnable(GL_STENCIL_TEST);
+	glEnable(GL_STENCIL_TEST);
 
 	for(auto i : passes)
 	{
@@ -30,8 +30,8 @@ void ModuleRenderer::Update()
 		if(pass.Enabled)
 		{
 			glUseProgram(pass.Program);
-			//glStencilFunc(pass.StencilFunction, pass.StencilReference, 1);
-			//glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
+			glStencilFunc(pass.StencilFunction, pass.StencilReference, 0xFF);
+			glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
 			glViewport(0, 0, int(size.x * pass.Size), int(size.y * pass.Size));
 
 			pass.Function(&pass); // later on bind pass pointer, too

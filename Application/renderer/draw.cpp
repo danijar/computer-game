@@ -119,11 +119,9 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glDisable(GL_DEPTH_TEST);
 	//glDepthMask(GL_FALSE);
 
-	/*
-	glStencilFunc(GL_EQUAL, 0, 1);
+	glStencilFunc(GL_EQUAL, 0, 0xFF);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	DrawSky(Pass);
-	*/
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);
