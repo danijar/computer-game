@@ -51,7 +51,7 @@ void ModuleTerrain::Update()
 	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; camera.y = 0;
 	ivec3 distance = (int)(stg->Viewdistance * stg->Chunkdistance) / CHUNK_SIZE;
 
-	// add loaded threads to entity system
+	// add loaded chunks to entity system
 	if(!loading && !null && access.try_lock())
 	{
 		if(current.Changed)
