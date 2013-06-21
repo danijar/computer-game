@@ -1,14 +1,12 @@
 
 // sun
-
 light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.9, 'directional');
 light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.9, 'directional');
 
+// helper function
+function cook(from, to) { return (parseFloat(10000 * Math.random() % parseInt((to - from) * 10)) / 10) + from; };
 
-// cubes
-
-function cook(from, to){ return (Math.random() % parseInt((to - from) * 10) / 10.0) + from; };
-
+// shoot cube
 on('InputBindShoot', function(){
 	var id = model('qube.prim', 'magic.mtl', 0, 10, 0, 0, 0, 0, 0.5, 5);
 	var origin = position(camera());
