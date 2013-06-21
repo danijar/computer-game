@@ -79,6 +79,7 @@ public:
 	static v8::Handle<v8::Value> jsPosition (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRotation (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsScale    (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsDirection(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRadius   (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsIntensity(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsColor    (const v8::Arguments& args);

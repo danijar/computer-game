@@ -14,6 +14,7 @@ class ModuleConsole : public Module
 	std::string text;
 	void Init();
 	void Update();
+	void Callbacks();
 	void Listeners();
 
 	// history
@@ -24,4 +25,5 @@ class ModuleConsole : public Module
 	// callbacks
 public:
 	static v8::Handle<v8::Value> jsPrint(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsOn   (const v8::Arguments& args);
 };

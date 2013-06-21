@@ -94,6 +94,10 @@ v8::Handle<v8::Value> ModuleWindow::jsKey(const v8::Arguments& args)
 		else if(key == "7") pressed = Keyboard::isKeyPressed(Keyboard::Num7);
 		else if(key == "8") pressed = Keyboard::isKeyPressed(Keyboard::Num8);
 		else if(key == "9") pressed = Keyboard::isKeyPressed(Keyboard::Num9);
+		else if(key == "Shift") pressed = Keyboard::isKeyPressed(Keyboard::LShift) || Keyboard::isKeyPressed(Keyboard::RShift);
+		else if(key == "Ctrl" ) pressed = Keyboard::isKeyPressed(Keyboard::LControl) || Keyboard::isKeyPressed(Keyboard::RControl);
+		else if(key == "Space") pressed = Keyboard::isKeyPressed(Keyboard::Space);
+		else if(key == "Enter") pressed = Keyboard::isKeyPressed(Keyboard::Return);
 
 		return v8::Boolean::New(pressed);
 	}
