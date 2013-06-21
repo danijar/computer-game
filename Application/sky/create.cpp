@@ -13,22 +13,20 @@ using namespace sf;
 #include "form.h"
 
 
-unsigned int ModuleSky::CreateSky()
+Model ModuleSky::CreateSky()
 {
-	unsigned int id = Entity->New();
-	auto mdl = Entity->Add<Model>(id);
-	auto frm = Entity->Add<Form>(id);
+	Model model;
 
 	Mesh mesh = CreateMesh();
-	mdl->Positions = mesh.Positions;
-	mdl->Normals   = mesh.Normals;
-	mdl->Texcoords = mesh.Texcoords;
-	mdl->Elements  = mesh.Elements;
+	model.Positions = mesh.Positions;
+	model.Normals   = mesh.Normals;
+	model.Texcoords = mesh.Texcoords;
+	model.Elements  = mesh.Elements;
 
-	GLuint texture = CreateTexture("sky.jpg");
-	mdl->Diffuse = texture;
+	GLuint texture = TextureLoad("sky.jpg");
+	model.Diffuse = texture;
 
-	return id;
+	return model;
 }
 
 ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
@@ -114,7 +112,7 @@ ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
 	return mesh;
 }
 
-GLuint ModuleSky::CreateTexture(string Path)
+GLuint ModuleSky::TextureLoad(string Path)
 {
 	Image image;
 	bool result = image.loadFromFile(Name() + "/texture/" + Path);

@@ -115,7 +115,6 @@
     <ClCompile Include="Application\physic\general.cpp" />
     <ClCompile Include="Application\renderer\callbacks.cpp" />
     <ClCompile Include="Application\renderer\draw.cpp" />
-    <ClCompile Include="Application\renderer\effect.cpp" />
     <ClCompile Include="Application\renderer\framebuffer.cpp" />
     <ClCompile Include="Application\renderer\passes.cpp" />
     <ClCompile Include="Application\renderer\general.cpp" />
@@ -146,6 +145,7 @@
     <ClInclude Include="Application\storage\settings.h" />
     <ClInclude Include="Application\storage\print.h" />
     <ClInclude Include="Application\storage\form.h" />
+    <ClInclude Include="Application\storage\terrain.h" />
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\window\module.h" />
   </ItemGroup>
@@ -165,6 +165,7 @@
     <None Include="Application\mod\update.js" />
     <None Include="Application\physic\shader\shader.frag" />
     <None Include="Application\physic\shader\shader.vert" />
+    <None Include="Application\renderer\pipeline.js" />
     <None Include="Application\renderer\shader\antialiasing.frag" />
     <None Include="Application\renderer\shader\apply.frag" />
     <None Include="Application\renderer\shader\blur_u.frag" />

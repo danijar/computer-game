@@ -1,30 +1,53 @@
 #include "module.h"
 
 #include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+using namespace std;
 using namespace sf;
 
 
 void ModuleRenderer::Init()
 {
 	Opengl->Init();
+	
+	Callbacks();
 
-	Pipeline();
+	Script->Run("pipeline.js");
 	Uniforms();
 
 	Listeners();
-	Callbacks();
 }
 
 void ModuleRenderer::Update()
 {
-	DrawForms(GetPass("form"));
+	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
-	DrawLight(GetPass("light"));
+	glEnable(GL_STENCIL_TEST);
 
-	for(unsigned int i = 2; i < passes.size() - 1; ++i)
-		DrawQuad(&passes[i].second);
+	for(auto i : passes)
+	{
+		Pass pass = i.second;
 
-	DrawQuad(&passes.back().second, true);
+		if(pass.Enabled)
+		{
+			glUseProgram(pass.Program);
+			glStencilFunc(pass.StencilFunction, pass.StencilReference, 0xFF);
+			glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
+			glViewport(0, 0, int(size.x * pass.Size), int(size.y * pass.Size));
+
+			pass.Function(&pass);
+		}
+		else
+		{
+			// apply fallbacks
+			// ...
+		}
+	}
+
+	glDisable(GL_STENCIL_TEST);
+	glUseProgram(0);
+
+	Opengl->Test();
 }
 
 void ModuleRenderer::Listeners()
@@ -33,28 +56,28 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			// check whether file actually changed
-			glDeleteProgram(i->second.Shader);
-			i->second.Shader = CreateProgram(i->second.Vertex, i->second.Fragment);
+			glDeleteProgram(i->second.Program);
+			i->second.Program = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
-
 		Uniforms();
 	});
 
 	Event->Listen("WindowRecreated", [=]{
+		for(auto i : textures)
+			if(get<2>(i.second))
+				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
-			i->second.Framebuffer = CreateFramebuffer(i->second.Targets, i->second.Size);
+			i->second.Framebuffer = CreateFramebuffer(i->second.Targets);
 		}
-
 		Uniforms();
 	});
 
-	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
-		for(auto i : passes)
-			for(auto j : i.second.Targets)
-				TextureResize(j.second.first, j.second.second, Vector2u(Vector2f(Size) * i.second.Size));
-
+	Event->Listen("WindowResize", [=]{
+		for(auto i : textures)
+			if(get<2>(i.second))
+				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 		Uniforms();
 	});
 

@@ -52,4 +52,6 @@ void main()
 	float aliasing = (amount > 0.2 ? 1 : 0) * (1 - edge);
 
 	image = vec3(horizontal, vertical, aliasing);
+	// image = vec3(dhorizontal, dvertical, 0); // from depth only
+	// image = vec3(nhorizontal, nvertical, 0); // from normals only
 }

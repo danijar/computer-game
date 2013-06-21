@@ -12,7 +12,7 @@ uniform sampler2D tex;
 
 void main()
 {
-	position.xyz = fposition;
-	normal.xyz   = normalize(fnormal);
-	albedo.rgb   = texture2D(tex, ftexcoord).rgb;
+	position = fposition;
+	normal   = normalize(fnormal);
+	albedo   = texture2D(tex, ftexcoord).rgb;
 }

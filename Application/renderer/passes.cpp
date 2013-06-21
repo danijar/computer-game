@@ -1,5 +1,6 @@
 #include "module.h"
 
+#include <SFML/OpenGL.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <GLM/gtc/type_ptr.hpp>
 using namespace std;
@@ -9,143 +10,116 @@ using namespace glm;
 #include "camera.h"
 
 
-void ModuleRenderer::Pipeline()
-{
-	unordered_map<GLenum, pair<string, GLenum>> forms_targets;
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair("position", GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT1, make_pair("normal",   GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_COLOR_ATTACHMENT2, make_pair("albedo",   GL_RGB16F)));
-	forms_targets.insert(make_pair(GL_DEPTH_ATTACHMENT,  make_pair("depth",    GL_DEPTH_COMPONENT24)));
-	CreatePass("form", "forms.vert", "forms.frag", forms_targets);
-	
-	unordered_map<string, string> light_samplers;
-	light_samplers.insert(make_pair("positions", "position"));
-	light_samplers.insert(make_pair("normals",   "normal"  ));
-	CreatePass("light", "light.frag", "light", light_samplers);
-
-	unordered_map<string, string> edge_samplers;
-	edge_samplers.insert(make_pair("depth_tex",  "depth" ));
-	edge_samplers.insert(make_pair("normal_tex", "normal"));
-	CreatePass("edge", "edge.frag", "edge", edge_samplers);
-
-	unordered_map<string, string> combine_samplers;
-	combine_samplers.insert(make_pair("albedo", "albedo"));
-	combine_samplers.insert(make_pair("lights", "light" ));
-	combine_samplers.insert(make_pair("depth",  "depth" ));
-	CreatePass("combine", "combine.frag", "image", combine_samplers);
-
-	unordered_map<string, string> occlusion_samplers;
-	occlusion_samplers.insert(make_pair("depth_tex",  "depth" ));
-	occlusion_samplers.insert(make_pair("normal_tex", "normal"));
-	CreatePass("occlusion", "occlusion.frag", "occlusion", occlusion_samplers, 0.75);
-	GetPass("occlusion")->Samplers.insert(make_pair("noise_tex", CreateTexture("noise.png", true, false, false)));
-
-	unordered_map<string, string> apply_samplers;
-	apply_samplers.insert(make_pair("image_tex",  "image"    ));
-	apply_samplers.insert(make_pair("effect_tex", "occlusion"));
-	CreatePass("apply", "apply.frag", "result", apply_samplers);
-
-	CreatePass("blur_u", "blur_u.frag", "temp", make_pair("image_tex", "result"));
-	CreatePass("blur_v", "blur_v.frag", "blur", make_pair("image_tex", "temp"));
-
-	unordered_map<string, string> antialiasing_samplers;
-	antialiasing_samplers.insert(make_pair("image_tex", "result"));
-	antialiasing_samplers.insert(make_pair("blur_tex",  "blur"));
-	antialiasing_samplers.insert(make_pair("edge_tex",  "edge"));
-	CreatePass("antialiasing", "antialiasing.frag", "antialiasing", antialiasing_samplers);
-
-	CreatePass("screen", "screen.frag", "screen", make_pair("image_tex", "antialiasing"));
-}
-
 void ModuleRenderer::Uniforms()
 {
 	GLuint id;
 	
-	id = GetPass("form")->Shader;
+	id = PassGet("forms")->Program;
+	glUseProgram(id);
+	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+
+	id = PassGet("sky")->Program;
 	glUseProgram(id);
 	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
 
 	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 
-	id = GetPass("edge")->Shader;
+	id = PassGet("edge")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
-	id = GetPass("combine")->Shader;
+	id = PassGet("combine")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
-	id = GetPass("occlusion")->Shader;
+	id = PassGet("occlusion")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 	
-	id = GetPass("blur_u")->Shader;
+	id = PassGet("blur_u")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
-	id = GetPass("blur_v")->Shader;
+	id = PassGet("blur_v")->Program;
 	glUseProgram(id);
 	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
 
 	glUseProgram(0);
 }
 
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, string Target, pair<string, string> Sampler, float Size)
+void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Fallbacks, Function Function, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
-	unordered_map<string, string> samplers;
-	samplers.insert(Sampler);
-	return CreatePass(Name, Fragment, Target, samplers, Size);
-}
-
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Fragment, string Target, unordered_map<string, string> Samplers, float Size)
-{
-	unordered_map<GLenum, pair<string, GLenum>> targets;
-	targets.insert(make_pair(GL_COLOR_ATTACHMENT0, make_pair(Target, GL_RGB16F)));
-	return CreatePass(Name, "quad.vert", Fragment, targets, Samplers, Size);
-}
-
-ModuleRenderer::Pass ModuleRenderer::CreatePass(string Name, string Vertex, string Fragment, unordered_map<GLenum, pair<string, GLenum>> Targets, unordered_map<string, string> Samplers, float Size)
-{
-	Pass pass;
-
-	for(auto i : Samplers)
+	if(PassGet(Name, false))
 	{
-		auto sampler = targets.find(i.second);
-		if(sampler == targets.end())
-			Debug->Fail("sampler (" + i.second + ") not found");
-		else
-			pass.Samplers.insert(make_pair(i.first, sampler->second));
+		Debug->Fail("pass (" + Name + ") already exists");
+		return;
 	}
+
+	Pass pass;
 
 	for(auto i : Targets)
 	{
-		GLuint id;
-		auto target = targets.find(i.second.first);
-		if(target == targets.end())
+		auto texture = TextureGet(i.second);
+		if(get<2>(texture) != Size)
 		{
-			glGenTextures(1, &id);
-			targets.insert(make_pair(i.second.first, id));
+			Debug->Fail("size of pass (" + Name + ") and target (" + i.second + ") must match");
+			continue;
 		}
-		else
-			id = target->second;
-		pass.Targets.insert(make_pair(i.first, make_pair(id, i.second.second)));
+		GLuint id = get<0>(texture);
+		if(id) pass.Targets.insert(make_pair(i.first, id));
 	}
 
-	pass.Vertex      = Vertex;
-	pass.Fragment    = Fragment;
-	pass.Size        = Size;
-	pass.Shader      = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer = CreateFramebuffer(pass.Targets, pass.Size);
+	for(auto i : Samplers)
+	{
+		GLuint id = get<0>(TextureGet(i.second));
+		if(id) pass.Samplers.insert(make_pair(i.first, id));
+	}
+
+	for(auto i : Fallbacks)
+	{
+		GLuint from = get<0>(TextureGet(i.second)),
+			   to   = get<0>(TextureGet(i.first));
+		if(from && to) pass.Fallbacks.insert(make_pair(from, to));
+	}
+
+	switch(Function)
+	{
+	case FORMS:
+		pass.Function = bind(&ModuleRenderer::DrawForms,  this, std::placeholders::_1);
+		break;
+	case SKY:
+		pass.Function = bind(&ModuleRenderer::DrawSky,    this, std::placeholders::_1);
+		break;
+	case LIGHTS:
+		pass.Function = bind(&ModuleRenderer::DrawLights, this, std::placeholders::_1);
+		break;
+	case QUAD:
+		pass.Function = bind(&ModuleRenderer::DrawQuad,   this, std::placeholders::_1);
+		break;
+	case SCREEN:
+		pass.Function = bind(&ModuleRenderer::DrawScreen, this, std::placeholders::_1);
+		break;
+	default:
+		Debug->Fail("pass (" + Name + ") invalid drawing function");
+	}
+
+	pass.Vertex           = Vertex;
+	pass.Fragment         = Fragment;
+	pass.Size             = Size;
+	pass.Program          = CreateProgram(Vertex, Fragment);
+	pass.Framebuffer      = CreateFramebuffer(pass.Targets);
+	pass.StencilFunction  = StencilFunction;
+	pass.StencilReference = StencilReference;
+	pass.StencilOperation = StencilOperation;
 
 	passes.push_back(make_pair(Name, pass));
-	return pass;
 }
 
-ModuleRenderer::Pass *ModuleRenderer::GetPass(string Name)
+ModuleRenderer::Pass *ModuleRenderer::PassGet(string Name, bool Output)
 {
 	for(auto i = passes.begin(); i != passes.end(); ++i)
 		if(i->first == Name)
 			return &i->second;
 
-	Debug->Fail("cannot get pass because " + Name + " doesn't exist.");
-	return new Pass();
+	if(Output) Debug->Fail("cannot get pass because (" + Name + ") doesn't exist");
+	return NULL;
 }

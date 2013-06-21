@@ -13,8 +13,7 @@ void ModuleConsole::Init()
 	text = "";
 	history_index = 0;
 
-	Script->Bind("print", jsPrint);
-
+	Callbacks();
 	Listeners();
 }
 

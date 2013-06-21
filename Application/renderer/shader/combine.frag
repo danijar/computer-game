@@ -17,5 +17,5 @@ void main()
 
 	image = ambient + color * texture2D(lights, coord).rgb;
 	// image = ambient + texture2D(lights, coord).rgb; // only light
-	// image = texture2D(albedo, coord).rgb;           // only albedo
+	// image = color;                                  // only albedo
 }

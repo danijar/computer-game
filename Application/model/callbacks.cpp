@@ -15,6 +15,7 @@ void ModuleModel::Callbacks()
 	Script->Bind("position",  jsPosition );
 	Script->Bind("rotation",  jsRotation );
 	Script->Bind("scale",     jsScale    );
+	Script->Bind("direction", jsDirection);
 	Script->Bind("radius",    jsRadius   );
 	Script->Bind("intensity", jsIntensity);
 	Script->Bind("color",     jsColor    );
@@ -197,6 +198,24 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 		result->Set(2, v8::Number::New(scale.z));
 		return result;
 	}
+}
+
+v8::Handle<v8::Value> ModuleModel::jsDirection(const v8::Arguments& args)
+{
+	ModuleModel *module = (ModuleModel*)HelperScript::Unwrap(args.Data());
+
+	if(!args[0]->IsUint32())
+		return v8::Undefined();
+	unsigned int id = args[0]->Uint32Value();
+	auto tsf = module->Entity->Get<Form>(id);
+
+	vec3 direction = tsf->Direction();
+
+	v8::Handle<v8::Array> result = v8::Array::New(3);
+	result->Set(0, v8::Number::New(direction.x));
+	result->Set(1, v8::Number::New(direction.y));
+	result->Set(2, v8::Number::New(direction.z));
+	return result;
 }
 
 v8::Handle<v8::Value> ModuleModel::jsRadius(const v8::Arguments& args)
