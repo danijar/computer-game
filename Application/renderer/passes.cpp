@@ -12,36 +12,58 @@ using namespace glm;
 
 void ModuleRenderer::Uniforms()
 {
-	GLuint id;
-	
-	id = PassGet("forms")->Program;
-	glUseProgram(id);
-	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+	/*
+	 * Move this in pipeline.js script, using a
+	 * uniform() callback. Also register related
+	 * uniform changes to resize events in script.
+	 *
+	 * Moreover, we need to access projection matrix
+	 * and frame buffer size from scripts.
+	 */
 
-	id = PassGet("sky")->Program;
-	glUseProgram(id);
-	glUniformMatrix4fv(glGetUniformLocation(id, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+	if(Pass *pass = PassGet("forms"))
+	{
+		glUseProgram(pass->Program);
+		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+	}
+
+	if(Pass *pass = PassGet("sky"))
+	{
+		glUseProgram(pass->Program);
+		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+	}
 
 	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
 
-	id = PassGet("edge")->Program;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
+	if(Pass *pass = PassGet("edge"))
+	{
+		glUseProgram(pass->Program);
+		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
+	}
 
-	id = PassGet("combine")->Program;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
+	if(Pass *pass = PassGet("combine"))
+	{
+		glUseProgram(pass->Program);
+		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
+	}
 
-	id = PassGet("occlusion")->Program;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
-	
-	id = PassGet("blur_u")->Program;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
-	id = PassGet("blur_v")->Program;
-	glUseProgram(id);
-	glUniform2fv(glGetUniformLocation(id, "frame_size"), 1, value_ptr(vec2(Size.x, Size.y)));
+	if(Pass *pass = PassGet("occlusion"))
+	{
+		glUseProgram(pass->Program);
+		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
+	}
+
+	if(Pass *pass = PassGet("blur_u"))
+	{
+		glUseProgram(pass->Program);
+		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
+	}
+
+	if(Pass *pass = PassGet("blur_v"))
+	{
+		glUseProgram(pass->Program);
+		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
+	}
 
 	glUseProgram(0);
 }
