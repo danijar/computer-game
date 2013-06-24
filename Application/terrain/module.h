@@ -44,6 +44,10 @@ private:
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
 	void Buffer(unsigned int Id);
 
+	// savegame
+	bool Load(std::string File, Terrain *Terrain);
+	bool Save(std::string File, Terrain *Terrain);
+
 	// generation
 	const int SEALEVEL;
 	void Generate(Terrain *Terrain);
@@ -75,8 +79,8 @@ private:
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsChunk(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsBlock(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPlacetype(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsChunk      (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsBlock      (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPlacetype  (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsPlacemarker(const v8::Arguments& args);
 };

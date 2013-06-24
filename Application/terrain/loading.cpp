@@ -30,7 +30,8 @@ void ModuleTerrain::Loading()
 			// load or generate new chunk
 			else
 			{
-				Generate(&current);
+				bool loaded = Load("world", &current);
+				if(!loaded) Generate(&current);
 				Mesh(&current);
 			}
 

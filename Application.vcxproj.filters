@@ -223,6 +223,9 @@
     <ClCompile Include="Application\terrain\noise.cpp">
       <Filter>terrain</Filter>
     </ClCompile>
+    <ClCompile Include="Application\terrain\savegame.cpp">
+      <Filter>terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\storage\camera.h">

@@ -136,7 +136,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 				if(fallback->IsString())
 					fallbacks.insert(make_pair(target, stdstr(fallback)));
 				else if(fallback->IsNumber())
-					; // how to store clean value?
+					{ /* how to store clean value? */ }
 			}
 		}
 
