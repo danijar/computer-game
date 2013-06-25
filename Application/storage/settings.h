@@ -23,5 +23,6 @@ struct Settings
 	bool Wireframe, Verticalsync;
 
 	// terrain
+	std::string World;
 	float Chunkdistance;
 };

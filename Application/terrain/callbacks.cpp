@@ -16,6 +16,7 @@ void ModuleTerrain::Callbacks()
 	Script->Bind("block",       jsBlock      );
 	Script->Bind("placetype",   jsPlacetype  );
 	Script->Bind("placemarker", jsPlacemarker);
+	Script->Bind("world",       jsWorld      );
 }
 
 v8::Handle<v8::Value> ModuleTerrain::jsChunk(const v8::Arguments& args)
@@ -110,5 +111,18 @@ v8::Handle<v8::Value> ModuleTerrain::jsPlacemarker(const v8::Arguments& args)
 		module->Entity->Get<Form>(module->marker)->Position(vec3(0, -9999, 0));
 
 	HelperDebug::Print("script", string(module->show ? "enabled" : "disabled") + " placing marker");
+	return v8::Undefined();
+}
+
+v8::Handle<v8::Value> ModuleTerrain::jsWorld(const v8::Arguments& args)
+{
+	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return v8::Undefined();
+	string name = *v8::String::Utf8Value(args[0]);
+
+	module->World(name);
+
 	return v8::Undefined();
 }

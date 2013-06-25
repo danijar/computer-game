@@ -24,7 +24,7 @@ void ModuleTerrain::Loading()
 			// remesh updated chunk
 			if(current.Changed)
 			{
-				bool saved = Save("world", &current);
+				bool saved = Save(world, &current);
 				if(!saved) Debug->Fail("chunk could not be saved");
 				Mesh(&current);
 			}
@@ -32,7 +32,7 @@ void ModuleTerrain::Loading()
 			// load or generate new chunk
 			else
 			{
-				bool loaded = Load("world", &current);
+				bool loaded = Load(world, &current);
 				if(!loaded) Generate(&current);
 				Mesh(&current);
 			}

@@ -32,6 +32,8 @@ void ModuleTerrain::Init()
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
+	world = Global->Get<Settings>("settings")->World;
+
 	Listeners();
 	Callbacks();
 }

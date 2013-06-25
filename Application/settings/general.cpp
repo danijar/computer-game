@@ -20,6 +20,7 @@ void ModuleSettings::Init()
 	stg->Fieldofview   = 45.f;
 	stg->Viewdistance  = 1000.f;
 	stg->Chunkdistance = 0.1f;
+	stg->World         = "world";
 
 	frames = 0;
 	Entity->Add<Print>(Entity->New())->Text = [=]{

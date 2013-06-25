@@ -8,6 +8,9 @@ using namespace std;
 using namespace std::tr2::sys;
 using namespace glm;
 
+#include <settings.h>
+
+
 bool ModuleTerrain::Load(string File, Terrain *Terrain)
 {
 	string name = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
@@ -75,4 +78,26 @@ bool ModuleTerrain::Save(string File, Terrain *Terrain)
 	}
 
 	return true;
+}
+
+void ModuleTerrain::World(string Name)
+{
+	while(loading);
+	null = true;
+
+	auto tns = Entity->Get<Terrain>();
+
+	for(auto i : tns)
+	{
+		auto mdl = Entity->Get<Model>(i.first);
+		glDeleteBuffers(1, &mdl->Positions);
+		glDeleteBuffers(1, &mdl->Normals);
+		glDeleteBuffers(1, &mdl->Texcoords);
+		glDeleteBuffers(1, &mdl->Elements);
+
+		Entity->Delete(i.first);
+	}
+
+	world = Name;
+	Global->Get<Settings>("settings")->World = Name;
 }
