@@ -35,13 +35,8 @@ void ModulePhysic::Update()
 
 	auto tfs = Entity->Get<Form>();
 	for(auto i = tfs.begin(); i != tfs.end(); ++i)
-	{
-		if(!i->second->Added)
-		{
+		if(!i->second->Body->isInWorld())
 			world->addRigidBody(i->second->Body);
-			i->second->Added = true;
-		}
-	}
 
 	float delta = clock.restart().asSeconds();
 	world->stepSimulation(delta, 10);

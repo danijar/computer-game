@@ -10,6 +10,7 @@ Features
 - Culled mesh generation from voxel data
 - Different block looks using a texture atlas
 - Block modification at runtime
+- Store and load world on and from disk
 
 Screenshot
 ----------
@@ -50,6 +51,5 @@ Interaction with the world
 Upcoming Features
 -----------------
 
-- Advanced terrain generator
 - Generation of more simple meshes with adjacent face merging
 - Terrain smoothing by a particular algorithm

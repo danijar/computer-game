@@ -9,7 +9,7 @@
 
 struct Form
 {
-	Form() : Added(false), Remove(false)
+	Form()
 	{
 		btCollisionShape *shape = new btEmptyShape();
 		shape->setLocalScaling(btVector3(1, 1, 1));
@@ -75,5 +75,4 @@ struct Form
 	}
 
 	btRigidBody *Body;
-	bool Added, Remove;
 };
