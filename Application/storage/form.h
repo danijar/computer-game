@@ -17,10 +17,11 @@ struct Form
 	}
 	~Form()
 	{
-		// remove from world
-		// ...
-
-		// delete Body;
+		if(Form::World != NULL)
+		{
+			Form::World->removeRigidBody(Body);
+			delete Body;
+		}
 	}
 
 	glm::vec3 Position()
@@ -75,4 +76,5 @@ struct Form
 	}
 
 	btRigidBody *Body;
+	static btDynamicsWorld *World;
 };

@@ -3,6 +3,7 @@
 #include <BULLET/btBulletDynamicsCommon.h>
 
 #include "form.h"
+btDynamicsWorld* Form::World = NULL;
 
 
 void ModulePhysic::Init()
@@ -12,6 +13,9 @@ void ModulePhysic::Init()
 	dispatcher = new btCollisionDispatcher(configuration);
 	solver = new btSequentialImpulseConstraintSolver;
 	auto world = Global->Add<btDiscreteDynamicsWorld>("world", new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration));
+
+	if(Form::World == NULL)
+		Form::World = world;
 
 	world->setGravity(btVector3(0, -9.81f, 0));
 	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Debug));
