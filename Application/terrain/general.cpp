@@ -121,14 +121,6 @@ void ModuleTerrain::Update()
 	{
 		if(!Inside(abs(i.second->Key - camera), ivec3(0), distance + ivec3(tolerance)))
 		{
-			// maybe do this in another thread
-			bool saved = Save("world", i.second);
-			if(!saved)
-			{
-				Debug->Fail("chunk could not be saved");
-				continue; // don not free an unsaved chunk
-			}
-
 			auto mdl = Entity->Get<Model>(i.first);
 			glDeleteBuffers(1, &mdl->Positions);
 			glDeleteBuffers(1, &mdl->Normals);

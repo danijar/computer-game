@@ -1,7 +1,16 @@
-/Build
+
+# build related
+Build
 Application/Application.exp
 Application/Application.lib
 Application/Application.ilk
 Application/Application.pdb
-Thumbs.db
+
+# visual studio
 Application.opensdf
+
+# windows
+Thumbs.db
+
+# terrain savegames
+Application/terrain/save

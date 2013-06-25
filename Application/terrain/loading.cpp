@@ -21,9 +21,11 @@ void ModuleTerrain::Loading()
 	{
 		if(loading && access.try_lock())
 		{
-			// just remesh updated chunk
+			// remesh updated chunk
 			if(current.Changed)
 			{
+				bool saved = Save("world", &current);
+				if(!saved) Debug->Fail("chunk could not be saved");
 				Mesh(&current);
 			}
 			
