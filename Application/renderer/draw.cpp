@@ -73,7 +73,7 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		
 	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
 
-	glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, *stg->Get<bool>("Wireframe") ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_TEXTURE_2D);
@@ -136,7 +136,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 		
 	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
 
-	glPolygonMode(GL_FRONT_AND_BACK, stg->Wireframe ? GL_LINE : GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, *stg->Get<bool>("Wireframe") ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_TEXTURE_2D);

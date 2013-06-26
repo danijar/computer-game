@@ -99,5 +99,5 @@ void ModuleTerrain::World(string Name)
 	}
 
 	world = Name;
-	Global->Get<Settings>("settings")->World = Name;
+	Global->Get<Settings>("settings")->Set<string>("World", Name);
 }

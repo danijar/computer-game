@@ -20,7 +20,7 @@ void ModuleCamera::Projection(Vector2u Size)
 	auto stg = Global->Get<Settings>("settings");
 	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 
-	cam->Projection = perspective(stg->Fieldofview, (float)Size.x / (float)Size.y, 0.1f, stg->Viewdistance);
+	cam->Projection = perspective(*stg->Get<float>("Fieldofview"), (float)Size.x / (float)Size.y, 0.1f, *stg->Get<float>("Viewdistance"));
 }
 
 void ModuleCamera::Calculate()

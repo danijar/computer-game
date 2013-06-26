@@ -1,7 +1,9 @@
 #include "module.h"
 
+#include <string>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+using namespace std;
 using namespace sf;
 
 #include "settings.h"
@@ -11,7 +13,7 @@ using namespace sf;
 void ModuleWindow::Create()
 {
 	auto stg = Global->Get<Settings>("settings");
-	Create(!stg->Fullscreen);
+	Create(!*stg->Get<bool>("Fullscreen"));
 }
 
 void ModuleWindow::Create(bool Fullscreen)
@@ -19,7 +21,7 @@ void ModuleWindow::Create(bool Fullscreen)
 	auto wnd = Global->Get<RenderWindow>("window");
 	auto stg = Global->Get<Settings>("settings");
 
-	stg->Fullscreen = Fullscreen;
+	stg->Set<bool>("Fullscreen", Fullscreen);
 
 	bool Recreated = wnd->isOpen();
 	VideoMode mde = VideoMode::getDesktopMode();
@@ -33,15 +35,15 @@ void ModuleWindow::Create(bool Fullscreen)
 
 	if(Fullscreen)
 	{
-		stg->Position = wnd->getPosition();
-		wnd->create(VideoMode(mde.width, mde.height), stg->Title, Style::Fullscreen, cts);
+		stg->Set<>("Position", wnd->getPosition());
+		wnd->create(VideoMode(mde.width, mde.height), *stg->Get<string>("Title"), Style::Fullscreen, cts);
 	}
 	else
 	{
-		wnd->create(VideoMode(stg->Size.x, stg->Size.y), stg->Title, Style::Default, cts);
-		wnd->setPosition(stg->Position);
+		wnd->create(VideoMode(stg->Get<Vector2u>("Size")->x, stg->Get<Vector2u>("Size")->y), *stg->Get<string>("Title"), Style::Default, cts);
+		wnd->setPosition(*stg->Get<Vector2i>("Position"));
 	}
-	wnd->setVerticalSyncEnabled(stg->Verticalsync);
+	wnd->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
 
 	Debug->PassFail("creation", wnd->isOpen());
 

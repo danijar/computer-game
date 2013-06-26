@@ -27,14 +27,14 @@ v8::Handle<v8::Value> ModuleWindow::jsTitle(const v8::Arguments& args)
 		if(args[0]->IsString())
 		{
 			string title = *v8::String::Utf8Value(args[0]);
-			stg->Title = title;
+			stg->Set<string>("Title", title);
 			wnd->setTitle(title);
 		}
 		return v8::Undefined();
 	}
 	else
 	{
-		return v8::String::New(stg->Title.c_str());
+		return v8::String::New(stg->Get<string>("Title")->c_str());
 	}
 }
 
@@ -44,10 +44,10 @@ v8::Handle<v8::Value> ModuleWindow::jsVsync(const v8::Arguments& args)
 	auto stg = module->Global->Get<Settings>("settings");
 	auto wnd = module->Global->Get<RenderWindow>("window");
 
-	stg->Verticalsync = !stg->Verticalsync;
-	wnd->setVerticalSyncEnabled(stg->Verticalsync);
+	stg->Set<bool>("Verticalsync", !*stg->Get<bool>("Verticalsync"));
+	wnd->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
 
-	HelperDebug::Print("script", string(stg->Verticalsync ? "enabled" : "disabled") + " vertical sync");
+	HelperDebug::Print("script", string(*stg->Get<bool>("Verticalsync") ? "enabled" : "disabled") + " vertical sync");
 	return v8::Undefined();
 }
 

@@ -32,7 +32,7 @@ void ModuleTerrain::Init()
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
-	world = Global->Get<Settings>("settings")->World;
+	world = *Global->Get<Settings>("settings")->Get<string>("World");
 
 	Listeners();
 	Callbacks();
@@ -51,7 +51,7 @@ void ModuleTerrain::Update()
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
 	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; camera.y = 0;
-	ivec3 distance = (int)(stg->Viewdistance * stg->Chunkdistance) / CHUNK_SIZE;
+	ivec3 distance = (int)(*stg->Get<float>("Viewdistance") * *stg->Get<float>("Chunkdistance")) / CHUNK_SIZE;
 
 	// add loaded chunks to entity system
 	if(!loading && !null && access.try_lock())

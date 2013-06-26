@@ -237,8 +237,8 @@ v8::Handle<v8::Value> ModuleRenderer::jsWireframe(const v8::Arguments& args)
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
 
-	stg->Wireframe = !stg->Wireframe;
+	stg->Set<bool>("Wireframe", !*stg->Get<bool>("Wireframe"));
 
-	HelperDebug::Print("script", string(stg->Wireframe ? "enabled" : "disabled") + " wireframe mode");
+	HelperDebug::Print("script", string(*stg->Get<bool>("Wireframe") ? "enabled" : "disabled") + " wireframe mode");
 	return v8::Undefined();
 }

@@ -38,7 +38,7 @@ v8::Handle<v8::Value> ModuleCamera::jsFov(const v8::Arguments& args)
 	{
 		if(args[0]->IsNumber())
 		{
-			stg->Fieldofview = (float)args[0]->NumberValue();
+			stg->Set<float>("Fieldofview", (float)args[0]->NumberValue());
 			module->Projection();
 			module->Event->Fire("ShaderUpdated");
 		}
@@ -47,6 +47,6 @@ v8::Handle<v8::Value> ModuleCamera::jsFov(const v8::Arguments& args)
 	// get field of view
 	else
 	{
-		return v8::Number::New(stg->Fieldofview);
+		return v8::Number::New(*stg->Get<float>("Fieldofview"));
 	}
 }

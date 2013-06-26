@@ -13,8 +13,8 @@ void ModuleWindow::Init()
 	auto stg = Global->Get<Settings>("settings");
 
 	VideoMode mde = VideoMode::getDesktopMode();
-	stg->Position = Vector2i(mde.width / 2 - stg->Size.x / 2, mde.height / 2 - stg->Size.y / 2);
-	Create(stg->Fullscreen);
+	stg->Set<Vector2i>("Position", Vector2i(mde.width / 2 - stg->Get<Vector2u>("Size")->x / 2, mde.height / 2 - stg->Get<Vector2u>("Size")->y / 2));
+	Create(*stg->Get<bool>("Fullscreen"));
 
 	Listeners();
 	Callbacks();
@@ -46,7 +46,7 @@ void ModuleWindow::Update()
 				break;
 			case Event::Resized:
 				{ Vector2u Size(evt.size.width, evt.size.height);
-				stg->Size = Size;
+				stg->Set<Vector2u>("Size", Size);
 				Event->Fire<Vector2u>("WindowResize", Size);
 				break; }
 			case Event::GainedFocus:
@@ -81,7 +81,7 @@ void ModuleWindow::Listeners()
 
 	Event->Listen("InputBindVsync", [=]{
 		auto stg = Global->Get<Settings>("settings");
-		stg->Verticalsync = !stg->Verticalsync;
-		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Verticalsync);
+		stg->Set<bool>("Verticalsync", !*stg->Get<bool>("Verticalsync"));
+		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
 	});
 }
