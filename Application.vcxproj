@@ -119,6 +119,7 @@
     <ClCompile Include="Application\renderer\passes.cpp" />
     <ClCompile Include="Application\renderer\general.cpp" />
     <ClCompile Include="Application\renderer\shader.cpp" />
+    <ClCompile Include="Application\settings\callbacks.cpp" />
     <ClCompile Include="Application\settings\general.cpp" />
     <ClCompile Include="Application\sky\create.cpp" />
     <ClCompile Include="Application\sky\general.cpp" />
@@ -188,6 +189,7 @@
     <None Include="Application\renderer\shader\occlusion.frag" />
     <None Include="Application\renderer\shader\quad.vert" />
     <None Include="Application\renderer\shader\screen.frag" />
+    <None Include="Application\settings\init.js" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Application\interface\texture\crosshair.png" />
