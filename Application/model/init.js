@@ -1,7 +1,7 @@
 
 // sun
-light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.9, 'directional');
-light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.9, 'directional');
+light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional');
+light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
 
 // helper function
 function cook(from, to) { return (parseFloat(10000 * Math.random() % parseInt((to - from) * 10)) / 10) + from; };

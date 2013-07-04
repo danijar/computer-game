@@ -12,6 +12,7 @@ void main()
 {
 	vec3 ambient = vec3(0.0); // later look this up from skymap
 	vec3 color = texture2D(albedo, coord).rgb;
+	color = 1.3 * color - 0.15; // super saturate
 
 	if(texture2D(depth, coord).r > 0.9999){ image = color; return; }
 

@@ -15,4 +15,5 @@ void main()
 	position = fposition;
 	normal   = normalize(fnormal);
 	albedo   = texture2D(tex, ftexcoord).rgb;
+	gl_FragDepth = clamp(-position.z / 1000.0f, 0, 1);
 }
