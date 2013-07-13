@@ -5,7 +5,7 @@ out vec3 image;
 
 uniform sampler2D image_tex;
 uniform sampler2D effect_tex;
-uniform float amount = 0.5;
+uniform float amount = 0.3;
 
 
 void main()

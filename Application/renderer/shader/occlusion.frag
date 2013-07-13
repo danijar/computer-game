@@ -19,17 +19,17 @@ vec3 orientate(in vec3 value, in vec3 compare)
 
 void main()
 {
-	float z   = texture2D(depth_tex, coord).r;                                                             // read eye linear z
+	float z   = texture2D(depth_tex, coord).r;                                            // read eye linear z
 	vec3  nor = texture2D(normal_tex, coord).xyz;                                         // read normal
 	vec3  ref = texture2D(noise_tex, coord * noise_tiling * frame_size / noise_size).xyz; // read dithering vector
 
 	float bl = 0.0;
 	for(int i = 0; i < 16; ++i)
 	{
-		vec3  of = orientate(reflect(samples[i], ref * 0.6 + 0.3), nor);
+		vec3  of = orientate(reflect(samples[i], ref), nor);
 		vec2 cd = coord + 0.02 * of.xy;
 		float sz = texture2D(depth_tex, cd).r;
-		float zd = (z - sz) * 500 * clamp(30-2800*z, 1, 30);
+		float zd = (z - sz) * 1500 * clamp(35 - 2800 * z, 1, 35);
 		bl += (1-z) * clamp(zd, 0.0, 1.0);
 	}
 	image.x = 1.0 - bl / 16.0;
