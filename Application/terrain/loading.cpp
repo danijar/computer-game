@@ -151,9 +151,10 @@ void ModuleTerrain::Buffer(unsigned int Id)
 		mesh->addTriangle(get<0>(*i), get<1>(*i), get<2>(*i));
 	triangles.clear();
 
-	btCollisionShape *oldshape = frm->Body->getCollisionShape();
+	Form::World->removeRigidBody(frm->Body);
+	delete frm->Body->getCollisionShape();
 	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(mesh, true, true));
-	delete oldshape;
+	Form::World->addRigidBody(frm->Body);
 
 	null = true;
 }

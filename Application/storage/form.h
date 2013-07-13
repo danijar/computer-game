@@ -60,8 +60,9 @@ struct Form
 	}
 	void Scale(glm::vec3 Factors)
 	{
-		Body->activate(); // doesn't work for some reason
+		if(Form::World != NULL) Form::World->removeRigidBody(Body);
 		Body->getCollisionShape()->setLocalScaling(btVector3(Factors.x, Factors.y, Factors.z));
+		if(Form::World != NULL) Form::World->addRigidBody(Body);
 	}
 	glm::vec3 Direction()
 	{
