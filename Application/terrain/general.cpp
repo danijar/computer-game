@@ -145,7 +145,7 @@ void ModuleTerrain::Update()
 	if(show)
 	{
 		auto sel = Selection();
-		if(get<2>(sel))
+		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
 			Entity->Get<Form>(marker)->Position(vec3(get<0>(sel)) + .3f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
 		else
 			Entity->Get<Form>(marker)->Position(vec3(0, -9999, 0));
@@ -156,12 +156,13 @@ void ModuleTerrain::Listeners()
 {
 	Event->Listen("InputBindMine", [=]{
 		auto sel = Selection();
-		SetBlock(get<0>(sel), 0);
+		if(InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
+			SetBlock(get<0>(sel), 0);
 	});
 
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
-		if(get<2>(sel))
+		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
 		{
 			unsigned int person = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
 			auto psn = Entity->Get<Person>(person);

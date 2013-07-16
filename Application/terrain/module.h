@@ -73,9 +73,10 @@ private:
 
 	// select
 	bool show; GLuint marker;
-	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection(bool Infinite = false);
+	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection();
 	float Intbound(float s, float ds);
 	int Signum(float x);
+	bool InReachDistance(glm::vec3 Target);
 	GLuint Marker();
 	uint8_t type;
 

@@ -12,7 +12,7 @@ using namespace sf;
 #include "settings.h"
 
 
-tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection(bool Infinite)
+tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 {
 	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -20,11 +20,7 @@ tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection(bool Infinite)
 	vec3 origin = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 	vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 
-	float reach;
-	if(Infinite)
-		reach = 10000.0f;
-	else
-		reach = (float)(*Global->Get<Settings>("settings")->Get<int>("Placedistance"));
+	float reach = 1000.0f;
 
 	int x = (int)floor(origin.x);
 	int y = (int)floor(origin.y);
@@ -113,6 +109,16 @@ float ModuleTerrain::Intbound(float s, float ds)
 int ModuleTerrain::Signum(float x)
 {
 	return x > 0 ? 1 : x < 0 ? -1 : 0;
+}
+
+bool ModuleTerrain::InReachDistance(vec3 Target)
+{
+	auto stg = Global->Get<Settings>("settings");
+	auto frm = Entity->Get<Form>(*Global->Get<unsigned int>("camera"));
+
+	float reach = (float)*stg->Get<int>("Placedistance");
+	vec3 camera = frm->Position();
+	return length(Target - camera) < reach;
 }
 
 
