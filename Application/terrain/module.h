@@ -73,7 +73,7 @@ private:
 
 	// select
 	bool show; GLuint marker;
-	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection();
+	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection(bool Infinite = false);
 	float Intbound(float s, float ds);
 	int Signum(float x);
 	GLuint Marker();

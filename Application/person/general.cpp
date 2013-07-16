@@ -1,18 +1,26 @@
 #include "module.h"
 
+#include <string>
 #include <BULLET/btBulletDynamicsCommon.h>
 #include <GLM/glm.hpp>
 #include <SFML/Window.hpp>
+using namespace std;
 using namespace glm;
 using namespace sf;
 
 #include "form.h"
 #include "person.h"
 #include "camera.h"
+#include "print.h"
 
 
 void ModulePerson::Init()
 {
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		ivec3 position = (ivec3)Entity->Get<Form>(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
+		return "position  X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
+	};
+
 	Listeners();
 }
 

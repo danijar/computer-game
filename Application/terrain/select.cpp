@@ -9,9 +9,10 @@ using namespace glm;
 using namespace sf;
 
 #include "camera.h"
+#include "settings.h"
 
 
-tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
+tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection(bool Infinite)
 {
 	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
@@ -19,7 +20,11 @@ tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 	vec3 origin = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 	vec3 destination = unProject(vec3(size.x/2, size.y/2, 1.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
 
-	float reach = 1000.f;
+	float reach;
+	if(Infinite)
+		reach = 10000.0f;
+	else
+		reach = (float)(*Global->Get<Settings>("settings")->Get<int>("Placedistance"));
 
 	int x = (int)floor(origin.x);
 	int y = (int)floor(origin.y);

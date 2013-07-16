@@ -3,7 +3,6 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <GLM/glm.hpp>
-using namespace std;
 using namespace glm;
 using namespace sf;
 
@@ -11,7 +10,6 @@ using namespace sf;
 #include "form.h"
 #include "camera.h"
 #include "person.h"
-#include "print.h"
 
 
 void ModuleCamera::Init()
@@ -29,11 +27,6 @@ void ModuleCamera::Init()
 	Calculate();
 	State();
 	Projection();
-
-	Entity->Add<Print>(Entity->New())->Text = [=]{
-		ivec3 position = (ivec3)Entity->Get<Form>(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
-		return "X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
-	};
 
 	Listeners();
 	Callbacks();

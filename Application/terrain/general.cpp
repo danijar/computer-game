@@ -13,6 +13,9 @@ using namespace sf;
 #include "form.h"
 #include "model.h"
 #include "settings.h"
+#include "camera.h"
+#include "person.h"
+#include "print.h"
 
 
 ModuleTerrain::ModuleTerrain() : SEALEVEL(std::min(15, CHUNK_SIZE.y))
@@ -33,6 +36,11 @@ void ModuleTerrain::Init()
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
 	world = *Global->Get<Settings>("settings")->Get<string>("World");
+
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		ivec3 position = get<0>(Selection());
+		return "selection X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
+	};
 
 	Listeners();
 	Callbacks();
@@ -154,7 +162,19 @@ void ModuleTerrain::Listeners()
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
 		if(get<2>(sel))
-			SetBlock(get<0>(sel) + get<1>(sel), type);
+		{
+			unsigned int person = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+			auto psn = Entity->Get<Person>(person);
+
+			vec3 player = Entity->Get<Form>(person)->Position();
+			ivec3 block = get<0>(sel) + get<1>(sel);
+
+			if(player.x + psn->Radius < block.x || player.x - psn->Radius > block.x + 1 ||
+			   player.y + psn->Height < block.y || player.y               > block.y + 1 ||
+			   player.z + psn->Radius < block.z || player.z - psn->Radius > block.z + 1)
+					SetBlock(block, type);
+			else Debug->Warning("could not place block");
+		}
 	});
 
 	Event->Listen("InputBindPick", [=]{

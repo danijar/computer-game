@@ -14,6 +14,7 @@ settings({
     Viewdistance: [ 'float', 1000.0 ],
 
     // terrain
+    Placedistance: [ 'int',    5       ],
     Chunkdistance: [ 'float',  0.1     ],
     World:         [ 'string', 'world' ],
 });
