@@ -202,6 +202,11 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 		n++;
 	}
 
+	// debugging
+	Debug->Print("uniform location of normals is " + std::to_string(glGetUniformLocation(Pass->Program, "normals")));
+	Debug->Print("uniform location of positions is " + std::to_string(glGetUniformLocation(Pass->Program, "positions")));
+	Debug->Print("");
+
 	mat4 view = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View;
 
 	for(auto i : lis)
