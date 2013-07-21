@@ -3,6 +3,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 using namespace sf;
 
+#include "settings.h"
 #include "print.h"
 
 
@@ -16,7 +17,6 @@ void ModuleInterface::Init()
 	Resize();
 
 	show = true;
-	debug = false;
 
 	Listeners();
 	Callbacks();
@@ -33,7 +33,7 @@ void ModuleInterface::Update()
 	// normal interface
 	DrawCrosshair();
 
-	if(debug)
+	if(*Global->Get<Settings>("settings")->Get<bool>("Debug"))
 	{
 		// debug interface
 		DrawPrint();

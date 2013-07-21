@@ -3,6 +3,8 @@
 #include <string>
 using namespace std;
 
+#include "settings.h"
+
 
 void ModuleInterface::Callbacks()
 {
@@ -24,8 +26,9 @@ v8::Handle<v8::Value> ModuleInterface::jsDebug(const v8::Arguments& args)
 {
 	ModuleInterface *module = (ModuleInterface*)HelperScript::Unwrap(args.Data());
 
-	module->debug = !module->debug;
+	bool *debug = module->Global->Get<Settings>("settings")->Get<bool>("Debug");
+	*debug = !*debug;
 
-	HelperDebug::Print("script", string(module->debug ? "enabled" : "disabled") + " debug interface");
+	HelperDebug::Print("script", string(*debug ? "enabled" : "disabled") + " debug interface");
 	return v8::Undefined();
 }

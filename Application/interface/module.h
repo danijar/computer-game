@@ -8,7 +8,7 @@
 class ModuleInterface : public Module
 {
 	// general
-	bool show, debug;
+	bool show;
 	void Init();
 	void Update();
 	void Listeners();

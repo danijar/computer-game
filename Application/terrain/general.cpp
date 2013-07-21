@@ -18,11 +18,6 @@ using namespace sf;
 #include "print.h"
 
 
-ModuleTerrain::ModuleTerrain() : SEALEVEL(std::min(15, CHUNK_SIZE.y))
-{
-
-}
-
 void ModuleTerrain::Init()
 {
 	texture = Texture();
@@ -50,7 +45,7 @@ ModuleTerrain::~ModuleTerrain()
 {
 	glDeleteTextures(1, &texture);
 
-	running.store(false);
+	running = false;
 	task.get();
 }
 
@@ -58,8 +53,9 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; camera.y = 0;
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; //camera.y = 0;
 	ivec3 distance = (int)(*stg->Get<float>("Viewdistance") * *stg->Get<float>("Chunkdistance")) / CHUNK_SIZE;
+	distance.y = 2;
 
 	// add loaded chunks to entity system
 	if(!loading && !null && access.try_lock())
@@ -104,9 +100,10 @@ void ModuleTerrain::Update()
 		bool found = false;
 		ivec3 i, nearest;
 		for(i.x = -distance.x; i.x < distance.x; ++i.x)
+		for(i.y = -distance.y; i.y < distance.y; ++i.y)
 		for(i.z = -distance.z; i.z < distance.z; ++i.z)
 		{
-			bool inrange = i.x*i.x + i.z*i.z < distance.x * distance.z;
+			bool inrange = (float)(i.x*i.x) / (float)(distance.x*distance.x) + (float)(i.y*i.y) / (float)(distance.y*distance.y) + (float)(i.z*i.z) / (float)(distance.z*distance.z) < 1.0f;
 			bool nearer = found ? length(vec3(i)) < length(vec3(nearest)) : true;
 			bool loaded = GetChunk(camera + i) ? true : false;
 			if(inrange && nearer && !loaded)
@@ -132,10 +129,10 @@ void ModuleTerrain::Update()
 		if(!Inside(abs(i.second->Key - camera), ivec3(0), distance + ivec3(tolerance)))
 		{
 			auto mdl = Entity->Get<Model>(i.first);
-			glDeleteBuffers(1, &mdl->Positions);
-			glDeleteBuffers(1, &mdl->Normals);
-			glDeleteBuffers(1, &mdl->Texcoords);
-			glDeleteBuffers(1, &mdl->Elements);
+			if(mdl->Elements)  glDeleteBuffers(1, &mdl->Positions);
+			if(mdl->Normals)   glDeleteBuffers(1, &mdl->Normals);
+			if(mdl->Texcoords) glDeleteBuffers(1, &mdl->Texcoords);
+			if(mdl->Elements)  glDeleteBuffers(1, &mdl->Elements);
 
 			Entity->Delete(i.first);
 		}

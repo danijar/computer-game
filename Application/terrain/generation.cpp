@@ -13,62 +13,61 @@ using namespace std;
 void ModuleTerrain::Generate(Terrain *Terrain)
 {
 	const ivec3 offset = Terrain->Key * CHUNK_SIZE;
+	const int WORLD_HEIGHT = 1 * CHUNK_SIZE.y;
+
 	for(int x = 0; x < CHUNK_SIZE.x; ++x)
+	for(int z = 0; z < CHUNK_SIZE.z; ++z)
 	{
-		for(int z = 0; z < CHUNK_SIZE.z; ++z)
+		// two dimensional
+		vec2 sample(offset.x + x, offset.z + z);
+
+		// area characteristics
+		float   amount_rocks      = NoiseSigmoid(0.035f, sample, -0.5f, 5.0f),
+			    amount_plain      = NoiseSigmoid(0.025f, sample, -0.3f, 10.0f),
+			    amount_rough      = 1 - amount_plain,
+				amount_vegetation = NoiseLayered(0.040f, sample, 5) / 2 + 0.5f;
+
+		Terrain->Details[x][z][Terrain::ROCKS]      = amount_rocks;
+		Terrain->Details[x][z][Terrain::PLAIN]      = amount_plain;
+		Terrain->Details[x][z][Terrain::ROUGH]      = amount_rough;
+		Terrain->Details[x][z][Terrain::VEGETATION] = amount_vegetation;
+
+		// heightmap
+		vector<float> heightmaps;
+		heightmaps.push_back(0.23f * amount_rough * simplex(0.02f * sample));
+		heightmaps.push_back(0.13f * amount_rough * simplex(0.08f * sample));
+		float heightmap = 0; for(auto i : heightmaps) heightmap += i;
+
+		for(int y = 0; y < CHUNK_SIZE.y; ++y)
 		{
-			// two dimensional
-			vec2 sample(offset.x + x, offset.z + z);
-
-			// area characteristics
-			float amount_rocks      = NoiseSigmoid(0.3f, sample, -0.5f, 5.0f),
-			      amount_plain      = NoiseSigmoid(0.2f, sample, -0.3f, 10.0f),
-			      amount_rough      = 1 - amount_plain,
-				  amount_vegetation = NoiseLayered(0.5f, sample, 5) / 2 + 0.5f;
-
-			Terrain->Details[x][z][Terrain::ROCKS]      = amount_rocks;
-			Terrain->Details[x][z][Terrain::PLAIN]      = amount_plain;
-			Terrain->Details[x][z][Terrain::ROUGH]      = amount_rough;
-			Terrain->Details[x][z][Terrain::VEGETATION] = amount_vegetation;
+			// three dimensional
+			vec3 sample(offset.x + x, offset.y + y, offset.z + z);
+			float height = sample.y / WORLD_HEIGHT;
 
 			// heightmap
-			vector<float> heightmaps;
-			heightmaps.push_back(1.3f);
-			heightmaps.push_back(0.25f * amount_rough * NoiseNormal(0.4f, sample));
-			heightmaps.push_back(0.10f * amount_rough * NoiseNormal(1.5f, sample));
-			float heightmap = 0; for(auto i : heightmaps) heightmap += i;
+			float gradient = -1.0f / (height < heightmap ? heightmap + 1 : 1 - heightmap) * (height - heightmap);
 
-			for(int y = 0; y < CHUNK_SIZE.y; ++y)
-			{
-				// three dimensional
-				vec3 sample(offset.x + x, offset.y + y, offset.z + z);
+			// rocks
+			vector<float> rocks;
+			if(heightmap < height && height < heightmap + 0.4f)
+				rocks.push_back(0.8f * amount_rocks * amount_rough * simplex(0.09f * sample));
+			else if(heightmap - 0.2f < height && height < heightmap)
+				rocks.push_back(2.0f * std::max(amount_rocks * amount_rough * simplex(0.09f * sample), 0.0f));
+			if(heightmap - 0.2f < height && height < heightmap + 0.4f)
+				rocks.push_back(0.4f * amount_rocks * amount_rough * (simplex(0.05f * sample) / 1.5f + 0.3f));
+			rocks.push_back(0.1f * amount_rocks * simplex(0.13f * sample));
+			float rock = 0; for(auto i : rocks) rock += i;
 
-				// heightmap
-				float gradient = -y / heightmap / SEALEVEL + 1;
-				if(gradient < 0) gradient = -(gradient * gradient);
+			// combination
+			if(0.0f < gradient + rock)
+				Terrain->Blocks[x][y][z] = gradient > rock ? rand() % 2 + 1 : 3;
 
-				// rocks
-				vector<float> rocks;
-				if(AroundGroundlevel(y, heightmap, 1.0f, 1.2f))
-					rocks.push_back(0.5f * amount_rocks * amount_rough * NoiseNormal(1.5f, sample));
-				else if(AroundGroundlevel(y, heightmap, 0.8f, 1.0f))
-					rocks.push_back(std::max(2.0f * amount_rocks * amount_rough * NoiseNormal(1.5f, sample), 0.0f));
-				if(AroundGroundlevel(y, heightmap, 0.8f, 1.3f))
-					rocks.push_back(0.4f * amount_rocks * amount_rough * (NoiseNormal(0.9f, sample) / 1.5f + 0.3f));
-				rocks.push_back(0.1f * amount_rocks * NoiseNormal(2.0f, sample));
-				float density = 0; for(auto i : rocks) density += i;
-
-				// combination
-				if(0.0f < gradient + density)
-					Terrain->Blocks[x][y][z] = gradient > density ? rand() % 2 + 1 : 3;
-			}
+			float ores = FractionalBrownianMotion(0.07f, sample, 6, 2, 0.5f) - 0.4f;
 		}
 	}
 
 	GenerateGrass(Terrain);
-
 	GenerateTrees(Terrain);
-
 	// ...
 }
 

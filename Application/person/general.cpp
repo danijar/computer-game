@@ -17,8 +17,10 @@ using namespace sf;
 void ModulePerson::Init()
 {
 	Entity->Add<Print>(Entity->New())->Text = [=]{
-		ivec3 position = (ivec3)Entity->Get<Form>(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person)->Position();
-		return "position  X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
+		unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+		vec3 position = Entity->Get<Form>(id)->Position();
+		float height = Entity->Get<Person>(id)->Height;
+		return "position  X " + to_string((int)position.x) + " Y " + to_string((int)(position.y - height/2 + 0.01f)) + " Z " + to_string((int)position.z);
 	};
 
 	Listeners();

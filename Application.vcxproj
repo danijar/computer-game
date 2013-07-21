@@ -203,6 +203,7 @@
     <Image Include="Application\model\texture\rock.jpg" />
     <Image Include="Application\model\texture\shrine_d.jpg" />
     <Image Include="Application\model\texture\shrine_n.jpg" />
+    <Image Include="Application\sky\texture\sky.jpg" />
     <Image Include="Application\terrain\texture\marker.jpg" />
     <Image Include="Application\terrain\texture\terrain.png" />
   </ItemGroup>

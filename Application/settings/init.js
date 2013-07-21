@@ -6,7 +6,7 @@ settings({
     Size:       [ 'Vector2u', 800, 600               ],
     Title:      [ 'string',   'Graphics Application' ],
     Position:   [ 'Vector2i', 0, 0                   ],
-
+    
     // renderer
     Fieldofview:  [ 'float', 45.0   ],
     Wireframe:    [ 'bool',  false  ],
@@ -15,6 +15,9 @@ settings({
 
     // terrain
     Placedistance: [ 'int',    5       ],
-    Chunkdistance: [ 'float',  0.1     ],
+    Chunkdistance: [ 'float',  0.07    ],
     World:         [ 'string', 'world' ],
+
+    // development
+    Debug: [ 'bool', true ],
 });

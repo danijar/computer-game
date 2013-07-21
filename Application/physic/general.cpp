@@ -8,17 +8,19 @@ btDynamicsWorld* Form::World = NULL;
 
 void ModulePhysic::Init()
 {
+	Opengl->Init();
+
 	broadphase = new btDbvtBroadphase();
 	configuration = new btDefaultCollisionConfiguration();
 	dispatcher = new btCollisionDispatcher(configuration);
 	solver = new btSequentialImpulseConstraintSolver;
 	auto world = Global->Add<btDiscreteDynamicsWorld>("world", new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration));
-
-	if(Form::World == NULL)
-		Form::World = world;
+	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Debug));
 
 	world->setGravity(btVector3(0, -9.81f, 0));
-	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Debug));
+
+	if(!Form::World)
+		Form::World = world;
 
 	Callbacks();
 	Listeners();
@@ -26,6 +28,7 @@ void ModulePhysic::Init()
 
 ModulePhysic::~ModulePhysic()
 {
+	Form::World = NULL;
 	Global->Delete("world");
 	delete solver;
 	delete dispatcher;

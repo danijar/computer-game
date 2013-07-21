@@ -21,7 +21,6 @@ class ModuleTerrain : public Module
 {	
 	// general
 public:
-	ModuleTerrain();
 	~ModuleTerrain();
 private:
 	void Init();
@@ -51,18 +50,15 @@ private:
 	void World(std::string Name);
 
 	// generation
-	const int SEALEVEL;
 	void Generate(Terrain *Terrain);
 	void GenerateGrass(Terrain *Terrain);
 	void GenerateTrees(Terrain *Terrain);
 
 	// noise
-	float NoiseNormal  (float Zoom, glm::vec2 Sample); // add optional parameters for value range
-	float NoiseNormal  (float Zoom, glm::vec3 Sample);
+	float NoisePositive(float Zoom, glm::vec2 Sample);
 	float NoiseLayered (float Zoom, glm::vec2 Sample, int Layers = 3);
-	float NoisePositive(float Zoom, glm::vec2 Sample); // get rid of this then
 	float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
-	bool AroundGroundlevel(int Sample, float Heightmap, float From, float To);
+	float FractionalBrownianMotion(float Zoom, glm::vec3 Sample, int Octave, float Lacunarity, float Gain);
 
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);

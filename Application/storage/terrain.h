@@ -6,7 +6,7 @@
 #include <GLM/glm.hpp>
 
 
-#define CHUNK_SIZE ivec3(16, 32, 16)
+#define CHUNK_SIZE ivec3(16, 16, 16)
 
 struct Terrain
 {

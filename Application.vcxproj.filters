@@ -425,6 +425,9 @@
     <Image Include="Application\interface\texture\crosshair.png">
       <Filter>interface\texture</Filter>
     </Image>
+    <Image Include="Application\sky\texture\sky.jpg">
+      <Filter>sky\texture</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Font Include="Application\interface\font\source.ttf">

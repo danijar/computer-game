@@ -44,14 +44,14 @@ void ModuleTerrain::Loading()
 }
 
 #define GRID vec2(1.f / TILES_U, 1.f / TILES_V)
-#define GAP float(0.000/*1*/)
 
 void ModuleTerrain::Mesh(Terrain *Terrain)
 {
+	// rendering mesh
 	int n = 0;
-	for(int X = 0; X < CHUNK_SIZE.x;  ++X)
+	for(int X = 0; X < CHUNK_SIZE.x; ++X)
 	for(int Y = 0; Y < CHUNK_SIZE.y; ++Y)
-	for(int Z = 0; Z < CHUNK_SIZE.z;  ++Z)
+	for(int Z = 0; Z < CHUNK_SIZE.z; ++Z)
 	{
 		if(Terrain->Blocks[X][Y][Z])
 		{
@@ -76,10 +76,10 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 
 					vec2 coords(tile % TILES_U, tile / TILES_U);
 					vec2 position = coords * GRID;
-					texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y          + GAP);
-					texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y          + GAP);
-					texcoords.push_back(position.x          + GAP); texcoords.push_back(position.y + GRID.y - GAP);
-					texcoords.push_back(position.x + GRID.x - GAP); texcoords.push_back(position.y + GRID.y - GAP);
+					texcoords.push_back(position.x         ); texcoords.push_back(position.y         );
+					texcoords.push_back(position.x + GRID.x); texcoords.push_back(position.y         );
+					texcoords.push_back(position.x         ); texcoords.push_back(position.y + GRID.y);
+					texcoords.push_back(position.x + GRID.x); texcoords.push_back(position.y + GRID.y);
 
 					if(dir == -1) {
 						elements.push_back(n+0); elements.push_back(n+1); elements.push_back(n+2);
@@ -95,6 +95,7 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 		}
 	}
 
+	// collision shape
 	GLfloat coords[9];
 	for(unsigned int i = 0; i < elements.size(); i += 3)
 	{
@@ -131,30 +132,48 @@ void ModuleTerrain::Buffer(unsigned int Id)
 	auto mdl = Entity->Get<Model>(Id);
 	auto frm = Entity->Get<Form>(Id);
 
-	if(!mdl->Positions) glGenBuffers(1, &mdl->Positions);
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
-	glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
-	if(!mdl->Normals  ) glGenBuffers(1, &mdl->Normals  );
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
-	glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
-	if(!mdl->Texcoords) glGenBuffers(1, &mdl->Texcoords);
-	glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
-	glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
-	if(!mdl->Elements ) glGenBuffers(1, &mdl->Elements );
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
+	// clean model
+	mdl->Elements  = 0;
+
+	// clean shape
+	if(frm->Body->isInWorld())
+		if(Form::World)
+			Form::World->removeRigidBody(frm->Body);
+	delete frm->Body->getCollisionShape();
+
+	if(elements.size())
+	{
+		// update buffers
+		if(!mdl->Positions) glGenBuffers(1, &mdl->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
+		glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof GLfloat, &positions[0], GL_STATIC_DRAW);
+		if(!mdl->Normals  ) glGenBuffers(1, &mdl->Normals  );
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
+		glBufferData(GL_ARRAY_BUFFER, normals.size()   * sizeof GLfloat, &normals[0],   GL_STATIC_DRAW);
+		if(!mdl->Texcoords) glGenBuffers(1, &mdl->Texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
+		glBufferData(GL_ARRAY_BUFFER, texcoords.size() * sizeof GLfloat, &texcoords[0], GL_STATIC_DRAW);
+		if(!mdl->Elements ) glGenBuffers(1, &mdl->Elements );
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements.size() * sizeof GLuint, &elements[0], GL_STATIC_DRAW);
+
+		// update shape
+		btTriangleMesh *mesh = new btTriangleMesh();
+		for(auto i = triangles.begin(); i != triangles.end(); ++i)
+			mesh->addTriangle(get<0>(*i), get<1>(*i), get<2>(*i));
+		triangles.clear();
+	
+		frm->Body->setCollisionShape(new btBvhTriangleMeshShape(mesh, true, true));
+	}
+	else
+	{
+		frm->Body->setCollisionShape(new btEmptyShape());
+	}
+
+	if(!frm->Body->isInWorld())
+		if(Form::World)
+			Form::World->addRigidBody(frm->Body);
 
 	positions.clear(); normals.clear(); texcoords.clear(); elements.clear();
-	
-	btTriangleMesh *mesh = new btTriangleMesh();
-	for(auto i = triangles.begin(); i != triangles.end(); ++i)
-		mesh->addTriangle(get<0>(*i), get<1>(*i), get<2>(*i));
-	triangles.clear();
-
-	Form::World->removeRigidBody(frm->Body);
-	delete frm->Body->getCollisionShape();
-	frm->Body->setCollisionShape(new btBvhTriangleMeshShape(mesh, true, true));
-	Form::World->addRigidBody(frm->Body);
-
 	null = true;
 }

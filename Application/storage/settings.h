@@ -1,5 +1,7 @@
 #pragma once
 
+#include "system.h"
+
 #include <string>
 #include <unordered_map>
 #include <typeindex>
@@ -8,9 +10,6 @@
 
 struct Settings
 {
-	Settings() : FPS(0) {}
-	int FPS;
-
 	template <typename T>
 	void Set(std::string Key, T Value)
 	{
@@ -40,6 +39,7 @@ struct Settings
 		if(i->second.second != std::type_index(typeid(T)))
 		{
 			// type doesn't match
+			HelperDebug::Fail("settings", "cannot get because (" + Key + ") does not exist");
 			return new T();
 		}
 		return static_cast<T*>(i->second.first);

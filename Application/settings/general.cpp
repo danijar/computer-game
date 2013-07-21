@@ -14,8 +14,9 @@ void ModuleSettings::Init()
 	auto stg = Global->Add<Settings>("settings");
 
 	frames = 0;
+	*Global->Add<int>("FPS") = 0;
 	Entity->Add<Print>(Entity->New())->Text = [=]{
-		return "FPS " + to_string(*stg->Get<int>("FPS"));
+		return "FPS " + to_string(*Global->Get<int>("FPS"));
 	};
 
 	Listeners();
@@ -29,7 +30,7 @@ void ModuleSettings::Update()
 	if(clock.getElapsedTime().asMilliseconds() >= 1000)
 	{
 		clock.restart();
-		Global->Get<Settings>("settings")->FPS = frames;
+		*Global->Get<int>("FPS") = frames;
 		frames = 0;
 	}
 	frames++;

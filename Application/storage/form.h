@@ -17,11 +17,10 @@ struct Form
 	}
 	~Form()
 	{
-		if(Form::World != NULL)
-		{
-			Form::World->removeRigidBody(Body);
-			delete Body;
-		}
+		if(Form::World)
+			if(Body->isInWorld())
+				Form::World->removeRigidBody(Body);
+		delete Body;
 	}
 
 	glm::vec3 Position()
@@ -60,9 +59,9 @@ struct Form
 	}
 	void Scale(glm::vec3 Factors)
 	{
-		if(Form::World != NULL) Form::World->removeRigidBody(Body);
+		if(Form::World) Form::World->removeRigidBody(Body);
 		Body->getCollisionShape()->setLocalScaling(btVector3(Factors.x, Factors.y, Factors.z));
-		if(Form::World != NULL) Form::World->addRigidBody(Body);
+		if(Form::World) Form::World->addRigidBody(Body);
 	}
 	glm::vec3 Direction()
 	{
