@@ -56,7 +56,6 @@ private:
 
 	// noise
 	float NoisePositive(float Zoom, glm::vec2 Sample);
-	float NoiseLayered (float Zoom, glm::vec2 Sample, int Layers = 3);
 	float NoiseSigmoid (float Zoom, glm::vec2 Sample, float Shift = 0.0f, float Sharp = 1.0f);
 	float FractionalBrownianMotion(float Zoom, glm::vec3 Sample, int Octave, float Lacunarity, float Gain);
 
