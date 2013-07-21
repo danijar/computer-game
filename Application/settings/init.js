@@ -15,7 +15,7 @@ settings({
 
     // terrain
     Placedistance: [ 'int',    5       ],
-    Chunkdistance: [ 'float',  0.07    ],
+    Chunkdistance: [ 'float',  0.1     ],
     World:         [ 'string', 'world' ],
 
     // development

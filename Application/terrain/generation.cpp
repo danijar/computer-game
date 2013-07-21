@@ -22,10 +22,10 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 		vec2 sample(offset.x + x, offset.z + z);
 
 		// area characteristics
-		float   amount_rocks      = NoiseSigmoid(0.035f, sample, -0.5f, 5.0f),
-			    amount_plain      = NoiseSigmoid(0.025f, sample, -0.3f, 10.0f),
-			    amount_rough      = 1 - amount_plain,
-				amount_vegetation = NoiseLayered(0.040f, sample, 5) / 2 + 0.5f;
+		float   amount_rocks      = NoiseSigmoid(0.020f, sample, -0.5f, 5.0f),
+		        amount_plain      = NoiseSigmoid(0.013f, sample, -0.3f, 10.0f),
+		        amount_rough      = 1 - amount_plain,
+		        amount_vegetation = NoiseLayered(0.033f, sample, 5) / 2 + 0.5f;
 
 		Terrain->Details[x][z][Terrain::ROCKS]      = amount_rocks;
 		Terrain->Details[x][z][Terrain::PLAIN]      = amount_plain;
@@ -34,8 +34,8 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 		// heightmap
 		vector<float> heightmaps;
-		heightmaps.push_back(0.23f * amount_rough * simplex(0.02f * sample));
-		heightmaps.push_back(0.13f * amount_rough * simplex(0.08f * sample));
+		heightmaps.push_back(0.25f * amount_rough * simplex(0.0267f * sample));
+		heightmaps.push_back(0.10f * amount_rough * simplex(0.1000f * sample));
 		float heightmap = 0; for(auto i : heightmaps) heightmap += i;
 
 		for(int y = 0; y < CHUNK_SIZE.y; ++y)
@@ -49,6 +49,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 
 			// rocks
 			vector<float> rocks;
+			/*
 			if(heightmap < height && height < heightmap + 0.4f)
 				rocks.push_back(0.8f * amount_rocks * amount_rough * simplex(0.09f * sample));
 			else if(heightmap - 0.2f < height && height < heightmap)
@@ -56,6 +57,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 			if(heightmap - 0.2f < height && height < heightmap + 0.4f)
 				rocks.push_back(0.4f * amount_rocks * amount_rough * (simplex(0.05f * sample) / 1.5f + 0.3f));
 			rocks.push_back(0.1f * amount_rocks * simplex(0.13f * sample));
+			*/
 			float rock = 0; for(auto i : rocks) rock += i;
 
 			// combination
