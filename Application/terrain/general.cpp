@@ -53,9 +53,17 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE; // camera.y = 0;
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE;
+	/*
+	 * load chunks independent from cameras height
+	 * camera.y = 0;
+	 */
 	ivec3 distance = (int)(*stg->Get<float>("Viewdistance") * *stg->Get<float>("Chunkdistance")) / CHUNK_SIZE;
-	distance.y /= 2; if(distance.y < 2) distance.y = 2;
+	/*
+	 * this adds a lot more load to the CPU
+	 * distance.y = std::max(distance.y / 2, 1);
+	 */
+	distance.y = 1;
 
 	// add loaded chunks to entity system
 	if(!loading && !null && access.try_lock())
@@ -103,7 +111,7 @@ void ModuleTerrain::Update()
 		for(i.y = -distance.y; i.y < distance.y; ++i.y)
 		for(i.z = -distance.z; i.z < distance.z; ++i.z)
 		{
-			bool inrange = (float)(i.x*i.x) / (float)(distance.x*distance.x) + (float)(i.y*i.y) / (float)(distance.y*distance.y) + (float)(i.z*i.z) / (float)(distance.z*distance.z) < 1.0f;
+			bool inrange = float(i.x*i.x) / float(distance.x*distance.x) + float(i.z*i.z) / float(distance.z*distance.z) < 1.0f;
 			bool nearer = found ? length(vec3(i)) < length(vec3(nearest)) : true;
 			bool loaded = GetChunk(camera + i) ? true : false;
 			if(inrange && nearer && !loaded)
