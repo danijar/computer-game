@@ -13,8 +13,7 @@ using namespace std;
 void ModuleTerrain::Generate(Terrain *Terrain)
 {
 	const ivec3 offset = Terrain->Key * CHUNK_SIZE;
-	const int WORLD_HEIGHT = 1 * CHUNK_SIZE.y;
-
+	
 	for(int x = 0; x < CHUNK_SIZE.x; ++x)
 	for(int z = 0; z < CHUNK_SIZE.z; ++z)
 	{
@@ -22,6 +21,8 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 		vec2 sample(offset.x + x, offset.z + z);
 
 		// area characteristics
+		const int WORLD_HEIGHT = 20 + 12 * simplex(0.007f * sample);
+
 		float   amount_rocks      = NoiseSigmoid(0.020f, sample, -0.5f, 5.0f),
 		        amount_plain      = NoiseSigmoid(0.013f, sample, -0.3f, 10.0f),
 		        amount_rough      = 1 - amount_plain,
