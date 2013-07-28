@@ -5,7 +5,7 @@ settings({
     Mouse:      [ 'bool',     false                  ], // Determines whether the mouse is free or captured by the application to change the view direction.
     Size:       [ 'Vector2u', 800, 600               ], // Initial size of the window.
     Title:      [ 'string',   'Graphics Application' ], // Caption of the window. This will be hard coded later on.
-    Position:   [ 'Vector2i', 0, 0                   ]  // Window position on screen. Doesn't affect the initial position for now and therefore will maybe be removed later on.
+    Position:   [ 'Vector2i', 0, 0                   ], // Window position on screen. Doesn't affect the initial position for now and therefore will maybe be removed later on.
 
     // renderer
     Fieldofview:  [ 'float', 45.0   ], // Angle of the section your eyes can see. Depends on distance to monitor. High values allow you to have a wider view range but visually distort geometry.
