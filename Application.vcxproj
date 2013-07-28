@@ -189,6 +189,7 @@
     <None Include="Application\renderer\shader\occlusion.frag" />
     <None Include="Application\renderer\shader\quad.vert" />
     <None Include="Application\renderer\shader\screen.frag" />
+    <None Include="Application\renderer\shader\tonemapping.frag" />
     <None Include="Application\settings\init.js" />
   </ItemGroup>
   <ItemGroup>

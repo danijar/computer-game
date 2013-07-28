@@ -384,6 +384,9 @@
     <None Include="Application\settings\init.js">
       <Filter>settings</Filter>
     </None>
+    <None Include="Application\renderer\shader\tonemapping.frag">
+      <Filter>renderer\shader</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Application\model\texture\grass.jpg">
