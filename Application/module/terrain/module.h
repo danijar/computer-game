@@ -43,11 +43,9 @@ private:
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
 	void Buffer(unsigned int Id);
 
-	// savegame
-	std::string world;
-	bool Load(std::string File, Terrain *Terrain);
-	bool Save(std::string File, Terrain *Terrain);
-	void World(std::string Name);
+	// save
+	bool Load(Terrain *Terrain);
+	bool Save(Terrain *Terrain);
 
 	// generation
 	void Generate(Terrain *Terrain);

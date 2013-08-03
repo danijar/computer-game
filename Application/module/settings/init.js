@@ -1,5 +1,8 @@
 
 settings({
+    // general
+    Savegame: [ 'string', 'world' ], // Change this to load another world on startup.
+
     // window
     Fullscreen: [ 'bool',     false                  ], // Determines whether the application starts in fullscreen more or in windowed mode.
     Mouse:      [ 'bool',     false                  ], // Determines whether the mouse is free or captured by the application to change the view direction.
@@ -16,7 +19,6 @@ settings({
     // terrain
     Placedistance: [ 'int',    5       ], // Defines how far blocks you can mine and place.
     Chunkdistance: [ 'float',  0.1     ], // Defines how distant chunks are loaded relative to view distance. Depending on your machine a value higher than 0.1 might be very slow.
-    World:         [ 'string', 'world' ], // Change this to load another world on startup. Worlds are stored in terrain/save/.
 
     // development
     Debug: [ 'bool', true ], // Print debug information on screen like frame rate, player position, number of forms, and more.

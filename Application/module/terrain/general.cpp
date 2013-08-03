@@ -30,8 +30,6 @@ void ModuleTerrain::Init()
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
-	world = *Global->Get<Settings>("settings")->Get<string>("World");
-
 	Entity->Add<Print>(Entity->New())->Text = [=]{
 		ivec3 position = get<0>(Selection());
 		return "selection X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
@@ -159,6 +157,24 @@ void ModuleTerrain::Update()
 
 void ModuleTerrain::Listeners()
 {
+	Event->Listen("SaveChanged", [=]{
+		while(loading);
+		null = true;
+
+		auto tns = Entity->Get<Terrain>();
+
+		for(auto i : tns)
+		{
+			auto mdl = Entity->Get<Model>(i.first);
+			glDeleteBuffers(1, &mdl->Positions);
+			glDeleteBuffers(1, &mdl->Normals);
+			glDeleteBuffers(1, &mdl->Texcoords);
+			glDeleteBuffers(1, &mdl->Elements);
+
+			Entity->Delete(i.first);
+		}
+	});
+
 	Event->Listen("InputBindMine", [=]{
 		auto sel = Selection();
 		if(InReachDistance((vec3)get<0>(sel) + vec3(0.5)))

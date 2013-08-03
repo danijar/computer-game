@@ -129,7 +129,7 @@
     <ClCompile Include="Application\module\terrain\generation.cpp" />
     <ClCompile Include="Application\module\terrain\loading.cpp" />
     <ClCompile Include="Application\module\terrain\noise.cpp" />
-    <ClCompile Include="Application\module\terrain\savegame.cpp" />
+    <ClCompile Include="Application\module\terrain\save.cpp" />
     <ClCompile Include="Application\module\terrain\select.cpp" />
     <ClCompile Include="Application\module\terrain\texture.cpp" />
     <ClCompile Include="Application\module\window\callbacks.cpp" />

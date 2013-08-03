@@ -11,11 +11,13 @@ using namespace glm;
 #include <settings.h>
 
 
-bool ModuleTerrain::Load(string File, Terrain *Terrain)
+bool ModuleTerrain::Load(Terrain *Terrain)
 {
+	auto stg = Global->Get<Settings>("settings");
+	string folder = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/";
 	string name = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
-	zip *archive = zip_open(("module/" + Name() + "/save/" + File +".zip").c_str(), 0, NULL);
+	zip *archive = zip_open((folder + "data.zip").c_str(), 0, NULL);
 	if(archive == NULL)
 		return false;
 
@@ -44,14 +46,16 @@ bool ModuleTerrain::Load(string File, Terrain *Terrain)
 	return true;
 }
 
-bool ModuleTerrain::Save(string File, Terrain *Terrain)
+bool ModuleTerrain::Save(Terrain *Terrain)
 {
-	path dir("module/" + Name() + "/save");
-	if(!exists(dir)) create_directory(dir);
-
+	auto stg = Global->Get<Settings>("settings");
+	string folder = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/";
 	string name = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
-	zip *archive = zip_open(("module/" + Name() + "/save/" + File +".zip").c_str(), ZIP_CREATE, NULL);
+	path dir(folder);
+	if(!exists(dir)) create_directories(dir);
+
+	zip *archive = zip_open((folder + "data.zip").c_str(), ZIP_CREATE, NULL);
 	if(archive == NULL)
 		return false;
 
@@ -78,26 +82,4 @@ bool ModuleTerrain::Save(string File, Terrain *Terrain)
 	}
 
 	return true;
-}
-
-void ModuleTerrain::World(string Name)
-{
-	while(loading);
-	null = true;
-
-	auto tns = Entity->Get<Terrain>();
-
-	for(auto i : tns)
-	{
-		auto mdl = Entity->Get<Model>(i.first);
-		glDeleteBuffers(1, &mdl->Positions);
-		glDeleteBuffers(1, &mdl->Normals);
-		glDeleteBuffers(1, &mdl->Texcoords);
-		glDeleteBuffers(1, &mdl->Elements);
-
-		Entity->Delete(i.first);
-	}
-
-	world = Name;
-	Global->Get<Settings>("settings")->Set<string>("World", Name);
 }

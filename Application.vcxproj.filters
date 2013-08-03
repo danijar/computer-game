@@ -234,13 +234,13 @@
     <ClCompile Include="Application\module\terrain\noise.cpp">
       <Filter>module\terrain</Filter>
     </ClCompile>
-    <ClCompile Include="Application\module\terrain\savegame.cpp">
-      <Filter>module\terrain</Filter>
-    </ClCompile>
     <ClCompile Include="Application\module\settings\callbacks.cpp">
       <Filter>module\settings</Filter>
     </ClCompile>
     <ClCompile Include="Application\main.cpp" />
+    <ClCompile Include="Application\module\terrain\save.cpp">
+      <Filter>module\terrain</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">
