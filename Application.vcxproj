@@ -137,6 +137,13 @@
     <ClCompile Include="Application\module\window\general.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\helper\debug.h" />
+    <ClInclude Include="Application\helper\file.h" />
+    <ClInclude Include="Application\helper\opengl.h" />
+    <ClInclude Include="Application\helper\script.h" />
+    <ClInclude Include="Application\manager\entity.h" />
+    <ClInclude Include="Application\manager\event.h" />
+    <ClInclude Include="Application\manager\global.h" />
     <ClInclude Include="Application\module\camera\module.h" />
     <ClInclude Include="Application\module\console\module.h" />
     <ClInclude Include="Application\module\input\module.h" />

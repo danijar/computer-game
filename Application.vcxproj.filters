@@ -316,6 +316,27 @@
     <ClInclude Include="Application\type\terrain.h">
       <Filter>type</Filter>
     </ClInclude>
+    <ClInclude Include="Application\helper\debug.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\helper\file.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\helper\opengl.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\helper\script.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\manager\event.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\manager\entity.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\manager\global.h">
+      <Filter>manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\module\model\init.js">
