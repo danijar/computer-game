@@ -149,7 +149,7 @@ GLuint ModuleTerrain::Marker()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), Elements, GL_STATIC_DRAW);
 
 	Image image;
-	if(!image.loadFromFile(Name() + "/texture/marker.jpg"))
+	if(!image.loadFromFile("module/" + Name() + "/texture/marker.jpg"))
 		Debug->Fail("marker texture cannot be loaded");
 
 	glGenTextures(1, &mdl->Diffuse);

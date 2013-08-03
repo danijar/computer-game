@@ -50,7 +50,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Application;$(ProjectDir)\Application\type;$(ProjectDir)\Application\module;$(ProjectDir)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
@@ -67,7 +67,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(ProjectDir)\Application;$(ProjectDir)\Application\storage</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Application;$(ProjectDir)\Application\type;$(ProjectDir)\Application\module;$(ProjectDir)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SFML_STATIC;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <ObjectFileName>$(IntDir)/%(RelativeDir)</ObjectFileName>
@@ -82,134 +82,137 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application\camera\calculate.cpp" />
-    <ClCompile Include="Application\camera\callbacks.cpp" />
-    <ClCompile Include="Application\camera\control.cpp" />
-    <ClCompile Include="Application\camera\create.cpp" />
-    <ClCompile Include="Application\camera\general.cpp" />
-    <ClCompile Include="Application\camera\state.cpp" />
-    <ClCompile Include="Application\camera\synchronization.cpp" />
-    <ClCompile Include="Application\console\callbacks.cpp" />
-    <ClCompile Include="Application\console\general.cpp" />
-    <ClCompile Include="Application\console\history.cpp" />
-    <ClCompile Include="Application\input\general.cpp" />
-    <ClCompile Include="Application\interface\callbacks.cpp" />
-    <ClCompile Include="Application\interface\crosshair.cpp" />
-    <ClCompile Include="Application\interface\general.cpp" />
-    <ClCompile Include="Application\interface\print.cpp" />
+    <ClCompile Include="Application\module\camera\calculate.cpp" />
+    <ClCompile Include="Application\module\camera\callbacks.cpp" />
+    <ClCompile Include="Application\module\camera\control.cpp" />
+    <ClCompile Include="Application\module\camera\create.cpp" />
+    <ClCompile Include="Application\module\camera\general.cpp" />
+    <ClCompile Include="Application\module\camera\state.cpp" />
+    <ClCompile Include="Application\module\camera\synchronization.cpp" />
+    <ClCompile Include="Application\module\console\callbacks.cpp" />
+    <ClCompile Include="Application\module\console\general.cpp" />
+    <ClCompile Include="Application\module\console\history.cpp" />
+    <ClCompile Include="Application\module\input\general.cpp" />
+    <ClCompile Include="Application\module\interface\callbacks.cpp" />
+    <ClCompile Include="Application\module\interface\crosshair.cpp" />
+    <ClCompile Include="Application\module\interface\general.cpp" />
+    <ClCompile Include="Application\module\interface\print.cpp" />
     <ClCompile Include="Application\main.cpp" />
-    <ClCompile Include="Application\model\callbacks.cpp" />
-    <ClCompile Include="Application\model\create.cpp" />
-    <ClCompile Include="Application\model\general.cpp" />
-    <ClCompile Include="Application\model\material.cpp" />
-    <ClCompile Include="Application\model\mesh.cpp" />
-    <ClCompile Include="Application\model\body.cpp" />
-    <ClCompile Include="Application\model\texture.cpp" />
-    <ClCompile Include="Application\mod\general.cpp" />
-    <ClCompile Include="Application\person\create.cpp" />
-    <ClCompile Include="Application\person\checks.cpp" />
-    <ClCompile Include="Application\person\general.cpp" />
-    <ClCompile Include="Application\person\movement.cpp" />
-    <ClCompile Include="Application\physic\callbacks.cpp" />
-    <ClCompile Include="Application\physic\debug.cpp" />
-    <ClCompile Include="Application\physic\general.cpp" />
-    <ClCompile Include="Application\renderer\callbacks.cpp" />
-    <ClCompile Include="Application\renderer\draw.cpp" />
-    <ClCompile Include="Application\renderer\framebuffer.cpp" />
-    <ClCompile Include="Application\renderer\passes.cpp" />
-    <ClCompile Include="Application\renderer\general.cpp" />
-    <ClCompile Include="Application\renderer\shader.cpp" />
-    <ClCompile Include="Application\settings\callbacks.cpp" />
-    <ClCompile Include="Application\settings\general.cpp" />
-    <ClCompile Include="Application\sky\create.cpp" />
-    <ClCompile Include="Application\sky\general.cpp" />
-    <ClCompile Include="Application\terrain\block.cpp" />
-    <ClCompile Include="Application\terrain\callbacks.cpp" />
-    <ClCompile Include="Application\terrain\general.cpp" />
-    <ClCompile Include="Application\terrain\generation.cpp" />
-    <ClCompile Include="Application\terrain\loading.cpp" />
-    <ClCompile Include="Application\terrain\noise.cpp" />
-    <ClCompile Include="Application\terrain\savegame.cpp" />
-    <ClCompile Include="Application\terrain\select.cpp" />
-    <ClCompile Include="Application\terrain\texture.cpp" />
-    <ClCompile Include="Application\window\callbacks.cpp" />
-    <ClCompile Include="Application\window\create.cpp" />
-    <ClCompile Include="Application\window\general.cpp" />
+    <ClCompile Include="Application\module\model\callbacks.cpp" />
+    <ClCompile Include="Application\module\model\create.cpp" />
+    <ClCompile Include="Application\module\model\general.cpp" />
+    <ClCompile Include="Application\module\model\material.cpp" />
+    <ClCompile Include="Application\module\model\mesh.cpp" />
+    <ClCompile Include="Application\module\model\body.cpp" />
+    <ClCompile Include="Application\module\model\texture.cpp" />
+    <ClCompile Include="Application\module\mod\general.cpp" />
+    <ClCompile Include="Application\module\person\create.cpp" />
+    <ClCompile Include="Application\module\person\checks.cpp" />
+    <ClCompile Include="Application\module\person\general.cpp" />
+    <ClCompile Include="Application\module\person\movement.cpp" />
+    <ClCompile Include="Application\module\physic\callbacks.cpp" />
+    <ClCompile Include="Application\module\physic\debug.cpp" />
+    <ClCompile Include="Application\module\physic\general.cpp" />
+    <ClCompile Include="Application\module\renderer\callbacks.cpp" />
+    <ClCompile Include="Application\module\renderer\draw.cpp" />
+    <ClCompile Include="Application\module\renderer\framebuffer.cpp" />
+    <ClCompile Include="Application\module\renderer\passes.cpp" />
+    <ClCompile Include="Application\module\renderer\general.cpp" />
+    <ClCompile Include="Application\module\renderer\shader.cpp" />
+    <ClCompile Include="Application\module\settings\callbacks.cpp" />
+    <ClCompile Include="Application\module\settings\general.cpp" />
+    <ClCompile Include="Application\module\sky\create.cpp" />
+    <ClCompile Include="Application\module\sky\general.cpp" />
+    <ClCompile Include="Application\module\terrain\block.cpp" />
+    <ClCompile Include="Application\module\terrain\callbacks.cpp" />
+    <ClCompile Include="Application\module\terrain\general.cpp" />
+    <ClCompile Include="Application\module\terrain\generation.cpp" />
+    <ClCompile Include="Application\module\terrain\loading.cpp" />
+    <ClCompile Include="Application\module\terrain\noise.cpp" />
+    <ClCompile Include="Application\module\terrain\savegame.cpp" />
+    <ClCompile Include="Application\module\terrain\select.cpp" />
+    <ClCompile Include="Application\module\terrain\texture.cpp" />
+    <ClCompile Include="Application\module\window\callbacks.cpp" />
+    <ClCompile Include="Application\module\window\create.cpp" />
+    <ClCompile Include="Application\module\window\general.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\camera\module.h" />
-    <ClInclude Include="Application\console\module.h" />
-    <ClInclude Include="Application\input\module.h" />
-    <ClInclude Include="Application\interface\module.h" />
-    <ClInclude Include="Application\model\module.h" />
-    <ClInclude Include="Application\mod\module.h" />
-    <ClInclude Include="Application\person\module.h" />
-    <ClInclude Include="Application\physic\module.h" />
-    <ClInclude Include="Application\renderer\module.h" />
-    <ClInclude Include="Application\settings\module.h" />
-    <ClInclude Include="Application\sky\module.h" />
-    <ClInclude Include="Application\storage\person.h" />
-    <ClInclude Include="Application\storage\camera.h" />
-    <ClInclude Include="Application\storage\model.h" />
-    <ClInclude Include="Application\storage\light.h" />
-    <ClInclude Include="Application\storage\settings.h" />
-    <ClInclude Include="Application\storage\print.h" />
-    <ClInclude Include="Application\storage\form.h" />
-    <ClInclude Include="Application\storage\terrain.h" />
+    <ClInclude Include="Application\module\camera\module.h" />
+    <ClInclude Include="Application\module\console\module.h" />
+    <ClInclude Include="Application\module\input\module.h" />
+    <ClInclude Include="Application\module\interface\module.h" />
+    <ClInclude Include="Application\module\model\module.h" />
+    <ClInclude Include="Application\module\mod\module.h" />
+    <ClInclude Include="Application\module\person\module.h" />
+    <ClInclude Include="Application\module\physic\module.h" />
+    <ClInclude Include="Application\module\renderer\module.h" />
+    <ClInclude Include="Application\module\settings\module.h" />
+    <ClInclude Include="Application\module\sky\module.h" />
     <ClInclude Include="Application\system.h" />
-    <ClInclude Include="Application\terrain\module.h" />
-    <ClInclude Include="Application\window\module.h" />
+    <ClInclude Include="Application\module\terrain\module.h" />
+    <ClInclude Include="Application\type\animation.h" />
+    <ClInclude Include="Application\type\camera.h" />
+    <ClInclude Include="Application\type\form.h" />
+    <ClInclude Include="Application\type\light.h" />
+    <ClInclude Include="Application\type\model.h" />
+    <ClInclude Include="Application\type\movement.h" />
+    <ClInclude Include="Application\type\person.h" />
+    <ClInclude Include="Application\type\physic.h" />
+    <ClInclude Include="Application\type\print.h" />
+    <ClInclude Include="Application\type\settings.h" />
+    <ClInclude Include="Application\type\terrain.h" />
+    <ClInclude Include="Application\module\window\module.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Application\model\init.js" />
-    <None Include="Application\model\material\barrel.mtl" />
-    <None Include="Application\model\material\chess.mtl" />
-    <None Include="Application\model\material\dirt.mtl" />
-    <None Include="Application\model\material\grass.mtl" />
-    <None Include="Application\model\material\magic.mtl" />
-    <None Include="Application\model\material\rock.mtl" />
-    <None Include="Application\model\material\shrine.mtl" />
-    <None Include="Application\model\mesh\barrel.3ds" />
-    <None Include="Application\model\mesh\shrine.3ds" />
-    <None Include="Application\model\update.js" />
-    <None Include="Application\mod\init.js" />
-    <None Include="Application\mod\update.js" />
-    <None Include="Application\physic\shader\shader.frag" />
-    <None Include="Application\physic\shader\shader.vert" />
-    <None Include="Application\renderer\pipeline.js" />
-    <None Include="Application\renderer\shader\antialiasing.frag" />
-    <None Include="Application\renderer\shader\apply.frag" />
-    <None Include="Application\renderer\shader\blur_u.frag" />
-    <None Include="Application\renderer\shader\blur_v.frag" />
-    <None Include="Application\renderer\shader\combine.frag" />
-    <None Include="Application\renderer\shader\edge.frag" />
-    <None Include="Application\renderer\shader\forms.frag" />
-    <None Include="Application\renderer\shader\forms.vert" />
-    <None Include="Application\renderer\shader\light.frag" />
-    <None Include="Application\renderer\shader\occlusion.frag" />
-    <None Include="Application\renderer\shader\quad.vert" />
-    <None Include="Application\renderer\shader\screen.frag" />
-    <None Include="Application\renderer\shader\tonemapping.frag" />
-    <None Include="Application\settings\init.js" />
+    <None Include="Application\module\model\init.js" />
+    <None Include="Application\module\model\material\barrel.mtl" />
+    <None Include="Application\module\model\material\chess.mtl" />
+    <None Include="Application\module\model\material\dirt.mtl" />
+    <None Include="Application\module\model\material\grass.mtl" />
+    <None Include="Application\module\model\material\magic.mtl" />
+    <None Include="Application\module\model\material\rock.mtl" />
+    <None Include="Application\module\model\material\shrine.mtl" />
+    <None Include="Application\module\model\mesh\barrel.3ds" />
+    <None Include="Application\module\model\mesh\shrine.3ds" />
+    <None Include="Application\module\model\update.js" />
+    <None Include="Application\module\mod\init.js" />
+    <None Include="Application\module\mod\update.js" />
+    <None Include="Application\module\physic\shader\shader.frag" />
+    <None Include="Application\module\physic\shader\shader.vert" />
+    <None Include="Application\module\renderer\pipeline.js" />
+    <None Include="Application\module\renderer\shader\antialiasing.frag" />
+    <None Include="Application\module\renderer\shader\apply.frag" />
+    <None Include="Application\module\renderer\shader\blur_u.frag" />
+    <None Include="Application\module\renderer\shader\blur_v.frag" />
+    <None Include="Application\module\renderer\shader\combine.frag" />
+    <None Include="Application\module\renderer\shader\edge.frag" />
+    <None Include="Application\module\renderer\shader\forms.frag" />
+    <None Include="Application\module\renderer\shader\forms.vert" />
+    <None Include="Application\module\renderer\shader\light.frag" />
+    <None Include="Application\module\renderer\shader\occlusion.frag" />
+    <None Include="Application\module\renderer\shader\quad.vert" />
+    <None Include="Application\module\renderer\shader\screen.frag" />
+    <None Include="Application\module\renderer\shader\tonemapping.frag" />
+    <None Include="Application\module\settings\init.js" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Application\interface\texture\crosshair.png" />
-    <Image Include="Application\model\texture\barrel_d.jpg" />
-    <Image Include="Application\model\texture\barrel_n.jpg" />
-    <Image Include="Application\model\texture\bottom.jpg" />
-    <Image Include="Application\model\texture\dirt.jpg" />
-    <Image Include="Application\model\texture\grass.jpg" />
-    <Image Include="Application\model\texture\magic.jpg" />
-    <Image Include="Application\model\texture\noise.png" />
-    <Image Include="Application\model\texture\rock.jpg" />
-    <Image Include="Application\model\texture\shrine_d.jpg" />
-    <Image Include="Application\model\texture\shrine_n.jpg" />
-    <Image Include="Application\sky\texture\sky.jpg" />
-    <Image Include="Application\terrain\texture\marker.jpg" />
-    <Image Include="Application\terrain\texture\terrain.png" />
+    <Image Include="Application\module\interface\texture\crosshair.png" />
+    <Image Include="Application\module\model\texture\barrel_d.jpg" />
+    <Image Include="Application\module\model\texture\barrel_n.jpg" />
+    <Image Include="Application\module\model\texture\bottom.jpg" />
+    <Image Include="Application\module\model\texture\dirt.jpg" />
+    <Image Include="Application\module\model\texture\grass.jpg" />
+    <Image Include="Application\module\model\texture\magic.jpg" />
+    <Image Include="Application\module\model\texture\noise.png" />
+    <Image Include="Application\module\model\texture\rock.jpg" />
+    <Image Include="Application\module\model\texture\shrine_d.jpg" />
+    <Image Include="Application\module\model\texture\shrine_n.jpg" />
+    <Image Include="Application\module\sky\texture\sky.jpg" />
+    <Image Include="Application\module\terrain\texture\marker.jpg" />
+    <Image Include="Application\module\terrain\texture\terrain.png" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Application\interface\font\source.ttf" />
+    <Font Include="Application\module\interface\font\source.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

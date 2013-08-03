@@ -13,4 +13,4 @@ Application.opensdf
 Thumbs.db
 
 # terrain savegames
-Application/terrain/save
+Application/module/terrain/save

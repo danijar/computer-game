@@ -59,7 +59,7 @@ tuple<GLuint, GLenum, float> ModuleRenderer::TextureGet(string Name)
 void ModuleRenderer::TextureLoad(string Name, string Path, bool Repeat, bool Filtering, bool Mipmapping)
 {
 	Image image;
-	bool result = image.loadFromFile(this->Name() + "/texture/" + Path);
+	bool result = image.loadFromFile("module/" + this->Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Debug->Fail("texture (" + Path + ") cannot be loaded.");

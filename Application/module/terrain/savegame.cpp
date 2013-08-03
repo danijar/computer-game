@@ -15,7 +15,7 @@ bool ModuleTerrain::Load(string File, Terrain *Terrain)
 {
 	string name = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
-	zip *archive = zip_open((Name() + "/save/" + File +".zip").c_str(), 0, NULL);
+	zip *archive = zip_open(("module/" + Name() + "/save/" + File +".zip").c_str(), 0, NULL);
 	if(archive == NULL)
 		return false;
 
@@ -46,12 +46,12 @@ bool ModuleTerrain::Load(string File, Terrain *Terrain)
 
 bool ModuleTerrain::Save(string File, Terrain *Terrain)
 {
-	path dir(Name() + "/save");
+	path dir("module/" + Name() + "/save");
 	if(!exists(dir)) create_directory(dir);
 
 	string name = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
-	zip *archive = zip_open((Name() + "/save/" + File +".zip").c_str(), ZIP_CREATE, NULL);
+	zip *archive = zip_open(("module/" + Name() + "/save/" + File +".zip").c_str(), ZIP_CREATE, NULL);
 	if(archive == NULL)
 		return false;
 

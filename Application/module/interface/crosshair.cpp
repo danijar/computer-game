@@ -12,7 +12,7 @@ pair<Texture*, Sprite*> ModuleInterface::LoadImage(string Path)
 	Texture *texture = new Texture();
 	Sprite *sprite = new Sprite();
 
-	bool result = texture->loadFromFile(Name() + "/" + Path);
+	bool result = texture->loadFromFile("module/" + Name() + "/" + Path);
 	if(!result)
 	{
 		Debug->Fail("image (" + Path + ") cannot be loaded");

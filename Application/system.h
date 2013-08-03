@@ -115,11 +115,11 @@ public:
 
 	std::string Read(std::string Path)
 	{
-		return Read(name, Path);
+		return Read("module/" + name, Path);
 	}
 	void Write(std::string Path, std::string Text)
 	{
-		Write(name, Path, Text);
+		Write("module/" + name, Path, Text);
 	}
 
 	static void Write(std::string Name, std::string Path, std::string Text)
@@ -234,7 +234,7 @@ public:
 			return true;
 		}
 
-		std::string source = HelperFile::Read(name, Path);
+		std::string source = HelperFile::Read("module/" + name, Path);
 		v8::Persistent<v8::Script> script = Compile(source);
 		if(script.IsEmpty())
 		{

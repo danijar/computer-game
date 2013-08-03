@@ -21,7 +21,7 @@ void ModuleTerrain::Generate(Terrain *Terrain)
 		vec2 sample(offset.x + x, offset.z + z);
 
 		// area characteristics
-		const int WORLD_HEIGHT = 20 + 12 * simplex(0.007f * sample);
+		const int WORLD_HEIGHT = int(20 + 12 * simplex(0.007f * sample));
 
 		float   amount_rocks      = NoiseSigmoid(0.020f, sample, -0.5f, 5.0f),
 		        amount_plain      = NoiseSigmoid(0.013f, sample, -0.3f, 10.0f),
