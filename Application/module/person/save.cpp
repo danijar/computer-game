@@ -24,8 +24,6 @@ bool ModulePerson::Load(unsigned int Id)
 
 	bool result = Archive->Read(path, file, data);
 
-	Debug->Print("loaded x coordinate " + to_string((int)data[0]));
-
 	// later on save position and rotation in physics component
 	tsf->Position(vec3(data[0], data[1], data[2]));
 	tsf->Rotation(vec3(data[3], data[4], data[5]));
@@ -43,7 +41,14 @@ void ModulePerson::Save(unsigned int Id)
 	vec3 position = tsf->Position(), rotation = tsf->Rotation();
 	float data[6] = { position.x, position.y, position.z, rotation.x, rotation.y, rotation.z };
 	
+	/*
+	 * why doesn't this work asynchronously?
+	 *
+	 * Archive->WriteAsync(path, file, data, 6, [=](bool result){
+	 *     if(!result) Debug->Fail("save person failed");
+	 * });
+	 */
+
 	bool result = Archive->Write(path, file, data, 6);
 	if(!result) Debug->Fail("save person failed");
-	else Debug->Print("stored x coordinate " + to_string((int)data[0]));
 }
