@@ -15,7 +15,7 @@ class Module; // better use void* pointer directly
 class HelperScript
 {
 public:
-	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context)
+	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context) // make context static instead of passing it
 	{
 		v8::Isolate *isolate = v8::Isolate::GetCurrent();
 		v8::HandleScope scope(isolate);

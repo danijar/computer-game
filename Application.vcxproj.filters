@@ -241,6 +241,9 @@
     <ClCompile Include="Application\module\terrain\save.cpp">
       <Filter>module\terrain</Filter>
     </ClCompile>
+    <ClCompile Include="Application\module\person\save.cpp">
+      <Filter>module\person</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">
@@ -337,6 +340,9 @@
     <ClInclude Include="Application\manager\global.h">
       <Filter>manager</Filter>
     </ClInclude>
+    <ClInclude Include="Application\helper\archive.h">
+      <Filter>helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\module\model\init.js">
@@ -428,6 +434,9 @@
     </None>
     <None Include="Application\module\renderer\shader\tonemapping.frag">
       <Filter>module\renderer\shader</Filter>
+    </None>
+    <None Include="Application\module\person\update.js">
+      <Filter>module\person</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

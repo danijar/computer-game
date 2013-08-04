@@ -110,6 +110,7 @@
     <ClCompile Include="Application\module\person\checks.cpp" />
     <ClCompile Include="Application\module\person\general.cpp" />
     <ClCompile Include="Application\module\person\movement.cpp" />
+    <ClCompile Include="Application\module\person\save.cpp" />
     <ClCompile Include="Application\module\physic\callbacks.cpp" />
     <ClCompile Include="Application\module\physic\debug.cpp" />
     <ClCompile Include="Application\module\physic\general.cpp" />
@@ -137,6 +138,7 @@
     <ClCompile Include="Application\module\window\general.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application\helper\archive.h" />
     <ClInclude Include="Application\helper\debug.h" />
     <ClInclude Include="Application\helper\file.h" />
     <ClInclude Include="Application\helper\opengl.h" />
@@ -184,6 +186,7 @@
     <None Include="Application\module\model\update.js" />
     <None Include="Application\module\mod\init.js" />
     <None Include="Application\module\mod\update.js" />
+    <None Include="Application\module\person\update.js" />
     <None Include="Application\module\physic\shader\shader.frag" />
     <None Include="Application\module\physic\shader\shader.vert" />
     <None Include="Application\module\renderer\pipeline.js" />

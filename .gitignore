@@ -12,5 +12,5 @@ Application.opensdf
 # windows
 Thumbs.db
 
-# terrain savegames
-Application/module/terrain/save
+# savegames
+Application/save

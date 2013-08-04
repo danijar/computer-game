@@ -28,6 +28,9 @@ void ModulePerson::Init()
 
 void ModulePerson::Update()
 {
+	Script->Run("update.js");
+
+	// update persons
 	auto pns = Entity->Get<Person>();
 	
 	for(auto i = pns.begin(); i != pns.end(); ++i)
@@ -46,6 +49,9 @@ void ModulePerson::Update()
 	unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
 	auto psn = Entity->Get<Person>(id);
 	auto tsf = Entity->Get<Form>(id);
+
+	static bool once = true;
+	if(once){ once = false; Load(id); } // why get this overwritten when executed on "SystemInitialized"?
 
 	vec3 move;
 	if (Keyboard::isKeyPressed(Keyboard::Up   ) || Keyboard::isKeyPressed(Keyboard::W)) move.x++;
@@ -73,11 +79,19 @@ void ModulePerson::Update()
 
 	if(psn->Jumping && !Keyboard::isKeyPressed(Keyboard::Space) && Ground(id))
 		psn->Jumping = false;
+
+	// store player position every some milliseconds
+	static Clock clock;
+	if(clock.getElapsedTime().asMilliseconds() > 500)
+	{
+		Save(id);
+		clock.restart();
+	}
 }
 
 void ModulePerson::Listeners()
 {
-	Event->Listen("InputBindJump", [=] {
+	Event->Listen("InputBindJump", [=]{
 		unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
 		auto psn = Entity->Get<Person>(id);
 		auto tsf = Entity->Get<Form>(id);
@@ -86,5 +100,18 @@ void ModulePerson::Listeners()
 			Jump(id, 15.0f, true);
 		else if(Ground(id))
 			Jump(id);
+	});
+
+	Event->Listen("SystemInitialized", [=]{
+		/*
+		unsigned int id = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+
+		if(Form::World && Entity->Get<Form>(id)->Body->isInWorld()) Form::World->removeRigidBody(Entity->Get<Form>(id)->Body);
+		Load(id);
+		//if(Form::World) Form::World->addRigidBody(Entity->Get<Form>(id)->Body);
+
+		Debug->Print("new x coordinate " + to_string(Entity->Get<Form>(id)->Position().x));
+		Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Rotation(Entity->Get<Form>(id)->Rotation());
+		*/
 	});
 }

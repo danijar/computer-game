@@ -5,6 +5,8 @@
 #include <GLM/glm.hpp>
 #include <BULLET/btBulletDynamicsCommon.h>
 
+#include "form.h"
+
 
 class ModulePerson : public Module
 {
@@ -25,4 +27,8 @@ class ModulePerson : public Module
 	bool Edge(unsigned int Id, glm::vec3 Direction);
 	std::pair<bool, float> RayDown(btVector3 &Position, float Length);
 	bool Ray(btVector3 &From, btVector3 &To, btVector3 &Point = btVector3(), btVector3 &Normal = btVector3());
+
+	// save
+	bool ModulePerson::Load(unsigned int Id);
+	void ModulePerson::Save(unsigned int Id);
 };

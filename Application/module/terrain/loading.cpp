@@ -24,8 +24,7 @@ void ModuleTerrain::Loading()
 			// remesh updated chunk
 			if(current.Changed)
 			{
-				bool saved = Save(&current);
-				if(!saved) Debug->Fail("chunk could not be saved");
+				Save(&current);
 				Mesh(&current);
 			}
 			

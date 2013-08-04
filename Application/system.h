@@ -7,6 +7,7 @@
 #include "helper/file.h"
 #include "helper/opengl.h"
 #include "helper/script.h"
+#include "helper/archive.h"
 
 #include "manager/event.h"
 #include "manager/entity.h"
@@ -26,6 +27,7 @@ public:
 		this->File    = new HelperFile(Name);
 		this->Opengl  = new HelperOpengl(Name);
 		this->Script  = new HelperScript(Name, this, Context);
+		this->Archive = new HelperArchive(Name);
 		this->message = Message;
 	}
 	virtual void Init() = 0;
@@ -46,6 +48,7 @@ public:
 	HelperFile    *File;
 	HelperOpengl  *Opengl;
 	HelperScript  *Script;
+	HelperArchive *Archive;
 private:
 	std::string name;
 	std::string *message;

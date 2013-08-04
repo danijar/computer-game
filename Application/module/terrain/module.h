@@ -45,7 +45,7 @@ private:
 
 	// save
 	bool Load(Terrain *Terrain);
-	bool Save(Terrain *Terrain);
+	void Save(Terrain *Terrain);
 
 	// generation
 	void Generate(Terrain *Terrain);
