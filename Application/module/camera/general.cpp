@@ -22,8 +22,6 @@ void ModuleCamera::Init()
 	focus = Focus();
 	wnd->setMouseCursorVisible(!focus);
 
-	campitch = 0.0f;
-
 	Calculate();
 	State();
 	Projection();

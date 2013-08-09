@@ -6,7 +6,7 @@
 
 struct Camera
 {
-	Camera() : Active(false), Person(0)
+	Camera() : Active(false), Person(0), Pitch(0.f)
 	{
 		View = glm::lookAt(
 			glm::vec3(1.2, 1.2, 1.2),
@@ -17,6 +17,7 @@ struct Camera
 
 	bool Active;
 	unsigned int Person;
+	float Pitch;
 	glm::vec2 Angles;
 	glm::mat4 View, Projection;
 };

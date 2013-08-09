@@ -85,7 +85,6 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 
 		// tagets as attachment to texture name
 		unordered_map<GLenum, string> targets;
-
 		if(object->Has(v8str("targets")))
 		{
 			v8::Handle<v8::Object> obj = object->Get(v8str("targets"))->ToObject();
@@ -100,11 +99,6 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 				targets.insert(make_pair(GL_COLOR_ATTACHMENT3, stdstr(obj->Get(v8str("COLOR_ATTACHMENT3")))));
 			if(obj->Has(v8str("DEPTH_STENCIL_ATTACHMENT")))
 				targets.insert(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, stdstr(obj->Get(v8str("DEPTH_STENCIL_ATTACHMENT")))));
-		}
-		else
-		{
-			HelperDebug::Fail("script", "at least one target needed");
-			return v8::Undefined();
 		}
 
 		// samplers as shader location to texture name

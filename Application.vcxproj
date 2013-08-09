@@ -139,9 +139,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\helper\archive.h" />
+    <ClInclude Include="Application\helper\asset.h" />
     <ClInclude Include="Application\helper\debug.h" />
     <ClInclude Include="Application\helper\file.h" />
     <ClInclude Include="Application\helper\opengl.h" />
+    <ClInclude Include="Application\helper\save.h" />
     <ClInclude Include="Application\helper\script.h" />
     <ClInclude Include="Application\manager\entity.h" />
     <ClInclude Include="Application\manager\event.h" />
@@ -166,7 +168,6 @@
     <ClInclude Include="Application\type\model.h" />
     <ClInclude Include="Application\type\movement.h" />
     <ClInclude Include="Application\type\person.h" />
-    <ClInclude Include="Application\type\physic.h" />
     <ClInclude Include="Application\type\print.h" />
     <ClInclude Include="Application\type\settings.h" />
     <ClInclude Include="Application\type\terrain.h" />

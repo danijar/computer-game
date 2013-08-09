@@ -125,11 +125,8 @@ renderpass("tonemapping", {
     samplers: { "image_tex": "antialiasing" },
 });
 
-rendertarget("screen");
-
 renderpass("screen", {
     fragment : "screen.frag",
-    targets  : { "COLOR_ATTACHMENT0": "screen" },
     samplers: { "image_tex": "tonemapped" },
     draw     : "SCREEN",
 });

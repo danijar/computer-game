@@ -125,6 +125,15 @@ void ModuleTerrain::Update()
 			null = false;
 			loading = true;
 		}
+		else
+		{
+			static bool once = true;
+			if(once)
+			{
+				Event->Fire("TerrainLoadingFinished");
+				once = false;
+			}
+		}
 		access.unlock();
 	}
 

@@ -310,9 +310,6 @@
     <ClInclude Include="Application\type\person.h">
       <Filter>type</Filter>
     </ClInclude>
-    <ClInclude Include="Application\type\physic.h">
-      <Filter>type</Filter>
-    </ClInclude>
     <ClInclude Include="Application\type\settings.h">
       <Filter>type</Filter>
     </ClInclude>
@@ -341,6 +338,12 @@
       <Filter>manager</Filter>
     </ClInclude>
     <ClInclude Include="Application\helper\archive.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\helper\asset.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\helper\save.h">
       <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>

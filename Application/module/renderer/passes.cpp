@@ -128,7 +128,7 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 	pass.Fragment         = Fragment;
 	pass.Size             = Size;
 	pass.Program          = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer      = CreateFramebuffer(pass.Targets);
+	pass.Framebuffer      = Targets.size() ? CreateFramebuffer(pass.Targets) : 0;
 	pass.StencilFunction  = StencilFunction;
 	pass.StencilReference = StencilReference;
 	pass.StencilOperation = StencilOperation;

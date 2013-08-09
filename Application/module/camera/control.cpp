@@ -12,6 +12,7 @@ using namespace glm;
 void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
+	auto cam = Entity->Get<Camera>(id);
 	auto tsf = Entity->Get<Form>(id);
 
 	// apply multipliers
@@ -19,9 +20,9 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 
 	// clamp camera pitch
 	const float clamp = radians(85.0f);
-	if     (campitch + Amount.x >  clamp) Amount.x =  clamp - campitch;
-	else if(campitch + Amount.x < -clamp) Amount.x = -clamp - campitch;
-	campitch += Amount.x;
+	if     (cam->Pitch + Amount.x >  clamp) Amount.x =  clamp - cam->Pitch;
+	else if(cam->Pitch + Amount.x < -clamp) Amount.x = -clamp - cam->Pitch;
+	cam->Pitch += Amount.x;
 
 	// fetch current rotation
 	btTransform transform = tsf->Body->getWorldTransform();

@@ -52,6 +52,13 @@ struct Form
 		btQuaternion rotation(Body->getWorldTransform().getRotation());
 		return glm::quat(rotation.getW(), rotation.getX(), rotation.getY(), rotation.getZ());
 	}
+	void Quaternion(glm::quat Rotation)
+	{
+		Body->activate();
+		btTransform transform(Body->getWorldTransform());
+		transform.setRotation(btQuaternion(Rotation.x, Rotation.y, Rotation.z, Rotation.w));
+		Body->setWorldTransform(transform);
+	}
 	glm::vec3 Scale()
 	{
 		btVector3 factors(Body->getCollisionShape()->getLocalScaling());

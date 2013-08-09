@@ -1,11 +1,8 @@
 #include "module.h"
 
 #include <string>
-#include <filesystem>
 #include <GLM/glm.hpp>
-#include <ZIP/zipint.h>
 using namespace std;
-using namespace std::tr2::sys;
 using namespace glm;
 
 #include "settings.h"
@@ -15,32 +12,53 @@ using namespace glm;
 
 bool ModulePerson::Load(unsigned int Id)
 {
-	auto tsf = Entity->Get<Form>(Id);
 	auto stg = Global->Get<Settings>("settings");
+	auto cam = Entity->Get<Camera>(Id);
+	auto tsfcam = Entity->Get<Form>(Id);
+	auto tsfpsn = Entity->Get<Form>(cam->Person);
+
 	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/data.zip";
 	string file = "player.txt";
 
-	float data[6] = { 0 };
+	float data[8] = { 0 };
 
-	bool result = Archive->Read(path, file, data);
+	size_t test_length = 0;
+	bool result = Archive->Read(path, file, data, &test_length);
+	Debug->Fail("savegame length " + to_string(test_length));
 
-	// later on save position and rotation in physics component
-	tsf->Position(vec3(data[0], data[1], data[2]));
-	tsf->Rotation(vec3(data[3], data[4], data[5]));
+	if(result)
+	{
+		cam->Pitch = data[0];
+		tsfpsn->Position(vec3(data[1], data[2], data[3]));
+		tsfcam->Quaternion(quat(data[4], data[5], data[6], data[7]));
+		Debug->Pass("load player success");
+		Debug->Print("loaded player rotation (" + to_string(data[4]) + ", " + to_string(data[5]) + ", " + to_string(data[6]) + ", " + to_string(data[7]) + ")");
+	}
+	else
+	{
+		Debug->Fail("load player fail");
+	}
 
 	return result;
 }
 
 void ModulePerson::Save(unsigned int Id)
 {
-	auto tsf = Entity->Get<Form>(Id);
 	auto stg = Global->Get<Settings>("settings");
+	auto cam = Entity->Get<Camera>(Id);
+	auto tsfcam = Entity->Get<Form>(Id);
+	auto tsfpsn = Entity->Get<Form>(cam->Person);
+	
 	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/data.zip";
 	string file = "player.txt";
 
-	vec3 position = tsf->Position(), rotation = tsf->Rotation();
-	float data[6] = { position.x, position.y, position.z, rotation.x, rotation.y, rotation.z };
-	
+	// later on save position and rotation in physics module
+	// and campitch in camera module
+
+	vec3 position = tsfpsn->Position();
+	quat rotation = tsfcam->Quaternion();
+	float data[8] = { cam->Pitch, position.x, position.y, position.z, rotation.w, rotation.x, rotation.y, rotation.z };
+
 	/*
 	 * why doesn't this work asynchronously?
 	 *
@@ -49,6 +67,7 @@ void ModulePerson::Save(unsigned int Id)
 	 * });
 	 */
 
-	bool result = Archive->Write(path, file, data, 6);
+	bool result = Archive->Write(path, file, data, sizeof data);
 	if(!result) Debug->Fail("save person failed");
+	else Debug->Print("saved player rotation (" + to_string(data[4]) + ", " + to_string(data[5]) + ", " + to_string(data[6]) + ", " + to_string(data[7]) + ")");
 }

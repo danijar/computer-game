@@ -50,8 +50,10 @@ public:
 	}
 	void ReadAsync(std::string Path, std::string File, void *Destination, size_t *Length, std::function<void(bool)> Callback)
 	{
+		// later on add to thread queue
 		std::async(std::launch::async, [=]{
 			bool result = Read(Path, File, Destination, Length);
+			// later on add to callback queue to run in main thread
 			Callback(result);
 		});
 	}
@@ -59,8 +61,7 @@ public:
 	{
 		// get folder path from file path
 		const size_t last_slash = Path.rfind('/');
-		if (std::string::npos == last_slash)
-			return false;
+		if (std::string::npos == last_slash) return false;
 		std::string directory = Path.substr(0, last_slash);
 
 		// create folder path if it does not exist
