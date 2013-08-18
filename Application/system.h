@@ -3,26 +3,28 @@
 #include <string>
 #include <vector>
 
+#include "manager/event.h"
+#include "manager/entity.h"
+#include "manager/global.h"
+#include "manager/data.h"
+
 #include "helper/debug.h"
 #include "helper/file.h"
 #include "helper/opengl.h"
 #include "helper/script.h"
 #include "helper/archive.h"
 
-#include "manager/event.h"
-#include "manager/entity.h"
-#include "manager/global.h"
-
 
 class Module
 {
 public:
-	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, v8::Persistent<v8::Context> Context, std::string *Message)
+	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, v8::Persistent<v8::Context> Context, std::string *Message)
 	{
 		this->name    = Name;
 		this->Event   = Event;
 		this->Entity  = Entity;
 		this->Global  = Global;
+		this->Data    = Data;
 		this->Debug   = new HelperDebug(Name);
 		this->File    = new HelperFile(Name);
 		this->Opengl  = new HelperOpengl(Name);
@@ -44,6 +46,7 @@ public:
 	ManagerEvent  *Event;
 	ManagerEntity *Entity;
 	ManagerGlobal *Global;
+	ManagerData   *Data;
 	HelperDebug   *Debug;
 	HelperFile    *File;
 	HelperOpengl  *Opengl;
@@ -63,6 +66,7 @@ public:
 		event   = new ManagerEvent();
 		entity  = new ManagerEntity();
 		global  = new ManagerGlobal();
+		data    = new ManagerData();
 		message = "";
 	}
 
@@ -72,7 +76,7 @@ public:
 		context->Enter();
 		for (auto i : list)
 		{
-			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, context, &message);
+			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, data, context, &message);
 			std::get<1>(i)->Init();
 		}
 		event->Fire("SystemInitialized");
@@ -156,5 +160,6 @@ private:
 	ManagerEvent  *event;
 	ManagerEntity *entity;
 	ManagerGlobal *global;
+	ManagerData   *data;
 	std::string message;
 };
