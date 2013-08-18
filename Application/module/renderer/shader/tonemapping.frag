@@ -19,6 +19,7 @@ uniform float contrast   = 1.1;
  * default 1.3, 1.0, 1.0, 1.0, 1.1, 1.1
  * sunset  1.1, 2.0, 1.1, 0.5, 0.9, 1.0
  * crises  0.5, 0.7, 0.8, 1.1, 1.1, 1.3
+ * night   0.4, 0.6, 0.9, 1.5, 1.4, 1.2
  */
 
 void saturate(inout vec3 color, in float change)
@@ -45,7 +46,7 @@ void detone(inout vec3 color, in vec3 modification)
 	color.b -= Pb * change;
 }
 
-void brighten(inout vec3 color, in float brightness, in float contrast = 1.0)
+void brighten(inout vec3 color, in float brightness, in float contrast)
 {
 	color *= vec3(brightness);
 
