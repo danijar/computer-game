@@ -286,16 +286,10 @@
       <Filter>module\terrain</Filter>
     </ClInclude>
     <ClInclude Include="Application\system.h" />
-    <ClInclude Include="Application\type\animation.h">
-      <Filter>type</Filter>
-    </ClInclude>
     <ClInclude Include="Application\type\form.h">
       <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\type\light.h">
-      <Filter>type</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\type\movement.h">
       <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\type\print.h">
@@ -343,8 +337,8 @@
     <ClInclude Include="Application\helper\asset.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="Application\manager\data.h">
-      <Filter>manager</Filter>
+    <ClInclude Include="Application\helper\data.h">
+      <Filter>helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

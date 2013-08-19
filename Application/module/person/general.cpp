@@ -26,6 +26,37 @@ void ModulePerson::Init()
 	};
 
 	Listeners();
+
+
+	// test data manager
+
+	unordered_map<string, string> structure;
+	structure.insert(make_pair("mass",    "FLOAT"));
+	structure.insert(make_pair("height",  "FLOAT"));
+	structure.insert(make_pair("jumping", "BOOLEAN"));
+	Data->Register<Person>(structure, [](void *Instance){
+		unordered_map<string, string> serialized;
+		auto psn = (Person*)Instance;
+		serialized.insert(make_pair("mass",    to_string(psn->Mass)));
+		serialized.insert(make_pair("height",  to_string(psn->Height)));
+		serialized.insert(make_pair("jumping", to_string(psn->Jumping)));
+		return serialized;
+	}, [](void *Instance, unordered_map<string, string> Serialized){
+		auto psn = (Person*)Instance;
+		if(Serialized.find("mass")    == Serialized.end()) return false;
+		if(Serialized.find("height")  == Serialized.end()) return false;
+		if(Serialized.find("jumping") == Serialized.end()) return false;
+		psn->Mass    = std::stof(Serialized["mass"]);
+		psn->Height  = std::stof(Serialized["height"]);
+		psn->Jumping = (Serialized["jumping"] == "true" ? true : false);
+		return true;
+	});
+
+	unsigned int id = Entity->New();
+	auto psn = Entity->Add<Person>(id);
+
+	Data->Save(id, psn);
+	Data->Load(id, psn);
 }
 
 void ModulePerson::Update()
