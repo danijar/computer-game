@@ -22,21 +22,17 @@ bool ModulePerson::Load(unsigned int Id)
 
 	float data[8] = { 0 };
 
-	size_t test_length = 0;
-	bool result = Archive->Read(path, file, data, &test_length);
-	Debug->Fail("savegame length " + to_string(test_length));
+	bool result = Archive->Read(path, file, data);
 
 	if(result)
 	{
 		cam->Pitch = data[0];
 		tsfpsn->Position(vec3(data[1], data[2], data[3]));
 		tsfcam->Quaternion(quat(data[4], data[5], data[6], data[7]));
-		Debug->Pass("load player success");
-		Debug->Print("loaded player rotation (" + to_string(data[4]) + ", " + to_string(data[5]) + ", " + to_string(data[6]) + ", " + to_string(data[7]) + ")");
 	}
 	else
 	{
-		Debug->Fail("load player fail");
+		Debug->Fail("load person fail");
 	}
 
 	return result;
@@ -58,7 +54,7 @@ void ModulePerson::Save(unsigned int Id)
 	vec3 position = tsfpsn->Position();
 	quat rotation = tsfcam->Quaternion();
 	float data[8] = { cam->Pitch, position.x, position.y, position.z, rotation.w, rotation.x, rotation.y, rotation.z };
-
+	
 	/*
 	 * why doesn't this work asynchronously?
 	 *
@@ -68,6 +64,5 @@ void ModulePerson::Save(unsigned int Id)
 	 */
 
 	bool result = Archive->Write(path, file, data, sizeof data);
-	if(!result) Debug->Fail("save person failed");
-	else Debug->Print("saved player rotation (" + to_string(data[4]) + ", " + to_string(data[5]) + ", " + to_string(data[6]) + ", " + to_string(data[7]) + ")");
+	if(!result) Debug->Fail("save person fail");
 }

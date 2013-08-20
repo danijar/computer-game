@@ -14,9 +14,10 @@ using namespace sf;
 
 void ModuleCamera::Init()
 {
-	unsigned int id = Create(vec3(0), 1.80f);
+	unsigned int id = Entity->New();
+	Entity->Add<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
+	Entity->Add<Form>(id)->Body->setActivationState(DISABLE_DEACTIVATION);
 	*Global->Add<unsigned int>("camera") = id;
-	Entity->Get<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	focus = Focus();
@@ -36,11 +37,8 @@ void ModuleCamera::Update()
 	auto cam = Entity->Get<Camera>(camera);
 	if(!cam->Active) return;
 
-	auto psn = Entity->Get<Person>(cam->Person);
 	auto wnd = Global->Get<RenderWindow>("window");
-	auto tsfcam = Entity->Get<Form>(camera);
-	auto tsfpsn = Entity->Get<Form>(cam->Person);
-	
+
 	// rotate camera head
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
@@ -50,10 +48,15 @@ void ModuleCamera::Update()
 		Vector2i offset = position - center;
 		Rotate(vec3(offset.y, -offset.x, 0));
 	}
-	
+
 	// synchronize camera head and capsule body
-	tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
-	tsfpsn->Rotation(vec3(0, Yaw(), 0));
+	if(cam->Person)
+	{
+		auto tsfcam = Entity->Get<Form>(camera);
+		auto tsfpsn = Entity->Get<Form>(cam->Person);
+		tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
+		tsfpsn->Rotation(vec3(0, Yaw(), 0));
+	}
 
 	Calculate();
 }

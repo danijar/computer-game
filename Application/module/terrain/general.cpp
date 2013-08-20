@@ -190,6 +190,7 @@ void ModuleTerrain::Listeners()
 			SetBlock(get<0>(sel), 0);
 	});
 
+	/*
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
 		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
@@ -207,6 +208,7 @@ void ModuleTerrain::Listeners()
 			else Debug->Warning("could not place block");
 		}
 	});
+	*/
 
 	Event->Listen("InputBindPick", [=]{
 		auto sel = Selection();

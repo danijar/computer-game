@@ -108,9 +108,6 @@
     <ClCompile Include="Application\module\physic\debug.cpp">
       <Filter>module\physic</Filter>
     </ClCompile>
-    <ClCompile Include="Application\module\camera\create.cpp">
-      <Filter>module\camera</Filter>
-    </ClCompile>
     <ClCompile Include="Application\module\camera\control.cpp">
       <Filter>module\camera</Filter>
     </ClCompile>
@@ -286,16 +283,10 @@
       <Filter>module\terrain</Filter>
     </ClInclude>
     <ClInclude Include="Application\system.h" />
-    <ClInclude Include="Application\type\animation.h">
-      <Filter>type</Filter>
-    </ClInclude>
     <ClInclude Include="Application\type\form.h">
       <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\type\light.h">
-      <Filter>type</Filter>
-    </ClInclude>
-    <ClInclude Include="Application\type\movement.h">
       <Filter>type</Filter>
     </ClInclude>
     <ClInclude Include="Application\type\print.h">

@@ -23,19 +23,19 @@ public:
 	template <typename T>
 	T *Add(unsigned int Id, T *Instance)
 	{
-		if(Id > index || 1 > Id) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(Id) + ") because it is not an entity id. Use 'int New()'.");
+		if(Id > index || 1 > Id) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(Id) + ") because it is not an entity id, use 'int New()'");
 		auto key = std::type_index(typeid(T));
 
 		if (list.find(key) == list.end())
 		{
 			auto value = new std::unordered_map<int, std::shared_ptr<void> >();
-			list.insert(make_pair(key, *value));
+			list.insert(std::make_pair(key, *value));
 		}
 
-		auto result = list[key].insert(make_pair(Id, std::shared_ptr<void>(Instance)));
+		auto result = list[key].insert(std::make_pair(Id, std::shared_ptr<void>(Instance)));
 		if (!result.second)
 		{
-			HelperDebug::Warning("system", "cannot add entity (" + std::to_string(Id) + ") to (" + std::string(key.name()) + ") because it already exists.");
+			HelperDebug::Warning("system", "cannot add entity (" + std::to_string(Id) + ") to (" + std::string(key.name()) + ") because it already exists");
 			return Get<T>(Id);
 		}
 		return Instance;
@@ -60,7 +60,7 @@ public:
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, Id))
 		{
-			HelperDebug::Crash("system", "cannot get entity because (" + std::to_string(Id) + ") in (" + std::string(key.name()) + ") does not exist.");
+			HelperDebug::Crash("system", "cannot get entity because (" + std::to_string(Id) + ") in (" + std::string(key.name()) + ") does not exist");
 			return nullptr;
 		}
 		else return static_cast<T*>(list[key][Id].get());
@@ -69,7 +69,7 @@ public:
 	{
 		if(Id > index || 1 > Id)
 		{
-			HelperDebug::Warning("system", "cannot delete entity (" + std::to_string(Id) + ") because it is not an entity id.");
+			HelperDebug::Warning("system", "cannot delete entity (" + std::to_string(Id) + ") because it is not an entity id");
 			return;
 		}
 		for(auto i = list.begin(); i != list.end(); ++i)
@@ -88,7 +88,7 @@ public:
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, Id))
 		{
-			HelperDebug::Crash("system", "cannot delete entity because (" + std::string(key.name()) + ") in (" + std::string(key.name()) + ") does not exist.");
+			HelperDebug::Crash("system", "cannot delete entity because (" + std::string(key.name()) + ") in (" + std::string(key.name()) + ") does not exist");
 			return;
 		}
 		auto j = list[key].find(Id);

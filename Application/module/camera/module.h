@@ -14,9 +14,6 @@ class ModuleCamera : public Module
 	void Listeners();
 	void Callbacks();
 
-	// create
-	unsigned int Create(glm::vec3 Position = glm::vec3(0), float Height = 2.0f);
-
 	// state
 	bool focus;
 	void State();

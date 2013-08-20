@@ -85,7 +85,6 @@
     <ClCompile Include="Application\module\camera\calculate.cpp" />
     <ClCompile Include="Application\module\camera\callbacks.cpp" />
     <ClCompile Include="Application\module\camera\control.cpp" />
-    <ClCompile Include="Application\module\camera\create.cpp" />
     <ClCompile Include="Application\module\camera\general.cpp" />
     <ClCompile Include="Application\module\camera\state.cpp" />
     <ClCompile Include="Application\module\camera\synchronization.cpp" />
@@ -161,12 +160,10 @@
     <ClInclude Include="Application\module\sky\module.h" />
     <ClInclude Include="Application\system.h" />
     <ClInclude Include="Application\module\terrain\module.h" />
-    <ClInclude Include="Application\type\animation.h" />
     <ClInclude Include="Application\type\camera.h" />
     <ClInclude Include="Application\type\form.h" />
     <ClInclude Include="Application\type\light.h" />
     <ClInclude Include="Application\type\model.h" />
-    <ClInclude Include="Application\type\movement.h" />
     <ClInclude Include="Application\type\person.h" />
     <ClInclude Include="Application\type\print.h" />
     <ClInclude Include="Application\type\settings.h" />

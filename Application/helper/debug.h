@@ -71,7 +71,7 @@ public:
 	}
 	static void Crash(std::string Name, std::string Message)
 	{
-		Wait(Name, "crashed");
+		Wait(Name, "crashed, " + Message);
 		std::exit(EXIT_FAILURE);
 	}
 private:

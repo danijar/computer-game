@@ -8,8 +8,8 @@
 
 void ModulePerson::Setup(unsigned int Id)
 {
-	auto tsf = Entity->Check<Form>(Id) ? Entity->Get<Form>(Id) : Entity->Add<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
+	auto tsf = Entity->Check<Form>(Id) ? Entity->Get<Form>(Id) : Entity->Add<Form>(Id);
 
 	delete tsf->Body->getCollisionShape();
 	delete tsf->Body;
