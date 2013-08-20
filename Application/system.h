@@ -3,15 +3,16 @@
 #include <string>
 #include <vector>
 
+#include "manager/event.h"
+#include "manager/entity.h"
+#include "manager/global.h"
+
 #include "helper/debug.h"
 #include "helper/file.h"
 #include "helper/opengl.h"
 #include "helper/script.h"
 #include "helper/archive.h"
-
-#include "manager/event.h"
-#include "manager/entity.h"
-#include "manager/global.h"
+#include "helper/data.h"
 
 
 class Module
@@ -28,6 +29,7 @@ public:
 		this->Opengl  = new HelperOpengl(Name);
 		this->Script  = new HelperScript(Name, this, Context);
 		this->Archive = new HelperArchive(Name);
+		this->Data    = new HelperData();
 		this->message = Message;
 	}
 	virtual void Init() = 0;
@@ -49,6 +51,7 @@ public:
 	HelperOpengl  *Opengl;
 	HelperScript  *Script;
 	HelperArchive *Archive;
+	HelperData    *Data;
 private:
 	std::string name;
 	std::string *message;
