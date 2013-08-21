@@ -3,9 +3,7 @@
  * variables for update script
  */
 
-var house_keys_once = true;
-var house_keys_down = function(){ return key('H') && key('O') && key('U') && key('S') && key('E'); }
-var house_keys_up = function(){ return !(key('H') || key('O') || key('U') || key('S') || key('E')); }
+var keys_house_once = true;
 
 /*
  * build a nice house

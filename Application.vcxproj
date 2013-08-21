@@ -172,6 +172,7 @@
     <ClInclude Include="Application\module\window\module.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Application\module\camera\init.js" />
     <None Include="Application\module\model\init.js" />
     <None Include="Application\module\model\material\barrel.mtl" />
     <None Include="Application\module\model\material\chess.mtl" />
@@ -185,6 +186,7 @@
     <None Include="Application\module\model\update.js" />
     <None Include="Application\module\mod\init.js" />
     <None Include="Application\module\mod\update.js" />
+    <None Include="Application\module\person\init.js" />
     <None Include="Application\module\person\update.js" />
     <None Include="Application\module\physic\shader\shader.frag" />
     <None Include="Application\module\physic\shader\shader.vert" />

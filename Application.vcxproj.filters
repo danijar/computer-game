@@ -339,9 +339,7 @@
     <ClInclude Include="Application\helper\data.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="Application\system.h">
-      <Filter>save</Filter>
-    </ClInclude>
+    <ClInclude Include="Application\system.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\module\model\init.js">
@@ -435,6 +433,12 @@
       <Filter>module\renderer\shader</Filter>
     </None>
     <None Include="Application\module\person\update.js">
+      <Filter>module\person</Filter>
+    </None>
+    <None Include="Application\module\camera\init.js">
+      <Filter>module\camera</Filter>
+    </None>
+    <None Include="Application\module\person\init.js">
       <Filter>module\person</Filter>
     </None>
   </ItemGroup>

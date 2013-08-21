@@ -1,16 +1,13 @@
-/*
-// place player on terrain
-var worldheight = 50;
-var groundheight = -15;
-if (person()) {
-    var pos = position(person());
-    if (pos[1] < groundheight) {
-        var floor;
-        for (floor = worldheight - 1; 0 < floor - 1; --floor)
-            if (block(parseInt(pos[0]), floor, parseInt(pos[2])))
-                break;
-        position(person(), pos[0], floor + 3, pos[2]);
-        impulse(person(), 1000);
+
+if (!key_reset_down && key('R') && key('E') && key('S') && key('E') && key('T')) {
+    key_reset_down = true;
+
+    if (person()) {
+        var pos = position(person());
+        position(person(), pos[0], 10, pos[2]);
+        print("reset player position");
     }
 }
-*/
+else if (key_reset_down && !key('R') && !key('E') && !key('S') && !key('E') && !key('T')) {
+    key_reset_down = false;
+}

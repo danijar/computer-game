@@ -21,8 +21,12 @@ void ModuleCamera::Init()
 	if(Entity->Get<Camera>().size() < 1)
 	{
 		unsigned int id = Entity->New();
-		Entity->Add<Camera>(id);
-		Entity->Add<Form>(id)->Body->setActivationState(DISABLE_DEACTIVATION);
+		auto cam = Entity->Add<Camera>(id);
+		auto frm = Entity->Add<Form>(id);
+
+		frm->Body->setActivationState(DISABLE_DEACTIVATION);
+		frm->Position(vec3(0, 10, 0));
+
 		Debug->Pass("none loaded, added default one");
 	}
 	
@@ -42,6 +46,8 @@ void ModuleCamera::Init()
 
 	Listeners();
 	Callbacks();
+
+	Script->Run("init.js");
 }
 
 void ModuleCamera::Update()

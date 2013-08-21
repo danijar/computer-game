@@ -47,6 +47,8 @@ void ModulePerson::Init()
 	Data->Save(id, psn);
 	Data->Load(id, psn);
 	*/
+
+	Script->Run("init.js");
 }
 
 void ModulePerson::Update()

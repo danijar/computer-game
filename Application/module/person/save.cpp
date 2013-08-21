@@ -26,6 +26,7 @@ void ModulePerson::Load()
 
 		frm->Position(vec3(data[0], data[1], data[2]));
 		frm->Quaternion(quat(data[3], data[4], data[5], data[6]));
+		psn->Calculate(1.80f);
 	}
 }
 

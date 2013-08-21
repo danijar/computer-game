@@ -53,4 +53,4 @@ Upcoming Features
 
 - Generation of more simple meshes with adjacent face merging
 - Terrain smoothing by a particular algorithm
-- Realistig water by fluid simulation with (highly adaptive resolution)[http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html]
+- Realistic water by fluid simulation with [highly adaptive resolution](http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html)
