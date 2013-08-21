@@ -15,7 +15,6 @@ class ModuleCamera : public Module
 	void Callbacks();
 
 	// state
-	bool focus;
 	void State();
 	void State(bool Active);
 	bool Focus();
@@ -30,6 +29,10 @@ class ModuleCamera : public Module
 	void Projection();
 	void Projection(sf::Vector2u Size);
 	void Calculate();
+
+	// save
+	void Load();
+	void Save();
 
 public:
 	// callbacks

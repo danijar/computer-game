@@ -11,7 +11,7 @@ using namespace glm;
 
 void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 {
-	auto tsf = Entity->Get<Form>(Id);
+	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// fetch orientation of person
@@ -30,22 +30,22 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 
 	// adapt to surface angle
 	float distance = 0;
-	auto result = RayDown(tsf->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
+	auto result = RayDown(frm->Body->getWorldTransform().getOrigin() + forward * psn->Radius + btVector3(0, - psn->Height/2 + psn->Step, 0), 2 * psn->Step);
 	if(result.first) distance = -1 * (result.second - psn->Step);
 	Amount.y += distance;
 
 	// sum walking orientations together
-	btVector3 current  = tsf->Body->getLinearVelocity();
+	btVector3 current  = frm->Body->getLinearVelocity();
 	btVector3 velocity = btVector3(forward * Amount.x + up * Amount.y + side * Amount.z) * Speed;
 	if(abs(velocity.getY()) < 0.01f || velocity.getY() < current.getY()) velocity.setY(current.getY());
 
 	// set velocity to move body
-	tsf->Body->setLinearVelocity(velocity);
+	frm->Body->setLinearVelocity(velocity);
 }
 
 void ModulePerson::Jump(unsigned int Id, float Multiplier, bool Force)
 {
-	auto tsf = Entity->Get<Form>(Id);
+	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// jump by applying impulse, sadly a downward impulse to also push the ground doesn't work
@@ -53,11 +53,11 @@ void ModulePerson::Jump(unsigned int Id, float Multiplier, bool Force)
 	{
 		if(!Force)
 		{
-			btVector3 velocity = tsf->Body->getLinearVelocity();
-			tsf->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
+			btVector3 velocity = frm->Body->getLinearVelocity();
+			frm->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
 		}
 		float amount = psn->Mass * Multiplier;
-		tsf->Body->applyCentralImpulse(btVector3(0, amount, 0));
+		frm->Body->applyCentralImpulse(btVector3(0, amount, 0));
 		psn->Jumping = true;
 	}
 }

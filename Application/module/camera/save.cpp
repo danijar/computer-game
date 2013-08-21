@@ -6,10 +6,11 @@ using namespace std;
 using namespace glm;
 
 #include "settings.h"
-#include "person.h"
+#include "camera.h"
+#include "form.h"
 
 
-void ModulePerson::Load()
+void ModuleCamera::Load()
 {
 	auto stg = Global->Get<Settings>("settings");
 
@@ -17,43 +18,36 @@ void ModulePerson::Load()
 	string file = "data.txt";
 	
 	// for now, only load the first camera
-	float data[7] = { 0 };
+	float data[8] = { 0 };
 	if(Archive->Read(path, file, data))
 	{
 		unsigned int id = Entity->New();
-		auto psn = Entity->Add<Person>(id);
+		auto cam = Entity->Add<Camera>(id);
 		auto frm = Entity->Add<Form>(id);
 
-		frm->Position(vec3(data[0], data[1], data[2]));
-		frm->Quaternion(quat(data[3], data[4], data[5], data[6]));
+		cam->Pitch = data[0];
+		frm->Position(vec3(data[1], data[2], data[3]));
+		frm->Quaternion(quat(data[4], data[5], data[6], data[7]));
+		frm->Body->setActivationState(DISABLE_DEACTIVATION);
 	}
 }
 
-void ModulePerson::Save()
+void ModuleCamera::Save()
 {
 	auto stg = Global->Get<Settings>("settings");
-	auto pns = Entity->Get<Person>();
-	if(pns.size() < 1) return;
+	auto cms = Entity->Get<Camera>();
 
 	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + ".zip";
 	string file = "data.txt";
 
-	// for now, only save the first person
-	unsigned int id = pns.begin()->first;
-	auto psn = Entity->Get<Person>(id);
+	// for now, only save the first camera
+	unsigned int id = cms.begin()->first;
+	auto cam = Entity->Get<Camera>(id);
 	auto frm = Entity->Get<Form>(id);
 	
 	vec3 position = frm->Position();
 	quat rotation = frm->Quaternion();
-	float data[7] = { position.x, position.y, position.z, rotation.w, rotation.x, rotation.y, rotation.z };
-
-	/*
-	 * why doesn't this work asynchronously?
-	 *
-	 * Archive->WriteAsync(path, file, data, 6, [=](bool result){
-	 *     if(!result) Debug->Fail("save person failed");
-	 * });
-	 */
+	float data[8] = { cam->Pitch, position.x, position.y, position.z, rotation.w, rotation.x, rotation.y, rotation.z };
 
 	bool result = Archive->Write(path, file, data, sizeof data);
 	if(!result) Debug->Fail("save fail");

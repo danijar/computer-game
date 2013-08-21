@@ -14,18 +14,31 @@ using namespace sf;
 
 void ModuleCamera::Init()
 {
-	unsigned int id = Entity->New();
-	Entity->Add<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
-	Entity->Add<Form>(id)->Body->setActivationState(DISABLE_DEACTIVATION);
-	*Global->Add<unsigned int>("camera") = id;
-	auto wnd = Global->Get<RenderWindow>("window");
+	// load cameras
+	Load();
 
-	focus = Focus();
-	wnd->setMouseCursorVisible(!focus);
+	// if there is no camera at all, add a default one
+	if(Entity->Get<Camera>().size() < 1)
+	{
+		unsigned int id = Entity->New();
+		Entity->Add<Camera>(id);
+		Entity->Add<Form>(id)->Body->setActivationState(DISABLE_DEACTIVATION);
+		Debug->Pass("none loaded, added default one");
+	}
+	
+	// if there is no bound camera, bound the first one
+	if(!Global->Check("camera"))
+	{
+		unsigned int id = Entity->Get<Camera>().begin()->first;
+		Entity->Get<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
+		*Global->Add<unsigned int>("camera") = id;
+		Debug->Pass("not bound, fallback to first one");
+	}
 
-	Calculate();
-	State();
+	// initially calculate perspektive
+	// and set window and mouse state
 	Projection();
+	State(Focus());
 
 	Listeners();
 	Callbacks();
@@ -35,14 +48,12 @@ void ModuleCamera::Update()
 {
 	unsigned int camera = *Global->Get<unsigned int>("camera");
 	auto cam = Entity->Get<Camera>(camera);
-	if(!cam->Active) return;
-
 	auto wnd = Global->Get<RenderWindow>("window");
 
 	// rotate camera head
 	Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 	Vector2i position = Mouse::getPosition(*wnd);
-	if(position != center && focus)
+	if(cam->Active && position != center)
 	{
 		Mouse::setPosition(center, *wnd);
 		Vector2i offset = position - center;
@@ -52,10 +63,18 @@ void ModuleCamera::Update()
 	// synchronize camera head and capsule body
 	if(cam->Person)
 	{
-		auto tsfcam = Entity->Get<Form>(camera);
-		auto tsfpsn = Entity->Get<Form>(cam->Person);
-		tsfcam->Position(tsfpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
-		tsfpsn->Rotation(vec3(0, Yaw(), 0));
+		auto frmcam = Entity->Get<Form>(camera);
+		auto frmpsn = Entity->Get<Form>(cam->Person);
+		frmcam->Position(frmpsn->Position() + vec3(0, Entity->Get<Person>(cam->Person)->Eyes, 0));
+		frmpsn->Rotation(vec3(0, Yaw(), 0));
+	}
+
+	// store cameras every some milliseconds
+	static Clock clock;
+	if(clock.getElapsedTime().asMilliseconds() > 500)
+	{
+		Save();
+		clock.restart();
 	}
 
 	Calculate();
@@ -79,11 +98,7 @@ void ModuleCamera::Listeners()
 	});
 
 	Event->Listen("WindowFocusLost", [=]{
-		auto wnd = Global->Get<RenderWindow>("window");
-
-		// free mouse cursor
-		wnd->setMouseCursorVisible(true);
-		focus = false;
+		Global->Get<RenderWindow>("window")->setMouseCursorVisible(true);
 	});
 
 	Event->Listen("WindowFocusGained", [=]{
@@ -97,6 +112,5 @@ void ModuleCamera::Listeners()
 			Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 			Mouse::setPosition(center, *wnd);
 		}
-		focus = true;
 	});
 }

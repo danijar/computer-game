@@ -14,7 +14,7 @@ using namespace glm;
 bool ModuleTerrain::Load(Terrain *Terrain)
 {
 	auto stg = Global->Get<Settings>("settings");
-	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/data.zip";
+	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + ".zip";
 	string file = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
 	return Archive->Read(path, file, Terrain->Blocks);
@@ -23,7 +23,7 @@ bool ModuleTerrain::Load(Terrain *Terrain)
 void ModuleTerrain::Save(Terrain *Terrain)
 {
 	auto stg = Global->Get<Settings>("settings");
-	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + "/data.zip";
+	string path = "save/" + *stg->Get<string>("Savegame") + "/" + Name() + ".zip";
 	string file = to_string(Terrain->Key.x) + "," + to_string(Terrain->Key.y) + "," + to_string(Terrain->Key.z) + ".txt";
 
 	Archive->WriteAsync(path, file, Terrain->Blocks, sizeof Terrain->Blocks, [=](bool result){

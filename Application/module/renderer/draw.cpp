@@ -66,7 +66,7 @@ void ModuleRenderer::DrawScreen(Pass *Pass)
 void ModuleRenderer::DrawForms(Pass *Pass)
 {	
 	auto stg = Global->Get<Settings>("settings");
-	auto fms = Entity->Get<Model>();
+	auto mls = Entity->Get<Model>();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -83,33 +83,33 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
 
-	for(auto i : fms)
+	for(auto i : mls)
 	{
-		auto frm = i.second;
+		auto mdl = i.second;
 
 		// improve by using fallbacks instead of skipping
-		if(!frm->Elements) continue;
-		if(!frm->Diffuse) continue;
+		if(!mdl->Elements) continue;
+		if(!mdl->Diffuse) continue;
 		if(!Entity->Check<Form>(i.first)) continue;
-		auto tsf = Entity->Get<Form>(i.first);
+		auto frm = Entity->Get<Form>(i.first);
 
-		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(tsf->Matrix()));
+		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(frm->Matrix()));
 
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Positions);
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Positions);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Normals);
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Normals);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, frm->Texcoords);
+		glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
-		glBindTexture(GL_TEXTURE_2D, frm->Diffuse);
+		glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, frm->Elements);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
 
 		GLint size = 0;
 		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);

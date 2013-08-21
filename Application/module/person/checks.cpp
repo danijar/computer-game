@@ -11,11 +11,11 @@ using namespace glm;
 
 bool ModulePerson::Ground(unsigned int Id)
 {
-	auto tsf = Entity->Get<Form>(Id);
+	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// fetch person's origin
-	btVector3 origin = tsf->Body->getWorldTransform().getOrigin();
+	btVector3 origin = frm->Body->getWorldTransform().getOrigin();
 
 	// cast ray at the center
 	bool hit = RayDown(origin, psn->Height / 2).first;
@@ -33,11 +33,11 @@ bool ModulePerson::Ground(unsigned int Id)
 
 bool ModulePerson::Edge(unsigned int Id, vec3 Direction)
 {
-	auto tsf = Entity->Get<Form>(Id);
+	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// fetch person's origin and rotation
-	btTransform transform = tsf->Body->getWorldTransform();
+	btTransform transform = frm->Body->getWorldTransform();
 	btQuaternion rotation = transform.getRotation();
 	btVector3 origin = transform.getOrigin();
 

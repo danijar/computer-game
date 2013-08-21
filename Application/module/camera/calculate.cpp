@@ -26,8 +26,8 @@ void ModuleCamera::Projection(Vector2u Size)
 void ModuleCamera::Calculate()
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<Form>(id);
+	auto frm = Entity->Get<Form>(id);
 	auto cam = Entity->Get<Camera>(id);
 
-	cam->View = lookAt(tsf->Position(), tsf->Position() + tsf->Direction(), vec3(0, 1, 0));
+	cam->View = lookAt(frm->Position(), frm->Position() + frm->Direction(), vec3(0, 1, 0));
 }

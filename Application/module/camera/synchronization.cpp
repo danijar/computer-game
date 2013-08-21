@@ -8,10 +8,10 @@
 float ModuleCamera::Yaw()
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
-	auto tsf = Entity->Get<Form>(id);
+	auto frm = Entity->Get<Form>(id);
 
 	// fetch current rotation
-	btTransform transform = tsf->Body->getWorldTransform();
+	btTransform transform = frm->Body->getWorldTransform();
 	btQuaternion rotation = transform.getRotation();
 
 	// extract yaw amount

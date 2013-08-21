@@ -6,11 +6,11 @@ This is a branch of a basic [Graphics Application](https://github.com/ComputerGa
 Features
 --------
 
-- Random terrain generation using [Simplex noise](http://en.wikipedia.org/wiki/Simplex_noise)
+- Random terrain generation using multiple layers of [Simplex noise](http://en.wikipedia.org/wiki/Simplex_noise)
 - Culled mesh generation from voxel data
 - Different block looks using a texture atlas
-- Block modification at runtime
-- Store and load world on and from disk
+- Terrain modification at runtime
+- Store and load world and player from disk
 
 Screenshot
 ----------
@@ -53,3 +53,4 @@ Upcoming Features
 
 - Generation of more simple meshes with adjacent face merging
 - Terrain smoothing by a particular algorithm
+- Realistig water by fluid simulation with (highly adaptive resolution)[http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html]

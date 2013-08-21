@@ -29,6 +29,6 @@ class ModulePerson : public Module
 	bool Ray(btVector3 &From, btVector3 &To, btVector3 &Point = btVector3(), btVector3 &Normal = btVector3());
 
 	// save
-	bool ModulePerson::Load(unsigned int Id);
-	void ModulePerson::Save(unsigned int Id);
+	void Load();
+	void Save();
 };

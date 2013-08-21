@@ -13,7 +13,7 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 {
 	unsigned int id = *Global->Get<unsigned int>("camera");
 	auto cam = Entity->Get<Camera>(id);
-	auto tsf = Entity->Get<Form>(id);
+	auto frm = Entity->Get<Form>(id);
 
 	// apply multipliers
 	Amount *= Sensitivity;
@@ -25,7 +25,7 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 	cam->Pitch += Amount.x;
 
 	// fetch current rotation
-	btTransform transform = tsf->Body->getWorldTransform();
+	btTransform transform = frm->Body->getWorldTransform();
 	btQuaternion rotation = transform.getRotation();
 
 	// create orientation vectors
@@ -41,5 +41,5 @@ void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 
 	// set new rotation
 	transform.setRotation(rotation);
-	tsf->Body->setWorldTransform(transform);
+	frm->Body->setWorldTransform(transform);
 }

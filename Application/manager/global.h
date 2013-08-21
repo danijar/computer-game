@@ -48,6 +48,10 @@ public:
 		delete &i->second; // test this
 		list.erase(i);
 	}
+	bool Check(std::string Name)
+	{
+		return list.find(Name) != list.end();
+	}
 private:
 	std::unordered_map<std::string, std::shared_ptr<void>> list;
 };

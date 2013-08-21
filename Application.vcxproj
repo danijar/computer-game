@@ -86,6 +86,7 @@
     <ClCompile Include="Application\module\camera\callbacks.cpp" />
     <ClCompile Include="Application\module\camera\control.cpp" />
     <ClCompile Include="Application\module\camera\general.cpp" />
+    <ClCompile Include="Application\module\camera\save.cpp" />
     <ClCompile Include="Application\module\camera\state.cpp" />
     <ClCompile Include="Application\module\camera\synchronization.cpp" />
     <ClCompile Include="Application\module\console\callbacks.cpp" />

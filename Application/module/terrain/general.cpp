@@ -190,12 +190,12 @@ void ModuleTerrain::Listeners()
 			SetBlock(get<0>(sel), 0);
 	});
 
-	/*
 	Event->Listen("InputBindPlace", [=]{
 		auto sel = Selection();
 		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
 		{
 			unsigned int person = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+			if(!person) return;
 			auto psn = Entity->Get<Person>(person);
 
 			vec3 player = Entity->Get<Form>(person)->Position();
@@ -208,7 +208,6 @@ void ModuleTerrain::Listeners()
 			else Debug->Warning("could not place block");
 		}
 	});
-	*/
 
 	Event->Listen("InputBindPick", [=]{
 		auto sel = Selection();

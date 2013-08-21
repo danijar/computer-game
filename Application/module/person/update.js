@@ -1,4 +1,4 @@
-
+/*
 // place player on terrain
 var worldheight = 50;
 var groundheight = -15;
@@ -13,3 +13,4 @@ if (person()) {
         impulse(person(), 1000);
     }
 }
+*/

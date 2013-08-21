@@ -241,6 +241,9 @@
     <ClCompile Include="Application\module\person\save.cpp">
       <Filter>module\person</Filter>
     </ClCompile>
+    <ClCompile Include="Application\module\camera\save.cpp">
+      <Filter>module\camera</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">

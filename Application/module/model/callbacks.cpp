@@ -96,7 +96,7 @@ v8::Handle<v8::Value> ModuleModel::jsPosition(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	// set position
 	if(args.Length() > 1)
@@ -109,13 +109,13 @@ v8::Handle<v8::Value> ModuleModel::jsPosition(const v8::Arguments& args)
 		else
 			return v8::Undefined();
 
-		tsf->Position(position);
+		frm->Position(position);
 		return v8::Undefined();
 	}
 	// get position
 	else
 	{
-		vec3 position = tsf->Position();
+		vec3 position = frm->Position();
 
 		v8::Handle<v8::Array> result = v8::Array::New(3);
 		result->Set(0, v8::Number::New(position.x));
@@ -132,7 +132,7 @@ v8::Handle<v8::Value> ModuleModel::jsRotation(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	// set rotation
 	if(args.Length() > 1)
@@ -145,13 +145,13 @@ v8::Handle<v8::Value> ModuleModel::jsRotation(const v8::Arguments& args)
 		else
 			return v8::Undefined();
 
-		tsf->Rotation(rotation);
+		frm->Rotation(rotation);
 		return v8::Undefined();
 	}
 	// get rotation
 	else
 	{
-		vec3 rotation = tsf->Rotation();
+		vec3 rotation = frm->Rotation();
 
 		v8::Handle<v8::Array> result = v8::Array::New(3);
 		result->Set(0, v8::Number::New(rotation.x));
@@ -168,7 +168,7 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	// set scale, buggy because changes all identical shapes
 	if(args.Length() > 1)
@@ -183,14 +183,14 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 		else
 			return v8::Undefined();
 
-		tsf->Body->activate(); // is done by Scale() already but is needed for some reason
-		tsf->Scale(scale);
+		frm->Body->activate(); // is done by Scale() already but is needed for some reason
+		frm->Scale(scale);
 		return v8::Undefined();
 	}
 	// get scale
 	else
 	{
-		vec3 scale = tsf->Scale();
+		vec3 scale = frm->Scale();
 
 		v8::Handle<v8::Array> result = v8::Array::New(3);
 		result->Set(0, v8::Number::New(scale.x));
@@ -207,9 +207,9 @@ v8::Handle<v8::Value> ModuleModel::jsDirection(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
-	vec3 direction = tsf->Direction();
+	vec3 direction = frm->Direction();
 
 	v8::Handle<v8::Array> result = v8::Array::New(3);
 	result->Set(0, v8::Number::New(direction.x));

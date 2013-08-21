@@ -19,7 +19,7 @@ v8::Handle<v8::Value> ModulePhysic::jsImpulse(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	btVector3 impulse;
 	if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
@@ -28,8 +28,8 @@ v8::Handle<v8::Value> ModulePhysic::jsImpulse(const v8::Arguments& args)
 		impulse = btVector3(0, (float)args[1]->NumberValue(), 0);
 	else return v8::Undefined();
 	
-	tsf->Body->activate();
-	tsf->Body->applyCentralImpulse(impulse);
+	frm->Body->activate();
+	frm->Body->applyCentralImpulse(impulse);
 
 	return v8::Undefined();
 }
@@ -41,7 +41,7 @@ v8::Handle<v8::Value> ModulePhysic::jsForce(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	btVector3 force;
 	if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
@@ -50,8 +50,8 @@ v8::Handle<v8::Value> ModulePhysic::jsForce(const v8::Arguments& args)
 		force = btVector3(0, (float)args[1]->NumberValue(), 0);
 	else return v8::Undefined();
 		
-	tsf->Body->activate();
-	tsf->Body->applyCentralForce(force);
+	frm->Body->activate();
+	frm->Body->applyCentralForce(force);
 
 	return v8::Undefined();
 }
@@ -63,7 +63,7 @@ v8::Handle<v8::Value> ModulePhysic::jsVelocity(const v8::Arguments& args)
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
 	unsigned int id = args[0]->Uint32Value();
-	auto tsf = module->Entity->Get<Form>(id);
+	auto frm = module->Entity->Get<Form>(id);
 
 	// set velocity
 	if(args.Length() > 1)
@@ -76,14 +76,14 @@ v8::Handle<v8::Value> ModulePhysic::jsVelocity(const v8::Arguments& args)
 			velocity = btVector3(0, (float)args[1]->NumberValue(), 0);
 		else return v8::Undefined();
 		
-		tsf->Body->activate();
-		tsf->Body->setLinearVelocity(velocity);
+		frm->Body->activate();
+		frm->Body->setLinearVelocity(velocity);
 		return v8::Undefined();
 	}
 	// get velocity
 	else
 	{
-		btVector3 velocity = tsf->Body->getLinearVelocity();
+		btVector3 velocity = frm->Body->getLinearVelocity();
 
 		v8::Handle<v8::Array> result = v8::Array::New(3);
 		result->Set(0, v8::Number::New(velocity.getX()));
