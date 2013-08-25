@@ -7,6 +7,8 @@
 #include <locale>
 #include <typeindex>
 
+#include <SQLITE/sqlite3.h>
+
 #include "helper/debug.h"
 
 
@@ -43,6 +45,18 @@ class HelperData
 	};
 
 public:
+	/* 
+	 * Just for development purpose.
+	 * Later on remove this function.
+	 */
+	bool Test()
+	{
+		sqlite3 *connection = Open("save/database.db");
+		if(!connection) return false;
+		bool result = Close(connection);
+		HelperDebug::Pass("data", "test successful");
+		return result;
+	}
 	/*
 	 * Register a property type to the manager, providing its structure in database and converter functions.
 	 * Parameters are a map with future database field names as keys and their type names as value,
@@ -162,7 +176,7 @@ private:
 	/* static */ std::unordered_map<std::type_index, Functions> registered;
 
 	/*
-	 *
+	 * Get the lowercase name of the type passed as template argument
 	 */
 	template <typename T>
 	std::string Name()
@@ -184,5 +198,35 @@ private:
 		std::transform(name.begin(), name.end(), name.begin(), std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
 
 		return name;
+	}
+	/*
+	 * Connects to a database.
+	 * If the database specified by the path does not exist, a new one is created.
+	 */
+	sqlite3 *Open(std::string Path)
+	{
+		// create directory structure if not exist
+		// ...
+
+		sqlite3 *database = nullptr; // need to use "new"?
+		int result = sqlite3_open_v2(Path.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+		if(result != SQLITE_OK)
+			HelperDebug::Fail("data", "connect to database fail");
+		return database;
+	}
+	/*
+	 * Closes the connection to a datavase.
+	 * The connection handle gets deleted.
+	 */
+	bool Close(sqlite3 *Connection)
+	{
+		int result = sqlite3_close_v2(Connection);
+		if(result != SQLITE_OK)
+		{
+			HelperDebug::Fail("data", "disconnect from database failed");
+			return false;
+		}
+		// delete Connection;
+		return true;
 	}
 };
