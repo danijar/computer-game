@@ -3,6 +3,10 @@
 #include <unordered_map>
 #include <memory>
 #include <typeindex>
+// #include <cstdlib>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 #include "helper/debug.h"
 
@@ -10,10 +14,17 @@
 class ManagerEntity
 {
 public:
-	ManagerEntity() : index(0) {}
 	uint64_t New()
 	{
-		return ++index;
+		uint64_t id = 0;
+		boost::uuids::uuid uuid = boost::uuids::random_generator()();
+		for(int i = 0; i < 8; ++i)
+		{
+			id <<= 8;
+			id |= uuid.data[i];
+			// id |= rand() % 128;
+		}
+		return id;
 	}
 	template <typename T>
 	T *Add(uint64_t Id)
@@ -23,9 +34,7 @@ public:
 	template <typename T>
 	T *Add(uint64_t Id, T *Instance)
 	{
-		if(Id > index || 1 > Id) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(Id) + ") because it is not an entity id, use 'New()'");
 		auto key = std::type_index(typeid(T));
-
 		if (list.find(key) == list.end())
 		{
 			auto value = new std::unordered_map<uint64_t, std::shared_ptr<void> >();
@@ -67,11 +76,6 @@ public:
 	}
 	void Delete(uint64_t Id)
 	{
-		if(Id > index || 1 > Id)
-		{
-			HelperDebug::Warning("system", "cannot delete entity (" + std::to_string(Id) + ") because it is not an entity id");
-			return;
-		}
 		for(auto i = list.begin(); i != list.end(); ++i)
 		{
 			if (Check(i->first, Id))
@@ -104,7 +108,6 @@ public:
 		return true;
 	}
 private:
-	uint64_t index;
 	std::unordered_map<std::type_index, std::unordered_map<uint64_t, std::shared_ptr<void>>> list;
 	bool Check(std::type_index Key)
 	{

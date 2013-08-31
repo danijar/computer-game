@@ -58,7 +58,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)\library</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-d.lib;assimp-d.lib;v8-d.lib;bullet-d.lib;zip-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sfml-d.lib;assimp-d.lib;v8-d.lib;bullet-d.lib;zip-d.lib;sqlite-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

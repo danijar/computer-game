@@ -125,7 +125,7 @@ bool ModuleTerrain::InReachDistance(vec3 Target)
 #include <glew/glew.h>
 #include <sfml/Graphics.hpp>
 
-GLuint ModuleTerrain::Marker()
+uint64_t ModuleTerrain::Marker()
 {
 	uint64_t id = Entity->New();
 	auto mdl = Entity->Add<Model>(id);

@@ -65,12 +65,12 @@ private:
 	glm::ivec3 PosLocal(glm::ivec3 Block);
 
 	// select
-	bool show; GLuint marker;
+	bool show; uint64_t marker;
 	std::tuple<glm::ivec3, glm::ivec3, uint8_t> Selection();
 	float Intbound(float s, float ds);
 	int Signum(float x);
 	bool InReachDistance(glm::vec3 Target);
-	GLuint Marker();
+	uint64_t Marker();
 	uint8_t type;
 
 public:
