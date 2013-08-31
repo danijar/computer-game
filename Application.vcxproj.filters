@@ -244,6 +244,9 @@
     <ClCompile Include="Application\module\camera\save.cpp">
       <Filter>module\camera</Filter>
     </ClCompile>
+    <ClCompile Include="Application\module\person\callbacks.cpp">
+      <Filter>module\person</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">
@@ -434,9 +437,6 @@
     </None>
     <None Include="Application\module\person\update.js">
       <Filter>module\person</Filter>
-    </None>
-    <None Include="Application\module\camera\init.js">
-      <Filter>module\camera</Filter>
     </None>
     <None Include="Application\module\person\init.js">
       <Filter>module\person</Filter>

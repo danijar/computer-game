@@ -14,6 +14,7 @@ class ModulePerson : public Module
 	void Init();
 	void Update();
 	void Listeners();
+	void Callbacks();
 
 	// create
 	void Setup(unsigned int Id);
@@ -31,4 +32,8 @@ class ModulePerson : public Module
 	// save
 	void Load();
 	void Save();
+
+public:
+	// callbacks
+	static v8::Handle<v8::Value> jsPlayer(const v8::Arguments& args);
 };

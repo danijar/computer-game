@@ -16,9 +16,6 @@ using namespace sf;
 
 void ModulePerson::Init()
 {
-	Listeners();
-
-
 	/*
 	// test data manager
 	unordered_map<string, string> structure;
@@ -47,6 +44,9 @@ void ModulePerson::Init()
 	Data->Save(id, psn);
 	Data->Load(id, psn);
 	*/
+
+	Listeners();
+	Callbacks();
 
 	Script->Run("init.js");
 }

@@ -106,6 +106,7 @@
     <ClCompile Include="Application\module\model\body.cpp" />
     <ClCompile Include="Application\module\model\texture.cpp" />
     <ClCompile Include="Application\module\mod\general.cpp" />
+    <ClCompile Include="Application\module\person\callbacks.cpp" />
     <ClCompile Include="Application\module\person\create.cpp" />
     <ClCompile Include="Application\module\person\checks.cpp" />
     <ClCompile Include="Application\module\person\general.cpp" />
@@ -172,7 +173,6 @@
     <ClInclude Include="Application\module\window\module.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Application\module\camera\init.js" />
     <None Include="Application\module\model\init.js" />
     <None Include="Application\module\model\material\barrel.mtl" />
     <None Include="Application\module\model\material\chess.mtl" />

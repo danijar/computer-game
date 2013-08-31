@@ -46,8 +46,6 @@ void ModuleCamera::Init()
 
 	Listeners();
 	Callbacks();
-
-	Script->Run("init.js");
 }
 
 void ModuleCamera::Update()
