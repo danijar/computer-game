@@ -2,6 +2,7 @@
 
 #include <string>
 using namespace std;
+using namespace v8;
 
 #include "settings.h"
 
@@ -14,18 +15,18 @@ void ModuleRenderer::Callbacks()
 	Script->Bind("wireframe",        jsWireframe       );
 }
 
-v8::Handle<v8::Value> ModuleRenderer::jsRendertarget(const v8::Arguments& args)
+Handle<Value> ModuleRenderer::jsRendertarget(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 
 	if(args.Length() < 1 || !args[0]->IsString())
-		return v8::Undefined();
-	string name = *v8::String::Utf8Value(args[0]);
+		return Undefined();
+	string name = *String::Utf8Value(args[0]);
 
 	GLenum type = GL_RGB16F;
 	if(1 < args.Length() && args[1]->IsString())
 	{
-		string ty = *v8::String::Utf8Value(args[1]);
+		string ty = *String::Utf8Value(args[1]);
 
 		if     (ty == "RGB16")              type = GL_RGB16;
 		else if(ty == "RGB16F")             type = GL_RGB16F;
@@ -50,26 +51,26 @@ v8::Handle<v8::Value> ModuleRenderer::jsRendertarget(const v8::Arguments& args)
 
 	module->TextureCreate(name, type, size);
 
-	return v8::Undefined();
+	return Undefined();
 }
 
-v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
+Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 
 	if(args.Length() < 1 || !args[0]->IsString())
-		return v8::Undefined();
-	string name = *v8::String::Utf8Value(args[0]);
+		return Undefined();
+	string name = *String::Utf8Value(args[0]);
 
 	// helpers
-	auto v8str = [](string String){ return v8::String::New(String.c_str()); };
-	auto stdstr = [](v8::Handle<v8::Value> Value){ return string(*v8::String::Utf8Value(Value)); };
+	auto v8str = [](string String){ return String::New(String.c_str()); };
+	auto stdstr = [](Handle<Value> Value){ return string(*String::Utf8Value(Value)); };
 
 	// create new pass
 	if(1 < args.Length() && args[1]->IsObject())
 	{
 
-		v8::Handle<v8::Object> object = args[1]->ToObject();
+		Handle<Object> object = args[1]->ToObject();
 
 		// vertex path
 		string vertex;
@@ -81,13 +82,13 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 		string fragment;
 		if(object->Has(v8str("fragment")))
 			fragment = stdstr(object->Get(v8str("fragment")));
-		else { HelperDebug::Fail("script", "fragment shader path needed"); return v8::Undefined(); }
+		else { HelperDebug::Fail("script", "fragment shader path needed"); return Undefined(); }
 
 		// tagets as attachment to texture name
 		unordered_map<GLenum, string> targets;
 		if(object->Has(v8str("targets")))
 		{
-			v8::Handle<v8::Object> obj = object->Get(v8str("targets"))->ToObject();
+			Handle<Object> obj = object->Get(v8str("targets"))->ToObject();
 
 			if(obj->Has(v8str("COLOR_ATTACHMENT0")))
 				targets.insert(make_pair(GL_COLOR_ATTACHMENT0, stdstr(obj->Get(v8str("COLOR_ATTACHMENT0")))));
@@ -105,9 +106,9 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 		unordered_map<string, string> samplers;
 		if(object->Has(v8str("samplers")))
 		{
-			v8::Handle<v8::Object> obj = object->Get(v8str("samplers"))->ToObject();
+			Handle<Object> obj = object->Get(v8str("samplers"))->ToObject();
 
-			v8::Handle<v8::Array> locations = obj->GetPropertyNames();
+			Handle<Array> locations = obj->GetPropertyNames();
 			for(unsigned int i = 0; i < locations->Length(); ++i)
 			{
 				string location = stdstr(locations->Get(i));
@@ -120,13 +121,13 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 		unordered_map<string, string> fallbacks;
 		if(object->Has(v8str("fallbacks")))
 		{
-			v8::Handle<v8::Object> obj = object->Get(v8str("fallbacks"))->ToObject();
+			Handle<Object> obj = object->Get(v8str("fallbacks"))->ToObject();
 
-			v8::Handle<v8::Array> targets = obj->GetPropertyNames();
+			Handle<Array> targets = obj->GetPropertyNames();
 			for(unsigned int i = 0; i < targets->Length(); ++i)
 			{
 				string target = stdstr(targets->Get(i));
-				v8::Handle<v8::Value> fallback = obj->Get(v8str(target));
+				Handle<Value> fallback = obj->Get(v8str(target));
 				if(fallback->IsString())
 					fallbacks.insert(make_pair(target, stdstr(fallback)));
 				else if(fallback->IsNumber())
@@ -158,7 +159,7 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 		GLenum stencilop   = GL_KEEP;
 		if(object->Has(v8str("stencil")))
 		{
-			v8::Handle<v8::Array> array = v8::Handle<v8::Array>::Cast(object->Get(v8str("stencil")));
+			Handle<Array> array = Handle<Array>::Cast(object->Get(v8str("stencil")));
 
 			if(0 < array->Length() && array->Get(0)->IsString())
 			{
@@ -194,20 +195,20 @@ v8::Handle<v8::Value> ModuleRenderer::jsRenderpass(const v8::Arguments& args)
 		HelperDebug::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
 	}
 	
-	return v8::Undefined();
+	return Undefined();
 }
 
-v8::Handle<v8::Value> ModuleRenderer::jsRendertargetload(const v8::Arguments& args)
+Handle<Value> ModuleRenderer::jsRendertargetload(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 
 	if(args.Length() < 1 || !args[0]->IsString())
-		return v8::Undefined();
-	string name = *v8::String::Utf8Value(args[0]);
+		return Undefined();
+	string name = *String::Utf8Value(args[0]);
 
 	if(args.Length() < 2 || !args[1]->IsString())
-		return v8::Undefined();
-	string path = *v8::String::Utf8Value(args[1]);
+		return Undefined();
+	string path = *String::Utf8Value(args[1]);
 
 	bool repeat = true;
 	if(2 < args.Length() && args[2]->IsBoolean())
@@ -223,10 +224,10 @@ v8::Handle<v8::Value> ModuleRenderer::jsRendertargetload(const v8::Arguments& ar
 
 	module->TextureLoad(name, path, repeat, filtering, mipmapping);
 
-	return v8::Undefined();
+	return Undefined();
 }
 
-v8::Handle<v8::Value> ModuleRenderer::jsWireframe(const v8::Arguments& args)
+Handle<Value> ModuleRenderer::jsWireframe(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
@@ -234,5 +235,5 @@ v8::Handle<v8::Value> ModuleRenderer::jsWireframe(const v8::Arguments& args)
 	stg->Set<bool>("Wireframe", !*stg->Get<bool>("Wireframe"));
 
 	HelperDebug::Print("script", string(*stg->Get<bool>("Wireframe") ? "enabled" : "disabled") + " wireframe mode");
-	return v8::Undefined();
+	return Undefined();
 }

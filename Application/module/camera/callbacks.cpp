@@ -1,5 +1,7 @@
 #include "module.h"
 
+using namespace v8;
+
 #include "settings.h"
 #include "camera.h"
 
@@ -9,7 +11,7 @@ void ModuleCamera::Callbacks()
 	Script->Bind("fov",    jsFov   );
 }
 
-v8::Handle<v8::Value> ModuleCamera::jsFov(const v8::Arguments& args)
+Handle<Value> ModuleCamera::jsFov(const Arguments& args)
 {
 	ModuleCamera *module = (ModuleCamera*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
@@ -23,11 +25,11 @@ v8::Handle<v8::Value> ModuleCamera::jsFov(const v8::Arguments& args)
 			module->Projection();
 			module->Event->Fire("ShaderUpdated");
 		}
-		return v8::Undefined();
+		return Undefined();
 	}
 	// get field of view
 	else
 	{
-		return v8::Number::New(*stg->Get<float>("Fieldofview"));
+		return Number::New(*stg->Get<float>("Fieldofview"));
 	}
 }

@@ -3,7 +3,7 @@
 #include <string>
 #include <sfml/System.hpp>
 using namespace std;
-using namespace sf;
+using namespace v8;
 
 #include "settings.h"
 
@@ -13,33 +13,33 @@ void ModuleSettings::Callbacks()
 	Script->Bind("settings", jsSettings);
 }
 
-v8::Handle<v8::Value> ModuleSettings::jsSettings(const v8::Arguments& args)
+Handle<Value> ModuleSettings::jsSettings(const Arguments& args)
 {
 	ModuleSettings *module = (ModuleSettings*)HelperScript::Unwrap(args.Data());
 
 	if(args.Length() < 1 || !args[0]->IsObject())
-		return v8::Undefined();
-	v8::Handle<v8::Object> object = args[0]->ToObject();
+		return Undefined();
+	Handle<Object> object = args[0]->ToObject();
 
 	auto stg = module->Global->Get<Settings>("settings");
 
-	v8::Handle<v8::Array> keys = object->GetPropertyNames();
+	Handle<Array> keys = object->GetPropertyNames();
 	for(unsigned int i = 0; i < keys->Length(); ++i)
 	{
-		string key = *v8::String::Utf8Value(keys->Get(i));
-		if(!object->Get(v8::String::New(key.c_str()))->IsArray())
+		string key = *String::Utf8Value(keys->Get(i));
+		if(!object->Get(String::New(key.c_str()))->IsArray())
 		{
 			HelperDebug::Fail("script", "could not parse (" + key + ") setting");
 			continue;
 		}
-		v8::Handle<v8::Array> values = v8::Handle<v8::Array>::Cast(object->Get(v8::String::New(key.c_str())));
+		Handle<Array> values = Handle<Array>::Cast(object->Get(String::New(key.c_str())));
 	
 		if(!values->Has(0) || !values->Get(0)->IsString())
 		{
 			HelperDebug::Fail("script", "could not parse (" + key + ") setting");
 			continue;
 		}
-		string type = *v8::String::Utf8Value(values->Get(0));
+		string type = *String::Utf8Value(values->Get(0));
 
 		if(type == "bool")
 		{
@@ -75,7 +75,7 @@ v8::Handle<v8::Value> ModuleSettings::jsSettings(const v8::Arguments& args)
 				HelperDebug::Fail("script", "could not parse (" + key + ") setting");
 				continue;
 			}
-			stg->Set<string>(key, *v8::String::Utf8Value(values->Get(1)));
+			stg->Set<string>(key, *String::Utf8Value(values->Get(1)));
 		}
 		else if(type == "Vector2i")
 		{
@@ -84,7 +84,7 @@ v8::Handle<v8::Value> ModuleSettings::jsSettings(const v8::Arguments& args)
 				HelperDebug::Fail("script", "could not parse (" + key + ") setting");
 				continue;
 			}
-			stg->Set<Vector2i>(key, Vector2i(values->Get(1)->Int32Value(), values->Get(2)->Int32Value()));
+			stg->Set<sf::Vector2i>(key, sf::Vector2i(values->Get(1)->Int32Value(), values->Get(2)->Int32Value()));
 		}
 		else if(type == "Vector2u")
 		{
@@ -93,9 +93,9 @@ v8::Handle<v8::Value> ModuleSettings::jsSettings(const v8::Arguments& args)
 				HelperDebug::Fail("script", "could not parse (" + key + ") setting");
 				continue;
 			}
-			stg->Set<Vector2u>(key, Vector2u(values->Get(1)->Uint32Value(), values->Get(2)->Uint32Value()));
+			stg->Set<sf::Vector2u>(key, sf::Vector2u(values->Get(1)->Uint32Value(), values->Get(2)->Uint32Value()));
 		}
 	}
 
-	return v8::Undefined();
+	return Undefined();
 }

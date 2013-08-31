@@ -4,7 +4,7 @@
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
 using namespace std;
-using namespace sf;
+using namespace v8;
 
 #include "settings.h"
 
@@ -16,90 +16,90 @@ void ModuleWindow::Callbacks()
 	Script->Bind("key",   jsKey  );
 }
 
-v8::Handle<v8::Value> ModuleWindow::jsTitle(const v8::Arguments& args)
+Handle<Value> ModuleWindow::jsTitle(const Arguments& args)
 {
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
-	auto wnd = module->Global->Get<RenderWindow>("window");
+	auto wnd = module->Global->Get<sf::RenderWindow>("window");
 
 	if(0 < args.Length())
 	{
 		if(args[0]->IsString())
 		{
-			string title = *v8::String::Utf8Value(args[0]);
+			string title = *String::Utf8Value(args[0]);
 			stg->Set<string>("Title", title);
 			wnd->setTitle(title);
 		}
-		return v8::Undefined();
+		return Undefined();
 	}
 	else
 	{
-		return v8::String::New(stg->Get<string>("Title")->c_str());
+		return String::New(stg->Get<string>("Title")->c_str());
 	}
 }
 
-v8::Handle<v8::Value> ModuleWindow::jsVsync(const v8::Arguments& args)
+Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
 {
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
-	auto wnd = module->Global->Get<RenderWindow>("window");
+	auto wnd = module->Global->Get<sf::RenderWindow>("window");
 
 	stg->Set<bool>("Verticalsync", !*stg->Get<bool>("Verticalsync"));
 	wnd->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
 
 	HelperDebug::Print("script", string(*stg->Get<bool>("Verticalsync") ? "enabled" : "disabled") + " vertical sync");
-	return v8::Undefined();
+	return Undefined();
 }
 
-v8::Handle<v8::Value> ModuleWindow::jsKey(const v8::Arguments& args)
+Handle<Value> ModuleWindow::jsKey(const Arguments& args)
 {
 	if(0 < args.Length() && args[0]->IsString())
 	{
-		string key = *v8::String::Utf8Value(args[0]);
+		string key = *String::Utf8Value(args[0]);
 		bool pressed = false;
 
-		if     (key == "A") pressed = Keyboard::isKeyPressed(Keyboard::A);
-		else if(key == "B") pressed = Keyboard::isKeyPressed(Keyboard::B);
-		else if(key == "C") pressed = Keyboard::isKeyPressed(Keyboard::C);
-		else if(key == "D") pressed = Keyboard::isKeyPressed(Keyboard::D);
-		else if(key == "E") pressed = Keyboard::isKeyPressed(Keyboard::E);
-		else if(key == "F") pressed = Keyboard::isKeyPressed(Keyboard::F);
-		else if(key == "G") pressed = Keyboard::isKeyPressed(Keyboard::G);
-		else if(key == "H") pressed = Keyboard::isKeyPressed(Keyboard::H);
-		else if(key == "I") pressed = Keyboard::isKeyPressed(Keyboard::I);
-		else if(key == "J") pressed = Keyboard::isKeyPressed(Keyboard::J);
-		else if(key == "K") pressed = Keyboard::isKeyPressed(Keyboard::K);
-		else if(key == "L") pressed = Keyboard::isKeyPressed(Keyboard::L);
-		else if(key == "M") pressed = Keyboard::isKeyPressed(Keyboard::M);
-		else if(key == "N") pressed = Keyboard::isKeyPressed(Keyboard::N);
-		else if(key == "O") pressed = Keyboard::isKeyPressed(Keyboard::O);
-		else if(key == "P") pressed = Keyboard::isKeyPressed(Keyboard::P);
-		else if(key == "Q") pressed = Keyboard::isKeyPressed(Keyboard::Q);
-		else if(key == "R") pressed = Keyboard::isKeyPressed(Keyboard::R);
-		else if(key == "S") pressed = Keyboard::isKeyPressed(Keyboard::S);
-		else if(key == "T") pressed = Keyboard::isKeyPressed(Keyboard::T);
-		else if(key == "U") pressed = Keyboard::isKeyPressed(Keyboard::U);
-		else if(key == "V") pressed = Keyboard::isKeyPressed(Keyboard::V);
-		else if(key == "W") pressed = Keyboard::isKeyPressed(Keyboard::W);
-		else if(key == "X") pressed = Keyboard::isKeyPressed(Keyboard::X);
-		else if(key == "Y") pressed = Keyboard::isKeyPressed(Keyboard::Y);
-		else if(key == "Z") pressed = Keyboard::isKeyPressed(Keyboard::Z);
-		else if(key == "0") pressed = Keyboard::isKeyPressed(Keyboard::Num0);
-		else if(key == "1") pressed = Keyboard::isKeyPressed(Keyboard::Num1);
-		else if(key == "2") pressed = Keyboard::isKeyPressed(Keyboard::Num2);
-		else if(key == "3") pressed = Keyboard::isKeyPressed(Keyboard::Num3);
-		else if(key == "4") pressed = Keyboard::isKeyPressed(Keyboard::Num4);
-		else if(key == "5") pressed = Keyboard::isKeyPressed(Keyboard::Num5);
-		else if(key == "6") pressed = Keyboard::isKeyPressed(Keyboard::Num6);
-		else if(key == "7") pressed = Keyboard::isKeyPressed(Keyboard::Num7);
-		else if(key == "8") pressed = Keyboard::isKeyPressed(Keyboard::Num8);
-		else if(key == "9") pressed = Keyboard::isKeyPressed(Keyboard::Num9);
-		else if(key == "Shift") pressed = Keyboard::isKeyPressed(Keyboard::LShift) || Keyboard::isKeyPressed(Keyboard::RShift);
-		else if(key == "Ctrl" ) pressed = Keyboard::isKeyPressed(Keyboard::LControl) || Keyboard::isKeyPressed(Keyboard::RControl);
-		else if(key == "Space") pressed = Keyboard::isKeyPressed(Keyboard::Space);
-		else if(key == "Enter") pressed = Keyboard::isKeyPressed(Keyboard::Return);
+		if     (key == "A") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::A);
+		else if(key == "B") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::B);
+		else if(key == "C") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::C);
+		else if(key == "D") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::D);
+		else if(key == "E") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::E);
+		else if(key == "F") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::F);
+		else if(key == "G") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::G);
+		else if(key == "H") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::H);
+		else if(key == "I") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::I);
+		else if(key == "J") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::J);
+		else if(key == "K") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::K);
+		else if(key == "L") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::L);
+		else if(key == "M") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::M);
+		else if(key == "N") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::N);
+		else if(key == "O") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::O);
+		else if(key == "P") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::P);
+		else if(key == "Q") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
+		else if(key == "R") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::R);
+		else if(key == "S") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::S);
+		else if(key == "T") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::T);
+		else if(key == "U") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::U);
+		else if(key == "V") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::V);
+		else if(key == "W") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::W);
+		else if(key == "X") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::X);
+		else if(key == "Y") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Y);
+		else if(key == "Z") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+		else if(key == "0") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num0);
+		else if(key == "1") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num1);
+		else if(key == "2") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num2);
+		else if(key == "3") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num3);
+		else if(key == "4") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num4);
+		else if(key == "5") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num5);
+		else if(key == "6") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num6);
+		else if(key == "7") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num7);
+		else if(key == "8") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num8);
+		else if(key == "9") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Num9);
+		else if(key == "Shift") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+		else if(key == "Ctrl" ) pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl);
+		else if(key == "Space") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+		else if(key == "Enter") pressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Return);
 
-		return v8::Boolean::New(pressed);
+		return Boolean::New(pressed);
 	}
-	return v8::Undefined();
+	return Undefined();
 }
