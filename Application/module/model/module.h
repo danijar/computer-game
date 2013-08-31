@@ -3,10 +3,10 @@
 #include "system.h"
 
 #include <unordered_map>
-#include <SFML/OpenGL.hpp>
-#include <GLM/glm.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
-#include <V8/v8.h>
+#include <sfml/OpenGL.hpp>
+#include <glm/glm.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
+#include <v8/v8.h>
 
 #include "light.h"
 

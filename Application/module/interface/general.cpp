@@ -1,6 +1,6 @@
 #include "module.h"
 
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace sf;
 
 #include "settings.h"

@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 using namespace std;
 using namespace glm;
 

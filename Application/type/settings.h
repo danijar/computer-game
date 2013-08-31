@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <typeindex>
-#include <SFML/System.hpp>
+#include <sfml/System.hpp>
 
 
 struct Settings

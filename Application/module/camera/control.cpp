@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include <GLM/glm.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
 

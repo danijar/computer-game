@@ -1,8 +1,8 @@
 ﻿#include "module.h"
 
-#include <GLEW/glew.h>
-#include <SFML/OpenGL.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <glew/glew.h>
+#include <sfml/OpenGL.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace std;
 using namespace sf;
 

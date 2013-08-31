@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
-#include <GLM/glm.hpp>
-#include <SFML/System.hpp>
+#include <glm/glm.hpp>
+#include <sfml/System.hpp>
 
 
 class ModuleRenderer : public Module

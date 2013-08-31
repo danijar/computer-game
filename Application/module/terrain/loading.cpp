@@ -2,10 +2,10 @@
 
 #include <string>
 #include <mutex>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/noise.hpp>
-#include <SFML/OpenGL.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/noise.hpp>
+#include <sfml/OpenGL.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
 using namespace sf;

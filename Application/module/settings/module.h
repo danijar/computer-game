@@ -2,7 +2,7 @@
 
 #include "system.h"
 
-#include <SFML/System.hpp>
+#include <sfml/System.hpp>
 
 
 class ModuleSettings : public Module

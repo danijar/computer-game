@@ -4,7 +4,7 @@
 
 #include <string>
 #include <vector>
-#include <V8/v8.h>
+#include <v8/v8.h>
 
 
 class ModuleConsole : public Module

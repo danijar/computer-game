@@ -2,8 +2,8 @@
 
 #include "system.h"
 
-#include <SFML/System.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <sfml/System.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 
 
 class ModulePhysic : public Module

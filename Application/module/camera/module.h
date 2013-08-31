@@ -2,8 +2,8 @@
 
 #include "system.h"
 
-#include <SFML/System.hpp>
-#include <GLM/glm.hpp>
+#include <sfml/System.hpp>
+#include <glm/glm.hpp>
 
 
 class ModuleCamera : public Module

@@ -1,6 +1,6 @@
 #include "module.h"
 
-#include <SFML/Window.hpp>
+#include <sfml/Window.hpp>
 using namespace std;
 using namespace sf;
 

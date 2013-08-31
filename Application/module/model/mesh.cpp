@@ -2,10 +2,10 @@
 
 #include <vector>
 #include <unordered_map>
-#include <GLEW/glew.h>
-#include <ASSIMP/cimport.h>
-#include <ASSIMP/scene.h>
-#include <ASSIMP/postprocess.h>
+#include <glew/glew.h>
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 using namespace std;
 
 

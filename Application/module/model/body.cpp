@@ -1,10 +1,10 @@
 #include "module.h"
 
-#include <GLM/glm.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
-#include <ASSIMP/cimport.h>
-#include <ASSIMP/scene.h>
-#include <ASSIMP/postprocess.h>
+#include <glm/glm.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 using namespace std;
 using namespace glm;
 

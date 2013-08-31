@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include <SFML/Window.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <sfml/Window.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace sf;
 
 #include "camera.h"

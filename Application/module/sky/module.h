@@ -3,7 +3,7 @@
 #include "system.h"
 
 #include <string>
-#include <GLEW/glew.h>
+#include <glew/glew.h>
 
 #include "model.h"
 

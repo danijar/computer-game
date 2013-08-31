@@ -2,8 +2,8 @@
 
 #include <string>
 #include <filesystem>
-#include <GLM/glm.hpp>
-#include <ZIP/zipint.h>
+#include <glm/glm.hpp>
+#include <zip/zipint.h>
 using namespace std;
 using namespace std::tr2::sys;
 using namespace glm;

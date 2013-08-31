@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include <GLEW/glew.h>
-#include <SFML/Graphics.hpp>
+#include <glew/glew.h>
+#include <sfml/Graphics.hpp>
 using namespace sf;
 
 

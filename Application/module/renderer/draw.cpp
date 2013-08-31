@@ -1,8 +1,8 @@
 #include "module.h"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/type_ptr.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 using namespace sf;
 using namespace glm;
 

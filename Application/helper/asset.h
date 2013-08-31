@@ -3,8 +3,8 @@
 #include <string>
 #include <unordered_map>
 
-#include <GLEW/glew.h>
-#include <SFML/Graphics.hpp>
+#include <glew/glew.h>
+#include <sfml/Graphics.hpp>
 
 
 class ManagerAsset

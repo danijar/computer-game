@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include <GLM/glm.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <glm/glm.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace glm;
 using namespace sf;
 

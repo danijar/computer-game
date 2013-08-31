@@ -3,8 +3,8 @@
 #include <string>
 #include <future>
 #include <mutex>
-#include <GLM/glm.hpp>
-#include <SFML/Window.hpp>
+#include <glm/glm.hpp>
+#include <sfml/Window.hpp>
 using namespace std;
 using namespace glm;
 using namespace sf;

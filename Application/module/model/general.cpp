@@ -3,10 +3,10 @@
 #include <unordered_map>
 #include <cstdlib>
 #include <filesystem>
-#include <GLEW/glew.h>
-#include <GLM/glm.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glew/glew.h>
+#include <glm/glm.hpp>
+#include <sfml/Window/Keyboard.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace std::tr2::sys;
 using namespace sf;

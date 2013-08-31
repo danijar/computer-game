@@ -2,9 +2,9 @@
 
 #include <vector>
 #include <string>
-#include <GLM/glm.hpp>
-#include <GLEW/glew.h>
-#include <SFML/Graphics.hpp>
+#include <glm/glm.hpp>
+#include <glew/glew.h>
+#include <sfml/Graphics.hpp>
 using namespace std;
 using namespace glm;
 using namespace sf;

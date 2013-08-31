@@ -1,9 +1,9 @@
 #include "module.h"
 
 #include <cmath>
-#include <GLM/glm.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <glm/glm.hpp>
+#include <sfml/System.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace std;
 using namespace glm;
 using namespace sf;
@@ -122,8 +122,8 @@ bool ModuleTerrain::InReachDistance(vec3 Target)
 }
 
 
-#include <GLEW/glew.h>
-#include <SFML/Graphics.hpp>
+#include <glew/glew.h>
+#include <sfml/Graphics.hpp>
 
 GLuint ModuleTerrain::Marker()
 {

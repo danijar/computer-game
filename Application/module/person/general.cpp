@@ -1,9 +1,9 @@
 #include "module.h"
 
 #include <string>
-#include <BULLET/btBulletDynamicsCommon.h>
-#include <GLM/glm.hpp>
-#include <SFML/Window.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
+#include <sfml/Window.hpp>
 using namespace std;
 using namespace glm;
 using namespace sf;

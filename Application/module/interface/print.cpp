@@ -1,8 +1,8 @@
 #include "module.h"
 
 #include <functional>
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <sfml/Graphics.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
 using namespace std;
 using namespace sf;
 

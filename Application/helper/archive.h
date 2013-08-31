@@ -5,7 +5,7 @@
 #include <future>
 #include <filesystem>
 
-#include <ZIP/zipint.h>
+#include <zip/zipint.h>
 
 
 class HelperArchive

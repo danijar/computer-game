@@ -1,6 +1,6 @@
 #include "module.h"
 
-#include <GLM/glm.hpp>
+#include <glm/glm.hpp>
 using namespace glm;
 
 #include "terrain.h"

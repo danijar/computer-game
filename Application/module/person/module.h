@@ -2,8 +2,8 @@
 
 #include "system.h"
 
-#include <GLM/glm.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "form.h"
 

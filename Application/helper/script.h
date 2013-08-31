@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <functional>
 
-#include <V8/v8.h>
+#include <v8/v8.h>
 
 #include "helper/debug.h"
 #include "helper/file.h"

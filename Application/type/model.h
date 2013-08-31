@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <GLEW/glew.h>
+#include <glew/glew.h>
 
 
 struct Model

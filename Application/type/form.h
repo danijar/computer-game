@@ -1,10 +1,10 @@
 #pragma once
 
-#include <GLM/glm.hpp>
-#include <GLM/gtc/quaternion.hpp>
-#include <GLM/gtx/quaternion.hpp>
-#include <GLM/gtc/matrix_transform.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 
 
 struct Form

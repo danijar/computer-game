@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <cstdlib>
-#include <GLM/glm.hpp>
-#include <GLM/gtc/noise.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/noise.hpp>
 using namespace glm;
 using namespace std;
 

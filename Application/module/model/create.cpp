@@ -1,8 +1,8 @@
 #include "module.h"
 
-#include <GLEW/glew.h>
-#include <GLM/glm.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glew/glew.h>
+#include <glm/glm.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
 

@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <SFML/System.hpp>
+#include <sfml/System.hpp>
 using namespace std;
 using namespace sf;
 

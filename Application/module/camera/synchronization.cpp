@@ -1,6 +1,6 @@
 #include "module.h"
 
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <bullet/btBulletDynamicsCommon.h>
 
 #include "form.h"
 

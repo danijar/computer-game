@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <GLEW/glew.h>
+#include <glew/glew.h>
 
 #include "helper/debug.h"
 

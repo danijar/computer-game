@@ -1,10 +1,10 @@
 #include "module.h"
 
 #include <string>
-#include <GLEW/glew.h>
-#include <GLM/gtc/type_ptr.hpp>
-#include <SFML/OpenGL.hpp>
-#include <BULLET/btBulletDynamicsCommon.h>
+#include <glew/glew.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <sfml/OpenGL.hpp>
+#include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
 

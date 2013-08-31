@@ -7,7 +7,7 @@
 #include <locale>
 #include <typeindex>
 
-#include <SQLITE/sqlite3.h>
+#include <sqlite/sqlite3.h>
 
 #include "helper/debug.h"
 
