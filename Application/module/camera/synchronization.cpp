@@ -7,7 +7,7 @@
 
 float ModuleCamera::Yaw()
 {
-	unsigned int id = *Global->Get<unsigned int>("camera");
+	uint64_t id = *Global->Get<uint64_t>("camera");
 	auto frm = Entity->Get<Form>(id);
 
 	// fetch current rotation

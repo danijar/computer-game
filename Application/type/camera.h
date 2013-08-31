@@ -16,7 +16,7 @@ struct Camera
 	}
 
 	bool Active;
-	unsigned int Person;
+	uint64_t Person;
 	float Pitch;
 	glm::vec2 Angles;
 	glm::mat4 View, Projection;

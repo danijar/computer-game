@@ -18,14 +18,14 @@ void ModuleCamera::Projection()
 void ModuleCamera::Projection(Vector2u Size)
 {
 	auto stg = Global->Get<Settings>("settings");
-	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
+	auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 
 	cam->Projection = perspective(*stg->Get<float>("Fieldofview"), (float)Size.x / (float)Size.y, 0.1f, *stg->Get<float>("Viewdistance"));
 }
 
 void ModuleCamera::Calculate()
 {
-	unsigned int id = *Global->Get<unsigned int>("camera");
+	uint64_t id = *Global->Get<uint64_t>("camera");
 	auto frm = Entity->Get<Form>(id);
 	auto cam = Entity->Get<Camera>(id);
 

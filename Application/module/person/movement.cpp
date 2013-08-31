@@ -9,13 +9,13 @@ using namespace glm;
 #include "camera.h" // get rid of that later
 
 
-void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
+void ModulePerson::Move(uint64_t Id, vec3 Amount, float Speed)
 {
 	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
 
 	// fetch orientation of person
-	btQuaternion rotation = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Body->getWorldTransform().getRotation();
+	btQuaternion rotation = Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Body->getWorldTransform().getRotation();
 	/*
 	 * Do not move in camera direction but in person direction.
 	 * This doesn't work at the moment. Direction is always positive, though it doesn't work on the half of the map.
@@ -43,7 +43,7 @@ void ModulePerson::Move(unsigned int Id, vec3 Amount, float Speed)
 	frm->Body->setLinearVelocity(velocity);
 }
 
-void ModulePerson::Jump(unsigned int Id, float Multiplier, bool Force)
+void ModulePerson::Jump(uint64_t Id, float Multiplier, bool Force)
 {
 	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);

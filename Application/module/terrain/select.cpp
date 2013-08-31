@@ -14,7 +14,7 @@ using namespace sf;
 
 tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 {
-	auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
+	auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
 
 	vec3 origin = unProject(vec3(size.x/2, size.y/2, 0.f), cam->View, cam->Projection, vec4(0, 0, size.x, size.y));
@@ -114,7 +114,7 @@ int ModuleTerrain::Signum(float x)
 bool ModuleTerrain::InReachDistance(vec3 Target)
 {
 	auto stg = Global->Get<Settings>("settings");
-	auto frm = Entity->Get<Form>(*Global->Get<unsigned int>("camera"));
+	auto frm = Entity->Get<Form>(*Global->Get<uint64_t>("camera"));
 
 	float reach = (float)*stg->Get<int>("Placedistance");
 	vec3 camera = frm->Position();
@@ -127,7 +127,7 @@ bool ModuleTerrain::InReachDistance(vec3 Target)
 
 GLuint ModuleTerrain::Marker()
 {
-	unsigned int id = Entity->New();
+	uint64_t id = Entity->New();
 	auto mdl = Entity->Add<Model>(id);
 	auto frm = Entity->Add<Form>(id);
 

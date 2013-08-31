@@ -11,9 +11,9 @@ using namespace glm;
 #include "light.h"
 
 
-unsigned int ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, vec3 Rotation, vec3 Scale, float Mass)
+uint64_t ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, vec3 Rotation, vec3 Scale, float Mass)
 {
-	unsigned int id = Entity->New();
+	uint64_t id = Entity->New();
 	auto mdl = Entity->Add<Model>(id);
 	auto frm = Entity->Add<Form>(id);
 
@@ -38,9 +38,9 @@ unsigned int ModuleModel::CreateModel(string Mesh, string Material, vec3 Positio
 	return id;
 }
 
-unsigned int ModuleModel::CreateLight(vec3 Position, float Radius, vec3 Color, float Intensity, Light::Shape Type)
+uint64_t ModuleModel::CreateLight(vec3 Position, float Radius, vec3 Color, float Intensity, Light::Shape Type)
 {
-	unsigned int id = Entity->New();
+	uint64_t id = Entity->New();
 	auto frm = Entity->Add<Form>(id);
 	auto lgh = Entity->Add<Light>(id);
 

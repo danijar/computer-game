@@ -11,7 +11,7 @@ using namespace glm;
 
 void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 {
-	unsigned int id = *Global->Get<unsigned int>("camera");
+	uint64_t id = *Global->Get<uint64_t>("camera");
 	auto cam = Entity->Get<Camera>(id);
 	auto frm = Entity->Get<Form>(id);
 

@@ -126,7 +126,7 @@ ivec3 ModuleTerrain::Shift(int Dimension, ivec3 Vector)
 	else                         return Vector;
 }
 
-void ModuleTerrain::Buffer(unsigned int Id)
+void ModuleTerrain::Buffer(uint64_t Id)
 {
 	auto mdl = Entity->Get<Model>(Id);
 	auto frm = Entity->Get<Form>(Id);

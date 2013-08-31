@@ -18,7 +18,7 @@ v8::Handle<v8::Value> ModulePhysic::jsImpulse(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	btVector3 impulse;
@@ -40,7 +40,7 @@ v8::Handle<v8::Value> ModulePhysic::jsForce(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	btVector3 force;
@@ -62,7 +62,7 @@ v8::Handle<v8::Value> ModulePhysic::jsVelocity(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	// set velocity

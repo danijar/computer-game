@@ -20,7 +20,7 @@ void ModuleCamera::Init()
 	// if there is no camera at all, add a default one
 	if(Entity->Get<Camera>().size() < 1)
 	{
-		unsigned int id = Entity->New();
+		uint64_t id = Entity->New();
 		auto cam = Entity->Add<Camera>(id);
 		auto frm = Entity->Add<Form>(id);
 
@@ -33,9 +33,9 @@ void ModuleCamera::Init()
 	// if there is no bound camera, bound the first one
 	if(!Global->Check("camera"))
 	{
-		unsigned int id = Entity->Get<Camera>().begin()->first;
+		uint64_t id = Entity->Get<Camera>().begin()->first;
 		Entity->Get<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
-		*Global->Add<unsigned int>("camera") = id;
+		*Global->Add<uint64_t>("camera") = id;
 		Debug->Pass("not bound, fallback to first one");
 	}
 
@@ -50,7 +50,7 @@ void ModuleCamera::Init()
 
 void ModuleCamera::Update()
 {
-	unsigned int camera = *Global->Get<unsigned int>("camera");
+	uint64_t camera = *Global->Get<uint64_t>("camera");
 	auto cam = Entity->Get<Camera>(camera);
 	auto wnd = Global->Get<RenderWindow>("window");
 
@@ -87,7 +87,7 @@ void ModuleCamera::Update()
 void ModuleCamera::Listeners()
 {
 	Event->Listen("InputBindCamera", [=]{
-		auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
+		auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 		State(!cam->Active);
 	});
 
@@ -107,7 +107,7 @@ void ModuleCamera::Listeners()
 
 	Event->Listen("WindowFocusGained", [=]{
 		auto wnd = Global->Get<RenderWindow>("window");
-		auto cam = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"));
+		auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 
 		// recover state
 		if(cam->Active)

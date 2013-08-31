@@ -24,13 +24,13 @@ void ModuleRenderer::Uniforms()
 	if(Pass *pass = PassGet("forms"))
 	{
 		glUseProgram(pass->Program);
-		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Projection));
 	}
 
 	if(Pass *pass = PassGet("sky"))
 	{
 		glUseProgram(pass->Program);
-		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Projection));
+		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Projection));
 	}
 
 	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();

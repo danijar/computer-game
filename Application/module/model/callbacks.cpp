@@ -51,7 +51,7 @@ v8::Handle<v8::Value> ModuleModel::jsModel(const v8::Arguments& args)
 		mass = (float)args[9]->NumberValue();
 	}
 
-	unsigned int id = module->CreateModel(mesh, material, position, radians(rotation), scale, mass);
+	uint64_t id = module->CreateModel(mesh, material, position, radians(rotation), scale, mass);
 	return v8::Uint32::New(id);
 }
 
@@ -85,7 +85,7 @@ v8::Handle<v8::Value> ModuleModel::jsLight(const v8::Arguments& args)
 		else HelperDebug::Fail("script", "light unknown type");
 	}
 
-	unsigned int id = module->CreateLight(position, radius, color, intensity, shape);
+	uint64_t id = module->CreateLight(position, radius, color, intensity, shape);
 	return v8::Uint32::New(id);
 }
 
@@ -95,7 +95,7 @@ v8::Handle<v8::Value> ModuleModel::jsPosition(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	// set position
@@ -131,7 +131,7 @@ v8::Handle<v8::Value> ModuleModel::jsRotation(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	// set rotation
@@ -167,7 +167,7 @@ v8::Handle<v8::Value> ModuleModel::jsScale(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	// set scale, buggy because changes all identical shapes
@@ -206,7 +206,7 @@ v8::Handle<v8::Value> ModuleModel::jsDirection(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto frm = module->Entity->Get<Form>(id);
 
 	vec3 direction = frm->Direction();
@@ -224,7 +224,7 @@ v8::Handle<v8::Value> ModuleModel::jsRadius(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto lgt = module->Entity->Get<Light>(id);
 
 	if(args.Length() > 1)
@@ -245,7 +245,7 @@ v8::Handle<v8::Value> ModuleModel::jsIntensity(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto lgt = module->Entity->Get<Light>(id);
 
 	if(args.Length() > 1)
@@ -266,7 +266,7 @@ v8::Handle<v8::Value> ModuleModel::jsColor(const v8::Arguments& args)
 
 	if(!args[0]->IsUint32())
 		return v8::Undefined();
-	unsigned int id = args[0]->Uint32Value();
+	uint64_t id = args[0]->Uint32Value();
 	auto lgt = module->Entity->Get<Light>(id);
 
 	// set color

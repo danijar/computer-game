@@ -11,24 +11,24 @@ class ManagerEntity
 {
 public:
 	ManagerEntity() : index(0) {}
-	int New()
+	uint64_t New()
 	{
 		return ++index;
 	}
 	template <typename T>
-	T *Add(unsigned int Id)
+	T *Add(uint64_t Id)
 	{
 		return Add(Id, new T());
 	}
 	template <typename T>
-	T *Add(unsigned int Id, T *Instance)
+	T *Add(uint64_t Id, T *Instance)
 	{
-		if(Id > index || 1 > Id) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(Id) + ") because it is not an entity id, use 'int New()'");
+		if(Id > index || 1 > Id) HelperDebug::Crash("system", "cannot add entity (" + std::to_string(Id) + ") because it is not an entity id, use 'New()'");
 		auto key = std::type_index(typeid(T));
 
 		if (list.find(key) == list.end())
 		{
-			auto value = new std::unordered_map<int, std::shared_ptr<void> >();
+			auto value = new std::unordered_map<uint64_t, std::shared_ptr<void> >();
 			list.insert(std::make_pair(key, *value));
 		}
 
@@ -41,9 +41,9 @@ public:
 		return Instance;
 	}
 	template <typename T>
-	std::unordered_map<int, T*> Get()
+	std::unordered_map<uint64_t, T*> Get()
 	{
-		std::unordered_map<int, T*> output;
+		std::unordered_map<uint64_t, T*> output;
 		auto key = std::type_index(typeid(T));
 		if (Check(key))
 		{
@@ -55,7 +55,7 @@ public:
 		return output;
 	}
 	template <typename T>
-	T *Get(unsigned int Id)
+	T *Get(uint64_t Id)
 	{
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, Id))
@@ -65,7 +65,7 @@ public:
 		}
 		else return static_cast<T*>(list[key][Id].get());
 	}
-	void Delete(unsigned int Id)
+	void Delete(uint64_t Id)
 	{
 		if(Id > index || 1 > Id)
 		{
@@ -83,7 +83,7 @@ public:
 		}
 	}
 	template <typename T>
-	void Delete(unsigned int Id)
+	void Delete(uint64_t Id)
 	{
 		auto key = std::type_index(typeid(T));
 		if (!Check(key, Id))
@@ -96,7 +96,7 @@ public:
 		list[key].erase(j);
 	}
 	template <typename T>
-	bool Check(unsigned int Id)
+	bool Check(uint64_t Id)
 	{
 		auto key = std::type_index(typeid(T));
 		if (!Check(key)) return false;
@@ -104,17 +104,17 @@ public:
 		return true;
 	}
 private:
-	unsigned int index;
-	std::unordered_map<std::type_index, std::unordered_map<int, std::shared_ptr<void>>> list;
-	bool Check(std::type_index key)
+	uint64_t index;
+	std::unordered_map<std::type_index, std::unordered_map<uint64_t, std::shared_ptr<void>>> list;
+	bool Check(std::type_index Key)
 	{
-		if (list.find(key) == list.end()) return false;
+		if (list.find(Key) == list.end()) return false;
 		return true;
 	}
-	bool Check(std::type_index key, int id)
+	bool Check(std::type_index Key, uint64_t Id)
 	{
-		if (!Check(key)) return false;
-		if (list[key].find(id) == list[key].end()) return false;
+		if (!Check(Key)) return false;
+		if (list[Key].find(Id) == list[Key].end()) return false;
 		return true;
 	}
 };

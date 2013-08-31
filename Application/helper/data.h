@@ -95,7 +95,7 @@ public:
 	 *
 	 */
 	template <typename T>
-	bool Save(unsigned int Id, T *Instance)
+	bool Save(uint64_t Id, T *Instance)
 	{
 		std::string table = Name<T>();
 		auto key = std::type_index(typeid(T));
@@ -126,7 +126,7 @@ public:
 	 *
 	 */
 	template <typename T>
-	bool Load(unsigned int id, T *Instance)
+	bool Load(uint64_t id, T *Instance)
 	{
 		std::string table = Name<T>();
 		auto key = std::type_index(typeid(T));
@@ -158,7 +158,7 @@ public:
 	 * Return type is a map with entity ids as key and newly created instances as value, like what the analogous entity manager function returns.
 	 */
 	template <typename T>
-	std::unordered_map<unsigned int, T*> Load(std::function<T*(unsigned int)> Walker)
+	std::unordered_map<uint64_t, T*> Load(std::function<T*(uint64_t)> Walker)
 	{
 
 	}
@@ -167,7 +167,7 @@ public:
 	 * Useful for loading a dataset for the first time.
 	 */
 	template <typename T>
-	std::unordered_map<unsigned int, T*> Load()
+	std::unordered_map<uint64_t, T*> Load()
 	{
 		Load([]{ return new T(); });
 	}

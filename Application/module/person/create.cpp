@@ -6,7 +6,7 @@
 #include "person.h"
 
 
-void ModulePerson::Setup(unsigned int Id)
+void ModulePerson::Setup(uint64_t Id)
 {
 	auto psn = Entity->Get<Person>(Id);
 	auto frm = Entity->Check<Form>(Id) ? Entity->Get<Form>(Id) : Entity->Add<Form>(Id);

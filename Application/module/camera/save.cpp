@@ -21,7 +21,7 @@ void ModuleCamera::Load()
 	float data[8] = { 0 };
 	if(Archive->Read(path, file, data))
 	{
-		unsigned int id = Entity->New();
+		uint64_t id = Entity->New();
 		auto cam = Entity->Add<Camera>(id);
 		auto frm = Entity->Add<Form>(id);
 
@@ -41,7 +41,7 @@ void ModuleCamera::Save()
 	string file = "data.txt";
 
 	// for now, only save the first camera
-	unsigned int id = cms.begin()->first;
+	uint64_t id = cms.begin()->first;
 	auto cam = Entity->Get<Camera>(id);
 	auto frm = Entity->Get<Form>(id);
 	

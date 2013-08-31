@@ -9,7 +9,7 @@ using namespace glm;
 #include "form.h"
 
 
-bool ModulePerson::Ground(unsigned int Id)
+bool ModulePerson::Ground(uint64_t Id)
 {
 	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);
@@ -31,7 +31,7 @@ bool ModulePerson::Ground(unsigned int Id)
 	return hit;
 }
 
-bool ModulePerson::Edge(unsigned int Id, vec3 Direction)
+bool ModulePerson::Edge(uint64_t Id, vec3 Direction)
 {
 	auto frm = Entity->Get<Form>(Id);
 	auto psn = Entity->Get<Person>(Id);

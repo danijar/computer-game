@@ -51,7 +51,7 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position()) / CHUNK_SIZE;
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position()) / CHUNK_SIZE;
 	/*
 	 * load chunks independent from cameras height
 	 * camera.y = 0;
@@ -68,14 +68,14 @@ void ModuleTerrain::Update()
 	{
 		if(current.Changed)
 		{
-			unsigned int id = GetChunk(current.Key);
+			uint64_t id = GetChunk(current.Key);
 			Entity->Get<Terrain>(id)->Changed = false;
 
 			Buffer(id);
 		}
 		else
 		{
-			unsigned int id = Entity->New();
+			uint64_t id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
 			Entity->Add<Model>(id)->Diffuse = texture;
 			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK_SIZE));
@@ -194,7 +194,7 @@ void ModuleTerrain::Listeners()
 		auto sel = Selection();
 		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
 		{
-			unsigned int person = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->Person;
+			uint64_t person = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Person;
 			if(!person) return;
 			auto psn = Entity->Get<Person>(person);
 

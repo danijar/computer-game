@@ -71,7 +71,7 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
-	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
+	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View));
 
 	glPolygonMode(GL_FRONT_AND_BACK, *stg->Get<bool>("Wireframe") ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
@@ -134,7 +134,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 		
-	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View));
+	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View));
 
 	glPolygonMode(GL_FRONT_AND_BACK, *stg->Get<bool>("Wireframe") ? GL_LINE : GL_FILL);
 	glEnable(GL_CULL_FACE);
@@ -147,7 +147,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 	Model *frm = Global->Get<Model>("sky");
 	if(frm->Elements && frm->Diffuse)
 	{
-		vec3 position = Entity->Get<Form>(*Global->Get<unsigned int>("camera"))->Position();
+		vec3 position = Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position();
 		mat4 matrix = translate(mat4(1), position);
 
 		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(matrix));
@@ -209,7 +209,7 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 	 * Debug->Print("");
 	 */
 
-	mat4 view = Entity->Get<Camera>(*Global->Get<unsigned int>("camera"))->View;
+	mat4 view = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View;
 
 	for(auto i : lis)
 	{

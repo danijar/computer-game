@@ -20,7 +20,7 @@ void ModulePerson::Load()
 	float data[7] = { 0 };
 	if(Archive->Read(path, file, data))
 	{
-		unsigned int id = Entity->New();
+		uint64_t id = Entity->New();
 		auto psn = Entity->Add<Person>(id);
 		auto frm = Entity->Add<Form>(id);
 
@@ -40,7 +40,7 @@ void ModulePerson::Save()
 	string file = "data.txt";
 
 	// for now, only save the first person
-	unsigned int id = pns.begin()->first;
+	uint64_t id = pns.begin()->first;
 	auto psn = Entity->Get<Person>(id);
 	auto frm = Entity->Get<Form>(id);
 	

@@ -41,7 +41,7 @@ private:
 	void Mesh(Terrain *Terrain);
 	inline bool Inside(glm::ivec3 Position, glm::ivec3 Min, glm::ivec3 Max);
 	inline glm::ivec3 Shift(int Dimension, glm::ivec3 Vector);
-	void Buffer(unsigned int Id);
+	void Buffer(uint64_t Id);
 
 	// save
 	bool Load(Terrain *Terrain);
@@ -60,7 +60,7 @@ private:
 	// block
 	uint8_t GetBlock(glm::ivec3 Block);
 	void SetBlock(glm::ivec3 Block, uint8_t Type);
-	unsigned int GetChunk(glm::ivec3 Chunk);
+	uint64_t GetChunk(glm::ivec3 Chunk);
 	glm::ivec3 PosChunk(glm::ivec3 Block);
 	glm::ivec3 PosLocal(glm::ivec3 Block);
 

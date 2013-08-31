@@ -8,7 +8,7 @@ using namespace glm;
 
 uint8_t ModuleTerrain::GetBlock(ivec3 Block)
 {
-	unsigned int id = GetChunk(PosChunk(Block));
+	uint64_t id = GetChunk(PosChunk(Block));
 	if(!id)
 	{
 		Debug->Fail("the chunk isn't loaded");
@@ -21,7 +21,7 @@ uint8_t ModuleTerrain::GetBlock(ivec3 Block)
 
 void ModuleTerrain::SetBlock(ivec3 Block, uint8_t Type)
 {
-	unsigned int id = GetChunk(PosChunk(Block));
+	uint64_t id = GetChunk(PosChunk(Block));
 	if(!id)
 	{
 		Debug->Fail("the chunk isn't loaded");
@@ -35,7 +35,7 @@ void ModuleTerrain::SetBlock(ivec3 Block, uint8_t Type)
 	trn->Changed = true;
 }
 
-unsigned int ModuleTerrain::GetChunk(ivec3 Chunk)
+uint64_t ModuleTerrain::GetChunk(ivec3 Chunk)
 {
 	for(auto i : Entity->Get<Terrain>())
 		if(i.second->Key == Chunk)
