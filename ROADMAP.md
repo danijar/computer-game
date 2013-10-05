@@ -1,6 +1,9 @@
 Roadmap for Graphics Application
 ================================
 
+Implement data manager or helper to store entities in databases
+    make use of SQLite for saves
+    use treats or lamdas for conversion between structs and table rows
 Refactor system managers and helpers
     move asset functionality from Model module into a manager
     move file hash function into a filesystem helper
