@@ -1,7 +1,7 @@
 Graphics Application: Terrain
 =============================
 
-This is a branch of a basic [Graphics Application](https://github.com/ComputerGame/GraphicsApplication) extending the functionality by voxel based terrain capabilities.
+Modular architecture for grounded cross platform graphics applications. Provides global managers for messaging and entities. Comes with helpers for logging, automatic database storage, and scripting. Implemented modules cover OpenGL graphics, physics simulation, asset loading, character control, and voxel based terrain.
 
 Features
 --------

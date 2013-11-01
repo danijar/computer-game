@@ -17,14 +17,14 @@ class HelperData
 	/*
 	 * Shortcut for a map with database field names as keys and their values.
 	 */
-	typedef std::unordered_map<std::string, std::string> string_map;
+	typedef std::unordered_map<std::string, sqlite3_value> row;
 
 	/*
 	 * Function to extract data from property struct to a map for save in database.
 	 * Parameters is void pointer to property instance, which must be casted back.
 	 * Return type type is a map with database field names as keys and their values.
 	 */
-	typedef std::function<string_map(void*)> Serialization;
+	typedef std::function<row(void*)> Serialization;
 
 	/*
 	 * Function to fill property struct with data from database.
@@ -32,7 +32,7 @@ class HelperData
 	 * and a map with database field names as keys and their values.
 	 * Return type indicates success.
 	 */
-	typedef std::function<bool(void*, string_map)> Deserialization;
+	typedef std::function<bool(void*, row)> Deserialization;
 
 	/*
 	 * Value type for the list of registered serialization and deserialization functions.
@@ -45,18 +45,32 @@ class HelperData
 	};
 
 public:
+	/* static */ std::string Name;
+
+	/*
+	 * Constructor.
+	 */
+	HelperData() : Name("") {}
+
 	/* 
 	 * Just for development purpose.
 	 * Later on remove this function.
 	 */
 	bool Test()
 	{
-		sqlite3 *connection = Open("save/database.db");
+		sqlite3 *connection = Open("save/" + Name + ".db");
 		if(!connection) return false;
+
+		// query
+		// ...
+
 		bool result = Close(connection);
+		if(!result) return false;
+
 		HelperDebug::Pass("data", "test successful");
-		return result;
+		return true;
 	}
+
 	/*
 	 * Register a property type to the manager, providing its structure in database and converter functions.
 	 * Parameters are a map with future database field names as keys and their type names as value,
@@ -106,7 +120,7 @@ public:
 			HelperDebug::Fail("data", "no serialization function for (" + table + ")");
 			return false;
 		}
-		string_map serialized = i->second.Serialize(Instance);
+		row serialized = i->second.Serialize(Instance);
 
 		std::string keys = "id", values = to_string(Id);
 		for(auto i : serialized)
@@ -141,7 +155,7 @@ public:
 		std::string query = "SELECT * FROM " + table + " WHERE id = " + to_string(id) + ";";
 		// execute query,
 		// and store result in this variable
-		string_map serialized;
+		row serialized;
 
 		// provide example output and data for testing
 		HelperDebug::Pass("data", query);
@@ -213,6 +227,19 @@ private:
 		if(result != SQLITE_OK)
 			HelperDebug::Fail("data", "connect to database fail");
 		return database;
+	}
+	/*
+	 *
+	 *
+	 */
+	std::vector<row> Query(std::string Query)
+	{
+		// prepare query
+
+		// step through results,
+		// and add them to result vector
+
+		// finalize query
 	}
 	/*
 	 * Closes the connection to a datavase.

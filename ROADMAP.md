@@ -1,9 +1,14 @@
 Roadmap for Graphics Application
 ================================
 
-Set shader uniforms from within scripts
+Implement data helper for SQL savegames
+Set shader uniforms from scripts
+Readd forward renderer as alternative
+Implement tone mapping
 Live reload for scripts
-    Move file hash function into a system helper
+    Move file hash function into a file helper
+Implement advanced fog
+    http://www.iquilezles.org/www/articles/fog/fog.htm
 Improve Texture Mapping
     fallback to 1x1 diffuse map with pink color
 Specular Lighting
@@ -12,18 +17,6 @@ Normal Mapping
     use reorientated blending:
     http://blog.selfshadow.com/publications/blending-in-detail/
     fallback to 1x1 normal map that doesn't change vertex normals
-Implement sky system
-    Color skydome per vertex
-    Render sun as alphablended texture projected onto the skydome
-    Make sun moving by time and update light source accordingly
-    Implement procedural clouds projected onto the skydome
-    Advanced fog
-        http://www.iquilezles.org/www/articles/fog/fog.htm
-    Day and night cycles
-        change skydome color
-        move sun and moon
-        how to implement stars for night skyies?
-Implement light scattering ("god rays")
 Mesh Collision Shapes
     Determine whether a mesh is convex or concave
         http://liam.flookes.com/cs/geo/index.html
@@ -38,11 +31,8 @@ Mesh Collision Shapes
 Improve Lighting
     Desaturate colors in low light
     Draw bounding geometry for point lights to cull not affected pixels
-    support for spot lights
-Support transparent textures
-    either read alpha channel or use a additional texture file
-    initially, only support full or none transparency
-    compare different approaches for semi transparency in computer graphics
+    support point lights
+Implement light scattering ("god rays")
 Implement Window as entity (do this later and mainly for consistency)
     therefore support multiple windows
     each windows draws the scene from the camera entity it's bound to
@@ -51,11 +41,11 @@ Implement Window as entity (do this later and mainly for consistency)
         maybe yes, and make also sure that the related window is set to active before
         so that viewport and shader uniforms are set for the right window
             are they window dependent?
+Support transparency
 Implement water system
     maybe using metaballs of varying size depending on the amount of water and or distance to player
-        http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html
 Implement ragdoll characters
-Implement character animations
+Implement character animation
 Set up a project website
     buy the domain www.opengp.org which reads "Open Game Project"
 Implement in game bug report tool
@@ -70,6 +60,8 @@ Editor capabilities
 Dirt layer using multi texturing
     Crytek's dirt layer:
     http://freesdk.crydev.net/display/SDKDOC3/Dirt+Layer
+Support transparent textures
+    either read alpha channel or use a additional texture file
 Grass system
     support for normals grass, fern and more
     maybe procedurally generate forms

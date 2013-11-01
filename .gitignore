@@ -11,6 +11,10 @@ Application.opensdf
 
 # windows
 Thumbs.db
+desktop.ini
 
 # savegames
 Application/save
+
+# custom tools
+Distribution
