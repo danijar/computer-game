@@ -1,22 +1,71 @@
 Roadmap for Graphics Application
 ================================
 
-Implement data helper for SQL savegames
-Set shader uniforms from scripts
+Implement data manager or helper to store entities in databases
+    make use of SQLite for saves
+    use treats or lamdas for conversion between structs and table rows
+Refactor system managers and helpers
+    split managers, helpers and types into header and source files
+    split modules into sub projects which generate DLL files
+    move asset functionality from Model module into a manager
+    move file hash function into a filesystem helper
+Set shader uniforms from within scripts
+Meta module system
+    loads in all available DLL files
+    adds them to the world with their file name as name
+    add scripting callbacks to toggle modules by their name
 Readd forward renderer as alternative
-Implement tone mapping
+Find window and rendering bug on Intel tablet
 Live reload for scripts
     Move file hash function into a file helper
 Implement advanced fog
     http://www.iquilezles.org/www/articles/fog/fog.htm
 Improve Texture Mapping
     fallback to 1x1 diffuse map with pink color
+    added texture tinting through color vertex attributes
 Specular Lighting
     fallback to 1x1 specular map which is completely not glossy
 Normal Mapping
     use reorientated blending:
     http://blog.selfshadow.com/publications/blending-in-detail/
     fallback to 1x1 normal map that doesn't change vertex normals
+Support transparent textures
+    either read alpha channel or use a additional texture file
+    initially, only support full or none transparency
+    compare different approaches for semi transparency in computer graphics
+Improve Lighting
+    Desaturate colors in low light
+    Draw bounding geometry for point lights to cull not affected pixels
+    support for spot lights
+Implement Window as entity (do this later and mainly for consistency)
+    therefore support multiple windows
+    each windows draws the scene from the camera entity it's bound to
+    store active window id globally instead of active camera id
+    should be fire resize and recreated events from all windows?
+        maybe yes, and make also sure that the related window is set to active before
+        so that viewport and shader uniforms are set for the right window
+            are they window dependent?
+Implement Artifficial Intelligence
+    add capsule primitive and attach to persons
+    store bahavior queues attached to persons
+    store AI and its state in a Thought property attached to persons
+    load different AIs from scripts
+Implement sky system
+    Color skydome per vertex
+    Render sun as alphablended texture projected onto the skydome
+    Make sun moving by time and update light source accordingly
+    Implement procedural clouds projected onto the skydome
+    Advanced fog
+        http://www.iquilezles.org/www/articles/fog/fog.htm
+    Day and night cycles
+        change skydome color
+        move sun and moon
+        how to implement stars for night skyies?
+Implement temporal anti aliasing
+    store velocity vector in gbuffer
+Implement light scattering ("god rays")
+Implement in game profiling and benchmarking
+Run scripts in namespaced of their module
 Mesh Collision Shapes
     Determine whether a mesh is convex or concave
         http://liam.flookes.com/cs/geo/index.html
@@ -28,24 +77,13 @@ Mesh Collision Shapes
         afterwards maybe simplify by BtShapeHull vertex reduction utility
     Implement anti tunneling:
         http://bulletphysics.org/mediawiki-1.5.8/index.php/Anti_tunneling_by_Motion_Clamping
-Improve Lighting
-    Desaturate colors in low light
-    Draw bounding geometry for point lights to cull not affected pixels
-    support point lights
-Implement light scattering ("god rays")
-Implement Window as entity (do this later and mainly for consistency)
-    therefore support multiple windows
-    each windows draws the scene from the camera entity it's bound to
-    store active window id globally instead of active camera id
-    should be fire resize and recreated events from all windows?
-        maybe yes, and make also sure that the related window is set to active before
-        so that viewport and shader uniforms are set for the right window
-            are they window dependent?
-Support transparency
+Change from placeholder capsule to ragdoll characters
+Implement character animations
 Implement water system
     maybe using metaballs of varying size depending on the amount of water and or distance to player
-Implement ragdoll characters
-Implement character animation
+Add modding support
+    think about splitting modules into DLL files, main executable scans folders and loads their DLL files
+    or instead just allow smaller modding through a Mod module
 Set up a project website
     buy the domain www.opengp.org which reads "Open Game Project"
 Implement in game bug report tool
@@ -57,12 +95,14 @@ Editor capabilities
         creating scripting commands as blueprint for the world would be cool
     allow to seamlessly switch between game and editor mode
     support resetting the world on switch
+Implement water system
+    maybe using metaballs of varying size depending on the amount of water and or distance to player
+        http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html
 Dirt layer using multi texturing
     Crytek's dirt layer:
     http://freesdk.crydev.net/display/SDKDOC3/Dirt+Layer
-Support transparent textures
-    either read alpha channel or use a additional texture file
-Grass system
+Vegetation system
     support for normals grass, fern and more
-    maybe procedurally generate forms
+    maybe procedurally generate meshes and or textures
     or use prebuilt meshes
+    bend vegetation by contacting forms
