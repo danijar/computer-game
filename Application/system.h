@@ -2,34 +2,35 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 
 #include "manager/event.h"
 #include "manager/entity.h"
 #include "manager/global.h"
+#include "manager/data/manager.h"
 
 #include "helper/debug.h"
 #include "helper/file.h"
 #include "helper/opengl.h"
 #include "helper/script.h"
 #include "helper/archive.h"
-#include "helper/data.h"
 
 
 class Module
 {
 public:
-	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, v8::Persistent<v8::Context> Context, std::string *Message)
+	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, v8::Persistent<v8::Context> Context, std::string *Message)
 	{
 		this->name    = Name;
 		this->Event   = Event;
 		this->Entity  = Entity;
 		this->Global  = Global;
+		this->Data    = Data;
 		this->Debug   = new HelperDebug(Name);
 		this->File    = new HelperFile(Name);
 		this->Opengl  = new HelperOpengl(Name);
 		this->Script  = new HelperScript(Name, this, Context);
 		this->Archive = new HelperArchive(Name);
-		this->Data    = new HelperData();
 		this->message = Message;
 	}
 	virtual void Init() = 0;
@@ -46,12 +47,12 @@ public:
 	ManagerEvent  *Event;
 	ManagerEntity *Entity;
 	ManagerGlobal *Global;
+	ManagerData   *Data;
 	HelperDebug   *Debug;
 	HelperFile    *File;
 	HelperOpengl  *Opengl;
 	HelperScript  *Script;
 	HelperArchive *Archive;
-	HelperData    *Data;
 private:
 	std::string name;
 	std::string *message;
@@ -66,6 +67,7 @@ public:
 		event   = new ManagerEvent();
 		entity  = new ManagerEntity();
 		global  = new ManagerGlobal();
+		data    = new ManagerData();
 		message = "";
 	}
 
@@ -75,7 +77,7 @@ public:
 		context->Enter();
 		for (auto i : list)
 		{
-			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, context, &message);
+			std::get<1>(i)->Set(std::get<0>(i), event, entity, global, data, context, &message);
 			std::get<1>(i)->Init();
 		}
 		event->Fire("SystemInitialized");
@@ -159,5 +161,6 @@ private:
 	ManagerEvent  *event;
 	ManagerEntity *entity;
 	ManagerGlobal *global;
+	ManagerData   *data;
 	std::string message;
 };

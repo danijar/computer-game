@@ -82,6 +82,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application\manager\data\database.cpp" />
+    <ClCompile Include="Application\manager\data\deserialization.cpp" />
+    <ClCompile Include="Application\manager\data\helper.cpp" />
+    <ClCompile Include="Application\manager\data\removed.cpp" />
+    <ClCompile Include="Application\manager\data\serialization.cpp" />
     <ClCompile Include="Application\module\camera\calculate.cpp" />
     <ClCompile Include="Application\module\camera\callbacks.cpp" />
     <ClCompile Include="Application\module\camera\control.cpp" />
@@ -141,11 +146,12 @@
   <ItemGroup>
     <ClInclude Include="Application\helper\archive.h" />
     <ClInclude Include="Application\helper\asset.h" />
-    <ClInclude Include="Application\helper\data.h" />
     <ClInclude Include="Application\helper\debug.h" />
     <ClInclude Include="Application\helper\file.h" />
     <ClInclude Include="Application\helper\opengl.h" />
     <ClInclude Include="Application\helper\script.h" />
+    <ClInclude Include="Application\manager\data\manager.h" />
+    <ClInclude Include="Application\manager\data\trait.h" />
     <ClInclude Include="Application\manager\entity.h" />
     <ClInclude Include="Application\manager\event.h" />
     <ClInclude Include="Application\manager\global.h" />

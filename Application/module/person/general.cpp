@@ -45,6 +45,9 @@ void ModulePerson::Init()
 	Data->Load(id, psn);
 	*/
 
+	bool result = Data->Test();
+	Debug->PassFail("data helper test", result);
+
 	Listeners();
 	Callbacks();
 

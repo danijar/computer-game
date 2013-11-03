@@ -82,6 +82,9 @@
     <Filter Include="save">
       <UniqueIdentifier>{7cbd437c-243c-477d-8b28-368de81ffe8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="manager\data">
+      <UniqueIdentifier>{e4e7fefb-4849-43dd-b057-fad046e031e5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\module\renderer\framebuffer.cpp">
@@ -247,6 +250,21 @@
     <ClCompile Include="Application\module\person\callbacks.cpp">
       <Filter>module\person</Filter>
     </ClCompile>
+    <ClCompile Include="Application\manager\data\helper.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\manager\data\database.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\manager\data\removed.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\manager\data\deserialization.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\manager\data\serialization.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">
@@ -339,10 +357,13 @@
     <ClInclude Include="Application\helper\asset.h">
       <Filter>helper</Filter>
     </ClInclude>
-    <ClInclude Include="Application\helper\data.h">
-      <Filter>helper</Filter>
-    </ClInclude>
     <ClInclude Include="Application\system.h" />
+    <ClInclude Include="Application\manager\data\manager.h">
+      <Filter>manager\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\manager\data\trait.h">
+      <Filter>manager\data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\module\model\init.js">

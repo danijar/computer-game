@@ -14,6 +14,7 @@ Meta module system
     loads in all available DLL files
     adds them to the world with their file name as name
     add scripting callbacks to toggle modules by their name
+Merge terrain branch back into master and continue there
 Readd forward renderer as alternative
 Find window and rendering bug on Intel tablet
 Live reload for scripts

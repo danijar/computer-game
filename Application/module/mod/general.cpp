@@ -6,12 +6,13 @@ using namespace std;
 
 void ModuleMod::Init()
 {
+	/*
 	string name = "world";
 	Data->Name = name;
 	Event->Fire<string>("SavegameChanged", name);
 
 	Data->Test();
-
+	*/
 	Script->Run("init.js");
 }
 
