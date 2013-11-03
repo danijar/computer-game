@@ -11,24 +11,12 @@
 
 #include <sqlite/sqlite3.h>
 
-#include "manager/data/trait.h"
+//#include "manager/data/trait.h"
 
 
 class ManagerData
 {
 public:
-	bool Test()
-	{
-		bool result = true;
-		sqlite3 *database = Open("save/world.db");
-		std::unordered_map<std::string, std::string> fields;
-		fields.insert(std::make_pair("id", "INT")); // move this to table function including auto increment and not null
-		fields.insert(std::make_pair("value", "FLOAT"));
-		result = Table(database, "test", fields) ? true : false;
-		result = Close(database) ? result : false;
-		return result;
-	}
-	/*
 	template <typename T>
 	bool Save(uint64_t Id, T *Instance)
 	{
@@ -36,75 +24,110 @@ public:
 		sqlite3 *database = Open("save/world.db");
 
 		typedef ManagerDataTrait<T> Trait;
-		
-		// create vector of column fields
+
+		Table(database, name, Trait::Fields);
+
 		std::vector<std::string> fields;
+		fields.resize(Trait::Fields.size() + 1);
 		fields.push_back("id");
-		for(auto i : Trait::Fields) fields.push_back(i);
+		
+		std::string sql = "INSERT OR REPLACE";
+		sql += " INTO " + name + "(id";
+		for(auto i : Trait::Fields)
+		{
+			sql += ", " + i.first;
+			fields.push_back(i.first);
+		}
+		sql += " VALUES (?" + name;
+		for(unsigned int i = 0; i < Trait::Fields.size(); ++i)
+			sql += ", ?";
+		sql += ")";
+		
+		sqlite3_stmt *statement;
+		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
+		Serialization serialization(statement, fields);
 
-		// create table if not exists
-		bool table = false;
+		Trait::Serialize(Instance, &serialization);
 
-		ManagerData::Serialization serialization(database, name, fields, table);
-		serialization.TEXT("id", std::to_string(Id));
-		bool result = Trait::Serialize(Instance, *serialization);
-		if(result)
-			result = serialization.Execute();
+		bool fine;
+		int result = sqlite3_step(statement);
+		if(result == SQLITE_DONE) fine = true;
+		else { HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")"); fine = false; }
 
-		return result;
+		Close(database);
+		return fine;
 	}
 
 	template <typename T>
-	T *Load(uint64_t Id)
+	T *Load(uint64_t Id, T* Instance = new T())
 	{
 		std::string name = Name<T>();
 		sqlite3 *database = Open("save/world.db");
 
 		typedef ManagerDataTrait<T> Trait;
 		
-		// create vector of column fields
 		std::vector<std::string> fields;
+		fields.resize(Trait::Fields.size() + 1);
 		fields.push_back("id");
-		for(auto i : Trait::Fields) fields.push_back(i);
 
-		// create table if not exists
-		// ...
+		std::string sql = "SELECT id";
+		for(auto i : Trait::Fields)
+		{
+			sql += ", " + i.first;
+			fields.push_back(i.first);
+		}
+		sql += " FROM " + name;
+		sql += " WHERE id='" + std::to_string(Id) + "'";
+		
+		sqlite3_stmt *statement;
+		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
+		Deserialization deserialization(statement, fields);
 
-		ManagerData::Deserialization deserialization(database, name, fields, Id);
-		bool result = deserialization.Execute();
-		if(result)
-			result = Trait::Deserialize(Instance, *serialization);
+		while(int result = sqlite3_step(statement))
+		{
+			if(result == SQLITE_BUSY)
+				continue;
+			else if(result == SQLITE_ROW)
+				Trait::Deserialize(Instance, &deserialization);
+			else if(result == SQLITE_DONE)
+				break;
+			else
+			{
+				HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")");
+				break;
+			}
+		};
 
-		return result;
+		Close(database);
+		return Instance;
 	}
-	*/
+
 	class Serialization
 	{
 	public:
-		Serialization(sqlite3 *Database, std::string Name, std::unordered_map<std::string, std::string> Fields, bool Table = true);
-		bool Execute();
+		Serialization(sqlite3_stmt *Statement, std::vector<std::string> Fields);
 		void INTEGER(std::string Field, int Value);
 		void FLOAT(std::string Field, float Value);
 		void TEXT(std::string Field, std::string Value);
 		// add BLOB support
 	private:
-		std::unordered_map<std::string, std::string> fields;
-		sqlite3_stmt *query;
-		bool table;
+		int Index(std::string Field);
+		std::vector<std::string> fields;
+		sqlite3_stmt *statement;
 	};
 
 	class Deserialization
 	{
 	public:
-		Deserialization(sqlite3 *Database, std::string Name, std::unordered_map<std::string, std::string> Fields, uint64_t Id = 0);
-		bool Execute();
+		Deserialization(sqlite3_stmt *Statement, std::vector<std::string> Fields);
 		int INTEGER(std::string Field);
 		float FLOAT(std::string Field);
 		std::string TEXT(std::string Field);
 		// add BLOB support
 	private:
-		std::unordered_map<std::string, std::string> fields;
-		sqlite3_stmt *query;
+		int Index(std::string Field);
+		std::vector<std::string> fields;
+		sqlite3_stmt *statement;
 	};
 
 private:
@@ -128,6 +151,9 @@ private:
 
 		return name;
 	}
+
+	// manager
+	std::string NameFromTypename(std::string Typename);
 	
 	// database
 	sqlite3 *Open(std::string Path);
@@ -139,3 +165,13 @@ private:
 	static std::string Implode(const std::vector<std::string> &Vector, const char* const Separator = ", ");
 	static std::string Placeholders(unsigned int Number, const char* const Symbol = "?", const char* const Separator = ", ");
 };
+
+template <typename T>
+struct ManagerDataTrait;
+/*
+{
+	static std::unordered_map<std::string, std::string> Fields;
+	static void Serialize(T *Instance, ManagerData::Serialization *Data);
+	static void Deserialize(T *Instance, ManagerData::Deserialization *Data);
+};
+*/

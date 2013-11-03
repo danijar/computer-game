@@ -22,7 +22,7 @@ sqlite3 *ManagerData::Open(string Path)
 }
 
 /*
- * Closes the connection to a datavase.
+ * Closes the connection to a database.
  * The connection handle gets deleted.
  */
 bool ManagerData::Close(sqlite3 *Database)
@@ -45,7 +45,7 @@ bool ManagerData::Query(sqlite3 *Database, string Sql, function<void(sqlite3_stm
 {
 	sqlite3_stmt *statement;
 	sqlite3_prepare_v2(Database, Sql.c_str(), -1, &statement, 0);
-	while(int result = sqlite3_step(statement)) // might be also SQLITE_BUSY
+	while(int result = sqlite3_step(statement))
 	{
 		if(result == SQLITE_BUSY)
 			continue;
@@ -68,19 +68,10 @@ bool ManagerData::Query(sqlite3 *Database, string Sql, function<void(sqlite3_stm
  */
 bool ManagerData::Table(sqlite3 *Database, string Name, unordered_map<string, string> Fields)
 {
-	string sql = "CREATE TABLE IF NOT EXISTS " + Name + " (";
-	bool first = true;
+	string sql = "CREATE TABLE IF NOT EXISTS " + Name + " (id TEXT PRIMARY KEY";
 	for(auto i : Fields)
 	{
-		if(first)
-		{
-			sql += i.first + " " + i.second;
-			first = false;
-		}
-		else
-		{
-			sql += ", " + i.first + " " + i.second;
-		}
+		sql += ", " + i.first + " " + i.second;
 	}
 	sql += ")";
 	return Query(Database, sql);

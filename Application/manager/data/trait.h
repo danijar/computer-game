@@ -1,16 +1,17 @@
 #pragma once
 
-#include <vector>
+/*
+#include <unordered_map>
 #include <string>
 
 #include "manager/data/manager.h"
 
-/*
+
 template <typename T>
 struct ManagerDataTrait
 {
 	std::unordered_map<std::string, std::string> Fields;
-	bool Serialize(T *Instance, ManagerData::Serialization *Data);
-	bool Deserialize(T *Instance, ManagerData::Deserialization *Data);
+	static void Serialize(T *Instance, ManagerData::Serialization *Data);
+	static void Deserialize(T *Instance, ManagerData::Deserialization *Data);
 };
 */

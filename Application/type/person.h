@@ -1,7 +1,7 @@
 #pragma once
 
-#include "manager/data/trait.h"
-
+//#include "manager/data/trait.h"
+#include "manager/data/manager.h"
 
 #define GROUND_TOLERANCE 0.1f
 
@@ -29,31 +29,32 @@ struct Person
 	bool Changed;
 };
 
-/*
+
+// move this in separate file later
 template <>
 struct ManagerDataTrait<Person>
 {
-	ManagerDataTrait()
-	{
-		Fields.insert(std::make_pair("height", "FLOAT"));
-		Fields.insert(std::make_pair("mass", "FLOAT"));
-	}
-	std::unordered_map<std::string, std::string> Fields;
+	static const std::unordered_map<std::string, std::string> Fields;
 	/*
 	 * When inline member initialization and initializer lists
 	 * are available, just use the following line for the above.
 	 * std::vector<std::string> Fields = { "height", "mass" };
 	 */
-	/*
-	bool Serialize(Person *Instance, ManagerData::Serialization *Data)
+	static void Serialize(Person *Instance, ManagerData::Serialization *Data)
 	{
 		Data->FLOAT("height", Instance->Height);
 		Data->FLOAT("mass",   Instance->Mass);
 	}
-	bool Deserialize(Person *Instance, ManagerData::Deserialization *Data)
+	static void Deserialize(Person *Instance, ManagerData::Deserialization *Data)
 	{
 		Instance->Height = Data->FLOAT("height");
 		Instance->Mass   = Data->FLOAT("mass");
 	}
 };
-*/
+
+const std::unordered_map<std::string, std::string> ManagerDataTrait<Person>::Fields = []{
+	std::unordered_map<std::string, std::string> fields;
+	fields.insert(std::make_pair("height", "FLOAT"));
+	fields.insert(std::make_pair("mass", "FLOAT"));
+	return fields;
+}();
