@@ -14,7 +14,7 @@ using namespace sf;
 #include "model.h"
 #include "settings.h"
 #include "camera.h"
-#include "person.h"
+#include "type/person/type.h"
 #include "print.h"
 
 

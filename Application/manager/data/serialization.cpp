@@ -3,7 +3,7 @@
 using namespace std;
 
 
-ManagerData::Serialization::Serialization(sqlite3_stmt *Statement, std::vector<std::string> Fields) : fields(Fields)
+ManagerData::Serialization::Serialization(sqlite3_stmt *Statement, std::vector<std::string> Fields) : fields(Fields), statement(Statement)
 {
 
 }

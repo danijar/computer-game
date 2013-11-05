@@ -85,6 +85,9 @@
     <Filter Include="manager\data">
       <UniqueIdentifier>{e4e7fefb-4849-43dd-b057-fad046e031e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="type\person">
+      <UniqueIdentifier>{22606dfa-66a8-46a1-8e77-bc89a72c120a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application\module\renderer\framebuffer.cpp">
@@ -250,9 +253,6 @@
     <ClCompile Include="Application\module\person\callbacks.cpp">
       <Filter>module\person</Filter>
     </ClCompile>
-    <ClCompile Include="Application\manager\data\helper.cpp">
-      <Filter>manager\data</Filter>
-    </ClCompile>
     <ClCompile Include="Application\manager\data\database.cpp">
       <Filter>manager\data</Filter>
     </ClCompile>
@@ -264,6 +264,9 @@
     </ClCompile>
     <ClCompile Include="Application\manager\data\serialization.cpp">
       <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\type\person\general.cpp">
+      <Filter>type\person</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -321,9 +324,6 @@
     <ClInclude Include="Application\type\model.h">
       <Filter>type</Filter>
     </ClInclude>
-    <ClInclude Include="Application\type\person.h">
-      <Filter>type</Filter>
-    </ClInclude>
     <ClInclude Include="Application\type\settings.h">
       <Filter>type</Filter>
     </ClInclude>
@@ -363,6 +363,12 @@
     </ClInclude>
     <ClInclude Include="Application\manager\data\trait.h">
       <Filter>manager\data</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\type\person\trait.h">
+      <Filter>type\person</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\type\person\type.h">
+      <Filter>type\person</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

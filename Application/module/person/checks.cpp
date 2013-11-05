@@ -5,7 +5,7 @@
 using namespace std;
 using namespace glm;
 
-#include "person.h"
+#include "type/person/type.h"
 #include "form.h"
 
 

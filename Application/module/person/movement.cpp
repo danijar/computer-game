@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 using namespace glm;
 
-#include "person.h"
+#include "type/person/type.h"
 #include "form.h"
 #include "camera.h" // get rid of that later
 

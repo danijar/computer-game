@@ -84,7 +84,6 @@
   <ItemGroup>
     <ClCompile Include="Application\manager\data\database.cpp" />
     <ClCompile Include="Application\manager\data\deserialization.cpp" />
-    <ClCompile Include="Application\manager\data\helper.cpp" />
     <ClCompile Include="Application\manager\data\removed.cpp" />
     <ClCompile Include="Application\manager\data\serialization.cpp" />
     <ClCompile Include="Application\module\camera\calculate.cpp" />
@@ -142,6 +141,7 @@
     <ClCompile Include="Application\module\window\callbacks.cpp" />
     <ClCompile Include="Application\module\window\create.cpp" />
     <ClCompile Include="Application\module\window\general.cpp" />
+    <ClCompile Include="Application\type\person\general.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\helper\archive.h" />
@@ -172,7 +172,8 @@
     <ClInclude Include="Application\type\form.h" />
     <ClInclude Include="Application\type\light.h" />
     <ClInclude Include="Application\type\model.h" />
-    <ClInclude Include="Application\type\person.h" />
+    <ClInclude Include="Application\type\person\trait.h" />
+    <ClInclude Include="Application\type\person\type.h" />
     <ClInclude Include="Application\type\print.h" />
     <ClInclude Include="Application\type\settings.h" />
     <ClInclude Include="Application\type\terrain.h" />

@@ -3,7 +3,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include "form.h"
-#include "person.h"
+#include "type/person/type.h"
 
 
 void ModulePerson::Setup(uint64_t Id)

@@ -7,11 +7,10 @@
 #include <functional>
 #include <stdint.h>
 
-#include "helper/debug.h"
-
 #include <sqlite/sqlite3.h>
 
-//#include "manager/data/trait.h"
+#include "manager/data/trait.h"
+#include "helper/debug.h"
 
 
 class ManagerData
@@ -152,26 +151,9 @@ private:
 		return name;
 	}
 
-	// manager
-	std::string NameFromTypename(std::string Typename);
-	
 	// database
 	sqlite3 *Open(std::string Path);
 	bool Close(sqlite3 *Database);
 	bool Query(sqlite3 *Database, std::string Sql, std::function<void(sqlite3_stmt*)> Callback = [](sqlite3_stmt* statement){});
 	bool Table(sqlite3 *Database, std::string Name, std::unordered_map<std::string, std::string> Fields);
-
-	// helper
-	static std::string Implode(const std::vector<std::string> &Vector, const char* const Separator = ", ");
-	static std::string Placeholders(unsigned int Number, const char* const Symbol = "?", const char* const Separator = ", ");
 };
-
-template <typename T>
-struct ManagerDataTrait;
-/*
-{
-	static std::unordered_map<std::string, std::string> Fields;
-	static void Serialize(T *Instance, ManagerData::Serialization *Data);
-	static void Deserialize(T *Instance, ManagerData::Deserialization *Data);
-};
-*/

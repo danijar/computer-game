@@ -9,7 +9,7 @@ using namespace sf;
 #include "settings.h"
 #include "form.h"
 #include "camera.h"
-#include "person.h"
+#include "type/person/type.h"
 
 
 void ModuleCamera::Init()

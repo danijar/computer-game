@@ -9,7 +9,8 @@ using namespace glm;
 using namespace sf;
 
 #include "form.h"
-#include "person.h"
+#include "type/person/type.h"
+#include "type/person/trait.h"
 #include "camera.h"
 #include "print.h"
 
@@ -21,9 +22,11 @@ void ModulePerson::Init()
 	psn->Height = 3.14f;
 	psn->Mass = 42.f;
 
+	bool result;
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
 	Debug->Print("! data test", "saving");
-	Data->Save<Person>(id, psn);
+	result = Data->Save<Person>(id, psn);
+	Debug->PassFail("! data test", "saving", result);
 
 	Debug->Print("! data test", "modifying");
 	psn->Height = 11.11f;
@@ -31,7 +34,8 @@ void ModulePerson::Init()
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
 
 	Debug->Print("! data test", "loading");
-	Data->Load<Person>(id, psn);
+	result = Data->Load<Person>(id, psn);
+	Debug->PassFail("! data test", "loading", result);
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
 
 	Listeners();

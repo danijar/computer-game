@@ -6,7 +6,7 @@ using namespace std;
 using namespace glm;
 
 #include "settings.h"
-#include "person.h"
+#include "type/person/type.h"
 
 
 void ModulePerson::Load()
