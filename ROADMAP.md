@@ -10,6 +10,10 @@ Refactor system managers and helpers
     move asset functionality from Model module into a manager
     move file hash function into a filesystem helper
 Set shader uniforms from within scripts
+Improve render pass system
+    disable or enable passes while rendering still works by just copying unmodified textures through
+    allow to set texture rendered to screen by a scripting callback at runtime
+    would just pass('screen', { samplers: { 'image_text':'normals' }}); do the trick?
 Meta module system
     loads in all available DLL files
     adds them to the world with their file name as name
@@ -30,6 +34,8 @@ Normal Mapping
     use reorientated blending:
     http://blog.selfshadow.com/publications/blending-in-detail/
     fallback to 1x1 normal map that doesn't change vertex normals
+Support camera rotation along all axis, even roll
+when mouse is free, select block unter cursor instead of in the middle of screen
 Support transparent textures
     either read alpha channel or use a additional texture file
     initially, only support full or none transparency
@@ -89,6 +95,10 @@ Set up a project website
     buy the domain www.opengp.org which reads "Open Game Project"
 Implement in game bug report tool
     send screenshot, hardware configuration, time and an optional user comment to the server
+Logging system
+    rename Debug Helper to Log Manager
+    Randomly color messages by their output sources
+    Provide options for solo or mute output sources
 Editor capabilities
     insert, edit and transform objects
         inserted objects can get their id stored in a scripting variable or be anonym
@@ -107,3 +117,6 @@ Vegetation system
     maybe procedurally generate meshes and or textures
     or use prebuilt meshes
     bend vegetation by contacting forms
+Feature Visions
+    Weather affecting clothes (wet shine, wind flackering)
+    3d decals like footsteps

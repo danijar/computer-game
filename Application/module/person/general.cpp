@@ -34,7 +34,7 @@ void ModulePerson::Init()
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
 
 	Debug->Print("! data test", "loading");
-	result = Data->Load<Person>(id, psn);
+	Data->Load<Person>(id, psn);
 	Debug->PassFail("! data test", "loading", result);
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
 

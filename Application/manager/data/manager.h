@@ -31,17 +31,17 @@ public:
 		fields.push_back("id");
 		
 		std::string sql = "INSERT OR REPLACE";
-		sql += " INTO " + name + "(id";
+		sql += " INTO " + name + " (id";
 		for(auto i : Trait::Fields)
 		{
 			sql += ", " + i.first;
 			fields.push_back(i.first);
 		}
-		sql += " VALUES (?" + name;
+		sql += ") VALUES (?";
 		for(unsigned int i = 0; i < Trait::Fields.size(); ++i)
 			sql += ", ?";
 		sql += ")";
-		
+
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Serialization serialization(statement, fields);
@@ -53,7 +53,7 @@ public:
 		if(result == SQLITE_DONE) fine = true;
 		else { HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")"); fine = false; }
 
-		Close(database);
+		Close(database); // consider keep up the connection for performance
 		return fine;
 	}
 
@@ -76,8 +76,8 @@ public:
 			fields.push_back(i.first);
 		}
 		sql += " FROM " + name;
-		sql += " WHERE id='" + std::to_string(Id) + "'";
-		
+		sql += " WHERE id = '" + std::to_string(Id) + "'";
+
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Deserialization deserialization(statement, fields);
@@ -137,13 +137,13 @@ private:
 	std::string Name()
 	{
 		// name in the form "struct Name", or "class Name"
-		std::string fullname = typeid(T).name();
+		std::string type = typeid(T).name();
 
 		// extract last word from name
-		std::size_t last = fullname.size();
-		while(fullname[last] == ' ' && last > 0) --last;
-		if (!last){ HelperDebug::Fail("data", "empty type name"); return ""; }
-		std::string name = fullname.substr(fullname.find_last_of(' ', last));
+		while(type.back() == ' ') type.pop_back();
+		unsigned int i = type.size() - 1;
+		while(type.at(i) != ' ') i--;
+		string name = type.substr(i + 1);
 
 		// transform to lower case
 		std::transform(name.begin(), name.end(), name.begin(), std::bind2nd(std::ptr_fun(&std::tolower<char>), std::locale("")));
