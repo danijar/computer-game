@@ -20,11 +20,8 @@ Meta module system
     add scripting callbacks to toggle modules by their name
 Merge terrain branch back into master and continue there
 Readd forward renderer as alternative
-Find window and rendering bug on Intel tablet
 Live reload for scripts
     Move file hash function into a file helper
-Implement advanced fog
-    http://www.iquilezles.org/www/articles/fog/fog.htm
 Improve Texture Mapping
     fallback to 1x1 diffuse map with pink color
     added texture tinting through color vertex attributes
@@ -52,7 +49,14 @@ Implement Window as entity (do this later and mainly for consistency)
         maybe yes, and make also sure that the related window is set to active before
         so that viewport and shader uniforms are set for the right window
             are they window dependent?
-Implement Artifficial Intelligence
+Improve terrain generation
+    load terrain parameters from scripts
+    implement live terrain reload on parameter change
+    retweak whole generation
+Overthink chunk mechanism
+    optimize current ellipsoid range
+    smoothly fade in newly loaded chunks and fade out freed ones
+Implement Artificial Intelligence
     add capsule primitive and attach to persons
     store bahavior queues attached to persons
     store AI and its state in a Thought property attached to persons
@@ -86,8 +90,6 @@ Mesh Collision Shapes
         http://bulletphysics.org/mediawiki-1.5.8/index.php/Anti_tunneling_by_Motion_Clamping
 Change from placeholder capsule to ragdoll characters
 Implement character animations
-Implement water system
-    maybe using metaballs of varying size depending on the amount of water and or distance to player
 Add modding support
     think about splitting modules into DLL files, main executable scans folders and loads their DLL files
     or instead just allow smaller modding through a Mod module
@@ -99,6 +101,7 @@ Logging system
     rename Debug Helper to Log Manager
     Randomly color messages by their output sources
     Provide options for solo or mute output sources
+Officially announce project
 Editor capabilities
     insert, edit and transform objects
         inserted objects can get their id stored in a scripting variable or be anonym
@@ -118,5 +121,6 @@ Vegetation system
     or use prebuilt meshes
     bend vegetation by contacting forms
 Feature Visions
-    Weather affecting clothes (wet shine, wind flackering)
+    weather affecting clothes (wet shine, wind flackering)
     3d decals like footsteps
+	wind from weather system effects water wave size and direction
