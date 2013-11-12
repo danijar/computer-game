@@ -3,8 +3,15 @@ Graphics Application
 
 Modular architecture for grounded cross platform graphics applications. Provides global managers for messaging, entities and automatedly storing them in databases. Comes with helpers for logging, scripting, file access and asset management. Implemented modules cover OpenGL graphics, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
 
+Screenshot
+----------
+
+![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/master/screenshot.png)
+
 Features
 --------
+
+### State of Play
 
 - First person camera
 - Deferred Rendering
@@ -17,10 +24,21 @@ Features
 - Dynamic character controller
 - Random generated voxel based terrain
 
-Screenshot
-----------
+### Upcoming Features
 
-![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/master/screenshot.png)
+- Normal mapping
+- AI and character animations
+- Modding support
+- Editor capabilities
+
+Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplication/master/ROADMAP.md) for an overview of all planned features.
+
+### Feature Visions
+
+- Shadow Volumes
+- Terrain shape smoothing by a particular algorithm
+- Realistic water by fluid simulation with [highly adaptive resolution](http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html)
+- Dynamic weather and daycycle system
 
 Libraries
 ---------
@@ -75,21 +93,3 @@ As described above, the scripting console can be accessed by pressing the `Tab` 
 To enable debug mode, blindly press `Tab`, type in `debug()` and hit `Enter`. You can now see debug information on the screen like the scripting console, frames per second, number of loaded meshes, coordinates of the camera, and so on.
 
 For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/ComputerGame/GraphicsApplication/wiki/List-of-Scripting-Functions).
-
-Upcoming Features
------------------
-
-- Normal mapping
-- AI and character animations
-- Modding support
-- Editor capabilities
-
-Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplication/master/ROADMAP.md) for an overview of all planned features.
-
-Feature Visions
----------------
-
-- Shadow Volumes
-- Terrain shape smoothing by a particular algorithm
-- Realistic water by fluid simulation with [highly adaptive resolution](http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html)
-- Dynamic weather and daycycle system
