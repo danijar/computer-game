@@ -1,7 +1,7 @@
 Graphics Application
 ====================
 
-This is an OpenGL graphics application based on a component and data oriented [architecture](https://github.com/ComputerGame/GraphicsArchitecture) with event manager.
+Modular architecture for grounded cross platform graphics applications. Provides global managers for messaging, entities and automatedly storing them in databases. Comes with helpers for logging, scripting, file access and asset management. Implemented modules cover OpenGL graphics, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
 
 Features
 --------
@@ -15,21 +15,25 @@ Features
 - Scripting
 - Physics and collision
 - Dynamic character controller
-
-Libraries
----------
-
-- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
-- [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler Library (1.9.0)
-- [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
-- [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
-- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
-- [Bullet](http://bulletphysics.org/) Physics Library (2.81)
+- Random generated voxel based terrain
 
 Screenshot
 ----------
 
 ![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/master/screenshot.png)
+
+Libraries
+---------
+
+- [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler (1.9.0)
+- [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
+- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
+- [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
+- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
+- [Bullet](http://bulletphysics.org/) Realtime Physics Simulation (2.81)
+- [SQLite](http://www.sqlite.org/) SQL Database Engine (3.8.1)
+- [zlib](http://www.zlib.net/) General Purpose Compression (1.2.8)
+- [libzip](http://www.nih.at/libzip/) Zip Archives (0.11.1)
 
 Instructions
 ------------
@@ -56,9 +60,11 @@ Movement and orientation
 
 Interaction with the world
 
-- `Mouse Right` Shoot a cube in view direction.
-- `F` Let a cube fall down in the center of the world.
-- Hold `Left Shift` to insert more and fast cubiods.
+- `Mouse Left` Mine selected block.
+- `Mouse Right` Place a block.
+- `Mouse Middle` Pick type of selected block.
+- `1` to `9` Change type of block getting placed.
+- `F` Shoot a cube in view direction.
 
 ### Scripting
 
@@ -70,23 +76,20 @@ To enable debug mode, blindly press `Tab`, type in `debug()` and hit `Enter`. Yo
 
 For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/ComputerGame/GraphicsApplication/wiki/List-of-Scripting-Functions).
 
-Branches
---------
-
-The [Terrain](https://github.com/ComputerGame/GraphicsApplication/tree/terrain) branch implements a voxel based world. It involves chunk management, a terrain generator and meshing techniques.
-
 Upcoming Features
 -----------------
 
-There is a lot to do and the core development hasn't finished yet.
+- Normal mapping
+- AI and character animations
+- Modding support
+- Editor capabilities
 
-- Normal Mapping
+Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplication/master/ROADMAP.md) for an overview of all planned features.
+
+Feature Visions
+---------------
+
 - Shadow Volumes
-
-Desired features that might be implemented in future.
-
-- Global illumination
-- Character animations
-- Artificial intelligence
-- Combat
-- Networking, for multiplayer
+- Terrain shape smoothing by a particular algorithm
+- Realistic water by fluid simulation with [highly adaptive resolution](http://pub.ist.ac.at/group_wojtan/projects/2013_Ando_HALSoTM/index.html)
+- Dynamic weather and daycycle system

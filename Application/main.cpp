@@ -10,6 +10,7 @@ using namespace std;
 #include    "window/module.h"
 #include     "input/module.h"
 #include     "model/module.h"
+#include   "terrain/module.h"
 #include       "sky/module.h"
 #include    "physic/module.h"
 #include    "person/module.h"
@@ -28,6 +29,7 @@ int main()
 	World.Add("window",    new ModuleWindow()   );
 	World.Add("input",     new ModuleInput()    );
 	World.Add("model",     new ModuleModel()    );
+	World.Add("terrain",   new ModuleTerrain()  );
 	World.Add("sky",       new ModuleSky()      );
 	World.Add("person",    new ModulePerson()   );
 	World.Add("camera",    new ModuleCamera()   );
