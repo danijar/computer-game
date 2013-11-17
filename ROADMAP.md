@@ -53,9 +53,11 @@ Improve terrain generation
     load terrain parameters from scripts
     implement live terrain reload on parameter change
     retweak whole generation
-Overthink chunk mechanism
+Overthink chunk loading mechanism
     optimize current ellipsoid range
     smoothly fade in newly loaded chunks and fade out freed ones
+    simpler geometry for far horizons
+        http://www.sea-of-memes.com/LetsCode28/LetsCode28.html
 Implement Artificial Intelligence
     add capsule primitive and attach to persons
     store bahavior queues attached to persons
@@ -88,6 +90,10 @@ Mesh Collision Shapes
         afterwards maybe simplify by BtShapeHull vertex reduction utility
     Implement anti tunneling:
         http://bulletphysics.org/mediawiki-1.5.8/index.php/Anti_tunneling_by_Motion_Clamping
+let dynamic voxels snap back into stadtic terrain grid
+    do this smoothly by applying linear and radial forces from the grids
+    example without forces
+        http://www.youtube.com/watch?v=ptC4LUdZ8n8
 Change from placeholder capsule to ragdoll characters
 Implement character animations
 Add modding support
@@ -102,6 +108,11 @@ Logging system
     Randomly color messages by their output sources
     Provide options for solo or mute output sources
 Officially announce project
+Ingame screen capturing
+    images in jpg or webp and clips in h.264 encoded mp4 or vp9 encoded webm
+Improve terrain meshing and texturing
+    allow different textures for each side of a block
+    consider generally supporting texture arrays in the engine and update terrain module to use that
 Editor capabilities
     insert, edit and transform objects
         inserted objects can get their id stored in a scripting variable or be anonym
@@ -124,3 +135,6 @@ Feature Visions
     weather affecting clothes (wet shine, wind flackering)
     3d decals like footsteps
 	wind from weather system effects water wave size and direction
+    smooth voxel landscapes by particular algorithm
+    support dynamical rounded blocks, e.g. for tree trunks
+        detect neighbours and join shapes
