@@ -17,13 +17,11 @@ struct ManagerDataTrait<Person>
 	 */
 	static void Serialize(Person *Instance, ManagerData::Serialization *Data)
 	{
-		HelperDebug::Print("trait", "inside serialize");
 		Data->FLOAT("height", Instance->Height);
 		Data->FLOAT("mass",   Instance->Mass);
 	}
 	static void Deserialize(Person *Instance, ManagerData::Deserialization *Data)
 	{
-		HelperDebug::Print("trait", "inside deserialize");
 		Instance->Height = Data->FLOAT("height");
 		Instance->Mass   = Data->FLOAT("mass");
 	}

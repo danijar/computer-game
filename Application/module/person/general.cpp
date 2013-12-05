@@ -22,26 +22,23 @@ void ModulePerson::Init()
 {
 	uint64_t id = Entity->New();
 	auto psn = Entity->Add<Person>(id);
+
 	psn->Height = 3.14f;
 	psn->Mass = 42.f;
+	Debug->Print("test", "height is " + to_string(psn->Height));
 
-	bool result;
-	Debug->Print("! data test", "person height is " + to_string(psn->Height));
-	Debug->Print("! data test", "saving");
-	result = Data->Save<Person>(id, psn);
-	Debug->PassFail("! data test", "saving", result);
+	if(!Data->Save<Person>(id, psn))
+		Debug->Fail("test", "saving fail");
 
-	/*
-	Debug->Print("! data test", "modifying");
 	psn->Height = 11.11f;
 	psn->Mass = 11.11f;
-	Debug->Print("! data test", "person height is " + to_string(psn->Height));
+	Debug->Print("test", "height is " + to_string(psn->Height));
 
-	Debug->Print("! data test", "loading");
-	Data->Load<Person>(id, psn);
-	Debug->PassFail("! data test", "loading", result);
-	Debug->Print("! data test", "person height is " + to_string(psn->Height));
-	*/
+	if(!Data->Load<Person>(id, psn))
+		Debug->Fail("test", "loading fail");
+
+	Debug->Print("test", "height is " + to_string(psn->Height));
+
 	Listeners();
 	Callbacks();
 

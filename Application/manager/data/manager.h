@@ -42,8 +42,6 @@ public:
 			sql += ", ?";
 		sql += ")";
 
-		HelperDebug::Print("SQL: ", sql);
-
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Serialization serialization(statement, fields);
@@ -56,7 +54,7 @@ public:
 		if(result == SQLITE_DONE) fine = true;
 		else { HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")"); fine = false; }
 
-		Close(database); // consider keep up the connection for performance
+		Close(database); // consider keeping up the connection for performance
 		return fine;
 	}
 
@@ -69,7 +67,7 @@ public:
 		typedef ManagerDataTrait<T> Trait;
 		
 		std::vector<std::string> fields;
-		fields.resize(Trait::Fields.size() + 1);
+		fields.reserve(Trait::Fields.size() + 1);
 		fields.push_back("id");
 
 		std::string sql = "SELECT id";
@@ -81,6 +79,8 @@ public:
 		sql += " FROM " + name;
 		sql += " WHERE id = '" + std::to_string(Id) + "'";
 
+		HelperDebug::Pass("data", "sql (" + sql + ")");
+
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Deserialization deserialization(statement, fields);
@@ -90,14 +90,11 @@ public:
 			if(result == SQLITE_BUSY)
 				continue;
 			else if(result == SQLITE_ROW)
-				Trait::Deserialize(Instance, &deserialization);
+				{ HelperDebug::Pass("data", "found a row"); Trait::Deserialize(Instance, &deserialization); }
 			else if(result == SQLITE_DONE)
 				break;
 			else
-			{
-				HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")");
-				break;
-			}
+				{ HelperDebug::Fail("data", "query failed with code (" + to_string(result) + ")"); break; }
 		};
 
 		Close(database);
