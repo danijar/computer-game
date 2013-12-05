@@ -27,7 +27,7 @@ public:
 		Table(database, name, Trait::Fields);
 
 		std::vector<std::string> fields;
-		fields.resize(Trait::Fields.size() + 1);
+		fields.reserve(Trait::Fields.size() + 1);
 		fields.push_back("id");
 		
 		std::string sql = "INSERT OR REPLACE";
@@ -42,9 +42,12 @@ public:
 			sql += ", ?";
 		sql += ")";
 
+		HelperDebug::Print("SQL: ", sql);
+
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Serialization serialization(statement, fields);
+		serialization.TEXT("id", std::to_string(Id));
 
 		Trait::Serialize(Instance, &serialization);
 
@@ -105,9 +108,9 @@ public:
 	{
 	public:
 		Serialization(sqlite3_stmt *Statement, std::vector<std::string> Fields);
-		void INTEGER(std::string Field, int Value);
-		void FLOAT(std::string Field, float Value);
-		void TEXT(std::string Field, std::string Value);
+		bool INTEGER(std::string Field, int Value);
+		bool FLOAT(std::string Field, float Value);
+		bool TEXT(std::string Field, std::string Value);
 		// add BLOB support
 	private:
 		int Index(std::string Field);

@@ -4,6 +4,9 @@
 #include <bullet/btBulletDynamicsCommon.h>
 #include <glm/glm.hpp>
 #include <sfml/Window.hpp>
+
+#include <thread>
+#include <chrono>
 using namespace std;
 using namespace glm;
 using namespace sf;
@@ -28,6 +31,7 @@ void ModulePerson::Init()
 	result = Data->Save<Person>(id, psn);
 	Debug->PassFail("! data test", "saving", result);
 
+	/*
 	Debug->Print("! data test", "modifying");
 	psn->Height = 11.11f;
 	psn->Mass = 11.11f;
@@ -37,7 +41,7 @@ void ModulePerson::Init()
 	Data->Load<Person>(id, psn);
 	Debug->PassFail("! data test", "loading", result);
 	Debug->Print("! data test", "person height is " + to_string(psn->Height));
-
+	*/
 	Listeners();
 	Callbacks();
 
