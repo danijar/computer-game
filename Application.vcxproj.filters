@@ -268,6 +268,12 @@
     <ClCompile Include="Application\type\person\general.cpp">
       <Filter>type\person</Filter>
     </ClCompile>
+    <ClCompile Include="Application\manager\data\general.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
+    <ClCompile Include="Application\manager\data\name.cpp">
+      <Filter>manager\data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application\module\renderer\module.h">

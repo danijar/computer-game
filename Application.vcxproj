@@ -84,6 +84,8 @@
   <ItemGroup>
     <ClCompile Include="Application\manager\data\database.cpp" />
     <ClCompile Include="Application\manager\data\deserialization.cpp" />
+    <ClCompile Include="Application\manager\data\general.cpp" />
+    <ClCompile Include="Application\manager\data\name.cpp" />
     <ClCompile Include="Application\manager\data\removed.cpp" />
     <ClCompile Include="Application\manager\data\serialization.cpp" />
     <ClCompile Include="Application\module\camera\calculate.cpp" />

@@ -58,6 +58,12 @@ Overthink chunk loading mechanism
     smoothly fade in newly loaded chunks and fade out freed ones
     simpler geometry for far horizons
         http://www.sea-of-memes.com/LetsCode28/LetsCode28.html
+Speed up terrain (?)
+    reuse the large voxel arrays of discarded chunks (kind of array pool)
+Frustum culling on a per model basis
+    save expanse of models in all six directions from origin
+    skip models out of view in renderer based on position and expanse
+    http://www.iquilezles.org/www/articles/frustumcorrect/frustumcorrect.htm
 Implement Artificial Intelligence
     add capsule primitive and attach to persons
     store bahavior queues attached to persons
@@ -78,7 +84,10 @@ Implement temporal anti aliasing
     store velocity vector in gbuffer
 Implement light scattering ("god rays")
 Implement in game profiling and benchmarking
-Run scripts in namespaced of their module
+Run scripts in namespaces named by their modules
+Add audio manager
+    sound occlusion, decrease radius and add high pass filter
+        use as input for artificial intelligence
 Mesh Collision Shapes
     Determine whether a mesh is convex or concave
         http://liam.flookes.com/cs/geo/index.html
@@ -105,8 +114,8 @@ Implement in game bug report tool
     send screenshot, hardware configuration, time and an optional user comment to the server
 Logging system
     rename Debug Helper to Log Manager
-    Randomly color messages by their output sources
-    Provide options for solo or mute output sources
+    automatedly assign colors to output sources to highlight their messages
+    provide options for solo or mute output sources
 Officially announce project
 Ingame screen capturing
     images in jpg or webp and clips in h.264 encoded mp4 or vp9 encoded webm

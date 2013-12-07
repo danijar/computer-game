@@ -2,6 +2,7 @@
 
 #include <string>
 #include <functional>
+#include <filesystem>
 using namespace std;
 
 
@@ -11,10 +12,17 @@ using namespace std;
  */
 sqlite3 *ManagerData::Open(string Path)
 {
-	// create directory structure if not exist
-	// ...
+	// get folder path from file path
+	const size_t last_slash = Path.rfind('/');
+	if (std::string::npos == last_slash) return false;
+	std::string directory = Path.substr(0, last_slash);
 
-	sqlite3 *database = nullptr; // need to use "new"?
+	// create directory structure if not exist
+	std::tr2::sys::path dir(directory);
+	if(!std::tr2::sys::exists(dir)) std::tr2::sys::create_directories(dir);
+
+	// open and if necessary create database
+	sqlite3 *database;
 	int result = sqlite3_open_v2(Path.c_str(), &database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 	if(result != SQLITE_OK)
 		HelperDebug::Fail("data", "connect to database fail");
