@@ -39,7 +39,7 @@ btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static)
 	btCollisionShape *shape = NULL;
 	LoadShape(shape, Path, Scale, Static);
 
-	shapes.insert(make_pair(key, make_pair(shape, Hash("module/" + Name() + "/mesh/" + Path))));
+	shapes.insert(make_pair(key, make_pair(shape, File->Hash("module/" + Name() + "/mesh/" + Path))));
 
 	return shape;
 }
@@ -50,7 +50,7 @@ void ModuleModel::ReloadShapes()
 
 	for(auto i = shapes.begin(); i != shapes.end(); ++i)
 	{
-		int hash = Hash("module/" + Name() + "/mesh/" + get<0>(i->first));
+		int hash = File->Hash("module/" + Name() + "/mesh/" + get<0>(i->first));
 		if(i->second.second != hash)
 		{
 			i->second.second = hash;

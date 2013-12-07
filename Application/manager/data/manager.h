@@ -22,7 +22,8 @@ public:
 	bool Save(uint64_t Id, T *Instance)
 	{
 		std::string name = Name<T>();
-		sqlite3 *database = Open(path);
+		sqlite3 *database = Open();
+		if(!database) return false;
 
 		typedef ManagerDataTrait<T> Trait;
 
@@ -51,20 +52,21 @@ public:
 
 		Trait::Serialize(Instance, &serialization);
 
-		bool fine;
 		int result = sqlite3_step(statement);
-		if(result == SQLITE_DONE) fine = true;
-		else { HelperDebug::Fail("data", "query from (" + name + ") failed with code (" + to_string(result) + ")"); fine = false; }
+		bool success = (result == SQLITE_DONE);
+		if(!success)
+			HelperDebug::Fail("data", "query from (" + name + ") failed with code (" + to_string(result) + ")");
 
 		Close(database); // consider keeping up the connection for performance
-		return fine;
+		return success;
 	}
 
 	template <typename T>
 	bool Save(std::unordered_map<uint64_t, T*> Instances)
 	{
 		std::string name = Name<T>();
-		sqlite3 *database = Open(path);
+		sqlite3 *database = Open();
+		if(!database) return false;
 
 		typedef ManagerDataTrait<T> Trait;
 
@@ -90,17 +92,14 @@ public:
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Serialization serialization(statement, fields);
 
+		int result;
 		for(auto i : Instances)
 		{
-			serialization.TEXT("id", std::to_string(Id));
-			Trait::Serialize(Instance, &serialization);
+			serialization.TEXT("id", std::to_string(i.first));
+			Trait::Serialize(i.second, &serialization);
 
 			while((result = sqlite3_step(statement)) == SQLITE_BUSY);
-			if(result == SQLITE_DONE)
-			{
-				HelperDebug::Pass("data", "stored row in (" + name + ")"); // debug
-			}
-			else
+			if(result != SQLITE_DONE)
 			{
 				HelperDebug::Fail("data", "query in (" + name + ") failed with code (" + to_string(result) + ")");
 				Close(database);
@@ -110,7 +109,7 @@ public:
 			sqlite3_reset(statement);
 		}
 
-		Close(database); // consider keeping up the connection for performance
+		Close(database);
 		return true;
 	}
 
@@ -119,7 +118,8 @@ public:
 	T *Load(uint64_t Id, T* Instance = new T())
 	{
 		std::string name = Name<T>();
-		sqlite3 *database = Open(path);
+		sqlite3 *database = Open();
+		if(!database) return Instance;
 
 		typedef ManagerDataTrait<T> Trait;
 		
@@ -143,12 +143,11 @@ public:
 		int result;
 		while((result = sqlite3_step(statement)) == SQLITE_BUSY);
 		if(result == SQLITE_ROW)
-		{
-			HelperDebug::Pass("data", "found row from (" + name + ")"); // debug
 			Trait::Deserialize(Instance, &deserialization);
-		}
-		else if(result == SQLITE_DONE) HelperDebug::Pass("data", "no row found");
-		else HelperDebug::Fail("data", "query from (" + name + ") failed with code (" + to_string(result) + ")");
+		else if(result == SQLITE_DONE)
+			HelperDebug::Warning("data", "no row found");
+		else
+			HelperDebug::Fail("data", "query from (" + name + ") failed with code (" + to_string(result) + ")");
 
 		Close(database);
 		return Instance;
@@ -158,7 +157,8 @@ public:
 	std::unordered_map<uint64_t, T*> Load()
 	{
 		std::string name = Name<T>();
-		sqlite3 *database = Open(path);
+		sqlite3 *database = Open();
+		if(!database) return std::unordered_map<uint64_t, T*>();
 
 		typedef ManagerDataTrait<T> Trait;
 		
@@ -174,8 +174,6 @@ public:
 		}
 		sql += " FROM " + name;
 
-		HelperDebug::Pass("data", "sql (" + sql + ")");
-
 		sqlite3_stmt *statement;
 		sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 		Deserialization deserialization(statement, fields);
@@ -186,9 +184,8 @@ public:
 			if(result == SQLITE_BUSY) continue;
 			else if(result == SQLITE_ROW)
 			{
-				HelperDebug::Pass("data", "found a row from (" + name + ")"); // debug
 				T* instance = new T();
-				uint64_t id = deserialization.TEXT("id");
+				uint64_t id = std::stoull(deserialization.TEXT("id"));
 				Trait::Deserialize(instance, &deserialization);
 				instances.insert(std::make_pair(id, instance));
 			}
@@ -230,8 +227,9 @@ public:
 
 	// name
 	void Name(std::string Path);
+	std::string Name();
 private:
-	std::string path;
+	std::string name;
 
 	/*
 	 * Get the lowercase name of the type passed as template argument
@@ -255,6 +253,7 @@ private:
 	}
 
 	// database
+	sqlite3 *Open();
 	sqlite3 *Open(std::string Path);
 	bool Close(sqlite3 *Database);
 	bool Query(sqlite3 *Database, std::string Sql, std::function<void(sqlite3_stmt*)> Callback = [](sqlite3_stmt* statement){});

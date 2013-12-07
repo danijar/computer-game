@@ -21,7 +21,7 @@ ModuleModel::Mesh ModuleModel::GetMesh(string Path)
 	glGenBuffers(1, &mesh.Elements);
 	LoadMesh(mesh, Path);
 
-	meshes.insert(make_pair(Path, make_pair(mesh, Hash("module/" + Name() + "/mesh/" + Path))));
+	meshes.insert(make_pair(Path, make_pair(mesh, File->Hash("module/" + Name() + "/mesh/" + Path))));
 	return mesh;
 }
 
@@ -29,7 +29,7 @@ void ModuleModel::ReloadMeshes()
 {
 	for(auto i = meshes.begin(); i != meshes.end(); ++i)
 	{
-		int hash = Hash("module/" + Name() + "/mesh/" + i->first);
+		int hash = File->Hash("module/" + Name() + "/mesh/" + i->first);
 		if(i->second.second != hash)
 		{
 			i->second.second = hash;

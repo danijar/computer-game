@@ -18,7 +18,6 @@ class ModuleModel : public Module
 	void Update();
 	void Listeners();
 	void Callbacks();
-	int Hash(std::string Path);
 
 	// mesh
 	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };

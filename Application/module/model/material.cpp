@@ -18,7 +18,7 @@ ModuleModel::Material ModuleModel::GetMaterial(string Path)
 	Material material;
 	LoadMaterial(material, Path);
 
-	materials.insert(make_pair(Path, make_pair(material, Hash("module/" + Name() + "/material/" + Path))));
+	materials.insert(make_pair(Path, make_pair(material, File->Hash("module/" + Name() + "/material/" + Path))));
 	return material;
 }
 
@@ -28,7 +28,7 @@ void ModuleModel::ReloadMaterials()
 
 	for(auto i = materials.begin(); i != materials.end(); ++i)
 	{
-		int hash = Hash("module/" + Name() + "/material/" + i->first);
+		int hash = File->Hash("module/" + Name() + "/material/" + i->first);
 		if(i->second.second != hash)
 		{
 			i->second.second = hash;

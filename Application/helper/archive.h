@@ -7,6 +7,8 @@
 
 #include <zip/zipint.h>
 
+#include "helper/file.h"
+
 
 class HelperArchive
 {
@@ -59,14 +61,8 @@ public:
 	}
 	bool Write(std::string Path, std::string File, void *Data, size_t Size)
 	{
-		// get folder path from file path
-		const size_t last_slash = Path.rfind('/');
-		if (std::string::npos == last_slash) return false;
-		std::string directory = Path.substr(0, last_slash);
-
-		// create folder path if it does not exist
-		std::tr2::sys::path dir(directory);
-		if(!std::tr2::sys::exists(dir)) std::tr2::sys::create_directories(dir);
+		// create directory structure if not exist
+		HelperFile::Create(Path);
 
 		// open archive and create if it does not exist
 		zip *archive = zip_open(Path.c_str(), ZIP_CREATE, NULL);

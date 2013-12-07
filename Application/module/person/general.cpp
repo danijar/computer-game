@@ -20,25 +20,6 @@ using namespace sf;
 
 void ModulePerson::Init()
 {
-	uint64_t id = Entity->New();
-	auto psn = Entity->Add<Person>(id);
-
-	psn->Height = 3.14f;
-	psn->Mass = 42.f;
-	Debug->Print("test", "height is " + to_string(psn->Height));
-
-	if(!Data->Save<Person>(id, psn))
-		Debug->Fail("test", "saving fail");
-
-	psn->Height = 11.11f;
-	psn->Mass = 11.11f;
-	Debug->Print("test", "height is " + to_string(psn->Height));
-
-	if(!Data->Load<Person>(id, psn))
-		Debug->Fail("test", "loading fail");
-
-	Debug->Print("test", "height is " + to_string(psn->Height));
-
 	Listeners();
 	Callbacks();
 
