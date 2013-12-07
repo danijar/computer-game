@@ -1,13 +1,13 @@
 @echo off
 
-IF exist Distribution (
-    cd Distribution
+IF exist distribution (
+    cd distribution
     del /q .
     cd ..
 )
 
-xcopy Application Distribution /s /e /i /y
-cd Distribution
+xcopy %~dp0 distribution /s /e /i /y
+cd distribution
 
 del *.exp
 del *.lib

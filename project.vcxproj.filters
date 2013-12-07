@@ -1,0 +1,344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="type\camera\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\form\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\light\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\model\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\person\trait.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\person\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\print\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\settings\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="type\terrain\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="system\system.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\camera\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\console\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\input\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\interface\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\mod\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\model\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\person\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\physic\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\renderer\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\settings\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\sky\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\terrain\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\window\module.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\archive\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\asset\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\data\load.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\data\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\data\save.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\data\trait.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\data\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\entity\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\event\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\file\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\global\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\log\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\opengl\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="manager\script\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="type\person\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="system\module.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="system\system.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\calculate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\save.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\camera\synchronization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\console\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\console\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\console\history.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\input\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\interface\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\interface\crosshair.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\interface\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\interface\print.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\mod\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\create.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\model\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\checks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\create.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\movement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\person\save.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\framebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\passes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\renderer\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\settings\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\settings\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\sky\create.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\sky\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\block.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\generation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\loading.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\noise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\save.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\select.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\terrain\texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\window\callbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\window\create.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\window\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manager\data\database.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manager\data\deserialization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manager\data\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="manager\data\serialization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="application\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="module\camera\init.js" />
+    <None Include="module\settings\init.js" />
+    <None Include="module\renderer\pipeline.js" />
+    <None Include="module\person\init.js" />
+    <None Include="module\person\update.js" />
+    <None Include="module\physic\shader\shader.vert" />
+    <None Include="module\physic\shader\shader.frag" />
+    <None Include="module\renderer\shader\tonemapping.frag" />
+    <None Include="module\renderer\shader\antialiasing.frag" />
+    <None Include="module\renderer\shader\apply.frag" />
+    <None Include="module\renderer\shader\blur_u.frag" />
+    <None Include="module\renderer\shader\blur_v.frag" />
+    <None Include="module\renderer\shader\combine.frag" />
+    <None Include="module\renderer\shader\edge.frag" />
+    <None Include="module\renderer\shader\forms.frag" />
+    <None Include="module\renderer\shader\forms.vert" />
+    <None Include="module\renderer\shader\light.frag" />
+    <None Include="module\renderer\shader\occlusion.frag" />
+    <None Include="module\renderer\shader\quad.vert" />
+    <None Include="module\renderer\shader\screen.frag" />
+    <None Include="module\mod\init.js" />
+    <None Include="module\mod\update.js" />
+    <None Include="module\model\init.js" />
+    <None Include="module\model\update.js" />
+  </ItemGroup>
+</Project>

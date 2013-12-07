@@ -1,23 +1,20 @@
-#pragma once
+#include "system/system.h"
 
-#include "system.h"
+#include "module/settings/module.h"
+#include "module/console/module.h"
+#include "module/window/module.h"
+#include "module/input/module.h"
+#include "module/model/module.h"
+#include "module/terrain/module.h"
+#include "module/sky/module.h"
+#include "module/physic/module.h"
+#include "module/person/module.h"
+#include "module/camera/module.h"
+#include "module/renderer/module.h"
+#include "module/interface/module.h"
+#include "module/mod/module.h"
 
-#include <string>
 using namespace std;
-
-#include  "settings/module.h"
-#include   "console/module.h"
-#include    "window/module.h"
-#include     "input/module.h"
-#include     "model/module.h"
-#include   "terrain/module.h"
-#include       "sky/module.h"
-#include    "physic/module.h"
-#include    "person/module.h"
-#include    "camera/module.h"
-#include  "renderer/module.h"
-#include "interface/module.h"
-#include       "mod/module.h"
 
 
 int main()

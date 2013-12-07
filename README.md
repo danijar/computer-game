@@ -13,16 +13,14 @@ Features
 
 ### State of Play
 
-- First person camera
 - Deferred Rendering
-- Basic text drawing
 - Edge detect anti-aliasing
 - Screen space ambient occlusion
-- Deferred Lighting
 - Scripting
 - Physics and collision
 - Dynamic character controller
-- Random generated voxel based terrain
+- Procedural voxel based terrain
+- Automated storing to database
 
 ### Upcoming Features
 
@@ -43,20 +41,24 @@ Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplica
 Libraries
 ---------
 
+- [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
+- [Bullet](http://bulletphysics.org/) Realtime Physics Simulation (2.81)
 - [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler (1.9.0)
 - [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
-- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
-- [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
-- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
-- [Bullet](http://bulletphysics.org/) Realtime Physics Simulation (2.81)
-- [SQLite](http://www.sqlite.org/) SQL Database Engine (3.8.1)
-- [zlib](http://www.zlib.net/) General Purpose Compression (1.2.8)
 - [libzip](http://www.nih.at/libzip/) Zip Archives (0.11.1)
+- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
+- [SQLite](http://www.sqlite.org/) SQL Database Engine (3.8.1)
+- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
+- [zlib](http://www.zlib.net/) General Purpose Compression (1.2.8)
 
 Instructions
 ------------
 
-There is a precompiled executable for Windows. To use it, download the content of the `Application` folder and run the executable. You may need a recent Windows version to run this.
+There is a precompiled executable for Windows. To use it, just download the repository and run `/main.exe` from the repository root. You may need a recent version of Windows.
+
+Currently, there is no compiler setup for Linux. However, the source code is cross platform and you will see a Linux release in future. Until then you may build this application on your own, but keep in mind that you need to build all dependencies listed above first.
+
+The code should be compatible to Mac, but there are no plans for support.
 
 ### Key controls
 
@@ -84,6 +86,14 @@ Interaction with the world
 - `1` to `9` Change type of block getting placed.
 - `F` Shoot a cube in view direction.
 
+### Saves
+
+The game sames are stored in a `/save/` folder. Modify the settings file located at `/module/settings/init.js` to specify which save game should be loaded at startup. The default name is `world`. If the name doesn't exist yet, a new world is created.
+
+    Savegame: [ 'string', 'world' ],
+
+There are also scripting functions available for creating new worlds and switching between them at run time.
+
 ### Scripting
 
 The scripting language used is JavaScript.
@@ -93,3 +103,7 @@ As described above, the scripting console can be accessed by pressing the `Tab` 
 To enable debug mode, blindly press `Tab`, type in `debug()` and hit `Enter`. You can now see debug information on the screen like the scripting console, frames per second, number of loaded meshes, coordinates of the camera, and so on.
 
 For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/ComputerGame/GraphicsApplication/wiki/List-of-Scripting-Functions).
+
+### Questions
+
+If you have any questions, feel free to contact me. I'm sure you will find a way.

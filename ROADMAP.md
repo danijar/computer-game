@@ -1,14 +1,14 @@
 Roadmap for Graphics Application
 ================================
 
-Implement data manager or helper to store entities in databases
-    make use of SQLite for saves
-    use treats or lamdas for conversion between structs and table rows
-Refactor system managers and helpers
-    split managers, helpers and types into header and source files
+x Implement data manager or helper to store entities in databases
+    x make use of SQLite for saves
+    x use treats or lamdas for conversion between structs and table rows
+x Refactor system managers and helpers
+    x split managers, helpers and types into header and source files
     split modules into sub projects which generate DLL files
     move asset functionality from Model module into a manager
-    move file hash function into a filesystem helper
+    x move file hash function into a filesystem helper
 Set shader uniforms from within scripts
 Improve render pass system
     disable or enable passes while rendering still works by just copying unmodified textures through
@@ -18,7 +18,7 @@ Meta module system
     loads in all available DLL files
     adds them to the world with their file name as name
     add scripting callbacks to toggle modules by their name
-Merge terrain branch back into master and continue there
+x Merge terrain branch back into master and continue there
 Readd forward renderer as alternative
 Live reload for scripts
     Move file hash function into a file helper

@@ -1,20 +1,18 @@
 
-# build related
-Build
-Application/Application.exp
-Application/Application.lib
-Application/Application.ilk
-Application/Application.pdb
-
 # visual studio
-Application.opensdf
+/project.opensdf
+/Debug/
+/Release/
+/main.lib
+/main.pdb
+/main.exp
 
 # windows
 Thumbs.db
 desktop.ini
 
 # savegames
-Application/save
+/save/
 
 # custom tools
-Distribution
+/distribution/

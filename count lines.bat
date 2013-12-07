@@ -1,7 +1,5 @@
 @echo off
 
-cd Application
-
 set sum = 0
 set files = 0
 for /r %%i in (*) do (
