@@ -18,20 +18,23 @@ public:
 	 */
 	static bool Create(std::string Path) // detect files by extension dot and ignore last segment
 	{
+		using namespace std;
+		using namespace std::tr2::sys;
+
 		// remove trailing slash
 		if(Path.back() == '/')
 			Path.pop_back();
 
 		// find last path segment
 		const size_t position = Path.rfind('/');
-		bool slash = (position != std::string::npos);
-		std::string segment = slash ? Path.substr(position + 1, std::string::npos) : Path;
+		bool slash = (position != string::npos);
+		string segment = slash ? Path.substr(position + 1, string::npos) : Path;
 
 		// check wether it is a file
-		bool file = (segment.find('.') != std::string::npos) && (segment.back() != '/');
+		bool file = (segment.find('.') != string::npos) && (segment.back() != '/');
 
 		// get path without file
-		std::string directory;
+		string directory;
 		if(!file)
 			directory = Path;
 		if(file && slash)
@@ -39,8 +42,8 @@ public:
 		else return true; // no directory in path
 
 		// create directory structure if not exist
-		std::tr2::sys::path dir(directory);
-		if(!std::tr2::sys::exists(dir)) return std::tr2::sys::create_directories(dir);
+		path dir(directory);
+		if(!exists(dir)) return create_directories(dir);
 
 		return true;
 	}
@@ -51,11 +54,14 @@ public:
 	 */
 	int Hash(std::string Path)
 	{
-		std::tr2::sys::path filepath(Path);
-		std::time_t timestamp = std::tr2::sys::last_write_time(filepath);
-		unsigned long long filesize = std::tr2::sys::file_size(filepath);
+		using namespace std;
+		using namespace std::tr2::sys;
 
-		return std::hash<time_t>()(timestamp) + 37 * std::hash<unsigned long long>()(filesize);
+		path filepath(Path);
+		time_t timestamp = last_write_time(filepath);
+		unsigned long long filesize = file_size(filepath);
+
+		return hash<time_t>()(timestamp) + 37 * hash<unsigned long long>()(filesize);
 	}
 
 	/*

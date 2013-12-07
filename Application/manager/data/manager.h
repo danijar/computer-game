@@ -47,6 +47,7 @@ private:
 	bool Table(sqlite3 *Database, std::string Name, std::unordered_map<std::string, std::string> Fields);
 };
 
+
 // include template implementations
 #include "save.h"
 #include "load.h"

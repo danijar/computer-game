@@ -7,15 +7,16 @@
 
 #include <thread>
 #include <chrono>
-using namespace std;
-using namespace glm;
-using namespace sf;
 
 #include "form.h"
 #include "type/person/type.h"
 #include "type/person/trait.h"
 #include "camera.h"
 #include "print.h"
+
+using namespace std;
+using namespace glm;
+using namespace sf;
 
 
 void ModulePerson::Init()

@@ -23,24 +23,26 @@ private:
 template <typename T>
 T *ManagerData::Load(uint64_t Id, T* Instance)
 {
-	std::string name = Type<T>();
+	using namespace std;
+
+	string name = Type<T>();
 	sqlite3 *database = Open();
 	if(!database) return Instance;
 
 	typedef ManagerDataTrait<T> Trait;
 		
-	std::vector<std::string> fields;
+	vector<string> fields;
 	fields.reserve(Trait::Fields.size() + 1);
 	fields.push_back("id");
 
-	std::string sql = "SELECT id";
+	string sql = "SELECT id";
 	for(auto i : Trait::Fields)
 	{
 		sql += ", " + i.first;
 		fields.push_back(i.first);
 	}
 	sql += " FROM " + name;
-	sql += " WHERE id = '" + std::to_string(Id) + "'";
+	sql += " WHERE id = '" + to_string(Id) + "'";
 
 	sqlite3_stmt *statement;
 	sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
@@ -62,17 +64,19 @@ T *ManagerData::Load(uint64_t Id, T* Instance)
 template <typename T>
 std::unordered_map<uint64_t, T*> ManagerData::Load()
 {
-	std::string name = Type<T>();
+	using namespace std;
+
+	string name = Type<T>();
 	sqlite3 *database = Open();
-	if(!database) return std::unordered_map<uint64_t, T*>();
+	if(!database) return unordered_map<uint64_t, T*>();
 
 	typedef ManagerDataTrait<T> Trait;
 		
-	std::vector<std::string> fields;
+	vector<string> fields;
 	fields.reserve(Trait::Fields.size() + 1);
 	fields.push_back("id");
 
-	std::string sql = "SELECT id";
+	string sql = "SELECT id";
 	for(auto i : Trait::Fields)
 	{
 		sql += ", " + i.first;
@@ -84,16 +88,16 @@ std::unordered_map<uint64_t, T*> ManagerData::Load()
 	sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, 0);
 	Deserialization deserialization(statement, fields);
 
-	std::unordered_map<uint64_t, T*> instances;
+	unordered_map<uint64_t, T*> instances;
 	while(int result = sqlite3_step(statement))
 	{
 		if(result == SQLITE_BUSY) continue;
 		else if(result == SQLITE_ROW)
 		{
 			T* instance = new T();
-			uint64_t id = std::stoull(deserialization.TEXT("id"));
+			uint64_t id = stoull(deserialization.TEXT("id"));
 			Trait::Deserialize(instance, &deserialization);
-			instances.insert(std::make_pair(id, instance));
+			instances.insert(make_pair(id, instance));
 		}
 		else if(result == SQLITE_DONE) break;
 		else { HelperDebug::Fail("data", "query from (" + name + ") failed with code (" + to_string(result) + ")"); break; }
