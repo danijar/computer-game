@@ -52,3 +52,6 @@ private:
 #include "save.h"
 #include "load.h"
 #include "type.h"
+
+// debug
+#include "type/person/trait.h"

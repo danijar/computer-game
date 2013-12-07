@@ -10,7 +10,7 @@
 
 #include "form.h"
 #include "type/person/type.h"
-#include "type/person/trait.h"
+//#include "type/person/trait.h"
 #include "camera.h"
 #include "print.h"
 
@@ -23,6 +23,14 @@ void ModulePerson::Init()
 {
 	Listeners();
 	Callbacks();
+
+	/*
+	// debug
+	Person *psn = new Person;
+	psn->Height = 1.77f;
+	psn->Mass = 67.f;
+	Data->Save(Entity->New(), psn);
+	*/
 
 	Script->Run("init.js");
 }
