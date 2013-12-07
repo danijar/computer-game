@@ -1,4 +1,6 @@
-#include "manager/data/manager.h"
+#include "manager.h"
+
+#include "helper/debug.h"
 
 using namespace std;
 

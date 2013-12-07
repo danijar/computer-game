@@ -256,9 +256,6 @@
     <ClCompile Include="Application\manager\data\database.cpp">
       <Filter>manager\data</Filter>
     </ClCompile>
-    <ClCompile Include="Application\manager\data\removed.cpp">
-      <Filter>manager\data</Filter>
-    </ClCompile>
     <ClCompile Include="Application\manager\data\deserialization.cpp">
       <Filter>manager\data</Filter>
     </ClCompile>
@@ -269,9 +266,6 @@
       <Filter>type\person</Filter>
     </ClCompile>
     <ClCompile Include="Application\manager\data\general.cpp">
-      <Filter>manager\data</Filter>
-    </ClCompile>
-    <ClCompile Include="Application\manager\data\name.cpp">
       <Filter>manager\data</Filter>
     </ClCompile>
   </ItemGroup>
@@ -376,6 +370,9 @@
     <ClInclude Include="Application\type\person\type.h">
       <Filter>type\person</Filter>
     </ClInclude>
+    <ClInclude Include="Application\manager\data\type.h">
+      <Filter>manager\data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Application\module\model\init.js">
@@ -473,6 +470,12 @@
     </None>
     <None Include="Application\module\person\init.js">
       <Filter>module\person</Filter>
+    </None>
+    <None Include="Application\manager\data\load.h">
+      <Filter>manager\data</Filter>
+    </None>
+    <None Include="Application\manager\data\save.h">
+      <Filter>manager\data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

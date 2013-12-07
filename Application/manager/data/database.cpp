@@ -1,8 +1,9 @@
-#include "manager/data/manager.h"
+#include "manager.h"
 
 #include <string>
 #include <functional>
 
+#include "helper/debug.h"
 #include "helper/file.h"
 
 using namespace std;

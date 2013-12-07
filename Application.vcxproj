@@ -85,8 +85,6 @@
     <ClCompile Include="Application\manager\data\database.cpp" />
     <ClCompile Include="Application\manager\data\deserialization.cpp" />
     <ClCompile Include="Application\manager\data\general.cpp" />
-    <ClCompile Include="Application\manager\data\name.cpp" />
-    <ClCompile Include="Application\manager\data\removed.cpp" />
     <ClCompile Include="Application\manager\data\serialization.cpp" />
     <ClCompile Include="Application\module\camera\calculate.cpp" />
     <ClCompile Include="Application\module\camera\callbacks.cpp" />
@@ -153,6 +151,7 @@
     <ClInclude Include="Application\helper\opengl.h" />
     <ClInclude Include="Application\helper\script.h" />
     <ClInclude Include="Application\manager\data\manager.h" />
+    <ClInclude Include="Application\manager\data\type.h" />
     <ClInclude Include="Application\manager\data\trait.h" />
     <ClInclude Include="Application\manager\entity.h" />
     <ClInclude Include="Application\manager\event.h" />
@@ -182,6 +181,8 @@
     <ClInclude Include="Application\module\window\module.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Application\manager\data\load.h" />
+    <None Include="Application\manager\data\save.h" />
     <None Include="Application\module\model\init.js" />
     <None Include="Application\module\model\material\barrel.mtl" />
     <None Include="Application\module\model\material\chess.mtl" />
