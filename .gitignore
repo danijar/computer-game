@@ -1,8 +1,8 @@
 
 # visual studio
-/project.opensdf
-/Debug/
-/Release/
+project.opensdf
+Debug
+Release
 /main.lib
 /main.pdb
 /main.exp

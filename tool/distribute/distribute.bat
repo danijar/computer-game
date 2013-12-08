@@ -1,5 +1,7 @@
 @echo off
 
+cd ..
+
 IF exist distribution (
     cd distribution
     del /q .
