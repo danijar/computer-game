@@ -1,7 +1,9 @@
 Graphics Application
 ====================
 
-Modular architecture for grounded cross platform graphics applications. Provides global managers for messaging, entities and automatedly storing them in databases. Comes with helpers for logging, scripting, file access and asset management. Implemented modules cover OpenGL graphics, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
+This is a modular game engine architecture for grounded cross platform graphics applications. It provides managers for messaging, entities and automatedly storing them in databases. Additionally, it provides functionality for unified logging, scripting, file access and asset management. Currently implemented modules cover OpenGL rendering, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
+
+The application is thought out, designed and written by Danijar Hafner.
 
 Screenshot
 ----------
@@ -11,7 +13,7 @@ Screenshot
 Features
 --------
 
-### State of Play
+State of Play
 
 - Deferred Rendering
 - Edge detect anti-aliasing
@@ -20,9 +22,9 @@ Features
 - Physics and collision
 - Dynamic character controller
 - Procedural voxel based terrain
-- Automated storing to database
+- Automated storing of entities to database
 
-### Upcoming Features
+Upcoming Features
 
 - Normal mapping
 - AI and character animations
@@ -31,7 +33,7 @@ Features
 
 Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplication/master/ROADMAP.md) for an overview of all planned features.
 
-### Feature Visions
+Feature Visions
 
 - Shadow Volumes
 - Terrain shape smoothing by a particular algorithm
