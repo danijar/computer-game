@@ -2,9 +2,9 @@
 
 #include <string>
 #include <mutex>
-#include "dependency/glm/glm.hpp"
-#include "dependency/glm/gtc/noise.hpp"
-#include "dependency/sfml/OpenGL.hpp"
+#include <dependency/glm/glm.hpp>
+#include <dependency/glm/gtc/noise.hpp>
+#include <dependency/sfml/OpenGL.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;

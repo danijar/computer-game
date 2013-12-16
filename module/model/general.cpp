@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <cstdlib>
 #include <glew/glew.h>
-#include "dependency/glm/glm.hpp"
-#include "dependency/sfml/Window/Keyboard.hpp"
+#include <dependency/glm/glm.hpp>
+#include <dependency/sfml/Window/Keyboard.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace sf;

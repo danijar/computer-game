@@ -1,10 +1,14 @@
 #include "module.h"
 
 #include <string>
+#include <dependency/sfml/System.hpp>
+#include <dependency/glm/gtc/type_ptr.hpp>
 using namespace std;
 using namespace v8;
+using namespace glm;
 
 #include "type/settings/type.h"
+#include "type/camera/type.h"
 
 
 void ModuleRenderer::Callbacks()
@@ -13,6 +17,7 @@ void ModuleRenderer::Callbacks()
 	Script->Bind("renderpass",       jsRenderpass      );
 	Script->Bind("rendertargetload", jsRendertargetload);
 	Script->Bind("wireframe",        jsWireframe       );
+	Script->Bind("projection",       jsProjection      );
 }
 
 Handle<Value> ModuleRenderer::jsRendertarget(const Arguments& args)
@@ -198,6 +203,10 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 	return Undefined();
 }
 
+/*
+ * rendertargetload(name, path, repeat?, filtering?, mipmapping?)
+ * Loads a texture into a render target.
+ */
 Handle<Value> ModuleRenderer::jsRendertargetload(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
@@ -227,6 +236,10 @@ Handle<Value> ModuleRenderer::jsRendertargetload(const Arguments& args)
 	return Undefined();
 }
 
+/*
+ * wireframe()
+ * Toggles wireframe rendering.
+ */
 Handle<Value> ModuleRenderer::jsWireframe(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
@@ -236,4 +249,23 @@ Handle<Value> ModuleRenderer::jsWireframe(const Arguments& args)
 
 	ManagerLog::Print("script", string(*stg->Get<bool>("Wireframe") ? "enabled" : "disabled") + " wireframe mode");
 	return Undefined();
+}
+
+/*
+ * projection()
+ * Get projection matrix of current camera. Return value is an array of length 16.
+ */
+Handle<Value> ModuleRenderer::jsProjection(const Arguments& args)
+{
+	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
+
+	uint64_t id = *module->Global->Get<uint64_t>("camera");
+	auto cam = module->Entity->Get<Camera>(id);
+	mat4 projection = cam->Projection;
+	float *value = value_ptr(projection);
+
+	Handle<Array> result = Array::New(2);
+	for(int i = 0; i < 16; ++i)
+		result->Set(i, Number::New(value[i]));
+	return result;
 }

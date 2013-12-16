@@ -1,8 +1,8 @@
 #include "module.h"
 
 #include <string>
-#include "dependency/sfml/Window.hpp"
-#include "dependency/sfml/Graphics/RenderWindow.hpp"
+#include <dependency/sfml/Window.hpp>
+#include <dependency/sfml/Graphics/RenderWindow.hpp>
 using namespace std;
 using namespace v8;
 
@@ -11,11 +11,16 @@ using namespace v8;
 
 void ModuleWindow::Callbacks()
 {
-	Script->Bind("title", jsTitle);
-	Script->Bind("vsync", jsVsync);
-	Script->Bind("key",   jsKey  );
+	Script->Bind("title",      jsTitle     );
+	Script->Bind("vsync",      jsVsync     );
+	Script->Bind("windowsize", jsWindowsize);
+	Script->Bind("key",        jsKey       );
 }
 
+/*
+ * title(string?)
+ * Set or get window title.
+ */
 Handle<Value> ModuleWindow::jsTitle(const Arguments& args)
 {
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
@@ -38,6 +43,10 @@ Handle<Value> ModuleWindow::jsTitle(const Arguments& args)
 	}
 }
 
+/* 
+ * vsync()
+ * Toggles Vsync.
+ */
 Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
 {
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
@@ -51,6 +60,28 @@ Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
 	return Undefined();
 }
 
+/*
+ * windowsize()
+ * Get dimensions of the window. Return value is an array of length two.
+ * Later on also allow to set the window size.
+ */
+Handle<Value> ModuleWindow::jsWindowsize(const Arguments& args)
+{
+	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
+	auto wnd = module->Global->Get<sf::RenderWindow>("window");
+
+	sf::Vector2u size = module->Global->Get<sf::RenderWindow>("window")->getSize();
+
+	Handle<Array> result = Array::New(2);
+	result->Set(0, Number::New(size.x));
+	result->Set(1, Number::New(size.y));
+	return result;
+}
+
+/*
+ * key(character)
+ * Checks whether the key corresponding to the passed letter is currently pressed.
+ */
 Handle<Value> ModuleWindow::jsKey(const Arguments& args)
 {
 	if(0 < args.Length() && args[0]->IsString())

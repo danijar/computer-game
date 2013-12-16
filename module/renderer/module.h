@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
-#include "dependency/glm/glm.hpp"
-#include "dependency/sfml/System.hpp"
+#include <dependency/glm/glm.hpp>
+#include <dependency/sfml/System.hpp>
 
 
 class ModuleRenderer : public Module
@@ -78,4 +78,5 @@ public:
 	static v8::Handle<v8::Value> jsRendertarget(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRendertargetload(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsWireframe   (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsProjection  (const v8::Arguments& args);
 };

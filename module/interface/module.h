@@ -2,7 +2,7 @@
 
 #include "system/system.h"
 
-#include "dependency/sfml/Graphics.hpp"
+#include <dependency/sfml/Graphics.hpp>
 
 
 class ModuleInterface : public Module

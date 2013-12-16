@@ -1,8 +1,8 @@
 #include "module.h"
 
-#include "dependency/sfml/OpenGL.hpp"
-#include "dependency/sfml/Graphics/RenderWindow.hpp"
-#include "dependency/glm/gtc/type_ptr.hpp"
+#include <dependency/sfml/OpenGL.hpp>
+#include <dependency/sfml/Graphics/RenderWindow.hpp>
+#include <dependency/glm/gtc/type_ptr.hpp>
 using namespace std;
 using namespace sf;
 using namespace glm;

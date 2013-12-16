@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include "dependency/sfml/System.hpp"
+#include <dependency/sfml/System.hpp>
 using namespace std;
 using namespace v8;
 

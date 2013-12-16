@@ -1,8 +1,8 @@
 #include "module.h"
 
 #include <string>
-#include "dependency/sfml/Window.hpp"
-#include "dependency/sfml/Graphics/RenderWindow.hpp"
+#include <dependency/sfml/Window.hpp>
+#include <dependency/sfml/Graphics/RenderWindow.hpp>
 using namespace std;
 using namespace sf;
 

@@ -3,8 +3,8 @@
 #include "system/system.h"
 
 #include <unordered_map>
-#include "dependency/sfml/OpenGL.hpp"
-#include "dependency/glm/glm.hpp"
+#include <dependency/sfml/OpenGL.hpp>
+#include <dependency/glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <v8/v8.h>
 

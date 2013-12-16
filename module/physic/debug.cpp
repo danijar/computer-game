@@ -2,10 +2,10 @@
 
 #include <string>
 
-#include "dependency/glew/glew.h"
-#include "dependency/glm/gtc/type_ptr.hpp"
-#include "dependency/sfml/OpenGL.hpp"
-#include "dependency/bullet/btBulletDynamicsCommon.h"
+#include <dependency/glew/glew.h>
+#include <dependency/glm/gtc/type_ptr.hpp>
+#include <dependency/sfml/OpenGL.hpp>
+#include <dependency/bullet/btBulletDynamicsCommon.h>
 
 #include "type/settings/type.h"
 #include "type/camera/type.h"

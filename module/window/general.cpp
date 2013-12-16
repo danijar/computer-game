@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include "dependency/sfml/Window.hpp"
-#include "dependency/sfml/Graphics/RenderWindow.hpp"
+#include <dependency/sfml/Window.hpp>
+#include <dependency/sfml/Graphics/RenderWindow.hpp>
 using namespace sf;
 
 #include "type/settings/type.h"

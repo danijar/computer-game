@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dependency/glm/glm.hpp"
-#include "dependency/glm/gtc/matrix_transform.hpp"
+#include <dependency/glm/glm.hpp>
+#include <dependency/glm/gtc/matrix_transform.hpp>
 
 
 struct Camera

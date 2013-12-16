@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include "dependency/glm/glm.hpp"
-#include "dependency/sfml/Graphics/RenderWindow.hpp"
+#include <dependency/glm/glm.hpp>
+#include <dependency/sfml/Graphics/RenderWindow.hpp>
 
 #include "type/settings/type.h"
 #include "type/camera/type.h"
