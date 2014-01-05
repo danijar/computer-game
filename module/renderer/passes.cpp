@@ -10,64 +10,6 @@ using namespace glm;
 #include "type/camera/type.h"
 
 
-void ModuleRenderer::Uniforms()
-{
-	/*
-	 * Move this in pipeline.js script, using a
-	 * uniform() callback. Also register related
-	 * uniform changes to resize events in script.
-	 *
-	 * Moreover, we need to access projection matrix
-	 * and frame buffer size from scripts.
-	 */
-
-	if(Pass *pass = PassGet("forms"))
-	{
-		glUseProgram(pass->Program);
-		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Projection));
-	}
-
-	if(Pass *pass = PassGet("sky"))
-	{
-		glUseProgram(pass->Program);
-		glUniformMatrix4fv(glGetUniformLocation(pass->Program, "projection"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Projection));
-	}
-
-	Vector2u Size = Global->Get<RenderWindow>("window")->getSize();
-
-	if(Pass *pass = PassGet("edge"))
-	{
-		glUseProgram(pass->Program);
-		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
-	}
-
-	if(Pass *pass = PassGet("combine"))
-	{
-		glUseProgram(pass->Program);
-		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
-	}
-
-	if(Pass *pass = PassGet("occlusion"))
-	{
-		glUseProgram(pass->Program);
-		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
-	}
-
-	if(Pass *pass = PassGet("blur_u"))
-	{
-		glUseProgram(pass->Program);
-		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
-	}
-
-	if(Pass *pass = PassGet("blur_v"))
-	{
-		glUseProgram(pass->Program);
-		glUniform2fv(glGetUniformLocation(pass->Program, "frame_size"), 1, value_ptr(pass->Size * vec2(Size.x, Size.y)));
-	}
-
-	glUseProgram(0);
-}
-
 void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Fallbacks, Function Function, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
 	if(PassGet(Name, false))

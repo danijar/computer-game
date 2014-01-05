@@ -340,5 +340,6 @@
     <None Include="module\mod\update.js" />
     <None Include="module\model\init.js" />
     <None Include="module\model\update.js" />
+    <None Include="module\renderer\uniforms.js" />
   </ItemGroup>
 </Project>

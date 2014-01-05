@@ -16,6 +16,7 @@ void ModuleRenderer::Callbacks()
 	Script->Bind("rendertarget",     jsRendertarget    );
 	Script->Bind("renderpass",       jsRenderpass      );
 	Script->Bind("rendertargetload", jsRendertargetload);
+	Script->Bind("uniform",          jsUniform         );
 	Script->Bind("wireframe",        jsWireframe       );
 	Script->Bind("projection",       jsProjection      );
 }
@@ -232,6 +233,61 @@ Handle<Value> ModuleRenderer::jsRendertargetload(const Arguments& args)
 		mipmapping = args[4]->BooleanValue();
 
 	module->TextureLoad(name, path, repeat, filtering, mipmapping);
+
+	return Undefined();
+}
+
+/*
+ * uniform(pass, name, value)
+ * Sets a shader uniform.
+ * Currently, only the OpenGL types 2fv and Matrix4fv are supported.
+ */
+Handle<Value> ModuleRenderer::jsUniform(const Arguments& args)
+{
+	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return Undefined();
+	string passname = *String::Utf8Value(args[0]);
+
+	if(args.Length() < 2 || !args[1]->IsString())
+		return Undefined();
+	string name = *String::Utf8Value(args[1]);
+
+	Pass *pass = module->PassGet(passname);
+	if(!pass) { module->Log->Warning("script", "pass (" + passname + ") not found"); return Undefined(); }
+
+	glUseProgram(pass->Program);
+	GLuint location = glGetUniformLocation(pass->Program, name.c_str());
+
+	if(args.Length() < 3)
+		return Undefined();
+
+	if(args[2]->IsArray())
+	{
+		Handle<Array> handle = Handle<Array>::Cast(args[2]);
+		if(!handle->Length()) { module->Log->Warning("script", "uniform value is empty"); return Undefined(); }
+
+		if(handle->Get(0)->IsNumber())
+		{
+			vector<GLfloat> values(handle->Length());
+			for(unsigned int i = 0; i < handle->Length(); ++i)
+				if(handle->Get(i)->IsNumber())
+					values[i] = ((GLfloat)handle->Get(i)->NumberValue());
+
+			if(values.size() == 2)
+				glUniform2fv(location, 1, &values[0]);
+			else if(values.size() == 16)
+				glUniformMatrix4fv(location, 1, GL_FALSE, &values[0]);
+			else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
+		}
+		// else if(handle->Get(0)->Is...())
+		// {
+		//     ...
+		// }
+		else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
+	}
+	else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
 
 	return Undefined();
 }

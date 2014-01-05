@@ -137,6 +137,7 @@
     <None Include="module\renderer\shader\quad.vert" />
     <None Include="module\renderer\shader\screen.frag" />
     <None Include="module\renderer\shader\tonemapping.frag" />
+    <None Include="module\renderer\uniforms.js" />
     <None Include="module\settings\init.js" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

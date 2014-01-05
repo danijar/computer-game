@@ -52,7 +52,6 @@ class ModuleRenderer : public Module
 		bool Enabled;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
-	void Uniforms();
 	void PassCreate(std::string Name,
 		std::string Vertex, std::string Fragment,
 		std::unordered_map<GLenum,      std::string> Targets,
@@ -77,6 +76,7 @@ public:
 	static v8::Handle<v8::Value> jsRenderpass  (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRendertarget(const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRendertargetload(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsUniform     (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsWireframe   (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsProjection  (const v8::Arguments& args);
 };

@@ -13,7 +13,7 @@ void ModuleRenderer::Init()
 	Callbacks();
 
 	Script->Run("pipeline.js");
-	Uniforms();
+	Script->Run("uniforms.js");
 
 	Listeners();
 }
@@ -59,7 +59,6 @@ void ModuleRenderer::Listeners()
 			glDeleteProgram(i->second.Program);
 			i->second.Program = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
-		Uniforms();
 	});
 
 	Event->Listen("WindowRecreated", [=]{
@@ -71,17 +70,11 @@ void ModuleRenderer::Listeners()
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
 			i->second.Framebuffer = CreateFramebuffer(i->second.Targets);
 		}
-		Uniforms();
 	});
 
 	Event->Listen("WindowResize", [=]{
 		for(auto i : textures)
 			if(get<2>(i.second))
 				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
-		Uniforms();
-	});
-
-	Event->Listen("ShaderUpdated", [=]{
-		Uniforms();
 	});
 }
