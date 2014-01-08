@@ -7,7 +7,6 @@ function uniforms() {
 
     var frame_size = windowsize();
     uniform("edge", "frame_size", frame_size);
-    uniform("combine", "frame_size", frame_size);
     uniform("occlusion", "frame_size", frame_size.map(function(x){ return 0.75 * x; }));
     uniform("blur_u", "frame_size", frame_size);
     uniform("blur_v", "frame_size", frame_size);

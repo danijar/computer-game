@@ -240,54 +240,173 @@ Handle<Value> ModuleRenderer::jsRendertargetload(const Arguments& args)
 /*
  * uniform(pass, name, value)
  * Sets a shader uniform.
- * Currently, only the OpenGL types 2fv and Matrix4fv are supported.
  */
 Handle<Value> ModuleRenderer::jsUniform(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 
-	if(args.Length() < 1 || !args[0]->IsString())
-		return Undefined();
+	if(args.Length() < 1 || !args[0]->IsString()) { module->Log->Warning("script", "wrong parameter"); return Undefined(); }
 	string passname = *String::Utf8Value(args[0]);
 
-	if(args.Length() < 2 || !args[1]->IsString())
-		return Undefined();
+	if(args.Length() < 2 || !args[1]->IsString()) { module->Log->Warning("script", "wrong parameter"); return Undefined(); }
 	string name = *String::Utf8Value(args[1]);
 
+	if(args.Length() < 3) { module->Log->Warning("script", "wrong parameter"); return Undefined(); }
+
+	// get pass
 	Pass *pass = module->PassGet(passname);
 	if(!pass) { module->Log->Warning("script", "pass (" + passname + ") not found"); return Undefined(); }
 
+	// get location
 	glUseProgram(pass->Program);
 	GLuint location = glGetUniformLocation(pass->Program, name.c_str());
 
-	if(args.Length() < 3)
-		return Undefined();
+	// get type
+	struct Uniform {char Name[128]; GLsizei Length; GLint Size; GLenum Type; } uniform;
+	bool match = false;
+	int count = 0;
+	glGetProgramiv(pass->Program, GL_ACTIVE_UNIFORMS, &count);
+	for(int i = 0; i < count && !match; ++i)
+	{
+		glGetActiveUniform(pass->Program, GLuint(i), sizeof(uniform.Name), &uniform.Length, &uniform.Size, &uniform.Type, uniform.Name);
+		if(uniform.Length > sizeof(uniform.Name))
+			module->Log->Fail("script", "uniform name longer than " + to_string(sizeof(uniform.Name)) + " characters");
 
+		if(uniform.Name == name) match = true;
+	}
+	if(!match) { module->Log->Fail("script", "uniform (" + name + ") not found in pass (" + passname + ")"); return Undefined(); }
+
+	// get value type
+	bool isint   = false;
+	bool isfloat = false;
+	bool isbool  = false;
+	switch(uniform.Type)
+	{
+	case GL_FLOAT:
+	case GL_FLOAT_VEC2:
+	case GL_FLOAT_VEC3:
+	case GL_FLOAT_VEC4:
+	case GL_FLOAT_MAT2:
+	case GL_FLOAT_MAT3:
+	case GL_FLOAT_MAT4:
+		isfloat = true;
+		break;
+	case GL_INT:
+	case GL_INT_VEC2:
+	case GL_INT_VEC3:
+	case GL_INT_VEC4:
+		isint = true;
+		break;
+	case GL_BOOL:
+	case GL_BOOL_VEC2:
+	case GL_BOOL_VEC3:
+	case GL_BOOL_VEC4:
+		isbool = true;
+		break;
+	}
+
+	// read values
+	vector<int>   ints;
+	vector<float> floats;
+	vector<int>   bools;
 	if(args[2]->IsArray())
 	{
-		Handle<Array> handle = Handle<Array>::Cast(args[2]);
-		if(!handle->Length()) { module->Log->Warning("script", "uniform value is empty"); return Undefined(); }
-
-		if(handle->Get(0)->IsNumber())
-		{
-			vector<GLfloat> values(handle->Length());
-			for(unsigned int i = 0; i < handle->Length(); ++i)
-				if(handle->Get(i)->IsNumber())
-					values[i] = ((GLfloat)handle->Get(i)->NumberValue());
-
-			if(values.size() == 2)
-				glUniform2fv(location, 1, &values[0]);
-			else if(values.size() == 16)
-				glUniformMatrix4fv(location, 1, GL_FALSE, &values[0]);
-			else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
-		}
-		// else if(handle->Get(0)->Is...())
-		// {
-		//     ...
-		// }
-		else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
+		Handle<Array> array = Handle<Array>::Cast(args[2]);
+		if(isint)
+			for(unsigned int i = 0; i < array->Length(); ++i)
+				if(array->Get(i)->IsInt32())
+					ints.push_back(array->Get(i)->Int32Value());
+		if(isfloat)
+			for(unsigned int i = 0; i < array->Length(); ++i)
+				if(array->Get(i)->IsNumber())
+					floats.push_back((float)array->Get(i)->NumberValue());
+		if(isbool)
+			for(unsigned int i = 0; i < array->Length(); ++i)
+				if(array->Get(i)->IsBoolean())
+					bools.push_back(array->Get(i)->BooleanValue() ? 1 : 0);
 	}
-	else { module->Log->Warning("script", "uniform type not supported"); return Undefined(); }
+	else if(isint && args[2]->IsInt32())
+		ints.push_back(args[2]->Int32Value());
+	else if(isfloat && args[2]->IsNumber())
+		floats.push_back((float)args[2]->NumberValue());
+	else if(isbool && args[2]->IsBoolean())
+		bools.push_back(args[2]->BooleanValue() ? 1 : 0);
+	else
+		module->Log->Warning("script", "invalid uniform value");
+
+	// set uniform value
+	switch(uniform.Type)
+	{
+	case GL_FLOAT:
+		if(floats.size() != 1) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform1fv(location, 1, &floats[0]);
+		break;
+	case GL_FLOAT_VEC2:
+		if(floats.size() != 2) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform2fv(location, 1, &floats[0]);
+		break;
+	case GL_FLOAT_VEC3:
+		if(floats.size() != 3) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform3fv(location, 1, &floats[0]);
+		break;
+	case GL_FLOAT_VEC4:
+		if(floats.size() != 4) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform4fv(location, 1, &floats[0]);
+		break;
+	case GL_INT:
+		if(ints.size() != 1) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform1iv(location, 1, &ints[0]);
+		break;
+	case GL_INT_VEC2:
+		if(ints.size() != 2) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform2iv(location, 1, &ints[0]);
+		break;
+	case GL_INT_VEC3:
+		if(ints.size() != 3) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform3iv(location, 1, &ints[0]);
+		break;
+	case GL_INT_VEC4:
+		if(ints.size() != 4) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform4iv(location, 1, &ints[0]);
+		break;
+	case GL_BOOL:
+		if(bools.size() != 1) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform1iv(location, 1, &bools[0]);
+		break;
+	case GL_BOOL_VEC2:
+		if(bools.size() != 2) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform2iv(location, 1, &bools[0]);
+		break;
+	case GL_BOOL_VEC3:
+		if(bools.size() != 3) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform3iv(location, 1, &bools[0]);
+		break;
+	case GL_BOOL_VEC4:
+		if(bools.size() != 4) module->Log->Warning("script", "uniform value length mismatch");
+		glUniform4iv(location, 1, &bools[0]);
+		break;
+	case GL_FLOAT_MAT2:
+		if(floats.size() != 4) module->Log->Warning("script", "uniform value length mismatch");
+		glUniformMatrix2fv(location, 1, GL_FALSE, &floats[0]);
+		break;
+	case GL_FLOAT_MAT3:
+		if(floats.size() != 9) module->Log->Warning("script", "uniform value length mismatch");
+		glUniformMatrix3fv(location, 1, GL_FALSE, &floats[0]);
+		break;
+	case GL_FLOAT_MAT4:
+		if(floats.size() != 16) module->Log->Warning("script", "uniform value length mismatch");
+		glUniformMatrix4fv(location, 1, GL_FALSE, &floats[0]);
+		break;
+	case GL_SAMPLER_2D:
+		module->Log->Warning("script", "setting sampler uniforms not supported");
+		break;
+	case GL_SAMPLER_CUBE:
+		module->Log->Warning("script", "setting sampler uniforms not supported");
+		break;
+	default:
+		module->Log->Warning("script", "unkown sampler type");
+		break;
+	}
 
 	return Undefined();
 }

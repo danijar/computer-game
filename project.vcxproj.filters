@@ -341,5 +341,7 @@
     <None Include="module\model\init.js" />
     <None Include="module\model\update.js" />
     <None Include="module\renderer\uniforms.js" />
+    <None Include="README.md" />
+    <None Include="ROADMAP.md" />
   </ItemGroup>
 </Project>

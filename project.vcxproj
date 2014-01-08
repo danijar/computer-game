@@ -139,6 +139,8 @@
     <None Include="module\renderer\shader\tonemapping.frag" />
     <None Include="module\renderer\uniforms.js" />
     <None Include="module\settings\init.js" />
+    <None Include="README.md" />
+    <None Include="ROADMAP.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C29B5F02-3BB9-4096-997A-6A99663E1DDA}</ProjectGuid>
