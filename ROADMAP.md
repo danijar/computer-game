@@ -161,7 +161,10 @@ Roadmap
 
 Feature Visions
 ---------------
-- Weather affecting clothes (wet shine, wind flackering)
+- Dynamic destruction, for example of vegetation
+- Weather system, affects multiple systems
+	- wet shining, wind flackering, bending trees
+	- clouds, lighting, tonemapping
 - 3d decals like footsteps
 - Wind from weather system effects water wave size and direction
 - Smooth voxel landscapes by particular algorithm
