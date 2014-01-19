@@ -32,5 +32,5 @@ void main()
 		float zd = (z - sz) * 1500 * clamp(35 - 2800 * z, 1, 35);
 		bl += (1-z) * clamp(zd, 0.0, 1.0);
 	}
-	image.x = 1.0 - bl / 16.0;
+	image = vec3(1.0 - bl / 16.0);
 }

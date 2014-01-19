@@ -14,7 +14,7 @@ renderpass("forms", {
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
     draw: "FORMS",
-    stencil: [ "ALWAYS", 1, "REPLACE" ],
+    stencil: ["ALWAYS", 1, "REPLACE"],
 });
 
 renderpass("sky", {
@@ -27,41 +27,42 @@ renderpass("sky", {
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
     fallbacks: {
-        "albedo": [ 1, 1, 1 ],
+        "albedo": [1, 1, 1],
     },
     draw: "SKY",
     clear: false,
-    stencil: [ "EQUAL", 0 ],
+    stencil: ["EQUAL", 0],
 });
 
 rendertarget("light");
 
 renderpass("lights", {
     fragment: "light.frag",
-    targets: { "COLOR_ATTACHMENT0" : "light" },
-    samplers: { "positions" : "position", "normals" : "normal" },
-    fallbacks: { "light": [ 0.5, 0.5, 0.5 ] },
+    targets: { "COLOR_ATTACHMENT0": "light" },
+    samplers: { "positions": "position", "normals": "normal" },
+    fallbacks: { "light": [.5, .5, .5] },
     draw: "LIGHTS",
-    stencil: [ "GEQUAL", 1 ],
+    stencil: ["GEQUAL", 1],
 });
 
 rendertarget("edge");
 
 renderpass("edge", {
     fragment: "edge.frag",
-    targets: { "COLOR_ATTACHMENT0" : "edge" },
-    samplers: { "depth_tex" : "depth", "normal_tex" : "normal" },
+    targets: { "COLOR_ATTACHMENT0": "edge" },
+    samplers: { "depth_tex": "depth", "normal_tex": "normal" },
+    fallbacks: { "edge": [0, 0, 0] },
 });
 
 rendertarget("image");
 
 renderpass("combine", {
     fragment: "combine.frag",
-    targets: { "COLOR_ATTACHMENT0" : "image" },
+    targets: { "COLOR_ATTACHMENT0": "image" },
     samplers: {
-        "albedo" : "albedo",
-        "lights" : "light",
-        "depth"  : "depth",
+        "albedo": "albedo",
+        "lights": "light",
+        "depth": "depth",
     },
 });
 
@@ -72,25 +73,26 @@ rendertargetload("noise", "noise.png", true, false, false);
 
 renderpass("occlusion", {
     fragment: "occlusion.frag",
-    targets: { "COLOR_ATTACHMENT0" : "occlusion" },
+    targets: { "COLOR_ATTACHMENT0": "occlusion" },
     samplers: {
-        "depth_tex"  : "depth",
-        "normal_tex" : "normal",
-        "noise_tex"  : "noise",
+        "depth_tex": "depth",
+        "normal_tex": "normal",
+        "noise_tex": "noise",
     },
+    fallbacks: { "occlusion": [1, 1, 1] },
     size: 0.75,
-    stencil: [ "GEQUAL", 1 ],
+    stencil: ["GEQUAL", 1],
 });
 
 rendertarget("result");
 
 renderpass("apply", {
     fragment: "apply.frag",
-    targets: { "COLOR_ATTACHMENT0" : "result" },
+    targets: { "COLOR_ATTACHMENT0": "result" },
     samplers: {
-        "image_tex"  : "image",
-        "effect_tex" : "occlusion",
-        "noise_tex"  : "noise",
+        "image_tex": "image",
+        "effect_tex": "occlusion",
+        "noise_tex": "noise",
     },
 });
 
@@ -98,16 +100,16 @@ rendertarget("temp");
 
 renderpass("blur_u", {
     fragment: "blur_u.frag",
-    targets: { "COLOR_ATTACHMENT0" : "temp" },
-    samplers: { "image_tex" : "result" },
+    targets: { "COLOR_ATTACHMENT0": "temp" },
+    samplers: { "image_tex": "result" },
 });
 
 rendertarget("blur");
 
 renderpass("blur_v", {
     fragment: "blur_v.frag",
-    targets: { "COLOR_ATTACHMENT0" : "blur" },
-    samplers: { "image_tex" : "temp" },
+    targets: { "COLOR_ATTACHMENT0": "blur" },
+    samplers: { "image_tex": "temp" },
 });
 
 rendertarget("antialiasing");
@@ -116,9 +118,9 @@ renderpass("antialiasing", {
     fragment: "antialiasing.frag",
     targets: { "COLOR_ATTACHMENT0": "antialiasing" },
     samplers: {
-        "image_tex" : "result",
-        "blur_tex"  : "blur",
-        "edge_tex"  : "edge",
+        "image_tex": "result",
+        "blur_tex": "blur",
+        "edge_tex": "edge",
     },
     fallbacks: { "antialiasing": "result" },
 });
@@ -133,7 +135,20 @@ renderpass("tonemapping", {
 });
 
 renderpass("screen", {
-    fragment : "screen.frag",
+    fragment: "screen.frag",
     samplers: { "image_tex": "tonemapped" },
-    draw     : "SCREEN",
+    draw: "SCREEN",
 });
+
+renderpass("preview", {
+    fragment: "preview.frag",
+    samplers: {
+    	"first": "edge",
+    	"second": "normal",
+    	"third": "light",
+    	"fourth": "occlusion",
+    },
+    draw: "SCREEN",
+    clear: false,
+});
+renderpass("preview"); // disable initially
