@@ -16,6 +16,9 @@ void ModuleRenderer::Init()
 	Script->Run("uniforms.js");
 
 	Listeners();
+
+	color = PassCreate("quad.vert", "color.frag");
+	copy = PassCreate("quad.vert", "copy.frag");
 }
 
 void ModuleRenderer::Update()
@@ -28,23 +31,69 @@ void ModuleRenderer::Update()
 	{
 		Pass pass = i.second;
 
+		// set render pass options
+		glStencilFunc(pass.StencilFunction, pass.StencilReference, 0xFF);
+		glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
+		glViewport(0, 0, int(size.x * pass.Size), int(size.y * pass.Size));
+
 		if(pass.Enabled)
 		{
+			// call render function
+			glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
+			if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			glUseProgram(pass.Program);
-			glStencilFunc(pass.StencilFunction, pass.StencilReference, 0xFF);
-			glStencilOp(GL_KEEP, pass.StencilOperation, pass.StencilOperation);
-			glViewport(0, 0, int(size.x * pass.Size), int(size.y * pass.Size));
-
 			pass.Function(&pass);
 		}
 		else
 		{
-			// apply fallbacks
-			// ...
+			// apply copy fallbacks
+			glBindFramebuffer(GL_FRAMEBUFFER, copy.Framebuffer);
+			glUseProgram(copy.Program);
+			for(auto j : pass.Copyfallbacks)
+			{
+				// attach fallback target and stencil
+				unordered_map<GLenum, GLuint> targets;
+				targets.insert(make_pair(GL_COLOR_ATTACHMENT0, j.first));
+				auto depthstencil = pass.Targets.find(GL_DEPTH_STENCIL_ATTACHMENT);
+				if(depthstencil != pass.Targets.end())
+					targets.insert(make_pair(depthstencil->first, depthstencil->second));
+				FramebufferTargets(copy.Framebuffer, targets, false);
+
+				// clear
+				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+				// copy texture over
+				copy.Samplers.clear();
+				copy.Samplers.insert(make_pair("copy", j.second));
+				copy.Function(&copy);
+			}
+
+			// apply color fallbacks
+			glBindFramebuffer(GL_FRAMEBUFFER, color.Framebuffer);
+			glUseProgram(color.Program);
+			for(auto j : pass.Colorfallbacks)
+			{
+				// attach fallback target and stencil
+				unordered_map<GLenum, GLuint> targets;
+				targets.insert(make_pair(GL_COLOR_ATTACHMENT0, j.first));
+				auto depthstencil = pass.Targets.find(GL_DEPTH_STENCIL_ATTACHMENT);
+				if(depthstencil != pass.Targets.end())
+					targets.insert(make_pair(depthstencil->first, depthstencil->second));
+				FramebufferTargets(copy.Framebuffer, targets, false);
+
+				// clear
+				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+				// fill with color
+				float array[3] = { j.second.r, j.second.g, j.second.b };
+				glUniform3fv(glGetUniformLocation(color.Program, "color"), 1, array);
+				color.Function(&color);
+			}
 		}
 	}
 
 	glDisable(GL_STENCIL_TEST);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
 
 	Opengl->Test();
@@ -59,6 +108,7 @@ void ModuleRenderer::Listeners()
 			glDeleteProgram(i->second.Program);
 			i->second.Program = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
+		this->Event->Fire("ShaderUpdated");
 	});
 
 	Event->Listen("WindowRecreated", [=]{
@@ -68,7 +118,7 @@ void ModuleRenderer::Listeners()
 		for(auto i = passes.begin(); i != passes.end(); ++i)
 		{
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
-			i->second.Framebuffer = CreateFramebuffer(i->second.Targets);
+			i->second.Framebuffer = FramebufferCreate(i->second.Targets);
 		}
 	});
 

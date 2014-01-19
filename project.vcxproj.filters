@@ -343,5 +343,7 @@
     <None Include="module\renderer\uniforms.js" />
     <None Include="README.md" />
     <None Include="ROADMAP.md" />
+    <None Include="module\renderer\shader\color.frag" />
+    <None Include="module\renderer\shader\copy.frag" />
   </ItemGroup>
 </Project>

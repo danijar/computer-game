@@ -9,8 +9,7 @@ using namespace glm;
 
 #include "type/camera/type.h"
 
-
-void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Fallbacks, Function Function, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
+void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Clear, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
 	if(PassGet(Name, false))
 	{
@@ -18,6 +17,12 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 		return;
 	}
 
+	Pass pass = PassCreate(Vertex, Fragment, Targets, Samplers, Copyfallbacks, Colorfallbacks, Function, Clear, Size, StencilFunction, StencilReference, StencilOperation);
+	passes.push_back(make_pair(Name, pass));
+}
+
+ModuleRenderer::Pass ModuleRenderer::PassCreate(string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Clear, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
+{
 	Pass pass;
 
 	for(auto i : Targets)
@@ -25,7 +30,7 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 		auto texture = TextureGet(i.second);
 		if(get<2>(texture) != Size)
 		{
-			Log->Fail("size of pass (" + Name + ") and target (" + i.second + ") must match");
+			Log->Fail("size of target (" + i.second + ") and pass must match");
 			continue;
 		}
 		GLuint id = get<0>(texture);
@@ -38,11 +43,17 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 		if(id) pass.Samplers.insert(make_pair(i.first, id));
 	}
 
-	for(auto i : Fallbacks)
+	for(auto i : Copyfallbacks)
 	{
-		GLuint from = get<0>(TextureGet(i.second)),
-			   to   = get<0>(TextureGet(i.first));
-		if(from && to) pass.Fallbacks.insert(make_pair(from, to));
+		GLuint to   = get<0>(TextureGet(i.first)),
+			   from = get<0>(TextureGet(i.second));
+		if(to && from) pass.Copyfallbacks.insert(make_pair(to, from));
+	}
+
+	for(auto i : Colorfallbacks)
+	{
+		GLuint to = get<0>(TextureGet(i.first));
+		if(to) pass.Colorfallbacks.insert(make_pair(to, i.second));
 	}
 
 	switch(Function)
@@ -63,19 +74,20 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 		pass.Function = bind(&ModuleRenderer::DrawScreen, this, std::placeholders::_1);
 		break;
 	default:
-		Log->Fail("pass (" + Name + ") invalid drawing function");
+		Log->Fail("pass invalid drawing function");
 	}
 
 	pass.Vertex           = Vertex;
 	pass.Fragment         = Fragment;
+	pass.Clear            = Clear;
 	pass.Size             = Size;
 	pass.Program          = CreateProgram(Vertex, Fragment);
-	pass.Framebuffer      = Targets.size() ? CreateFramebuffer(pass.Targets) : 0;
+	pass.Framebuffer      = Function == SCREEN ? 0 : FramebufferCreate(pass.Targets);
 	pass.StencilFunction  = StencilFunction;
 	pass.StencilReference = StencilReference;
 	pass.StencilOperation = StencilOperation;
 
-	passes.push_back(make_pair(Name, pass));
+	return pass;
 }
 
 ModuleRenderer::Pass *ModuleRenderer::PassGet(string Name, bool Output)

@@ -13,7 +13,6 @@ function uniforms() {
 }
 
 uniforms();
-on("WindowFocusGained", uniforms);
 on("WindowRecreated", uniforms);
 on("WindowResize", uniforms);
 on("ShaderUpdated", uniforms);

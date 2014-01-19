@@ -128,7 +128,9 @@
     <None Include="module\renderer\shader\apply.frag" />
     <None Include="module\renderer\shader\blur_u.frag" />
     <None Include="module\renderer\shader\blur_v.frag" />
+    <None Include="module\renderer\shader\color.frag" />
     <None Include="module\renderer\shader\combine.frag" />
+    <None Include="module\renderer\shader\copy.frag" />
     <None Include="module\renderer\shader\edge.frag" />
     <None Include="module\renderer\shader\forms.frag" />
     <None Include="module\renderer\shader\forms.vert" />

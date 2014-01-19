@@ -7,11 +7,24 @@ using namespace std;
 using namespace sf;
 
 
-GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, GLuint> Targets)
+GLuint ModuleRenderer::FramebufferCreate(unordered_map<GLenum, GLuint> Targets)
 {
-	GLuint framebuffer;
-	glGenFramebuffers(1, &framebuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	GLuint id;
+	glGenFramebuffers(1, &id);
+	FramebufferTargets(id, Targets);
+	return id;
+}
+
+void ModuleRenderer::FramebufferTarget(GLuint Id, GLenum Attachment, GLuint Target, bool Output)
+{
+	unordered_map<GLenum, GLuint> targets;
+	targets.insert(make_pair(Attachment, Target));
+	FramebufferTargets(Id, targets, Output);
+}
+
+void ModuleRenderer::FramebufferTargets(GLuint Id, unordered_map<GLenum, GLuint> Targets, bool Output)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, Id);
 
 	vector<GLenum> buffers;
 	for(auto i : Targets)
@@ -26,13 +39,11 @@ GLuint ModuleRenderer::CreateFramebuffer(unordered_map<GLenum, GLuint> Targets)
 		// check if it is really bound
 		GLint type;
 		glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, i.first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
-		if(type != GL_TEXTURE) Log->Fail("framebuffer target could not be attached");
+		if(type != GL_TEXTURE && Output) Log->Fail("framebuffer target could not be attached");
 	}
 	glDrawBuffers(buffers.size(), &buffers[0]);
 
-	Log->PassFail("framebuffer setup", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	return framebuffer;
+	if(Output) Log->PassFail("framebuffer setup", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
 void ModuleRenderer::TextureCreate(string Name, GLenum Type, float Size)

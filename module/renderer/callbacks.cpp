@@ -13,8 +13,8 @@ using namespace glm;
 
 void ModuleRenderer::Callbacks()
 {
-	Script->Bind("rendertarget",     jsRendertarget    );
 	Script->Bind("renderpass",       jsRenderpass      );
+	Script->Bind("rendertarget",     jsRendertarget    );
 	Script->Bind("rendertargetload", jsRendertargetload);
 	Script->Bind("uniform",          jsUniform         );
 	Script->Bind("wireframe",        jsWireframe       );
@@ -60,6 +60,10 @@ Handle<Value> ModuleRenderer::jsRendertarget(const Arguments& args)
 	return Undefined();
 }
 
+/*
+ * renderpass(name, { vertex, fragment, targets: { attachment: target, ... }, samplers: { location: target, ... }, fallbacks: { target: copy/color, ... }, draw, clear, size, stencil: [ function, reference, operation ] })
+ * Creates a new render target. If only name parameter is passed, it toggles existing render pass.
+ */
 Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 {
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
@@ -75,7 +79,6 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 	// create new pass
 	if(1 < args.Length() && args[1]->IsObject())
 	{
-
 		Handle<Object> object = args[1]->ToObject();
 
 		// vertex path
@@ -124,7 +127,8 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 		}
 
 		// fallbacks as target to texture name or clear value
-		unordered_map<string, string> fallbacks;
+		unordered_map<string, string> copyfallbacks;
+		unordered_map<string, vec3> colorfallbacks;
 		if(object->Has(v8str("fallbacks")))
 		{
 			Handle<Object> obj = object->Get(v8str("fallbacks"))->ToObject();
@@ -135,9 +139,13 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 				string target = stdstr(targets->Get(i));
 				Handle<Value> fallback = obj->Get(v8str(target));
 				if(fallback->IsString())
-					fallbacks.insert(make_pair(target, stdstr(fallback)));
-				else if(fallback->IsNumber())
-					{ /* how to store clean value? */ }
+					copyfallbacks.insert(make_pair(target, stdstr(fallback)));
+				else if(fallback->IsArray())
+				{
+					Handle<Array> array = Handle<Array>::Cast(fallback);
+					if(array->Length() == 3)
+						colorfallbacks.insert(make_pair(target, vec3((float)array->Get(0)->NumberValue(), (float)array->Get(1)->NumberValue(), (float)array->Get(2)->NumberValue())));
+				}
 			}
 		}
 
@@ -153,6 +161,11 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 			else if(func == "SCREEN") function = SCREEN;
 			else ManagerLog::Warning("script", "function is invalid");
 		}
+
+		// clear targets before rendering
+		bool clear = true;
+		if(object->Has(v8str("clear")))
+			clear = object->Get(v8str("clear"))->BooleanValue();
 
 		// resolution relative to window size
 		float size = 1.0f;
@@ -191,14 +204,16 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 		}
 
 		// create pass
-		module->PassCreate(name, vertex, fragment, targets, samplers, fallbacks, function, size, stencilfunc, stencilref, stencilop);
+		module->PassCreate(name, vertex, fragment, targets, samplers, copyfallbacks, colorfallbacks, function, clear, size, stencilfunc, stencilref, stencilop);
 	}
 	// toggle existing pass
 	else
 	{
-		Pass *pass = module->PassGet(name);
-		pass->Enabled = !pass->Enabled;
-		ManagerLog::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
+		if(Pass *pass = module->PassGet(name))
+		{
+			pass->Enabled = !pass->Enabled;
+			ManagerLog::Print("script", string(pass->Enabled ? "enabled" : "disabled") + " (" + name + ") pass");
+		}
 	}
 	
 	return Undefined();

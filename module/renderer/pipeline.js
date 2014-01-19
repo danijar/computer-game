@@ -26,7 +26,11 @@ renderpass("sky", {
         "COLOR_ATTACHMENT2"        : "albedo",
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
+    fallbacks: {
+        "albedo": [ 1, 1, 1 ],
+    },
     draw: "SKY",
+    clear: false,
     stencil: [ "EQUAL", 0 ],
 });
 
@@ -36,6 +40,7 @@ renderpass("lights", {
     fragment: "light.frag",
     targets: { "COLOR_ATTACHMENT0" : "light" },
     samplers: { "positions" : "position", "normals" : "normal" },
+    fallbacks: { "light": [ 0.5, 0.5, 0.5 ] },
     draw: "LIGHTS",
     stencil: [ "GEQUAL", 1 ],
 });
@@ -115,6 +120,7 @@ renderpass("antialiasing", {
         "blur_tex"  : "blur",
         "edge_tex"  : "edge",
     },
+    fallbacks: { "antialiasing": "result" },
 });
 
 rendertarget("tonemapped");
@@ -123,6 +129,7 @@ renderpass("tonemapping", {
     fragment: "tonemapping.frag",
     targets: { "COLOR_ATTACHMENT0": "tonemapped" },
     samplers: { "image_tex": "antialiasing" },
+    fallbacks: { "tonemapped": "antialiasing" },
 });
 
 renderpass("screen", {

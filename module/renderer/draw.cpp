@@ -16,9 +16,6 @@ using namespace glm;
 
 void ModuleRenderer::DrawQuad(Pass *Pass)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	int n = 0; for(auto i : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
@@ -41,9 +38,6 @@ void ModuleRenderer::DrawQuad(Pass *Pass)
 
 void ModuleRenderer::DrawScreen(Pass *Pass)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	int n = 0; for(auto i : Pass->Samplers)
 	{
 		glActiveTexture(GL_TEXTURE0 + n);
@@ -68,9 +62,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 {	
 	auto stg = Global->Get<Settings>("settings");
 	auto mls = Entity->Get<Model>();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		
 	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View));
 
@@ -132,8 +123,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 void ModuleRenderer::DrawSky(Pass *Pass)
 {	
 	auto stg = Global->Get<Settings>("settings");
-
-	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
 		
 	glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "view"), 1, GL_FALSE, value_ptr(Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View));
 
@@ -188,9 +177,6 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 void ModuleRenderer::DrawLights(Pass *Pass)
 {
 	auto lis = Entity->Get<Light>();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, Pass->Framebuffer);
-	glClear(GL_COLOR_BUFFER_BIT);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);

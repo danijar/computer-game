@@ -23,13 +23,12 @@ class ModuleRenderer : public Module
 	GLuint CreateShader(std::string Path, GLenum Type);
 	bool TestProgram(int Id);
 	bool TestShader(int Id);
-	void Uniform(GLuint Program, std::string Name, float Value);
-	void Uniform(GLuint Program, std::string Name, glm::mat4 Value);
-	void Uniform(GLuint Program, std::string Name, glm::vec2 Value);
 
 	// framebuffer
 	std::unordered_map<std::string, std::tuple<GLuint, GLenum, float>> textures; // name to id, format, size
-	GLuint CreateFramebuffer(std::unordered_map<GLenum, GLuint> Targets);
+	GLuint FramebufferCreate(std::unordered_map<GLenum, GLuint> Targets);
+	void FramebufferTarget(GLuint Id, GLenum Attachment, GLuint Target, bool Output = true);
+	void FramebufferTargets(GLuint Id, std::unordered_map<GLenum, GLuint> Targets, bool Output = true);
 	void TextureCreate(std::string Name, GLenum Type = GL_RGB16F, float Size = 1.0f);
 	std::tuple<GLuint, GLenum, float> TextureGet(std::string Name);
 	void TextureResize(GLuint Id, GLenum Type, float Size);
@@ -45,19 +44,31 @@ class ModuleRenderer : public Module
 		std::string Vertex, Fragment;
 		std::unordered_map<GLenum, GLuint> Targets;
 		std::unordered_map<std::string, GLuint> Samplers;
-		std::unordered_map<GLuint, GLuint> Fallbacks;
-		float Size;
+		std::unordered_map<GLuint, GLuint> Copyfallbacks;
+		std::unordered_map<GLuint, glm::vec3> Colorfallbacks;
 		std::function<void(Pass*)> Function;
+		bool Clear;
+		float Size;
 		GLenum StencilFunction, StencilOperation; GLint StencilReference;
 		bool Enabled;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
+	Pass color, copy;
 	void PassCreate(std::string Name,
 		std::string Vertex, std::string Fragment,
-		std::unordered_map<GLenum,      std::string> Targets,
-		std::unordered_map<std::string, std::string> Samplers,
-		std::unordered_map<std::string, std::string> Fallbacks,
-		Function Function = QUAD, float Size = 1.0,
+		std::unordered_map<GLenum, std::string> Targets = std::unordered_map<GLenum, std::string>(),
+		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
+		std::unordered_map<std::string, std::string> Copyfallbacks = std::unordered_map<std::string, std::string>(),
+		std::unordered_map<std::string, glm::vec3> Colorfallbacks = std::unordered_map<std::string, glm::vec3>(),
+		Function Function = QUAD, bool Clear = true, float Size = 1.0,
+		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
+	Pass PassCreate(
+		std::string Vertex, std::string Fragment,
+		std::unordered_map<GLenum, std::string> Targets = std::unordered_map<GLenum, std::string>(),
+		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
+		std::unordered_map<std::string, std::string> Copyfallbacks = std::unordered_map<std::string, std::string>(),
+		std::unordered_map<std::string, glm::vec3> Colorfallbacks = std::unordered_map<std::string, glm::vec3>(),
+		Function Function = QUAD, bool Clear = true, float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
 	Pass *PassGet(std::string Name, bool Output = true);
 	
@@ -73,10 +84,10 @@ class ModuleRenderer : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsRenderpass  (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRendertarget(const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRenderpass      (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRendertarget    (const v8::Arguments& args);
 	static v8::Handle<v8::Value> jsRendertargetload(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsUniform     (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsWireframe   (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsProjection  (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsUniform         (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsWireframe       (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsProjection      (const v8::Arguments& args);
 };
