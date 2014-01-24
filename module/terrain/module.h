@@ -29,8 +29,8 @@ private:
 	void Callbacks();
 
 	// texture
-	GLuint texture;
-	GLuint Texture();
+	GLuint diffuse, normal, specular;
+	GLuint Texture(std::string Path);
 	void TextureShrink(sf::Image &Texture);
 	inline sf::Color TextureAverage(sf::Color A, sf::Color B, sf::Color C, sf::Color D);
 

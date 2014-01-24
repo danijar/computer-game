@@ -20,7 +20,9 @@ using namespace sf;
 
 void ModuleTerrain::Init()
 {
-	texture = Texture();
+	diffuse = Texture("terrain.png");
+	normal  = Texture("terrain_n.jpg");
+	// specular = Texture("terrain_s.jpg");
 
 	marker = Marker();
 	Entity->Get<Form>(marker)->Scale(vec3(.5f));
@@ -41,7 +43,9 @@ void ModuleTerrain::Init()
 
 ModuleTerrain::~ModuleTerrain()
 {
-	glDeleteTextures(1, &texture);
+	glDeleteTextures(1, &diffuse);
+	glDeleteTextures(1, &normal);
+	// glDeleteTextures(1, &specular);
 
 	running = false;
 	task.get();
@@ -77,7 +81,10 @@ void ModuleTerrain::Update()
 		{
 			uint64_t id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
-			Entity->Add<Model>(id)->Diffuse = texture;
+			auto mdl = Entity->Add<Model>(id);
+			mdl->Diffuse = diffuse;
+			mdl->Normal = normal;
+			// mdl->Specular = specular;
 			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK_SIZE));
 
 			Buffer(id);

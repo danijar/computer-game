@@ -5,10 +5,10 @@
 using namespace sf;
 
 
-GLuint ModuleTerrain::Texture()
+GLuint ModuleTerrain::Texture(string Path)
 {
 	Image image;
-	bool result = image.loadFromFile("module/" + Name() + "/texture/terrain.png");
+	bool result = image.loadFromFile("module/" + Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Log->Fail("texture loading fail");

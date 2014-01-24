@@ -1,2 +1,4 @@
 newmtl rock
-map_Kd rock.jpg
+map_Kd rock_d.jpg
+map_Bump barrel_n.jpg
+Ns 0.5
