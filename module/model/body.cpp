@@ -68,7 +68,7 @@ void ModuleModel::ReloadShapes()
 
 void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, bool Static)
 {
-	if(Path == "qube.prim")  return LoadShapeCube (Shape, Scale);
+	if(Path == "cube.prim")  return LoadShapeCube (Shape, Scale);
 	if(Path == "plane.prim") return LoadShapePlane(Shape);
 
 	if(Static)

@@ -9,6 +9,15 @@ using namespace v8;
 void ModuleCamera::Callbacks()
 {
 	Script->Bind("fov",    jsFov   );
+	Script->Bind("camera", jsCamera);
+}
+
+Handle<Value> ModuleCamera::jsCamera(const Arguments& args)
+{
+	ModuleCamera *module = (ModuleCamera*)HelperScript::Unwrap(args.Data());
+	uint64_t id = *module->Global->Get<uint64_t>("camera");
+
+	return String::New(to_string(id).c_str());
 }
 
 Handle<Value> ModuleCamera::jsFov(const Arguments& args)

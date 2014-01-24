@@ -70,7 +70,9 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
-	//glUniform1i(glGetUniformLocation(Pass->Program, "tex"), 0); // shouldn't be necessary
+	glUniform1i(glGetUniformLocation(Pass->Program, "mapdiffuse"), 0);
+	glActiveTexture(GL_TEXTURE1);
+	glUniform1i(glGetUniformLocation(Pass->Program, "mapnormal"), 1);
 
 	glEnable(GL_DEPTH_TEST);
 	//glDepthMask(GL_TRUE);
@@ -98,8 +100,21 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		glEnableVertexAttribArray(2);
 		glBindBuffer(GL_ARRAY_BUFFER, mdl->Texcoords);
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		
+		glUniform1f(glGetUniformLocation(Pass->Program, "shininess"), mdl->Shininess);
 
-		glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
+		glActiveTexture(GL_TEXTURE0);
+		if(mdl->Diffuse) {
+			glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
+		} // else fallback texture
+
+		glActiveTexture(GL_TEXTURE1);
+		if(mdl->Normal) {
+			glBindTexture(GL_TEXTURE_2D, mdl->Normal);
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasmapnormal"), 1);
+		} else {
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasmapnormal"), 0); // fallback texture instead
+		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
 
@@ -117,7 +132,8 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glDisableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0); // should I unbind all samplers?
 }
 
 void ModuleRenderer::DrawSky(Pass *Pass)
@@ -188,13 +204,6 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
 		n++;
 	}
-
-	/*
-	 * debugging
-	 * Log->Print("uniform location of normals is " + std::to_string(glGetUniformLocation(Pass->Program, "normals")));
-	 * Log->Print("uniform location of positions is " + std::to_string(glGetUniformLocation(Pass->Program, "positions")));
-	 * Log->Print("");
-	 */
 
 	mat4 view = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View;
 

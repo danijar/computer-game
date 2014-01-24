@@ -29,7 +29,7 @@ class ModuleModel : public Module
 	void LoadMeshPlane(Mesh &Mesh);
 
 	// material
-	struct Material { std::string Name; std::string Diffuse, Normal, Specular; };
+	struct Material { std::string Name; float Shininess; std::string Diffuse, Normal, Specular; };
 	std::unordered_map<std::string, std::pair<Material, int>> materials;
 	Material GetMaterial(std::string Path);
 	void ReloadMaterials();

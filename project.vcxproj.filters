@@ -345,5 +345,6 @@
     <None Include="ROADMAP.md" />
     <None Include="module\renderer\shader\color.frag" />
     <None Include="module\renderer\shader\copy.frag" />
+    <None Include="module\renderer\shader\preview.frag" />
   </ItemGroup>
 </Project>

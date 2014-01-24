@@ -24,10 +24,11 @@ uint64_t ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, v
 	mdl->Elements  = mesh.Elements;
 
 	ModuleModel::Material material = GetMaterial(Material);
-	mdl->Diffuse     = GetTexture(material.Diffuse);
-	//mdl->Normal   = textures.Get(material.Normal);
-	//mdl->Specular = textures.Get(material.Specular);
-	mdl->Material = Material;
+	mdl->Shininess = material.Shininess;
+	mdl->Diffuse   = GetTexture(material.Diffuse);
+	mdl->Normal    = GetTexture(material.Normal);
+	mdl->Specular  = GetTexture(material.Specular);
+	mdl->Material  = Material;
 
 	delete frm->Body;
 	frm->Body = CreateBody(Mesh, Scale, Mass);

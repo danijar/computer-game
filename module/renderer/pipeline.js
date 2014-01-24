@@ -2,6 +2,7 @@
 rendertarget("position");
 rendertarget("normal");
 rendertarget("albedo");
+rendertarget("specular");
 rendertarget("depth", "DEPTH24_STENCIL8");
 
 renderpass("forms", {
@@ -11,6 +12,7 @@ renderpass("forms", {
         "COLOR_ATTACHMENT0"        : "position",
         "COLOR_ATTACHMENT1"        : "normal",
         "COLOR_ATTACHMENT2"        : "albedo",
+        "COLOR_ATTACHMENT3"        : "specular",
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
     draw: "FORMS",
@@ -39,7 +41,7 @@ rendertarget("light");
 renderpass("lights", {
     fragment: "light.frag",
     targets: { "COLOR_ATTACHMENT0": "light" },
-    samplers: { "positions": "position", "normals": "normal" },
+    samplers: { "positions": "position", "normals": "normal", "speculars": "specular" },
     fallbacks: { "light": [.5, .5, .5] },
     draw: "LIGHTS",
     stencil: ["GEQUAL", 1],
@@ -143,12 +145,12 @@ renderpass("screen", {
 renderpass("preview", {
     fragment: "preview.frag",
     samplers: {
-    	"first": "edge",
-    	"second": "normal",
+        "first": "normal",
+    	"second": "specular",
     	"third": "light",
     	"fourth": "occlusion",
     },
     draw: "SCREEN",
     clear: false,
 });
-renderpass("preview"); // disable initially
+renderpass("preview"); // disable initially, later toggle with debug view

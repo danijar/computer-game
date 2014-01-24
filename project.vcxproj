@@ -136,6 +136,7 @@
     <None Include="module\renderer\shader\forms.vert" />
     <None Include="module\renderer\shader\light.frag" />
     <None Include="module\renderer\shader\occlusion.frag" />
+    <None Include="module\renderer\shader\preview.frag" />
     <None Include="module\renderer\shader\quad.vert" />
     <None Include="module\renderer\shader\screen.frag" />
     <None Include="module\renderer\shader\tonemapping.frag" />

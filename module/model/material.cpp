@@ -67,6 +67,7 @@ void ModuleModel::LoadMaterial(Material &Material, string Path)
 
 		if(key == "") continue;
 		else if(key == "newmtl"  ) input >> Material.Name;
+		else if(key == "Ns"      ) input >> Material.Shininess;
 		else if(key == "map_Kd"  ) input >> Material.Diffuse;
 		else if(key == "map_Bump") input >> Material.Normal;
 		else if(key == "map_Ns"  ) input >> Material.Specular;

@@ -10,6 +10,8 @@ using namespace sf;
 
 GLuint ModuleModel::GetTexture(string Path)
 {
+	if(Path == "") return 0;
+
 	auto i = textures.find(Path);
 	if(i != textures.end()) return i->second.first;
 

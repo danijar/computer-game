@@ -6,7 +6,7 @@ layout(location = 2) in vec2 texcoord;
 
 out vec3 fposition;
 out vec3 fnormal;
-out vec2 ftexcoord;
+out vec2 fcoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -16,6 +16,6 @@ void main()
 {
 	fposition = vec3(view * model * vec4(position, 1.0));
 	fnormal = vec3(normalize(view * model * vec4(normal, 0.0)));
-	ftexcoord = texcoord;
+	fcoord = texcoord;
 	gl_Position = projection * view * model * vec4(position, 1.0);
 }

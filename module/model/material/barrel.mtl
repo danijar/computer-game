@@ -8,3 +8,4 @@ d 1.000000
 illum 2
 map_Kd barrel_d.jpg
 map_Bump barrel_n.jpg
+Ns 10

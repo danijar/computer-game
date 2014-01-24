@@ -41,7 +41,7 @@ void ModuleModel::ReloadMeshes()
 
 void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 {
-	if(Path == "qube.prim")  return LoadMeshCube (Mesh);
+	if(Path == "cube.prim") return LoadMeshCube(Mesh);
 	if(Path == "plane.prim") return LoadMeshPlane(Mesh);
 
 	const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
