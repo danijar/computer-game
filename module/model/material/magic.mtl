@@ -1,4 +1,4 @@
 newmtl magic
 map_Kd magic.jpg
 map_Bump magic_n.jpg
-Ns 150
+Ns 2.5

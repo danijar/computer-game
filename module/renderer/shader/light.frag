@@ -13,7 +13,6 @@ uniform vec3 color;
 uniform float radius;
 uniform float intensity = 1.0;
 
-
 void main()
 {
 	// light types
@@ -34,11 +33,14 @@ void main()
 	// check direction
 	vec3 arriving = normalize(source - position);
 	float faced = dot(arriving, normal);
-
+	
 	// reflection
-	vec3 lookat = vec3(0, 0, 1);
-	float reflection = max(0, dot(reflect(-arriving, normal), lookat));
-	float specular = min(shininess, 1) * pow(reflection, shininess);
+	vec3 lookat = vec3(0, 0, -1);
+	float reflection = max(0, dot(reflect(arriving, normal), lookat));
+	float specular = shininess * pow(reflection, pow(10, shininess - 1));
+	
+	// this was the previous equation
+	// float specular = min(shininess, 1) * pow(reflection, shininess);
 
 	// parameters
 	float attenuation = 1;

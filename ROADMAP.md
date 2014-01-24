@@ -1,6 +1,12 @@
 Roadmap for Graphics Application
 ================================
 
+Bugs
+----
+- Switch to fullscreen doen't work
+- Testing on intel tablet, the screen pass doesn't work after resize
+- Material live reload doesn't work
+
 Considerations
 --------------
 - Improve Data Manager
@@ -13,26 +19,14 @@ Considerations
 - Speed up terrain
 	- reuse the large voxel arrays of discarded chunks (kind of array pool)
 
-Finished
---------
-- Merge terrain branch back into master and continue there
-- Split into header and source files
-- Implement data manager to store entities in databases
-	- make use of SQLite for saves
-	- use treats or lamdas for conversion between structs and table rows
-- Set shader uniforms from within scripts
-
 Roadmap
 -------
 - Treat managers and prior helpers the same
+	- http://ideone.com/csNMx5
 - Create asset manager
 	- move functionality out of Model module
 	- generalize for all types
 	- live reload using Hash() from File Manager
-- Improve render pass system
-	- disable or enable passes while rendering still works by just copying unmodified textures through
-	- allow to set texture rendered to screen by a scripting callback at runtime
-	- would just `pass('screen', { samplers: { 'image_text':'normals' }});` do the trick?
 - Add scripting callbacks to toggle modules by their name
 	- provide Pause() and Resume() function for modules to override
 - Readd forward renderer as alternative
@@ -42,12 +36,6 @@ Roadmap
 - Improve Texture Mapping
 	- fallback to 1x1 diffuse map with pink color
 	- added texture tinting through color vertex attributes
-- Specular Lighting
-	- fallback to 1x1 specular map which is completely not glossy
-- Normal Mapping
-	- use reorientated blending:
-	- http://blog.selfshadow.com/publications/blending-in-detail/
-	- fallback to 1x1 normal map that doesn't change vertex normals
 - Support camera rotation along all axis, even roll
 - When mouse is free, select block unter cursor instead of in the middle of screen
 - Improve Lighting
@@ -170,3 +158,18 @@ Feature Visions
 - Smooth voxel landscapes by particular algorithm
 - Support dynamical rounded blocks, e.g. for tree trunks
 	- detect neighbours and join shapes
+
+Finished
+--------
+- Merge terrain branch back into master and continue there
+- Split into header and source files
+- Implement data manager to store entities in databases
+	- make use of SQLite for saves
+	- use treats or lamdas for conversion between structs and table rows
+- Set shader uniforms from within scripts
+- Improve render pass system
+	- disable or enable passes while rendering still works by just copying unmodified textures through
+	- allow to set texture rendered to screen by a scripting callback at runtime
+- Specular Lighting
+- Normal Mapping
+	- http://blog.selfshadow.com/publications/blending-in-detail/
