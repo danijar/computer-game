@@ -24,6 +24,7 @@ class ModuleConsole : public Module
 
 	// callbacks
 public:
-	static v8::Handle<v8::Value> jsPrint(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsOn   (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsPrint (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsOn    (const v8::Arguments& args);
+	static v8::Handle<v8::Value> jsRemove(const v8::Arguments& args);
 };

@@ -3,6 +3,9 @@
 light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional');
 light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
 
+// moon
+// light(0.5, 1.5, 1.0, 0, 0.6, 0.6, 0.8, 0.4, 'directional');
+
 // strong point light for debugging
 // light(0, 8, 0, 100, .2, .4, .9, 3.0, 'point');
 

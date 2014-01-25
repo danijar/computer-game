@@ -25,7 +25,7 @@ void ModulePerson::Init()
 	Callbacks();
 
 	/*
-	// debug
+	// test data manager
 	Person *psn = new Person;
 	psn->Height = 1.77f;
 	psn->Mass = 67.f;
@@ -51,7 +51,14 @@ void ModulePerson::Update()
 			psn->Changed = false;
 		}
 
-		Ground(i->first);
+		// cache ground in type and don't call Ground() anywhere else anymore
+		// Ground(i->first);
+
+		auto frm = Entity->Get<Form>(i->first);
+		if (Ground(i->first))
+			frm->Body->setDamping(0.7f, 0.7f);
+		else
+			frm->Body->setDamping(0, 0);
 	}
 
 	// move person attached to active camera

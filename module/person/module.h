@@ -21,7 +21,7 @@ class ModulePerson : public Module
 
 	// movement
 	void Move(uint64_t Id, glm::vec3 Amount, float Multiplier = 4.3f);
-	void Jump(uint64_t Id, float Multiplier = 4.8f, bool Force = false);
+	void Jump(uint64_t Id, float Multiplier = 5.0f, bool Force = false);
 
 	// checks
 	bool Ground(uint64_t Id);

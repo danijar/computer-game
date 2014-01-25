@@ -16,8 +16,11 @@ void ModulePerson::Callbacks()
 Handle<Value> ModulePerson::jsPlayer(const Arguments& args)
 {
 	ModulePerson *module = (ModulePerson*)HelperScript::Unwrap(args.Data());
-	auto cam = module->Entity->Get<Camera>(*module->Global->Get<uint64_t>("camera"));
-	uint64_t id = cam->Person;
+	uint64_t id = *module->Global->Get<uint64_t>("camera");
+	if (!id) return Undefined();
+	auto cam = module->Entity->Get<Camera>(id);
+	if (!cam) return Undefined();
 
-	return String::New(to_string(id).c_str());
+	uint64_t person = cam->Person;
+	return String::New(to_string(person).c_str());
 }

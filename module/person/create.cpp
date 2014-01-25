@@ -22,11 +22,11 @@ void ModulePerson::Setup(uint64_t Id)
 	shape->calculateLocalInertia(psn->Mass, inertia);
 	frm->Body->setMassProps(psn->Mass, inertia);
 
-	frm->Body->setAngularFactor(btVector3(0, 1, 0));       // lock rotation around X and Z to prevent falling over
-	frm->Body->setFriction(5.0f);                          // set high friction to not slide after walking
-	frm->Body->setRollingFriction(5.0f);                   // and to not spin too easily
-	frm->Body->setAnisotropicFriction(btVector3(1, 0, 1)); // disable friction in Y direction to not scratch in jumps
-	frm->Body->setActivationState(DISABLE_DEACTIVATION);
+	frm->Body->setAngularFactor(btVector3(0, 1, 0));		// lock rotation around X and Z to prevent falling over
+	frm->Body->setFriction(5.0f);							// set high friction to not slide after walking
+	frm->Body->setRollingFriction(5.0f);					// and to not spin too easily
+	frm->Body->setAnisotropicFriction(btVector3(1, 0, 1));	// disable friction in Y direction to not scratch in jumps
+	frm->Body->setActivationState(DISABLE_DEACTIVATION);	// prevent deactivation
 
 	if(Form::World)
 		Form::World->addRigidBody(frm->Body);

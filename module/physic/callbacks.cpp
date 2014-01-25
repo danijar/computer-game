@@ -19,8 +19,10 @@ Handle<Value> ModulePhysic::jsImpulse(const Arguments& args)
 
 	if(!args[0]->IsString())
 		return Undefined();
-	uint64_t id = std::stoull(*String::Utf8Value(args[0]));
+	uint64_t id = stoull(*String::Utf8Value(args[0]));
+	if (!id) return Undefined();
 	auto frm = module->Entity->Get<Form>(id);
+	if (!frm) return Undefined();
 
 	btVector3 impulse;
 	if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
@@ -41,8 +43,10 @@ Handle<Value> ModulePhysic::jsForce(const Arguments& args)
 
 	if(!args[0]->IsString())
 		return Undefined();
-	uint64_t id = std::stoull(*String::Utf8Value(args[0]));
+	uint64_t id = stoull(*String::Utf8Value(args[0]));
+	if (!id) return Undefined();
 	auto frm = module->Entity->Get<Form>(id);
+	if (!frm) return Undefined();
 
 	btVector3 force;
 	if(3 < args.Length() && args[1]->IsNumber() && args[2]->IsNumber() && args[3]->IsNumber())
@@ -63,8 +67,10 @@ Handle<Value> ModulePhysic::jsVelocity(const Arguments& args)
 
 	if(!args[0]->IsString())
 		return Undefined();
-	uint64_t id = std::stoull(*String::Utf8Value(args[0]));
+	uint64_t id = stoull(*String::Utf8Value(args[0]));
+	if (!id) return Undefined();
 	auto frm = module->Entity->Get<Form>(id);
+	if (!frm) return Undefined();
 
 	// set velocity
 	if(args.Length() > 1)

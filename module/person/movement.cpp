@@ -40,6 +40,7 @@ void ModulePerson::Move(uint64_t Id, vec3 Amount, float Speed)
 	if(abs(velocity.getY()) < 0.01f || velocity.getY() < current.getY()) velocity.setY(current.getY());
 
 	// set velocity to move body
+	frm->Body->activate();
 	frm->Body->setLinearVelocity(velocity);
 }
 
@@ -56,8 +57,11 @@ void ModulePerson::Jump(uint64_t Id, float Multiplier, bool Force)
 			btVector3 velocity = frm->Body->getLinearVelocity();
 			frm->Body->setLinearVelocity(btVector3(velocity.getX(), 0, velocity.getZ()));
 		}
-		float amount = psn->Mass * Multiplier;
-		frm->Body->applyCentralImpulse(btVector3(0, amount, 0));
+		
 		psn->Jumping = true;
+
+		float amount = psn->Mass * Multiplier;
+		frm->Body->activate();
+		frm->Body->applyCentralImpulse(btVector3(0, amount, 0));
 	}
 }

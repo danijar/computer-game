@@ -6,8 +6,9 @@ using namespace v8;
 
 void ModuleConsole::Callbacks()
 {
-	Script->Bind("print", jsPrint);
-	Script->Bind("on",    jsOn);
+	Script->Bind("print",  jsPrint);
+	Script->Bind("on",     jsOn);
+	Script->Bind("remove", jsRemove);
 }
 
 Handle<Value> ModuleConsole::jsPrint(const Arguments& args)
@@ -45,6 +46,19 @@ Handle<Value> ModuleConsole::jsOn(const Arguments& args)
 
 		persistent->Call(persistent, 0, NULL);
 	});
+
+	return Undefined();
+}
+
+Handle<Value> ModuleConsole::jsRemove(const Arguments& args)
+{
+	ModuleConsole *module = (ModuleConsole*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return Undefined();
+	uint64_t id = stoull(*String::Utf8Value(args[0]));
+
+	module->Entity->Delete(id);
 
 	return Undefined();
 }

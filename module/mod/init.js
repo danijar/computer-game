@@ -1,14 +1,68 @@
 
 /*
- * variables for update script
+ * Flashlight
  */
 
-var keys_house_once = true;
+// globals
+var flashlight_keys_once = true;
+var flashlight_on = false;
+var flashlight_id = 0;
+
+// key pressed
+on('InputKeyPressed', function () {
+	if (!flashlight_keys_once) return;
+	flashlight_keys_once = false;
+
+	if (key('F')) {
+		// light off
+		if (flashlight_on) {
+			flashlight_on = false;
+			remove(flashlight_id);
+			print("flashlight off");
+		}
+		// light on
+		else {
+			flashlight_on = true;
+			flashlight_id = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 3.0);
+			print("flashlight on");
+		}
+	}
+});
+
+// key released
+on('InputKeyReleased', function () {
+	if (!key('F')) {
+		flashlight_keys_once = true;
+	}
+});
 
 /*
- * build a nice house
+ * House
  */
- 
+
+// globals
+var house_keys_once = true;
+
+// key pressed
+on('InputKeyPressed', function () {
+	if (!house_keys_once) return;
+	house_keys_once = false;
+
+	if (key('H') && key('O') && key('U') && key('S') && key('E')) {
+		// build house around the player
+	    var offset = position(player());
+	    house(offset[0], offset[1], offset[2]);
+	}
+});
+
+// key released
+on('InputKeyReleased', function () {
+	if (!key('H') || !key('O') || !key('U') || !key('S') || !key('E')) {
+		house_keys_once = true;
+	}
+});
+
+// build a nice house
 function house(position_x, position_y, position_z, size_x, size_y, size_z)
 {
 	// parameterss
@@ -17,15 +71,15 @@ function house(position_x, position_y, position_z, size_x, size_y, size_z)
 	size_z = parseInt(size_z || (Math.floor(5 + Math.random() * 6)) / 2) * 2;
 
 	var origin_x = parseInt(position_x - size_x / 2),
-	    origin_y = parseInt(position_y),
-	    origin_z = parseInt(position_z - size_z / 2);
+		origin_y = parseInt(position_y),
+		origin_z = parseInt(position_z - size_z / 2);
 
 	var orientation = (size_x > size_z);
 
 	// materials
 	var brick = 6,
-	    roof  = 3
-	    floor = 4;
+		roof  = 3
+		floor = 4;
 
 	// fundament
 	blocks(origin_x - 1, 0, origin_z - 1, size_x + 2, origin_y, size_z + 2, 2, function(x, y, z){ return block(x, y, z) == 0; });
@@ -96,10 +150,7 @@ function house(position_x, position_y, position_z, size_x, size_y, size_z)
 	light(position_x, position_y + size_y/2 - 1, position_z, 4 * size_y, 1, 1, 1, 1.2);
 }
 
-/*
- * helper functions
- */
-
+// helpers
 function blocks(position_x, position_y, position_z, size_x, size_y, size_z, type, condition)
 {
 	for(var x = position_x; x < position_x + size_x; ++x)

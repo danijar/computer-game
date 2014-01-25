@@ -1,10 +1,6 @@
 
-if (!keys_house_once && key('H') && key('O') && key('U') && key('S') && key('E')) {
-    keys_house_once = true;
-
-    var offset = position(player());
-    house(offset[0], offset[1], offset[2]);
-}
-else if (keys_house_once && !key('H') && !key('O') && !key('U') && !key('S') && !key('E')) {
-    keys_house_once = false;
+// move flashlight with player
+if (flashlight_on) {
+    var coordinates = position(player());
+    position(flashlight_id, coordinates[0], coordinates[1] + 1.5, coordinates[2]);
 }

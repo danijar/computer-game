@@ -22,7 +22,7 @@ void ModuleInput::Listeners()
 		case Keyboard::Space:
 			this->Event->Fire("InputBindJump");
 			break;
-		case Keyboard::F:
+		case Keyboard::R:
 			this->Event->Fire("InputBindShoot");
 			break;
 		}
