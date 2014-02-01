@@ -69,12 +69,11 @@ public:
 	 */
 	std::string Read(std::string Path)
 	{
-		return Read("module/" + name, Path);
+		return Read(name, "module/" + name + '/' + Path);
 	}
 	static std::string Read(std::string Name, std::string Path)
 	{
-		std::string path = Name + "/" + Path;
-		std::ifstream stream(path);
+		std::ifstream stream(Path);
 		if(!stream.is_open())
 		{
 			ManagerLog::Fail(Name, "cannot read file (" + Path + ")");

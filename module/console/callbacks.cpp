@@ -6,9 +6,10 @@ using namespace v8;
 
 void ModuleConsole::Callbacks()
 {
-	Script->Bind("print",  jsPrint);
-	Script->Bind("on",     jsOn);
-	Script->Bind("remove", jsRemove);
+	Script->Bind("print",   jsPrint);
+	Script->Bind("require", jsRequire);
+	Script->Bind("on",      jsOn);
+	Script->Bind("remove",  jsRemove);
 }
 
 Handle<Value> ModuleConsole::jsPrint(const Arguments& args)
@@ -17,6 +18,19 @@ Handle<Value> ModuleConsole::jsPrint(const Arguments& args)
 		return Undefined();
 	string message = *String::Utf8Value(args[0]);
 	ManagerLog::Print("", message);
+	return Undefined();
+}
+
+Handle<Value> ModuleConsole::jsRequire(const Arguments& args)
+{
+	ModuleConsole *module = (ModuleConsole*)HelperScript::Unwrap(args.Data());
+
+	if(args.Length() < 1 || !args[0]->IsString())
+		return Undefined();
+	string path = *String::Utf8Value(args[0]);
+	
+	module->Script->Run(path, false);
+
 	return Undefined();
 }
 
@@ -31,7 +45,7 @@ Handle<Value> ModuleConsole::jsOn(const Arguments& args)
 	if(args.Length() < 2 || !args[1]->IsFunction())
 		return Undefined();
 	Handle<Function> callback = Local<Function>::Cast(args[1]->ToObject());
-	
+
 	if(callback.IsEmpty())
 	{
 		ManagerLog::Fail("script", "invalid callback function");
@@ -43,7 +57,6 @@ Handle<Value> ModuleConsole::jsOn(const Arguments& args)
 	module->Event->Listen(name, [=]{
 		HandleScope scope(Isolate::GetCurrent());
 		TryCatch trycatch;
-
 		persistent->Call(persistent, 0, NULL);
 	});
 

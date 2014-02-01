@@ -40,7 +40,7 @@ public:
 		global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
 	}
 
-	bool Load(std::string Path)
+	bool Load(std::string Path, bool Module = true)
 	{
 		if(scripts.find(Path) != scripts.end())
 		{
@@ -48,7 +48,8 @@ public:
 			return true;
 		}
 
-		std::string source = HelperFile::Read("module/" + name, Path);
+		std::string path = Module ? "module/" + name + "/" + Path : Path;
+		std::string source = HelperFile::Read(name, path);
 		v8::Persistent<v8::Script> script = Compile(source);
 		if(script.IsEmpty())
 		{
@@ -60,10 +61,10 @@ public:
 		return true;
 	}
 
-	v8::Persistent<v8::Value> Run(std::string Path)
+	v8::Persistent<v8::Value> Run(std::string Path, bool Module = true)
 	{
 		if(scripts.find(Path) == scripts.end())
-			if(!Load(Path))
+			if(!Load(Path, Module))
 				return v8::Persistent<v8::Value>(v8::Undefined());
 
 		return Execute(scripts[Path]);
