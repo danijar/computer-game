@@ -1,10 +1,19 @@
 
-// sun
-light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional');
-light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
+// daytime
+var sun1, sun2, moon;
+function daytime() {
+	if (typeof sun1 == 'undefined') {
+		remove(moon); moon = undefined;
+		sun1 = light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 1.2, 'directional');
+		sun2 = light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
+	} else {
+		remove(sun1); sun1 = undefined;
+		remove(sun2); sun2 = undefined;
+		moon = light(0.5, 1.5, 1.0, 0, 0.6, 0.6, 0.8, 0.4, 'directional');
+	}
+}
 
-// moon
-// light(0.5, 1.5, 1.0, 0, 0.6, 0.6, 0.8, 0.4, 'directional');
+daytime();
 
 // strong point light for debugging
 // light(0, 8, 0, 100, .2, .4, .9, 3.0, 'point');

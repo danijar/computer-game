@@ -33,13 +33,18 @@ void main()
 	// check direction
 	vec3 arriving = normalize(source - position);
 	float faced = dot(arriving, normal);
-	
-	// reflection
+
+	// reflection phong
 	vec3 lookat = normalize(position);
 	float reflection = max(0, dot(reflect(arriving, normal), lookat));
 	float specular = shininess * pow(reflection, pow(10, shininess - 1));
-	
-	// this was the previous equation
+
+	// reflection blinn-phong
+	// vec3 eye = normalize(-position);
+	// vec3 half = normalize(eye - arriving);
+	// float specular = 5 * shininess * pow(dot(normal, half), pow(10, shininess - 1));
+
+	// reflection first try
 	// vec3 lookat = vec3(0, 0, -1);
 	// float reflection = max(0, dot(reflect(arriving, normal), lookat));
 	// float specular = min(shininess, 1) * pow(reflection, shininess);
