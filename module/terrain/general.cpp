@@ -55,7 +55,7 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position()) / CHUNK_SIZE;
+	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position() + vec3(0.5f)) / CHUNK_SIZE;
 	/*
 	 * load chunks independent from cameras height
 	 * camera.y = 0;
@@ -112,16 +112,20 @@ void ModuleTerrain::Update()
 	{
 		bool found = false;
 		ivec3 i, nearest;
+		float nearestlength = 0;
 		for(i.x = -distance.x; i.x < distance.x; ++i.x)
 		for(i.y = -distance.y; i.y < distance.y; ++i.y)
 		for(i.z = -distance.z; i.z < distance.z; ++i.z)
 		{
-			bool inrange = float(i.x*i.x) / float(distance.x*distance.x) + float(i.z*i.z) / float(distance.z*distance.z) < 1.0f;
-			bool nearer = found ? length(vec3(i)) < length(vec3(nearest)) : true;
+			vec3 center = vec3(i.x + 0.5f, i.y + 0.5f, i.z + 0.5f);
+			float currentlength = length(vec3(center));
+			bool inrange = float(center.x*center.x) / float(distance.x*distance.x) + float(center.z*center.z) / float(distance.z*distance.z) < 1.0f;
+			bool nearer = found ? currentlength < nearestlength : true;
 			bool loaded = GetChunk(camera + i) ? true : false;
 			if(inrange && nearer && !loaded)
 			{
 				nearest = camera + i;
+				nearestlength = length(vec3(center));
 				found = true;
 			}
 		}
