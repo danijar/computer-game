@@ -3,7 +3,7 @@ Graphics Application
 
 This is a modular game engine architecture for grounded cross platform graphics applications. It provides managers for messaging, entities and automatedly storing them in databases. Additionally, it provides functionality for unified logging, scripting, file access and asset management. Currently implemented modules cover OpenGL rendering, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
 
-The application is thought out, designed and written by Danijar Hafner.
+The application is thought out and written by Danijar Hafner.
 
 Screenshot
 ----------
@@ -23,10 +23,10 @@ State of Play
 - Dynamic character controller
 - Procedural voxel based terrain
 - Automated storing of entities to database
+- Normal mapping
 
 Upcoming Features
 
-- Normal mapping
 - AI and character animations
 - Modding support
 - Editor capabilities

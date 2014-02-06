@@ -5,8 +5,8 @@ Bugs
 ----
 - Switch to fullscreen doen't work
 - Testing on intel tablet, the screen pass doesn't work after resize
-- Material live reload doesn't work
-- Two framebuffer creations fail
+- Material live reload is not reliable
+- Two framebuffer creations fail at startup
 
 Considerations
 --------------
@@ -24,6 +24,9 @@ Considerations
 - Speed up terrain
 	- reuse the large voxel arrays of discarded chunks (kind of array pool)
 - Digging animation
+- Optimize rendering pipeline
+	- Reduce gbuffer to two or three textures
+	- Maybe reuse textures
 
 Roadmap
 -------
@@ -90,6 +93,7 @@ Roadmap
 - Implement light scattering ("god rays")
 - Implement in game profiling and benchmarking
 - Run scripts in namespaces named by their modules
+	- Modules inject their callback functions as properties of a global javascript object of their name
 - Add audio manager
 	- sound occlusion, decrease radius and add high pass filter
 		- use as input for artificial intelligence
