@@ -16,6 +16,7 @@ renderpass("forms", {
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
     draw: "FORMS",
+    depth: true,
     stencil: ["ALWAYS", 1, "REPLACE"],
 });
 
@@ -86,16 +87,29 @@ renderpass("occlusion", {
     stencil: ["GEQUAL", 1],
 });
 
-rendertarget("result");
+rendertarget("occluded");
 
 renderpass("apply", {
     fragment: "apply.frag",
-    targets: { "COLOR_ATTACHMENT0": "result" },
+    targets: { "COLOR_ATTACHMENT0": "occluded" },
     samplers: {
         "image_tex": "image",
         "effect_tex": "occlusion",
         "noise_tex": "noise",
     },
+});
+
+rendertarget("result");
+
+renderpass("fog", {
+    fragment: "fog.frag",
+    targets: { "COLOR_ATTACHMENT0": "result" },
+    samplers: {
+        "colors": "occluded",
+        "depths": "depth",
+        "lights": "light",
+    },
+    stencil: ["GEQUAL", 1],
 });
 
 rendertarget("temp");
@@ -146,11 +160,10 @@ renderpass("preview", {
     fragment: "preview.frag",
     samplers: {
         "first": "normal",
-    	"second": "specular",
+    	"second": "depth",
     	"third": "light",
     	"fourth": "occlusion",
     },
     draw: "SCREEN",
     clear: false,
 });
-renderpass("preview"); // disable initially, later toggle with debug view

@@ -40,9 +40,18 @@ void ModuleRenderer::Update()
 		{
 			// call render function
 			glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
-			if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			if(pass.Depth) {
+				glEnable(GL_DEPTH_TEST);
+				glDepthMask(GL_TRUE);
+				if(pass.Clear) glClear(GL_DEPTH_BUFFER_BIT);
+			}
+			if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT);
 			glUseProgram(pass.Program);
 			pass.Function(&pass);
+			if(pass.Depth) {
+				glDisable(GL_DEPTH_TEST);
+				glDepthMask(GL_FALSE);
+			}
 		}
 		else
 		{
@@ -60,7 +69,7 @@ void ModuleRenderer::Update()
 				FramebufferTargets(copy.Framebuffer, targets, false);
 
 				// clear
-				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT);
 
 				// copy texture over
 				copy.Samplers.clear();
@@ -82,7 +91,7 @@ void ModuleRenderer::Update()
 				FramebufferTargets(copy.Framebuffer, targets, false);
 
 				// clear
-				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+				if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT);
 
 				// fill with color
 				float array[3] = { j.second.r, j.second.g, j.second.b };

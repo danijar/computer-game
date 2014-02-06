@@ -74,8 +74,8 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glActiveTexture(GL_TEXTURE1);
 	glUniform1i(glGetUniformLocation(Pass->Program, "mapnormal"), 1);
 
-	glEnable(GL_DEPTH_TEST);
-	//glDepthMask(GL_TRUE);
+	// where to better clear stencil buffer?
+	glClear(GL_STENCIL_BUFFER_BIT);
 
 	for(auto i : mls)
 	{
@@ -123,9 +123,6 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
 	}
 
-	glDisable(GL_DEPTH_TEST);
-	//glDepthMask(GL_FALSE);
-
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
@@ -147,8 +144,6 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE0);
-
-	glDepthMask(GL_FALSE);
 
 	Model *frm = Global->Get<Model>("sky");
 	if(frm->Elements && frm->Diffuse)
@@ -178,8 +173,6 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 		glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
 		glDrawElements(GL_TRIANGLES, size / sizeof(GLuint), GL_UNSIGNED_INT, (void*)0);
 	}
-
-	glDepthMask(GL_TRUE);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glDisableVertexAttribArray(0);

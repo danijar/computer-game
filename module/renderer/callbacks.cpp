@@ -162,10 +162,15 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 			else ManagerLog::Warning("script", "function is invalid");
 		}
 
-		// clear targets before rendering
+		// clear color targets before rendering
 		bool clear = true;
 		if(object->Has(v8str("clear")))
 			clear = object->Get(v8str("clear"))->BooleanValue();
+
+		// enable depth test and writing
+		bool depth = false;
+		if(object->Has(v8str("depth")))
+			depth = object->Get(v8str("depth"))->BooleanValue();
 
 		// resolution relative to window size
 		float size = 1.0f;
@@ -189,6 +194,7 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 				else if(func == "LESS"   ) stencilfunc = GL_LESS;
 				else if(func == "GEQUAL" ) stencilfunc = GL_GEQUAL;
 				else if(func == "LEQUAL" ) stencilfunc = GL_LEQUAL;
+				else ManagerLog::Warning("script", "pass (" + name + ") unknown stencil function");
 			}
 			if(1 < array->Length() && array->Get(1)->IsInt32())
 			{
@@ -200,11 +206,12 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 				if     (op == "KEEP"   ) stencilop = GL_KEEP;
 				else if(op == "REPLACE") stencilop = GL_REPLACE;
 				else if(op == "INCR"   ) stencilop = GL_INCR;
+				else ManagerLog::Warning("script", "pass (" + name + ") unknown stencil operation");
 			}
 		}
 
 		// create pass
-		module->PassCreate(name, vertex, fragment, targets, samplers, copyfallbacks, colorfallbacks, function, clear, size, stencilfunc, stencilref, stencilop);
+		module->PassCreate(name, vertex, fragment, targets, samplers, copyfallbacks, colorfallbacks, function, clear, depth, size, stencilfunc, stencilref, stencilop);
 	}
 	// toggle existing pass
 	else
@@ -419,7 +426,7 @@ Handle<Value> ModuleRenderer::jsUniform(const Arguments& args)
 		module->Log->Warning("script", "setting sampler uniforms not supported");
 		break;
 	default:
-		module->Log->Warning("script", "unkown sampler type");
+		module->Log->Warning("script", "unknown sampler type");
 		break;
 	}
 

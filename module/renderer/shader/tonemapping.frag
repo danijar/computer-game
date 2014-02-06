@@ -6,7 +6,7 @@ out vec4 image;
 uniform sampler2D image_tex;
 
 // 0 means none, 1 is default, 2 is twice
-uniform float saturation = 1.3;
+uniform float saturation = 1.0;
 uniform float red        = 1.0;
 uniform float green      = 1.0;
 uniform float blue       = 1.0;
