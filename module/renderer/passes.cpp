@@ -9,7 +9,7 @@ using namespace glm;
 
 #include "type/camera/type.h"
 
-void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Clear, bool Depth, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
+void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Depth, bool Clear, vec3 Clearcolor, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
 	if(PassGet(Name, false))
 	{
@@ -17,11 +17,11 @@ void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, uno
 		return;
 	}
 
-	Pass pass = PassCreate(Vertex, Fragment, Targets, Samplers, Copyfallbacks, Colorfallbacks, Function, Clear, Depth, Size, StencilFunction, StencilReference, StencilOperation);
+	Pass pass = PassCreate(Vertex, Fragment, Targets, Samplers, Copyfallbacks, Colorfallbacks, Function, Depth, Clear, Clearcolor, Size, StencilFunction, StencilReference, StencilOperation);
 	passes.push_back(make_pair(Name, pass));
 }
 
-ModuleRenderer::Pass ModuleRenderer::PassCreate(string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Clear, bool Depth, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
+ModuleRenderer::Pass ModuleRenderer::PassCreate(string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Depth, bool Clear, vec3 Clearcolor, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {
 	Pass pass;
 
@@ -80,6 +80,7 @@ ModuleRenderer::Pass ModuleRenderer::PassCreate(string Vertex, string Fragment, 
 	pass.Vertex           = Vertex;
 	pass.Fragment         = Fragment;
 	pass.Clear            = Clear;
+	pass.Clearcolor       = Clearcolor;
 	pass.Depth            = Depth;
 	pass.Size             = Size;
 	pass.Program          = CreateProgram(Vertex, Fragment);

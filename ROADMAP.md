@@ -7,6 +7,7 @@ Bugs
 - Testing on intel tablet, the screen pass doesn't work after resize
 - Material live reload is not reliable
 - Two framebuffer creations fail at startup
+- Stencil doesn't work in all cases
 
 Considerations
 --------------
@@ -30,7 +31,7 @@ Considerations
 
 Roadmap
 -------
-- Treat managers and prior helpers the same
+- Treat managers and helpers the same
 	- http://ideone.com/csNMx5
 - Create asset manager
 	- move functionality out of Model module

@@ -14,7 +14,7 @@ void main()
 	vec3 color = texture2D(albedo, coord).rgb;
 	vec3 light = texture2D(lights, coord).rgb;
 
-	// should be done by stencil
+	// do not light sky
 	if (texture2D(depth, coord).r > 0.9999) { image = color; return; }
 
 	// gray out in low light
@@ -23,7 +23,6 @@ void main()
 	// grayout = 0; // disable grayout
 
 	image = ambient + mix(color, desaturated, grayout) * light;
-
 	// image = ambient + light; // only light
 	// image = color;           // only albedo
 }

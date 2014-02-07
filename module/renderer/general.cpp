@@ -40,12 +40,14 @@ void ModuleRenderer::Update()
 		{
 			// call render function
 			glBindFramebuffer(GL_FRAMEBUFFER, pass.Framebuffer);
+			if(pass.Clear) {
+				glClearColor(pass.Clearcolor.r, pass.Clearcolor.g, pass.Clearcolor.b, 1.0f);
+				glClear(GL_COLOR_BUFFER_BIT);
+			}
 			if(pass.Depth) {
 				glEnable(GL_DEPTH_TEST);
 				glDepthMask(GL_TRUE);
-				if(pass.Clear) glClear(GL_DEPTH_BUFFER_BIT);
 			}
-			if(pass.Clear) glClear(GL_COLOR_BUFFER_BIT);
 			glUseProgram(pass.Program);
 			pass.Function(&pass);
 			if(pass.Depth) {

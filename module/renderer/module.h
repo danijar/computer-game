@@ -48,6 +48,7 @@ class ModuleRenderer : public Module
 		std::unordered_map<GLuint, glm::vec3> Colorfallbacks;
 		std::function<void(Pass*)> Function;
 		bool Clear, Depth;
+		glm::vec3 Clearcolor;
 		float Size;
 		GLenum StencilFunction, StencilOperation; GLint StencilReference;
 		bool Enabled;
@@ -60,7 +61,7 @@ class ModuleRenderer : public Module
 		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
 		std::unordered_map<std::string, std::string> Copyfallbacks = std::unordered_map<std::string, std::string>(),
 		std::unordered_map<std::string, glm::vec3> Colorfallbacks = std::unordered_map<std::string, glm::vec3>(),
-		Function Function = QUAD, bool Clear = true, bool Depth = false, float Size = 1.0,
+		Function Function = QUAD, bool Depth = false, bool Clear = false, glm::vec3 Clearcolor = glm::vec3(0), float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
 	Pass PassCreate(
 		std::string Vertex, std::string Fragment,
@@ -68,7 +69,7 @@ class ModuleRenderer : public Module
 		std::unordered_map<std::string, std::string> Samplers = std::unordered_map<std::string, std::string>(),
 		std::unordered_map<std::string, std::string> Copyfallbacks = std::unordered_map<std::string, std::string>(),
 		std::unordered_map<std::string, glm::vec3> Colorfallbacks = std::unordered_map<std::string, glm::vec3>(),
-		Function Function = QUAD, bool Clear = true, bool Depth = false, float Size = 1.0,
+		Function Function = QUAD, bool Depth = false, bool Clear = false, glm::vec3 Clearcolor = glm::vec3(0), float Size = 1.0,
 		GLenum StencilFunction = GL_ALWAYS, GLint StencilReference = 0, GLenum StencilOperation = GL_KEEP);
 	Pass *PassGet(std::string Name, bool Output = true);
 	

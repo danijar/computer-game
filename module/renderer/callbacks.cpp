@@ -162,15 +162,24 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 			else ManagerLog::Warning("script", "function is invalid");
 		}
 
-		// clear color targets before rendering
-		bool clear = true;
-		if(object->Has(v8str("clear")))
-			clear = object->Get(v8str("clear"))->BooleanValue();
-
 		// enable depth test and writing
 		bool depth = false;
 		if(object->Has(v8str("depth")))
 			depth = object->Get(v8str("depth"))->BooleanValue();
+
+		// clear color targets before rendering
+		bool clear = false;
+		vec3 clearcolor = vec3(0);
+		if(object->Has(v8str("clear"))) {
+			clear = true;
+			Handle<Value> value = object->Get(v8str("clear"));
+			if(value->IsArray())
+			{
+				Handle<Array> array = Handle<Array>::Cast(value);
+				if(array->Length() == 3)
+					clearcolor = vec3((float)array->Get(0)->NumberValue(), (float)array->Get(1)->NumberValue(), (float)array->Get(2)->NumberValue());
+			}
+		}
 
 		// resolution relative to window size
 		float size = 1.0f;
@@ -211,7 +220,7 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 		}
 
 		// create pass
-		module->PassCreate(name, vertex, fragment, targets, samplers, copyfallbacks, colorfallbacks, function, clear, depth, size, stencilfunc, stencilref, stencilop);
+		module->PassCreate(name, vertex, fragment, targets, samplers, copyfallbacks, colorfallbacks, function, depth, clear, clearcolor, size, stencilfunc, stencilref, stencilop);
 	}
 	// toggle existing pass
 	else

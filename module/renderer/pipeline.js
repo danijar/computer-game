@@ -17,6 +17,7 @@ renderpass("forms", {
     },
     draw: "FORMS",
     depth: true,
+    clear: [0, 0, 0],
     stencil: ["ALWAYS", 1, "REPLACE"],
 });
 
@@ -33,7 +34,6 @@ renderpass("sky", {
         "albedo": [1, 1, 1],
     },
     draw: "SKY",
-    clear: false,
     stencil: ["EQUAL", 0],
 });
 
@@ -41,11 +41,19 @@ rendertarget("light");
 
 renderpass("lights", {
     fragment: "light.frag",
-    targets: { "COLOR_ATTACHMENT0": "light" },
-    samplers: { "positions": "position", "normals": "normal", "speculars": "specular" },
+    targets: {
+        "COLOR_ATTACHMENT0": "light",
+        "DEPTH_STENCIL_ATTACHMENT": "depth",
+    },
+    samplers: {
+        "positions": "position",
+        "normals":   "normal",
+        "speculars": "specular",
+    },
     fallbacks: { "light": [.5, .5, .5] },
     draw: "LIGHTS",
-    stencil: ["GEQUAL", 1],
+    clear: [0, 0, 0],
+    stencil: ["LEQUAL", 1],
 });
 
 rendertarget("edge");
@@ -84,7 +92,8 @@ renderpass("occlusion", {
     },
     fallbacks: { "occlusion": [1, 1, 1] },
     size: 0.75,
-    stencil: ["GEQUAL", 1],
+    clear: [0, 0, 0],
+    stencil: ["LEQUAL", 1],
 });
 
 rendertarget("occluded");
@@ -93,9 +102,9 @@ renderpass("apply", {
     fragment: "apply.frag",
     targets: { "COLOR_ATTACHMENT0": "occluded" },
     samplers: {
-        "image_tex": "image",
+        "image_tex":  "image",
         "effect_tex": "occlusion",
-        "noise_tex": "noise",
+        "noise_tex":  "noise",
     },
 });
 
@@ -103,13 +112,15 @@ rendertarget("result");
 
 renderpass("fog", {
     fragment: "fog.frag",
-    targets: { "COLOR_ATTACHMENT0": "result" },
+    targets: {
+        "COLOR_ATTACHMENT0": "result",
+        "DEPTH_STENCIL_ATTACHMENT": "depth",
+    },
     samplers: {
         "colors": "occluded",
         "depths": "depth",
         "lights": "light",
     },
-    stencil: ["GEQUAL", 1],
 });
 
 rendertarget("temp");
@@ -165,5 +176,4 @@ renderpass("preview", {
     	"fourth": "occlusion",
     },
     draw: "SCREEN",
-    clear: false,
 });

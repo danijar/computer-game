@@ -74,8 +74,7 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glActiveTexture(GL_TEXTURE1);
 	glUniform1i(glGetUniformLocation(Pass->Program, "mapnormal"), 1);
 
-	// where to better clear stencil buffer?
-	glClear(GL_STENCIL_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	for(auto i : mls)
 	{
