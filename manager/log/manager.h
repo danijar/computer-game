@@ -74,6 +74,14 @@ public:
 		Wait(Name, "crashed, " + Message);
 		std::exit(EXIT_FAILURE);
 	}
+	static std::string Format(float Value, unsigned int Head, unsigned int Tail)
+	{
+		std::string text = std::to_string((int)(Value * std::pow(10, Tail)));
+		while (text.length() < Head + Tail)
+			text = " " + text;
+		text.insert(text.length() - Tail, 1, '.');
+		return text;
+	}
 private:
 	std::string name;
 };

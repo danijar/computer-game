@@ -23,7 +23,10 @@ void ModuleRenderer::Init()
 	copy = PassCreate("quad.vert", "copy.frag");
 
 	query = 0, time = 0;
-	Entity->Add<Print>(Entity->New())->Text = [=]{ return "rendering time " + to_string(time / 1000000.0f) + "ms"; }; // round accordingly and add space padding
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		float average = Logic->Average("render time", time / 1000000.0f, 60);
+		return "rendering time " + Log->Format(average, 2, 1) + " ms";
+	};
 }
 
 void ModuleRenderer::Update()

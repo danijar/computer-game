@@ -17,8 +17,8 @@ settings({
     Viewdistance: [ 'float', 1000.0 ], // Currently, a value below 1000.0 would not show the sky anymore.
 
     // terrain
-    Placedistance: [ 'int',    5       ], // Defines how far blocks you can mine and place.
-    Chunkdistance: [ 'float',  0.1     ], // Defines how distant chunks are loaded relative to view distance. Depending on your machine a value higher than 0.1 might be very slow.
+    Placedistance: [ 'int',    5    ], // Defines how far blocks you can mine and place.
+    Chunkdistance: [ 'float',  0.08 ], // Defines how distant chunks are loaded relative to view distance. This option has the highest performance impact.
 
     // development
     Debug: [ 'bool', true ], // Print debug information on screen like frame rate, player position, number of forms, and more.

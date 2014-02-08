@@ -126,6 +126,9 @@
     <ClInclude Include="manager\script\manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="manager\logic\manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="type\person\general.cpp">

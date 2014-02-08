@@ -23,6 +23,7 @@ class ModuleTerrain : public Module
 public:
 	~ModuleTerrain();
 private:
+	int candidates;
 	void Init();
 	void Update();
 	void Listeners();

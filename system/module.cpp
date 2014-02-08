@@ -11,6 +11,7 @@ void Module::Set(string Name, ManagerEvent *Event, ManagerEntity *Entity, Manage
 	this->Global  = Global;
 	this->Data    = Data;
 	this->Log     = new ManagerLog(Name);
+	this->Logic   = new ManagerLogic();
 	this->File    = new HelperFile(Name);
 	this->Opengl  = new HelperOpengl(Name);
 	this->Script  = new HelperScript(Name, this, Context);

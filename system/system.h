@@ -13,6 +13,7 @@
 #include "manager/file/manager.h"
 #include "manager/global/manager.h"
 #include "manager/log/manager.h"
+#include "manager/logic/manager.h"
 #include "manager/opengl/manager.h"
 #include "manager/script/manager.h"
 
@@ -31,6 +32,7 @@ public:
 	ManagerGlobal *Global;
 	ManagerData   *Data;
 	ManagerLog    *Log;
+	ManagerLogic  *Logic;
 	HelperFile    *File;
 	HelperOpengl  *Opengl;
 	HelperScript  *Script;

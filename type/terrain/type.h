@@ -5,17 +5,18 @@
 #include <stdint.h>
 #include <dependency/glm/glm.hpp>
 
+#define CHUNK_LENGTH 32
+#define CHUNK_SIZE ivec3(CHUNK_LENGTH, CHUNK_LENGTH, CHUNK_LENGTH)
 
-#define CHUNK_SIZE ivec3(32, 32, 32)
 
 struct Terrain
 {
 	Terrain() : Changed(false) { memset(Blocks, 0, sizeof Blocks); }
 
-	uint8_t Blocks[32][32][32];
+	uint8_t Blocks[CHUNK_LENGTH][CHUNK_LENGTH][CHUNK_LENGTH];
 
 	enum { ROCKS, PLAIN, ROUGH, VEGETATION };
-	float Details[32][32][4];
+	float Details[CHUNK_LENGTH][CHUNK_LENGTH][4];
 
 	glm::ivec3 Key;
 	bool Changed;

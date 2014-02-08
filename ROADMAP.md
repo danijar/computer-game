@@ -130,7 +130,6 @@ Roadmap
 - Implement in game bug report tool
 	- send screenshot, hardware configuration, time and an optional user comment to the server
 - Logging system
-	- rename Debug Helper to Log Manager
 	- automatedly assign colors to output sources to highlight their messages
 	- provide options for solo or mute output sources
 - Officially announce project

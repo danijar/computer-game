@@ -22,6 +22,7 @@
     <ClInclude Include="manager\event\manager.h" />
     <ClInclude Include="manager\file\manager.h" />
     <ClInclude Include="manager\global\manager.h" />
+    <ClInclude Include="manager\logic\manager.h" />
     <ClInclude Include="manager\log\manager.h" />
     <ClInclude Include="manager\opengl\manager.h" />
     <ClInclude Include="manager\script\manager.h" />

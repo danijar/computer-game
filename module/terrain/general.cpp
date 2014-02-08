@@ -27,14 +27,20 @@ void ModuleTerrain::Init()
 	marker = Marker();
 	Entity->Get<Form>(marker)->Scale(vec3(.5f));
 
-	show = true; type = 1;
+	show = true, type = 1;
 
 	running = true, loading = false, null = true;
 	task = async(launch::async, &ModuleTerrain::Loading, this);
 
+	candidates = 0;
+
 	Entity->Add<Print>(Entity->New())->Text = [=]{
 		ivec3 position = get<0>(Selection());
 		return "selection X " + to_string(position.x) + " Y " + to_string(position.y) + " Z " + to_string(position.z);
+	};
+
+	Entity->Add<Print>(Entity->New())->Text = [=]{
+		return "pending chunks " + to_string(candidates);
 	};
 
 	Listeners();
@@ -55,30 +61,27 @@ void ModuleTerrain::Update()
 {
 	auto stg = Global->Get<Settings>("settings");
 	auto tns = Entity->Get<Terrain>();
-	ivec3 camera = ivec3(Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position() + vec3(0.5f)) / CHUNK_SIZE;
-	/*
-	 * load chunks independent from cameras height
-	 * camera.y = 0;
-	 */
-	ivec3 distance = (int)(*stg->Get<float>("Viewdistance") * *stg->Get<float>("Chunkdistance")) / CHUNK_SIZE;
-	/*
-	 * this adds a lot more load to the CPU
-	 * distance.y = std::max(distance.y / 2, 1);
-	 */
-	distance.y = 1;
+
+	// ignore camera height to get an overview flying above the chunks
+	const bool grounding = false;
+
+	vec3 camera = Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position();
+	if (grounding) camera.y = 0;
+
+	float inradius = (*stg->Get<float>("Viewdistance")) * (*stg->Get<float>("Chunkdistance"));
+	float outradius = inradius + 0.3f * length(vec3(CHUNK_SIZE));
 
 	// add loaded chunks to entity system
 	if(!loading && !null && access.try_lock())
 	{
-		if(current.Changed)
-		{
+		// chunk was just modified
+		if(current.Changed) {
 			uint64_t id = GetChunk(current.Key);
 			Entity->Get<Terrain>(id)->Changed = false;
-
 			Buffer(id);
 		}
-		else
-		{
+		// chunk was newly loaded
+		else {
 			uint64_t id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
 			auto mdl = Entity->Add<Model>(id);
@@ -93,12 +96,9 @@ void ModuleTerrain::Update()
 	}
 
 	// remesh changed chunks
-	if(!loading)
-	{
-		for(auto i = tns.begin(); i != tns.end(); ++i)
-		{
-			if(i->second->Changed)
-			{
+	if(!loading) {
+		for(auto i = tns.begin(); i != tns.end(); ++i) {
+			if(i->second->Changed) {
 				current = Terrain(*i->second);
 				null = false;
 				loading = true;
@@ -110,37 +110,50 @@ void ModuleTerrain::Update()
 	// mesh new in range chunks
 	if(!loading && access.try_lock())
 	{
-		bool found = false;
+		// relative range to check for chunk candidates
+		ivec3 range = ivec3(inradius) / CHUNK_SIZE + ivec3(1);
+		range.y = 1;
+
+		// offset of relative range to camera
+		ivec3 offset = ivec3(Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position() + vec3(0.5f)) / CHUNK_SIZE;
+		if (grounding) offset.y = 0;
+
+		// find nearest chunk candidate
 		ivec3 i, nearest;
-		float nearestlength = 0;
-		for(i.x = -distance.x; i.x < distance.x; ++i.x)
-		for(i.y = -distance.y; i.y < distance.y; ++i.y)
-		for(i.z = -distance.z; i.z < distance.z; ++i.z)
-		{
-			vec3 center = vec3(i.x + 0.5f, i.y + 0.5f, i.z + 0.5f);
-			float currentlength = length(vec3(center));
-			bool inrange = float(center.x*center.x) / float(distance.x*distance.x) + float(center.z*center.z) / float(distance.z*distance.z) < 1.0f;
-			bool nearer = found ? currentlength < nearestlength : true;
-			bool loaded = GetChunk(camera + i) ? true : false;
-			if(inrange && nearer && !loaded)
-			{
-				nearest = camera + i;
-				nearestlength = length(vec3(center));
-				found = true;
+		float best = -1;
+		candidates = 0;
+		for (i.x = -range.x; i.x <= range.x; ++i.x)
+		for (i.y = -range.y; i.y <= range.y; ++i.y)
+		for (i.z = -range.z; i.z <= range.z; ++i.z) {
+			// calculate distance from chunk center to camera
+			vec3 center = (vec3(offset + i) + vec3(0.5f)) * vec3(CHUNK_SIZE);
+			float distance = length(camera - center);
+
+			// compute criteria
+			bool inrange = distance < inradius;
+			bool unloaded = !GetChunk(offset + i);
+			bool nearer = best < 0 ? true : distance < best;
+
+			// consider if in range and not loaded
+			if (inrange && unloaded) {
+				candidates++;
+				// find nearest
+				if (nearer) {
+					nearest = offset + i;
+					best = distance;
+				}
 			}
 		}
-		if(found)
-		{
+
+		// load chunk if one was found
+		if(best > -1) {
 			current = Terrain();
 			current.Key = nearest;
 			null = false;
 			loading = true;
-		}
-		else
-		{
+		} else {
 			static bool once = true;
-			if(once)
-			{
+			if(once) {
 				Event->Fire("TerrainLoadingFinished");
 				once = false;
 			}
@@ -149,11 +162,14 @@ void ModuleTerrain::Update()
 	}
 
 	// free out of range chunks
-	int tolerance = 1;
-	for(auto i : tns)
-	{
-		if(!Inside(abs(i.second->Key - camera), ivec3(0), distance + ivec3(tolerance)))
-		{
+	for(auto i : tns) {
+		auto chunk = i.second;
+		// calculate distance from chunk center to camera
+		vec3 center = (vec3(chunk->Key) + vec3(0.5f)) * vec3(CHUNK_SIZE);
+		float distance = length(camera - center);
+
+		// free if out of range
+		if(distance > outradius) {
 			auto mdl = Entity->Get<Model>(i.first);
 			if(mdl->Elements)  glDeleteBuffers(1, &mdl->Positions);
 			if(mdl->Normals)   glDeleteBuffers(1, &mdl->Normals);
@@ -165,8 +181,7 @@ void ModuleTerrain::Update()
 	}
 
 	// selection
-	if(show)
-	{
+	if(show) {
 		auto sel = Selection();
 		if(get<2>(sel) && InReachDistance((vec3)get<0>(sel) + vec3(0.5)))
 			Entity->Get<Form>(marker)->Position(vec3(get<0>(sel)) + .3f * vec3(get<1>(sel)) + vec3((1.0f -  .5f) / 2));
