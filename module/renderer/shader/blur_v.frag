@@ -5,7 +5,7 @@ out vec3 result;
 
 uniform sampler2D image_tex;
 uniform vec2 frame_size;
-uniform int radius = 1;
+uniform int radius = 2;
 
 
 vec3 fetch(in float u, in float v)

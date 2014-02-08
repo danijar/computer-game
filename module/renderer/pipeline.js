@@ -152,13 +152,28 @@ renderpass("antialiasing", {
     fallbacks: { "antialiasing": "result" },
 });
 
+rendertarget("dof");
+
+renderpass("dof", {
+    fragment: "dof.frag",
+    targets: {
+        "COLOR_ATTACHMENT0": "dof",
+        "DEPTH_STENCIL_ATTACHMENT": "depth",
+    },
+    samplers: {
+        "colors": "antialiasing",
+        "blurs": "blur",
+        "depths": "depth",
+    },
+});
+
 rendertarget("tonemapped");
 
 renderpass("tonemapping", {
     fragment: "tonemapping.frag",
     targets: { "COLOR_ATTACHMENT0": "tonemapped" },
-    samplers: { "image_tex": "antialiasing" },
-    fallbacks: { "tonemapped": "antialiasing" },
+    samplers: { "image_tex": "dof" },
+    fallbacks: { "tonemapped": "dof" },
 });
 
 renderpass("screen", {
