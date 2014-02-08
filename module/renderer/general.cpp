@@ -5,6 +5,8 @@
 using namespace std;
 using namespace sf;
 
+#include "type/print/type.h"
+
 
 void ModuleRenderer::Init()
 {
@@ -19,11 +21,23 @@ void ModuleRenderer::Init()
 
 	color = PassCreate("quad.vert", "color.frag");
 	copy = PassCreate("quad.vert", "copy.frag");
+
+	query = 0, time = 0;
+	Entity->Add<Print>(Entity->New())->Text = [=]{ return "rendering time " + to_string(time / 1000000.0f) + "ms"; }; // round accordingly and add space padding
 }
 
 void ModuleRenderer::Update()
 {
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+
+	// measure rendering time
+	if (query) {
+		GLint done = 0;
+		while (!done) glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &time);
+	}
+	glGenQueries(1, &query);
+	glBeginQuery(GL_TIME_ELAPSED, query);
 
 	glEnable(GL_STENCIL_TEST);
 
@@ -106,6 +120,8 @@ void ModuleRenderer::Update()
 	glDisable(GL_STENCIL_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
+
+	glEndQuery(GL_TIME_ELAPSED);
 
 	Opengl->Test();
 }

@@ -12,6 +12,8 @@
 class ModuleRenderer : public Module
 {
 	// general
+	GLuint query;
+	GLuint64 time;
 	void Init();
 	void Update();
 	void Listeners();
