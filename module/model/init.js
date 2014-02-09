@@ -36,7 +36,7 @@ key('V', function() {
 
 // insert capsule
 key('C', function () {
-	var capsule = place('capsule.obj', 'capsule.mtl', 2, 1, 70);
+	var capsule = place('capsule.obj', 'capsule.mtl', 2, 1, 0, 70);
 	if (!capsule) return;
 	impulse(capsule, 0, 200, 0);
 	print('Inserted a capsule.');
@@ -44,7 +44,7 @@ key('C', function () {
 
 // place barrel
 key('B', function () {
-	var barrel = place('barrel.3ds', 'barrel.mtl', 3, 1, 25);
+	var barrel = place('barrel.3ds', 'barrel.mtl', 3, 1, 0.8, 25);
 	if (!barrel) return;
 	rotation(barrel, -90, 0, 360 * cook());
 	print('Placed a barrel.');
@@ -52,12 +52,12 @@ key('B', function () {
 
 // insert rock
 key('N', function () {
-	var rock = place('rock.obj', 'rock.mtl', 4, 3, 500);
+	var rock = place('rock.obj', 'rock.mtl', 4, 3, 1.5, 500);
 	if (!rock) return;
 	print('Inserted a rock.');
 });
 
-function place(mesh, material, distance, scale, mass) {
+function place(mesh, material, distance, scale, shift, mass) {
 	distance = distance || 2;
 	scale    = scale    || 1;
 	mass     = mass     || 0;
@@ -87,5 +87,5 @@ function place(mesh, material, distance, scale, mass) {
 		return false;
 	}
 
-	return model(mesh, material, target[0], height, target[2], 0, 0, 0, scale, mass);
+	return model(mesh, material, target[0], height + shift, target[2], 0, 0, 0, scale, mass);
 }
