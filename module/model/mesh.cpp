@@ -101,30 +101,30 @@ void ModuleModel::LoadMeshCube(Mesh &Mesh)
 	const GLfloat texcoords[] = {0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.,0.,0.,1.,0.,1.,1.,0.,1.};
 	const GLuint  elements[]  = {0,1,2,2,3,0,4,5,6,6,7,4,8,9,10,10,11,8,12,13,14,14,15,12,16,17,18,18,19,16,20,21,22,22,23,20};
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Positions);
-	glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), &positions[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof positions, &positions[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Normals);
-	glBufferData(GL_ARRAY_BUFFER, 72 * sizeof(GLfloat), &normals[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof normals, &normals[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Texcoords);
-	glBufferData(GL_ARRAY_BUFFER, 48 * sizeof(GLfloat), &texcoords[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof texcoords, &texcoords[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh.Elements);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 36 * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof elements, &elements[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void ModuleModel::LoadMeshPlane(Mesh &Mesh)
+void ModuleModel::LoadMeshPlane(Mesh &Mesh, float Size)
 {
-	const float l = 200;
+	float l = Size;
 	const GLfloat positions[] = { -l,0,-l, -l,0,l, l,0,l, l,0,-l };
 	const GLfloat normals[]   = { 0,1,0, 0,1,0., 0,1,0, 0,1,0 };
 	const GLfloat texcoords[] = { 0,0, l/2,0, l/2,l/2, 0,l/2 };
 	const GLuint  elements[]  = { 0,1,2, 2,3,0 };
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Positions);
-	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(GLfloat), &positions[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof positions, &positions[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Normals);
-	glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(GLfloat), &normals[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof normals, &normals[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ARRAY_BUFFER, Mesh.Texcoords);
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(GLfloat), &texcoords[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof texcoords, &texcoords[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh.Elements);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(GLuint), &elements[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof elements, &elements[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }

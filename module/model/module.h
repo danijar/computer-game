@@ -26,7 +26,7 @@ class ModuleModel : public Module
 	void ReloadMeshes();
 	void LoadMesh(Mesh &Mesh, std::string Path);
 	void LoadMeshCube(Mesh &Mesh);
-	void LoadMeshPlane(Mesh &Mesh);
+	void LoadMeshPlane(Mesh &Mesh, float Size = 10.0f);
 
 	// material
 	struct Material { std::string Name; float Shininess; std::string Diffuse, Normal, Specular; };

@@ -146,13 +146,13 @@ Handle<Value> ModuleModel::jsRotation(const Arguments& args)
 		else
 			return Undefined();
 
-		frm->Rotation(rotation);
+		frm->Rotation(radians(rotation));
 		return Undefined();
 	}
 	// get rotation
 	else
 	{
-		vec3 rotation = frm->Rotation();
+		vec3 rotation = degrees(frm->Rotation());
 
 		Handle<Array> result = Array::New(3);
 		result->Set(0, Number::New(rotation.x));

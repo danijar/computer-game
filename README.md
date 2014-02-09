@@ -86,7 +86,13 @@ Interaction with the world
 - `Mouse Right` Place a block.
 - `Mouse Middle` Pick type of selected block.
 - `1` to `9` Change type of block getting placed.
-- `F` Shoot a cube in view direction.
+
+Inserting test objects
+
+- `C` Insert a capsule body.
+- `V` Shoot a cube in view direction.
+- `B` Place barrel on the floor.
+- `N` Insert a big rock.
 
 ### Saves
 

@@ -16,14 +16,11 @@ btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 	btCollisionShape *shape = GetShape(Path, Scale, (Mass == 0));
 	btRigidBody *body = new btRigidBody(Mass, new btDefaultMotionState(), shape);
 
-	if(Mass)
-	{
-		btVector3 inertia;
+	if(Mass) {
+		btVector3 inertia(0, 0, 0);
 		shape->calculateLocalInertia(Mass, inertia);
 		body->setMassProps(Mass, inertia);
-	}
-	else
-	{
+	} else {
 		body->setMassProps(0, btVector3(0, 0, 0));
 	}
 
@@ -71,39 +68,32 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 	if(Path == "cube.prim")  return LoadShapeCube (Shape, Scale);
 	if(Path == "plane.prim") return LoadShapePlane(Shape);
 
-	if(Static)
-	{
+	const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+	if(!scene) {
+		Log->Fail("mesh (" + Path + ") cannot be loaded for collision");
+		return;
+	}
+
+	btCollisionShape *shape = nullptr;
+
+	if (Static) {
 		btTriangleMesh *triangles = new btTriangleMesh();
 
-		const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
-		if(!scene)
-		{
-			Log->Fail("mesh (" + Path + ") cannot be loaded for collision");
-			return;
-		}
-
-		for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
-		{
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 			const aiMesh *mesh = scene->mMeshes[i];
 
 			vector<vector<int>> faces;
-			for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
-			{
+			for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
 				vector<int> face;
 				for(int j = 0; j < 3; ++j)
-				{
 					face.push_back(mesh->mFaces[i].mIndices[j]);
-				}
 				faces.push_back(face);
 			}
 
-			if(mesh->HasPositions())
-			{
-				for(auto face : faces)
-				{
+			if(mesh->HasPositions()) {
+				for(auto face : faces) {
 					vector<btVector3> triangle;
-					for(auto index : face)
-					{
+					for(auto index : face) {
 						aiVector3D vertex = mesh->mVertices[index];
 						triangle.push_back(btVector3(vertex.x, vertex.y, vertex.z));
 					}
@@ -112,16 +102,33 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 			}
 		}
 
-		Log->Pass("collision shape with " + to_string(triangles->getNumTriangles()) + " triangles");
+		shape = new btBvhTriangleMeshShape(triangles, true, true);
+	} else {
+		vector<btVector3> points;
 
-		auto oldshape = Shape;
-		Shape = new btBvhTriangleMeshShape(triangles, true, true);
-		delete oldshape;
-	}
-	else
-	{
+		for(unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+			const aiMesh *mesh = scene->mMeshes[i];
 
+			if(mesh->HasPositions()) {
+				points.reserve(points.size() + mesh->mNumVertices);
+
+				for (unsigned int j = 0; j < mesh->mNumVertices; ++j) {
+					aiVector3D vertex = mesh->mVertices[j];
+					points.push_back(btVector3(vertex.x, vertex.y, vertex.z));
+				}
+			}
+		}
+
+		btConvexHullShape *hull = new btConvexHullShape();
+		for (auto i : points)
+			hull->addPoint(i, false);
+		hull->recalcLocalAabb();
+		shape = hull;
 	}
+
+	auto oldshape = Shape;
+	Shape = shape;
+	delete oldshape;
 
 	Shape->setLocalScaling(btVector3(Scale.x, Scale.y, Scale.z));
 }

@@ -9,16 +9,16 @@ struct Person
 
 	void Calculate(float Height)
 	{
-		this->Height =            Height;
-		this->Step   =   0.25f *  Height;
-		this->Eyes   =   1.10f *  Height / 2;
-		this->Mass   = 100.00f * (Height - 1);
-		this->Radius =            Height / 4;
-		this->Step   =   0.25f *  Height;
+		this->Height = Height;
+		this->Radius = Height / 4;
+		this->Step   =   0.250f *  Height;
+		this->Eyes   =   0.875f *  Height / 2;
+		this->Mass   = 100.000f * (Height - 1);
+		this->Step   =   0.250f *  Height;
 	}
 
 	float Mass;
-	float Radius, Height;
+	float Height, Radius;
 	float Eyes; // distance from center to eyes
 	float Step; // maximum height difference for a step
 
