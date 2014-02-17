@@ -56,6 +56,7 @@
     <ClCompile Include="manager\data\deserialization.cpp" />
     <ClCompile Include="manager\data\general.cpp" />
     <ClCompile Include="manager\data\serialization.cpp" />
+    <ClCompile Include="manager\log\format.cpp" />
     <ClCompile Include="module\camera\calculate.cpp" />
     <ClCompile Include="module\camera\callbacks.cpp" />
     <ClCompile Include="module\camera\control.cpp" />

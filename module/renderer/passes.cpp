@@ -89,6 +89,10 @@ ModuleRenderer::Pass ModuleRenderer::PassCreate(string Vertex, string Fragment, 
 	pass.StencilReference = StencilReference;
 	pass.StencilOperation = StencilOperation;
 
+	glGenQueries(1, &pass.Query);
+	glBeginQuery(GL_TIME_ELAPSED, pass.Query);
+	glEndQuery(GL_TIME_ELAPSED);
+
 	return pass;
 }
 

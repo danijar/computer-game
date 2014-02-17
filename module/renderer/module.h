@@ -12,8 +12,6 @@
 class ModuleRenderer : public Module
 {
 	// general
-	GLuint query;
-	GLuint64 time;
 	void Init();
 	void Update();
 	void Listeners();
@@ -40,7 +38,7 @@ class ModuleRenderer : public Module
 	enum Function{ FORMS, SKY, LIGHTS, QUAD, SCREEN };
 	struct Pass
 	{
-		Pass() : Enabled(true) {}
+		Pass() : Enabled(true), Time(0) {}
 		GLuint Framebuffer;
 		GLuint Program;
 		std::string Vertex, Fragment;
@@ -54,6 +52,9 @@ class ModuleRenderer : public Module
 		float Size;
 		GLenum StencilFunction, StencilOperation; GLint StencilReference;
 		bool Enabled;
+		// benachmark
+		GLuint Query;
+		GLuint64 Time;
 	};
 	std::vector<std::pair<std::string, Pass>> passes;
 	Pass color, copy;

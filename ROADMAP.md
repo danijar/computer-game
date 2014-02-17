@@ -8,6 +8,7 @@ Bugs
 - Material live reload is not reliable
 - Two framebuffer creations fail at startup
 - Stencil doesn't work in all cases
+- Out of range chunks aren't freed completely
 
 Considerations
 --------------
