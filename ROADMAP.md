@@ -27,8 +27,10 @@ Considerations
 	- reuse the large voxel arrays of discarded chunks (kind of array pool)
 - Digging animation
 - Optimize rendering pipeline
-	- Reduce gbuffer to two or three textures
-	- Maybe reuse textures
+	- reduce gbuffer to two or three textures
+	- maybe reuse textures
+- Get id of focused object
+	- cast ray and compare result against all forms to get id
 
 Roadmap
 -------
