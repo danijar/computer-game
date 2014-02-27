@@ -34,7 +34,7 @@ void ModuleCamera::Init()
 	if(!Global->Check("camera"))
 	{
 		uint64_t id = Entity->Get<Camera>().begin()->first;
-		Entity->Get<Camera>(id)->Active = !*Global->Get<Settings>("settings")->Get<bool>("Mouse");
+		Entity->Get<Camera>(id)->Active = !Global->Get<Settings>("settings")->Is("Mouse");
 		*Global->Add<uint64_t>("camera") = id;
 		Log->Pass("not bound, fallback to first one");
 	}

@@ -14,7 +14,7 @@ void ModuleWindow::Init()
 
 	VideoMode mde = VideoMode::getDesktopMode();
 	stg->Set<Vector2i>("Position", Vector2i(mde.width / 2 - stg->Get<Vector2u>("Size")->x / 2, mde.height / 2 - stg->Get<Vector2u>("Size")->y / 2));
-	Create(*stg->Get<bool>("Fullscreen"));
+	Create(stg->Is("Fullscreen"));
 
 	Listeners();
 	Callbacks();
@@ -81,7 +81,7 @@ void ModuleWindow::Listeners()
 
 	Event->Listen("InputBindVsync", [=]{
 		auto stg = Global->Get<Settings>("settings");
-		stg->Set<bool>("Verticalsync", !*stg->Get<bool>("Verticalsync"));
-		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
+		stg->Set<bool>("Verticalsync", !stg->Is("Verticalsync"));
+		Global->Get<RenderWindow>("window")->setVerticalSyncEnabled(stg->Is("Verticalsync"));
 	});
 }

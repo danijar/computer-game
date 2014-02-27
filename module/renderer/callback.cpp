@@ -451,9 +451,9 @@ Handle<Value> ModuleRenderer::jsWireframe(const Arguments& args)
 	ModuleRenderer *module = (ModuleRenderer*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
 
-	stg->Set<bool>("Wireframe", !*stg->Get<bool>("Wireframe"));
+	stg->Set<bool>("Wireframe", !stg->Is("Wireframe"));
 
-	ManagerLog::Print("script", string(*stg->Get<bool>("Wireframe") ? "enabled" : "disabled") + " wireframe mode");
+	ManagerLog::Print("script", string(stg->Is("Wireframe") ? "enabled" : "disabled") + " wireframe mode");
 	return Undefined();
 }
 

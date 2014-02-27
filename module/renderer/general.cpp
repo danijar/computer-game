@@ -5,6 +5,7 @@
 using namespace std;
 using namespace sf;
 
+#include "type/settings/type.h"
 #include "type/print/type.h"
 
 
@@ -19,16 +20,33 @@ void ModuleRenderer::Init()
 
 	Listeners();
 
+	// fallback passes
 	color = PassCreate("quad.vert", "color.frag");
 	copy = PassCreate("quad.vert", "copy.frag");
 
-	Entity->Add<Print>(Entity->New())->Text = [=]{
-		string output = "rendering times\n";
+	// profile renderer
+	glGenQueries(1, &query);
+	glBeginQuery(GL_TIME_ELAPSED, query);
+	glEndQuery(GL_TIME_ELAPSED);
+	time = 0;
+
+	auto stg = Global->Get<Settings>("settings");
+
+	// display profile renderer
+	Entity->Add<Print>(Entity->New())->Text = [=] {
+		float average = Logic->Average("renderer profile", time / 1000000.0f, 60);
+		return "profile renderer " + Log->Format(average, 2, 2) + " ms";
+	};
+
+	// display profile passes
+	Entity->Add<Print>(Entity->New())->Text = [=] {
+		if (!stg->Is("Profile")) return string("");
+		string output = "profile renderer passes";
 		for(auto i : passes) {
 			if (!i.second.Enabled) continue;
-			float average = Logic->Average(i.first + " benchmark", i.second.Time / 1000000.0f, 60);
+			float average = Logic->Average("renderer profile " + i.first, i.second.Time / 1000000.0f, 60);
 			string name = i.first; while(name.length() < 15) name += " ";
-			output += name + " " + Log->Format(average, 2, 2) + " ms\n";
+			output += "\n" + name + " " + Log->Format(average, 2, 2) + " ms";
 		}
 		return output;
 	};
@@ -37,17 +55,31 @@ void ModuleRenderer::Init()
 void ModuleRenderer::Update()
 {
 	Vector2u size = Global->Get<RenderWindow>("window")->getSize();
+	bool profile = Global->Get<Settings>("settings")->Is("Profile");
+
+	// when profiling sum up all passes for overall rendering time
+	time = 0;
+	if (!profile) {
+		// otherwise do a query around all passes
+		GLint done = 0;
+		while (!done) glGetQueryObjectiv(query, GL_QUERY_RESULT_AVAILABLE, &done);
+		glGetQueryObjectui64v(query, GL_QUERY_RESULT, &time);
+		glBeginQuery(GL_TIME_ELAPSED, query);
+	}
 
 	glEnable(GL_STENCIL_TEST);
 
 	for(auto i = passes.begin(); i != passes.end(); ++i) {
 		Pass *pass = &i->second;
 
-		// measure rendering time
-		GLint done = 0;
-		while (!done) glGetQueryObjectiv(pass->Query, GL_QUERY_RESULT_AVAILABLE, &done);
-		glGetQueryObjectui64v(pass->Query, GL_QUERY_RESULT, &pass->Time);
-		glBeginQuery(GL_TIME_ELAPSED, pass->Query);
+		// measure time for this pass
+		if (profile) {
+			GLint done = 0;
+			while (!done) glGetQueryObjectiv(pass->Query, GL_QUERY_RESULT_AVAILABLE, &done);
+			glGetQueryObjectui64v(pass->Query, GL_QUERY_RESULT, &pass->Time);
+			time += pass->Time;
+			glBeginQuery(GL_TIME_ELAPSED, pass->Query);
+		}
 
 		// set render pass options
 		glStencilFunc(pass->StencilFunction, pass->StencilReference, 0xFF);
@@ -114,12 +146,15 @@ void ModuleRenderer::Update()
 				color.Function(&color);
 			}
 		}
-		glEndQuery(GL_TIME_ELAPSED);
+		if (profile) glEndQuery(GL_TIME_ELAPSED);
 	}
 
 	glDisable(GL_STENCIL_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
+
+	if (!profile)
+		glEndQuery(GL_TIME_ELAPSED);
 
 	Opengl->Test();
 }

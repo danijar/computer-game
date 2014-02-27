@@ -21,6 +21,7 @@ void ModuleInterface::DrawPrint()
 	for(auto i : prs)
 	{
 		string chars = i.second->Text();
+		if (chars == "") continue;
 		Text text(chars, font, textsize);
 		text.setPosition((float)margin, (float)offset);
 		wnd->draw(text);

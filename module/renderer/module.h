@@ -12,6 +12,8 @@
 class ModuleRenderer : public Module
 {
 	// general
+	GLuint query;
+	GLuint64 time;
 	void Init();
 	void Update();
 	void Listeners();
@@ -52,7 +54,7 @@ class ModuleRenderer : public Module
 		float Size;
 		GLenum StencilFunction, StencilOperation; GLint StencilReference;
 		bool Enabled;
-		// benachmark
+		// profiling
 		GLuint Query;
 		GLuint64 Time;
 	};

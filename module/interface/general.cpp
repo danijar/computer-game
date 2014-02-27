@@ -27,17 +27,14 @@ void ModuleInterface::Update()
 	if(!show) return;
 
 	auto wnd = Global->Get<RenderWindow>("window");
-
 	wnd->pushGLStates();
 
 	// normal interface
 	DrawCrosshair();
 
+	// debug interface
 	if(*Global->Get<Settings>("settings")->Get<bool>("Debug"))
-	{
-		// debug interface
 		DrawPrint();
-	}
 
 	wnd->popGLStates();
 }

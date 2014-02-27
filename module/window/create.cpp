@@ -13,7 +13,7 @@ using namespace sf;
 void ModuleWindow::Create()
 {
 	auto stg = Global->Get<Settings>("settings");
-	Create(!*stg->Get<bool>("Fullscreen"));
+	Create(!stg->Is("Fullscreen"));
 }
 
 void ModuleWindow::Create(bool Fullscreen)
@@ -43,7 +43,7 @@ void ModuleWindow::Create(bool Fullscreen)
 		wnd->create(VideoMode(stg->Get<Vector2u>("Size")->x, stg->Get<Vector2u>("Size")->y), *stg->Get<string>("Title"), Style::Default, cts);
 		wnd->setPosition(*stg->Get<Vector2i>("Position"));
 	}
-	wnd->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
+	wnd->setVerticalSyncEnabled(stg->Is("Verticalsync"));
 
 	Log->PassFail("creation", wnd->isOpen());
 

@@ -53,10 +53,10 @@ Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
 	auto stg = module->Global->Get<Settings>("settings");
 	auto wnd = module->Global->Get<sf::RenderWindow>("window");
 
-	stg->Set<bool>("Verticalsync", !*stg->Get<bool>("Verticalsync"));
-	wnd->setVerticalSyncEnabled(*stg->Get<bool>("Verticalsync"));
+	stg->Set<bool>("Verticalsync", !stg->Is("Verticalsync"));
+	wnd->setVerticalSyncEnabled(stg->Is("Verticalsync"));
 
-	ManagerLog::Print("script", string(*stg->Get<bool>("Verticalsync") ? "enabled" : "disabled") + " vertical sync");
+	ManagerLog::Print("script", string(stg->Is("Verticalsync") ? "enabled" : "disabled") + " vertical sync");
 	return Undefined();
 }
 

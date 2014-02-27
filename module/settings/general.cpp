@@ -40,6 +40,6 @@ void ModuleSettings::Listeners()
 {
 	Event->Listen("InputBindWireframe", [=]{
 		auto stg = Global->Get<Settings>("settings");
-		stg->Set<bool>("Wireframe", !*stg->Get<bool>("Wireframe"));
+		stg->Set<bool>("Wireframe", !stg->Is("Wireframe"));
 	});
 }

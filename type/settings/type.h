@@ -15,13 +15,10 @@ struct Settings
 	{
 		auto i = list.find(Key);
 		auto entry = std::make_pair((void*)(new T(Value)), std::type_index(typeid(T)));
-		if(i == list.end())
-		{
+		if (i == list.end()) {
 			// create new
 			list.insert(std::make_pair(Key, entry));
-		}
-		else
-		{
+		} else {
 			// change existing
 			delete i->second.first;
 			i->second = entry;
@@ -31,18 +28,23 @@ struct Settings
 	T *Get(std::string Key)
 	{
 		auto i = list.find(Key);
-		if(i == list.end())
-		{
+		if (i == list.end()) {
 			// setting not found
-			return new T();
-		}
-		if(i->second.second != std::type_index(typeid(T)))
-		{
-			// type doesn't match
 			ManagerLog::Fail("settings", "cannot get because (" + Key + ") does not exist");
-			return new T();
+			return nullptr;
+		}
+		if (i->second.second != std::type_index(typeid(T))) {
+			// type doesn't match
+			ManagerLog::Fail("settings", "cannot get because (" + Key + ") type doesn't match");
+			return nullptr;
 		}
 		return static_cast<T*>(i->second.first);
+	}
+	bool Is(std::string Key)
+	{
+		bool *result = Get<bool>(Key);
+		if (!result) return false;
+		return *result;
 	}
 private:
 	std::unordered_map<std::string, std::pair<void*, std::type_index>> list;
