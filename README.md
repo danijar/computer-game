@@ -5,10 +5,16 @@ This is a modular game engine architecture for grounded cross platform graphics 
 
 The application is thought out and written by Danijar Hafner.
 
-Screenshot
-----------
+Screenshots
+-----------
 
-![Screenshot](https://raw.github.com/ComputerGame/GraphicsApplication/master/screenshot.png)
+![Screenshot](screenshot.png?raw=true)
+
+<img src="screenshot/2014.02.11%20normal%20maps%20and%20specular%20magic.png?raw=true" width="150">&nbsp;
+<img src="screenshot/2014.03.02%20stairs%20day.png?raw=true" width="150">&nbsp;
+<img src="screenshot/2014.03.02%20stairs%20night.png?raw=true" width="150">&nbsp;
+<img src="screenshot/2014.01.24%20specular%20barrel.png?raw=true" width="150">
+
 
 Features
 --------
