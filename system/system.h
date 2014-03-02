@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 
-#include <dependency/v8/v8.h>
+#include <v8/v8.h>
 
 #include "manager/archive/manager.h"
 #include "manager/data/manager.h"

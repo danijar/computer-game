@@ -3,11 +3,12 @@
 #include "system/system.h"
 
 #include <unordered_map>
-#include <dependency/sfml/OpenGL.hpp>
-#include <dependency/glm/glm.hpp>
+#include <sfml/OpenGL.hpp>
+#include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <v8/v8.h>
 
+#include "type/model/type.h"
 #include "type/light/type.h"
 
 
@@ -20,7 +21,7 @@ class ModuleModel : public Module
 	void Callbacks();
 
 	// mesh
-	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; };
+	struct Mesh { GLuint Positions, Normals, Texcoords, Elements; Model::Bounds Box; };
 	std::unordered_map<std::string, std::pair<Mesh, int>> meshes;
 	Mesh GetMesh(std::string Path);
 	void ReloadMeshes();

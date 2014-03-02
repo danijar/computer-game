@@ -47,7 +47,7 @@ bool ManagerData::Serialization::TEXT(string Field, string Value)
 
 int ManagerData::Serialization::Index(string Field)
 {
-	for(unsigned int i = 0; i < fields.size(); ++i)
+	for(size_t i = 0; i < fields.size(); ++i)
 		if(fields[i] == Field)
 			return i;
 	return -1;

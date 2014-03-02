@@ -1,9 +1,9 @@
 #pragma once
 
-#include <dependency/glm/glm.hpp>
-#include <dependency/glm/gtc/quaternion.hpp>
-#include <dependency/glm/gtx/quaternion.hpp>
-#include <dependency/glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 
 

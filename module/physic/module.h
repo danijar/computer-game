@@ -2,7 +2,7 @@
 
 #include "system/system.h"
 
-#include <dependency/sfml/System.hpp>
+#include <sfml/System.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 
 

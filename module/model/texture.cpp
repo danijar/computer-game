@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <glew/glew.h>
-#include <dependency/sfml/Graphics.hpp>
+#include <sfml/Graphics.hpp>
 using namespace std;
 using namespace sf;
 

@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <glew/glew.h>
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
@@ -29,6 +29,8 @@ uint64_t ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, v
 	mdl->Normal    = GetTexture(material.Normal);
 	mdl->Specular  = GetTexture(material.Specular);
 	mdl->Material  = Material;
+
+	mdl->Box = mesh.Box;
 
 	delete frm->Body;
 	frm->Body = CreateBody(Mesh, Scale, Mass);

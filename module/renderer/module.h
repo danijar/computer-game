@@ -5,8 +5,8 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
-#include <dependency/glm/glm.hpp>
-#include <dependency/sfml/System.hpp>
+#include <glm/glm.hpp>
+#include <sfml/System.hpp>
 
 
 class ModuleRenderer : public Module
@@ -84,6 +84,9 @@ class ModuleRenderer : public Module
 	void DrawLights(Pass *Pass);
 	void DrawQuad(Pass *Pass);
 	void DrawScreen(Pass *Pass);
+
+	// culling
+	bool Visible(uint64_t Id);
 
 	// effect
 	void TextureLoad(std::string Name, std::string Path, bool Repeat = true, bool Filtering = true, bool Mipmapping = true);

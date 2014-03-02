@@ -1,6 +1,6 @@
 #include "module.h"
 
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
@@ -79,11 +79,11 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 	if (Static) {
 		btTriangleMesh *triangles = new btTriangleMesh();
 
-		for(unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+		for(size_t i = 0; i < scene->mNumMeshes; ++i) {
 			const aiMesh *mesh = scene->mMeshes[i];
 
 			vector<vector<int>> faces;
-			for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+			for (size_t i = 0; i < mesh->mNumFaces; ++i) {
 				vector<int> face;
 				for(int j = 0; j < 3; ++j)
 					face.push_back(mesh->mFaces[i].mIndices[j]);
@@ -106,13 +106,13 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 	} else {
 		vector<btVector3> points;
 
-		for(unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+		for(size_t i = 0; i < scene->mNumMeshes; ++i) {
 			const aiMesh *mesh = scene->mMeshes[i];
 
 			if(mesh->HasPositions()) {
 				points.reserve(points.size() + mesh->mNumVertices);
 
-				for (unsigned int j = 0; j < mesh->mNumVertices; ++j) {
+				for (size_t j = 0; j < mesh->mNumVertices; ++j) {
 					aiVector3D vertex = mesh->mVertices[j];
 					points.push_back(btVector3(vertex.x, vertex.y, vertex.z));
 				}

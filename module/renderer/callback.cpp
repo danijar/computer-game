@@ -1,8 +1,8 @@
 #include "module.h"
 
 #include <string>
-#include <dependency/sfml/System.hpp>
-#include <dependency/glm/gtc/type_ptr.hpp>
+#include <sfml/System.hpp>
+#include <glm/gtc/type_ptr.hpp>
 using namespace std;
 using namespace v8;
 using namespace glm;
@@ -118,7 +118,7 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 			Handle<Object> obj = object->Get(v8str("samplers"))->ToObject();
 
 			Handle<Array> locations = obj->GetPropertyNames();
-			for(unsigned int i = 0; i < locations->Length(); ++i)
+			for(size_t i = 0; i < locations->Length(); ++i)
 			{
 				string location = stdstr(locations->Get(i));
 				string texture = stdstr(obj->Get(v8str(location)));
@@ -134,7 +134,7 @@ Handle<Value> ModuleRenderer::jsRenderpass(const Arguments& args)
 			Handle<Object> obj = object->Get(v8str("fallbacks"))->ToObject();
 
 			Handle<Array> targets = obj->GetPropertyNames();
-			for(unsigned int i = 0; i < targets->Length(); ++i)
+			for(size_t i = 0; i < targets->Length(); ++i)
 			{
 				string target = stdstr(targets->Get(i));
 				Handle<Value> fallback = obj->Get(v8str(target));
@@ -344,15 +344,15 @@ Handle<Value> ModuleRenderer::jsUniform(const Arguments& args)
 	{
 		Handle<Array> array = Handle<Array>::Cast(args[2]);
 		if(isint)
-			for(unsigned int i = 0; i < array->Length(); ++i)
+			for(size_t i = 0; i < array->Length(); ++i)
 				if(array->Get(i)->IsInt32())
 					ints.push_back(array->Get(i)->Int32Value());
 		if(isfloat)
-			for(unsigned int i = 0; i < array->Length(); ++i)
+			for(size_t i = 0; i < array->Length(); ++i)
 				if(array->Get(i)->IsNumber())
 					floats.push_back((float)array->Get(i)->NumberValue());
 		if(isbool)
-			for(unsigned int i = 0; i < array->Length(); ++i)
+			for(size_t i = 0; i < array->Length(); ++i)
 				if(array->Get(i)->IsBoolean())
 					bools.push_back(array->Get(i)->BooleanValue() ? 1 : 0);
 	}

@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <dependency/sfml/Window.hpp>
+#include <sfml/Window.hpp>
 using namespace std;
 using namespace sf;
 

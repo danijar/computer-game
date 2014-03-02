@@ -1,7 +1,7 @@
 #include "module.h"
 
-#include <dependency/glm/glm.hpp>
-#include <dependency/glm/gtc/noise.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/noise.hpp>
 using namespace glm;
 
 

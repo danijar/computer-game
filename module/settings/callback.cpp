@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <dependency/sfml/System.hpp>
+#include <sfml/System.hpp>
 using namespace std;
 using namespace v8;
 
@@ -24,7 +24,7 @@ Handle<Value> ModuleSettings::jsSettings(const Arguments& args)
 	auto stg = module->Global->Get<Settings>("settings");
 
 	Handle<Array> keys = object->GetPropertyNames();
-	for(unsigned int i = 0; i < keys->Length(); ++i)
+	for(size_t i = 0; i < keys->Length(); ++i)
 	{
 		string key = *String::Utf8Value(keys->Get(i));
 		if(!object->Get(String::New(key.c_str()))->IsArray())

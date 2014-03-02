@@ -2,8 +2,8 @@
 
 #include <string>
 #include <bullet/btBulletDynamicsCommon.h>
-#include <dependency/glm/glm.hpp>
-#include <dependency/sfml/Window.hpp>
+#include <glm/glm.hpp>
+#include <sfml/Window.hpp>
 
 #include <thread>
 #include <chrono>

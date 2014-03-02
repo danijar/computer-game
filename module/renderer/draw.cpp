@@ -1,8 +1,8 @@
 #include "module.h"
 
-#include <dependency/sfml/Graphics/RenderWindow.hpp>
-#include <dependency/glm/glm.hpp>
-#include <dependency/glm/gtc/type_ptr.hpp>
+#include <sfml/Graphics/RenderWindow.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "type/settings/type.h"
 #include "type/camera/type.h"
@@ -16,8 +16,8 @@ using namespace glm;
 
 void ModuleRenderer::DrawQuad(Pass *Pass)
 {
-	int n = 0; for(auto i : Pass->Samplers)
-	{
+	int n = 0;
+	for(auto i : Pass->Samplers) {
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, i.second);
 		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
@@ -38,8 +38,8 @@ void ModuleRenderer::DrawQuad(Pass *Pass)
 
 void ModuleRenderer::DrawScreen(Pass *Pass)
 {
-	int n = 0; for(auto i : Pass->Samplers)
-	{
+	int n = 0;
+	for (auto i : Pass->Samplers) {
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, i.second);
 		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
@@ -76,14 +76,15 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	for(auto i : mls)
-	{
+	for (auto i : mls) {
+		if (!Visible(i.first)) continue;
+
 		auto mdl = i.second;
 
 		// improve by using fallbacks instead of skipping
-		if(!mdl->Elements) continue;
-		if(!mdl->Diffuse) continue;
-		if(!Entity->Check<Form>(i.first)) continue;
+		if (!mdl->Elements) continue;
+		if (!mdl->Diffuse) continue;
+		if (!Entity->Check<Form>(i.first)) continue;
 		auto frm = Entity->Get<Form>(i.first);
 
 		glUniformMatrix4fv(glGetUniformLocation(Pass->Program, "model"), 1, GL_FALSE, value_ptr(frm->Matrix()));
@@ -103,12 +104,12 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		glUniform1f(glGetUniformLocation(Pass->Program, "shininess"), mdl->Shininess);
 
 		glActiveTexture(GL_TEXTURE0);
-		if(mdl->Diffuse) {
+		if (mdl->Diffuse) {
 			glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
 		} // else fallback texture
 
 		glActiveTexture(GL_TEXTURE1);
-		if(mdl->Normal) {
+		if (mdl->Normal) {
 			glBindTexture(GL_TEXTURE_2D, mdl->Normal);
 			glUniform1i(glGetUniformLocation(Pass->Program, "hasmapnormal"), 1);
 		} else {
@@ -145,8 +146,7 @@ void ModuleRenderer::DrawSky(Pass *Pass)
 	glActiveTexture(GL_TEXTURE0);
 
 	Model *frm = Global->Get<Model>("sky");
-	if(frm->Elements && frm->Diffuse)
-	{
+	if (frm->Elements && frm->Diffuse) {
 		vec3 position = Entity->Get<Form>(*Global->Get<uint64_t>("camera"))->Position();
 		mat4 matrix = translate(mat4(1), position);
 
@@ -189,8 +189,8 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 
-	int n = 0; for(auto i : Pass->Samplers)
-	{
+	int n = 0;
+	for (auto i : Pass->Samplers) {
 		glActiveTexture(GL_TEXTURE0 + n);
 		glBindTexture(GL_TEXTURE_2D, i.second);
 		glUniform1i(glGetUniformLocation(Pass->Program, i.first.c_str()), n);
@@ -199,8 +199,7 @@ void ModuleRenderer::DrawLights(Pass *Pass)
 
 	mat4 view = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->View;
 
-	for(auto i : lis)
-	{
+	for (auto i : lis) {
 		int type = i.second->Type == Light::DIRECTIONAL ? 0 : 1;
 		vec3 pos = vec3(view * vec4(Entity->Get<Form>(i.first)->Position(), !type ? 0 : 1));
 		glUniform1i(glGetUniformLocation(Pass->Program, "type"),      type);

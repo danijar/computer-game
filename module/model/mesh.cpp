@@ -27,11 +27,9 @@ ModuleModel::Mesh ModuleModel::GetMesh(string Path)
 
 void ModuleModel::ReloadMeshes()
 {
-	for(auto i = meshes.begin(); i != meshes.end(); ++i)
-	{
+	for (auto i = meshes.begin(); i != meshes.end(); ++i) {
 		int hash = File->Hash("module/" + Name() + "/mesh/" + i->first);
-		if(i->second.second != hash)
-		{
+		if (i->second.second != hash) {
 			i->second.second = hash;
 			LoadMesh(i->second.first, i->first);
 			Log->Pass("mesh (" + i->first + ") reloaded");
@@ -41,23 +39,20 @@ void ModuleModel::ReloadMeshes()
 
 void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 {
-	if(Path == "cube.prim") return LoadMeshCube(Mesh);
-	if(Path == "plane.prim") return LoadMeshPlane(Mesh);
+	if (Path == "cube.prim")  return LoadMeshCube(Mesh);
+	if (Path == "plane.prim") return LoadMeshPlane(Mesh);
 
 	const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
-	if(!scene)
-	{
+	if (!scene) {
 		Log->Fail("mesh (" + Path + ") cannot be loaded");
 		return;
 	}
 
-	for(unsigned int i = 0; i < scene->mNumMeshes; ++i)
-	{
+	for (size_t i = 0; i < scene->mNumMeshes; ++i) {
 		const aiMesh *mesh = scene->mMeshes[i];
 
 		vector<GLuint> faces;
-		for (unsigned int t = 0; t < mesh->mNumFaces; ++t)
-		{
+		for (size_t t = 0; t < mesh->mNumFaces; ++t) {
 			faces.push_back(mesh->mFaces[t].mIndices[0]);
 			faces.push_back(mesh->mFaces[t].mIndices[1]);
 			faces.push_back(mesh->mFaces[t].mIndices[2]);
@@ -65,23 +60,30 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh.Elements);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, faces.size() * sizeof GLuint, &faces[0], GL_STATIC_DRAW);
 
-		if(mesh->HasPositions())
-		{
+		if (mesh->HasPositions()) {
 			glBindBuffer(GL_ARRAY_BUFFER, Mesh.Positions);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mVertices, GL_STATIC_DRAW);
+
+			// bounding box
+			Mesh.Box = Model::Bounds();
+			for (size_t i = 0; i < mesh->mNumVertices; ++i) {
+				Mesh.Box.X.Min = min(Mesh.Box.X.Min, mesh->mVertices[i].x);
+				Mesh.Box.X.Max = max(Mesh.Box.X.Max, mesh->mVertices[i].x);
+				Mesh.Box.Y.Min = min(Mesh.Box.Y.Min, mesh->mVertices[i].y);
+				Mesh.Box.Y.Max = max(Mesh.Box.Y.Max, mesh->mVertices[i].y);
+				Mesh.Box.Z.Min = min(Mesh.Box.Z.Min, mesh->mVertices[i].z);
+				Mesh.Box.Z.Max = max(Mesh.Box.Z.Max, mesh->mVertices[i].z);
+			}
 		}
 
-		if(mesh->HasNormals())
-		{
+		if (mesh->HasNormals()) {
 			glBindBuffer(GL_ARRAY_BUFFER, Mesh.Normals);
 			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * mesh->mNumVertices, mesh->mNormals, GL_STATIC_DRAW);
 		}
 
-		if(mesh->HasTextureCoords(0))
-		{
+		if (mesh->HasTextureCoords(0)) {
 			vector<GLfloat> texcoords;
-			for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
-			{
+			for (size_t i = 0; i < mesh->mNumVertices; ++i) {
 				texcoords.push_back(mesh->mTextureCoords[0][i].x);
 				texcoords.push_back(mesh->mTextureCoords[0][i].y);
 			}
@@ -109,6 +111,12 @@ void ModuleModel::LoadMeshCube(Mesh &Mesh)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh.Elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof elements, &elements[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	Mesh.Box.X.Min = -1;
+	Mesh.Box.X.Max =  1;
+	Mesh.Box.Y.Min = -1;
+	Mesh.Box.Y.Max =  1;
+	Mesh.Box.Z.Min = -1;
+	Mesh.Box.Z.Max =  1;
 }
 
 void ModuleModel::LoadMeshPlane(Mesh &Mesh, float Size)
@@ -127,4 +135,10 @@ void ModuleModel::LoadMeshPlane(Mesh &Mesh, float Size)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh.Elements);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof elements, &elements[0], GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	Mesh.Box.X.Min = -l;
+	Mesh.Box.X.Max =  l;
+	Mesh.Box.Y.Min =  0;
+	Mesh.Box.Y.Max =  0;
+	Mesh.Box.Z.Min = -l;
+	Mesh.Box.Z.Max =  l;
 }

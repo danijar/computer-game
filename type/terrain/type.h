@@ -3,7 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <stdint.h>
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 #define CHUNK_LENGTH 32
 #define CHUNK_SIZE ivec3(CHUNK_LENGTH, CHUNK_LENGTH, CHUNK_LENGTH)

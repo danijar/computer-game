@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <glew/glew.h>
-#include <dependency/sfml/Graphics.hpp>
+#include <sfml/Graphics.hpp>
 using namespace sf;
 
 
@@ -30,8 +30,8 @@ GLuint ModuleTerrain::Texture(string Path)
 	// cut tiles
 	const Vector2u TILESIZE(image.getSize().x / TILES_U, image.getSize().y / TILES_V);
 	Image tiles[TILES_U][TILES_V];
-	for(unsigned int u = 0; u < TILES_U; ++u)
-	for(unsigned int v = 0; v < TILES_V; ++v)
+	for(size_t u = 0; u < TILES_U; ++u)
+	for(size_t v = 0; v < TILES_V; ++v)
 	{
 		tiles[u][v].create(TILESIZE.x, TILESIZE.y);
 		tiles[u][v].copy(image, 0, 0, IntRect(u * TILESIZE.x, v * TILESIZE.y, (u+1) * TILESIZE.x, (v+1) * TILESIZE.y), true);
@@ -66,8 +66,8 @@ void ModuleTerrain::TextureShrink(Image &Texture)
 
 	Image half;
 	half.create(size.x, size.y);
-	for(unsigned int x = 0; x < size.x; ++x)
-	for(unsigned int y = 0; y < size.y; ++y)
+	for(size_t x = 0; x < size.x; ++x)
+	for(size_t y = 0; y < size.y; ++y)
 	{
 		Color input[4];
 		input[0] = Texture.getPixel(2 * x + 0, 2 * y + 0);

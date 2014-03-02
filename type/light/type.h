@@ -1,6 +1,6 @@
 #pragma once
 
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 
 struct Light

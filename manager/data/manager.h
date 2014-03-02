@@ -7,7 +7,7 @@
 #include <functional>
 #include <stdint.h>
 
-#include <dependency/sqlite/sqlite3.h>
+#include <sqlite/sqlite3.h>
 
 
 class ManagerData

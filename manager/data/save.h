@@ -43,7 +43,7 @@ bool ManagerData::Save(uint64_t Id, T *Instance)
 		fields.push_back(i.first);
 	}
 	sql += ") VALUES (?";
-	for(unsigned int i = 0; i < Trait::Fields.size(); ++i)
+	for(size_t i = 0; i < Trait::Fields.size(); ++i)
 		sql += ", ?";
 	sql += ")";
 
@@ -86,7 +86,7 @@ bool ManagerData::Save(std::unordered_map<uint64_t, T*> Instances)
 		fields.push_back(i.first);
 	}
 	sql += ") VALUES (?";
-	for(unsigned int i = 0; i < Trait::Fields.size(); ++i)
+	for(size_t i = 0; i < Trait::Fields.size(); ++i)
 		sql += ", ?";
 	sql += ")";
 

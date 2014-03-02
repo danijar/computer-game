@@ -3,8 +3,8 @@
 #include <string>
 #include <future>
 #include <mutex>
-#include <dependency/glm/glm.hpp>
-#include <dependency/sfml/Window.hpp>
+#include <glm/glm.hpp>
+#include <sfml/Window.hpp>
 using namespace std;
 using namespace glm;
 using namespace sf;
@@ -20,9 +20,9 @@ using namespace sf;
 
 void ModuleTerrain::Init()
 {
-	diffuse = Texture("terrain.png");
-	normal  = Texture("terrain_n.jpg");
-	// specular = Texture("terrain_s.jpg");
+	diffuse  = Texture("terrain_d.png");
+	normal   = Texture("terrain_n.jpg");
+	specular = Texture("terrain_s.jpg");
 
 	marker = Marker();
 	Entity->Get<Form>(marker)->Scale(vec3(.5f));
@@ -51,7 +51,7 @@ ModuleTerrain::~ModuleTerrain()
 {
 	glDeleteTextures(1, &diffuse);
 	glDeleteTextures(1, &normal);
-	// glDeleteTextures(1, &specular);
+	glDeleteTextures(1, &specular);
 
 	running = false;
 	task.get();
@@ -85,11 +85,18 @@ void ModuleTerrain::Update()
 			uint64_t id = Entity->New();
 			Entity->Add<Terrain>(id, new Terrain(current));
 			auto mdl = Entity->Add<Model>(id);
+			auto frm = Entity->Add<Form>(id);
+			// textures
 			mdl->Diffuse = diffuse;
 			mdl->Normal = normal;
-			// mdl->Specular = specular;
-			Entity->Add<Form>(id)->Position(vec3(current.Key * CHUNK_SIZE));
-
+			mdl->Specular = specular;
+			// bounding box
+			mdl->Box.X.Max = (float)CHUNK_SIZE.x;
+			mdl->Box.Y.Max = (float)CHUNK_SIZE.y;
+			mdl->Box.Z.Max = (float)CHUNK_SIZE.z;
+			// position
+			frm->Position(vec3(current.Key * CHUNK_SIZE));
+			// vertices
 			Buffer(id);
 		}
 		access.unlock();

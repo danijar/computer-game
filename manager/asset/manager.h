@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include <glew/glew.h>
-#include <dependency/sfml/Graphics.hpp>
+#include <sfml/Graphics.hpp>
 
 
 class ManagerAsset

@@ -1,7 +1,7 @@
 #include "module.h"
 
 #include <string>
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 using namespace std;
 using namespace glm;
 using namespace v8;

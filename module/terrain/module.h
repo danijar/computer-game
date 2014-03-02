@@ -5,9 +5,9 @@
 #include <vector>
 #include <future>
 #include <atomic>
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <glew/glew.h>
-#include <dependency/sfml/Graphics.hpp>
+#include <sfml/Graphics.hpp>
 
 #include "type/terrain/type.h"
 #include "type/model/type.h"

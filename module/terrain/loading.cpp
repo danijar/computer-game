@@ -2,9 +2,9 @@
 
 #include <string>
 #include <mutex>
-#include <dependency/glm/glm.hpp>
-#include <dependency/glm/gtc/noise.hpp>
-#include <dependency/sfml/OpenGL.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/noise.hpp>
+#include <sfml/OpenGL.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 using namespace std;
 using namespace glm;
@@ -46,7 +46,7 @@ void ModuleTerrain::Loading()
 
 void ModuleTerrain::Mesh(Terrain *Terrain)
 {
-	// rendering mesh
+	// mesh for rendering
 	int n = 0;
 	for(int X = 0; X < CHUNK_SIZE.x; ++X)
 	for(int Y = 0; Y < CHUNK_SIZE.y; ++Y)
@@ -96,7 +96,7 @@ void ModuleTerrain::Mesh(Terrain *Terrain)
 
 	// collision shape
 	GLfloat coords[9];
-	for(unsigned int i = 0; i < elements.size(); i += 3)
+	for(size_t i = 0; i < elements.size(); i += 3)
 	{
 		for(int n = 0, j = 0; j < 3; ++j)
 			for(int k = 0; k < 3; ++k, ++n)

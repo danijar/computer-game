@@ -2,7 +2,7 @@
 
 #include "system/system.h"
 
-#include <dependency/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include "type/form/type.h"

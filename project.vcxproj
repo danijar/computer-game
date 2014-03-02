@@ -90,6 +90,7 @@
     <ClCompile Include="module\physic\debug.cpp" />
     <ClCompile Include="module\physic\general.cpp" />
     <ClCompile Include="module\renderer\callback.cpp" />
+    <ClCompile Include="module\renderer\culling.cpp" />
     <ClCompile Include="module\renderer\draw.cpp" />
     <ClCompile Include="module\renderer\framebuffer.cpp" />
     <ClCompile Include="module\renderer\general.cpp" />
