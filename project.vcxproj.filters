@@ -355,5 +355,7 @@
     <None Include="module\renderer\shader\color.frag" />
     <None Include="module\renderer\shader\copy.frag" />
     <None Include="module\renderer\shader\preview.frag" />
+    <None Include="module\renderer\shader\dof.frag" />
+    <None Include="module\renderer\shader\fog.frag" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ var flashlight_on = false;
 var flashlight_id = 0;
 
 // key pressed
-key('F', function () {
+key('F', function() {
 	// light off
 	if (flashlight_on) {
 		flashlight_on = false;
@@ -18,7 +18,7 @@ key('F', function () {
 	// light on
 	else {
 		flashlight_on = true;
-		flashlight_id = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 3.0);
+		flashlight_id = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 1);
 		print("flashlight on");
 	}
 });
@@ -33,7 +33,7 @@ require('module/mod/helper/house.js');
 var house_keys_once = true;
 
 // key pressed
-on('InputKeyPressed', function () {
+on('InputKeyPressed', function() {
 	if (!house_keys_once) return;
 	house_keys_once = false;
 
@@ -45,8 +45,25 @@ on('InputKeyPressed', function () {
 });
 
 // key released
-on('InputKeyReleased', function () {
+on('InputKeyReleased', function() {
 	if (!key('H') || !key('O') || !key('U') || !key('S') || !key('E')) {
 		house_keys_once = true;
 	}
 });
+
+/*
+ * Hide interface and stuff
+ */
+function hide() {
+	renderpass('preview');
+	placemarker();
+	interface();
+}
+
+/*
+ * Place torch like light
+ */
+function torch() {
+	var pos = position(player());
+	light(pos[0], pos[1], pos[2], 3, 1, 0.7, 0.2, 3);
+}

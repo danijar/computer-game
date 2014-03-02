@@ -1,7 +1,7 @@
 
 rendertarget("position");
 rendertarget("normal");
-rendertarget("albedo");
+rendertarget("diffuse");
 rendertarget("specular");
 rendertarget("depth", "DEPTH24_STENCIL8");
 
@@ -11,7 +11,7 @@ renderpass("forms", {
     targets: {
         "COLOR_ATTACHMENT0"        : "position",
         "COLOR_ATTACHMENT1"        : "normal",
-        "COLOR_ATTACHMENT2"        : "albedo",
+        "COLOR_ATTACHMENT2"        : "diffuse",
         "COLOR_ATTACHMENT3"        : "specular",
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
@@ -27,11 +27,11 @@ renderpass("sky", {
     targets: {
         "COLOR_ATTACHMENT0"        : "position",
         "COLOR_ATTACHMENT1"        : "normal",
-        "COLOR_ATTACHMENT2"        : "albedo",
+        "COLOR_ATTACHMENT2"        : "diffuse",
         "DEPTH_STENCIL_ATTACHMENT" : "depth",
     },
     fallbacks: {
-        "albedo": [1, 1, 1],
+        "diffuse": [1, 1, 1],
     },
     draw: "SKY",
     stencil: ["EQUAL", 0],
@@ -71,7 +71,7 @@ renderpass("combine", {
     fragment: "combine.frag",
     targets: { "COLOR_ATTACHMENT0": "image" },
     samplers: {
-        "albedo": "albedo",
+        "diffuse": "diffuse",
         "lights": "light",
         "depth": "depth",
     },
@@ -186,7 +186,7 @@ renderpass("preview", {
     fragment: "preview.frag",
     samplers: {
         "first": "normal",
-    	"second": "depth",
+        "second": "specular",
     	"third": "light",
     	"fourth": "occlusion",
     },

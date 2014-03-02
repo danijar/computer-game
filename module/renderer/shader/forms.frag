@@ -6,29 +6,29 @@ in vec2 fcoord;
 
 layout(location = 0) out vec3 position;
 layout(location = 1) out vec3 normal;
-layout(location = 2) out vec3 albedo;
+layout(location = 2) out vec3 diffuse;
 layout(location = 3) out vec3 specular;
 
-uniform sampler2D mapdiffuse;
-uniform sampler2D mapnormal;
+uniform sampler2D diffusemap;
+uniform sampler2D normalmap;
+uniform sampler2D specularmap;
 
-uniform int hasmapnormal = 0;
+uniform bool hasnormalmap   = false;
+uniform bool hasspecularmap = false;
+
 uniform float shininess = 0.0;
 
 void main()
 {
 	position = fposition;
 
-	if (hasmapnormal == 1) {
-		vec3 normalmap = texture2D(mapnormal, fcoord).xyz;
-		normal = normalize(vec3(fnormal.xy + normalmap.xy, fnormal.z));
-	} else {
-		normal = normalize(fnormal);
-	}
+	diffuse = texture2D(diffusemap, fcoord).rgb;
 
-	albedo = texture2D(mapdiffuse, fcoord).rgb;
+	if (hasnormalmap)   normal = normalize(vec3(fnormal.xy + texture2D(normalmap, fcoord).xy, fnormal.z));
+	else                normal = normalize(fnormal);
 
-	specular = vec3(shininess);
+	if (hasspecularmap) specular = texture2D(specularmap, fcoord).xyz;
+	else                specular = vec3(shininess);
 
 	gl_FragDepth = clamp(-position.z / 1000.0f, 0, 1);
 }

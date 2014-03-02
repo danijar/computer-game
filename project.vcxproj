@@ -134,7 +134,9 @@
     <None Include="module\renderer\shader\color.frag" />
     <None Include="module\renderer\shader\combine.frag" />
     <None Include="module\renderer\shader\copy.frag" />
+    <None Include="module\renderer\shader\dof.frag" />
     <None Include="module\renderer\shader\edge.frag" />
+    <None Include="module\renderer\shader\fog.frag" />
     <None Include="module\renderer\shader\forms.frag" />
     <None Include="module\renderer\shader\forms.vert" />
     <None Include="module\renderer\shader\light.frag" />

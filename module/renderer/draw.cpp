@@ -69,10 +69,9 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 	glEnable(GL_CULL_FACE);
 
 	glEnable(GL_TEXTURE_2D);
-	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(Pass->Program, "mapdiffuse"), 0);
-	glActiveTexture(GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(Pass->Program, "mapnormal"), 1);
+	glUniform1i(glGetUniformLocation(Pass->Program, "diffusemap"),  0);
+	glUniform1i(glGetUniformLocation(Pass->Program, "normalmap"),   1);
+	glUniform1i(glGetUniformLocation(Pass->Program, "specularmap"), 2);
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -103,17 +102,28 @@ void ModuleRenderer::DrawForms(Pass *Pass)
 		
 		glUniform1f(glGetUniformLocation(Pass->Program, "shininess"), mdl->Shininess);
 
+		// diffuse map
 		glActiveTexture(GL_TEXTURE0);
 		if (mdl->Diffuse) {
 			glBindTexture(GL_TEXTURE_2D, mdl->Diffuse);
 		} // else fallback texture
 
+		// normal map
 		glActiveTexture(GL_TEXTURE1);
 		if (mdl->Normal) {
 			glBindTexture(GL_TEXTURE_2D, mdl->Normal);
-			glUniform1i(glGetUniformLocation(Pass->Program, "hasmapnormal"), 1);
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasnormalmap"), 1);
 		} else {
-			glUniform1i(glGetUniformLocation(Pass->Program, "hasmapnormal"), 0); // fallback texture instead
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasnormalmap"), 0); // fallback texture instead
+		}
+
+		// specular map
+		glActiveTexture(GL_TEXTURE2);
+		if (mdl->Specular) {
+			glBindTexture(GL_TEXTURE_2D, mdl->Specular);
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasspecularmap"), 1);
+		} else {
+			glUniform1i(glGetUniformLocation(Pass->Program, "hasspecularmap"), 0); // fallback texture instead
 		}
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mdl->Elements);
