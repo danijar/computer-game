@@ -1,0 +1,5 @@
+newmtl concrete
+map_Kd concrete_d.jpg
+map_Bump concrete_n.jpg
+map_Ns concrete_s.jpg
+Ns 0.1

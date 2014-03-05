@@ -1,0 +1,4 @@
+newmtl stones
+map_Kd stones_d.jpg
+map_Bump stones_n.jpg
+Ns 0.35

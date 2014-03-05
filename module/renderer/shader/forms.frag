@@ -27,7 +27,7 @@ void main()
 	if (hasnormalmap)   normal = normalize(vec3(fnormal.xy + texture2D(normalmap, fcoord).xy, fnormal.z));
 	else                normal = normalize(fnormal);
 
-	if (hasspecularmap) specular = texture2D(specularmap, fcoord).xyz;
+	if (hasspecularmap) specular = shininess * texture2D(specularmap, fcoord).xyz;
 	else                specular = vec3(shininess);
 
 	gl_FragDepth = clamp(-position.z / 1000.0f, 0, 1);

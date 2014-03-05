@@ -1,4 +1,5 @@
 newmtl barrel
 map_Kd cobble_d.jpg
 map_Bump cobble_n.jpg
-Ns 2.0
+map_Bump cobble_s.jpg
+Ns 0.25
