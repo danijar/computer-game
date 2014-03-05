@@ -13,7 +13,7 @@ using namespace std;
 ModuleModel::Material ModuleModel::GetMaterial(string Path)
 {
 	auto i = materials.find(Path);
-	if(i != materials.end()) return i->second.first;
+	if (i != materials.end()) return i->second.first;
 
 	Material material;
 	LoadMaterial(material, Path);
@@ -26,21 +26,18 @@ void ModuleModel::ReloadMaterials()
 {
 	auto mds = Entity->Get<Model>();
 
-	for(auto i = materials.begin(); i != materials.end(); ++i)
-	{
+	for (auto i = materials.begin(); i != materials.end(); ++i) {
 		int hash = File->Hash("module/" + Name() + "/material/" + i->first);
-		if(i->second.second != hash)
-		{
+		if (i->second.second != hash) {
 			i->second.second = hash;
 
 			Material previous(i->second.first);
 			LoadMaterial(i->second.first, i->first);
 
-			if(i->second.first.Diffuse != previous.Diffuse)
-			{
+			if (i->second.first.Diffuse != previous.Diffuse) {
 				GLuint diffuse = GetTexture(i->second.first.Diffuse);
-				for(auto j = mds.begin(); j != mds.end(); ++j)
-					if(j->second->Material == i->first)
+				for (auto j = mds.begin(); j != mds.end(); ++j)
+					if (j->second->Material == i->first)
 						j->second->Diffuse = diffuse;
 			}
 
@@ -52,15 +49,13 @@ void ModuleModel::ReloadMaterials()
 void ModuleModel::LoadMaterial(Material &Material, string Path)
 {
 	ifstream stream("module/" + Name() + "/material/" + Path);
-	if(!stream.is_open())
-	{
+	if (!stream.is_open()) {
 		Log->Fail("material (" + Path + ") cannot be loaded");
 		return;
 	}
 
 	string line;
-	while(getline(stream, line))
-	{
+	while (getline(stream, line)) {
 		istringstream input(line);
 		string key;
 		input >> key;

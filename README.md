@@ -99,6 +99,8 @@ Inserting test objects
 - `V` Shoot a cube in view direction.
 - `B` Place barrel on the floor.
 - `N` Insert a big rock.
+- `M` Set a shrine.
+- `X` Insert a big cube with the material in global `texture` scripting variable.
 
 ### Saves
 

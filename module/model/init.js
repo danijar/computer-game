@@ -57,9 +57,26 @@ key('N', function () {
 	print('Inserted a rock.');
 });
 
+// set a shrine
+key('M', function () {
+	var shrine = place('shrine.3ds', 'shrine.mtl', 10, 1);
+	rotation(shrine, -90, 0, 0);
+	if (!shrine) return;
+	print('Set a shrine.');
+});
+
+// insert texture test object
+var texture = 'concrete';
+key('X', function () {
+	var cube = place('cube.prim', texture + '.mtl', 10, 2, 1, 1000);
+	if (!cube) return;
+	print('Inserted a textured cube.');
+});
+
 function place(mesh, material, distance, scale, shift, mass) {
 	distance = distance || 2;
 	scale    = scale    || 1;
+	shift    = shift    || 0;
 	mass     = mass     || 0;
 
 	var origin = position(camera());
