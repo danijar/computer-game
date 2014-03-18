@@ -8,7 +8,7 @@ function daytime() {
 	if (moon) { remove(moon); moon = undefined; }
 	if (shine) { remove(shine); shine = undefined; }
 	if (mode == 0) {
-		sun1 = light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 1.2, 'directional');
+		sun1 = light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional');
 		sun2 = light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
 	}
 	else if (mode == 1)
@@ -24,7 +24,7 @@ daytime();
 function cook(from, to) { from = from || 0; to = to || 1; return (parseFloat(10000 * Math.random() % parseInt((to - from) * 10)) / 10) + from; };
 
 // shoot cube
-key('V', function() {
+key(['V', 'Ctrl'], function() {
 	var id = model('cube.prim', 'magic.mtl', 0, 10, 0, 0, 0, 0, 0.25, 5);
 	var origin = position(camera());
 	var lookat = direction(camera());
@@ -35,7 +35,7 @@ key('V', function() {
 });
 
 // insert capsule
-key('C', function () {
+key(['C', 'Ctrl'], function () {
 	var capsule = place('capsule.obj', 'capsule.mtl', 2, 1, 0, 70);
 	if (!capsule) return;
 	impulse(capsule, 0, 200, 0);
@@ -43,7 +43,7 @@ key('C', function () {
 });
 
 // place barrel
-key('B', function () {
+key(['B', 'Ctrl'], function () {
 	var barrel = place('barrel.3ds', 'barrel.mtl', 3, 1, 0.8, 25);
 	if (!barrel) return;
 	rotation(barrel, -90, 0, 360 * cook());
@@ -51,14 +51,14 @@ key('B', function () {
 });
 
 // insert rock
-key('N', function () {
+key(['N', 'Ctrl'], function () {
 	var rock = place('rock.obj', 'rock.mtl', 4, 3, 1.5, 500);
 	if (!rock) return;
 	print('Inserted a rock.');
 });
 
 // set a shrine
-key('M', function () {
+key(['M', 'Ctrl'], function () {
 	var shrine = place('shrine.3ds', 'shrine.mtl', 10, 1);
 	rotation(shrine, -90, 0, 0);
 	if (!shrine) return;
@@ -67,7 +67,7 @@ key('M', function () {
 
 // insert texture test object
 var texture = 'concrete';
-key('X', function () {
+key(['X', 'Ctrl'], function () {
 	var cube = place('cube.prim', texture + '.mtl', 10, 2, 1, 1000);
 	if (!cube) return;
 	print('Inserted a textured cube.');

@@ -1,69 +1,46 @@
 
-/*
- * Flashlight
- */
-
-// globals
-var flashlight_on = false;
-var flashlight_id = 0;
-
-// key pressed
-key('F', function() {
-	// light off
-	if (flashlight_on) {
-		flashlight_on = false;
-		remove(flashlight_id);
-		print("flashlight off");
-	}
-	// light on
-	else {
-		flashlight_on = true;
-		flashlight_id = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 1);
-		print("flashlight on");
-	}
+// flashlight
+require('module/mod/helper/togglekey.js');
+var flashlight = false;
+togglekey('F', function() {
+	flashlight = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 1);
+	print('flashlight on');
+}, function() {
+	remove(flashlight);
+	flashlight = false;
+	print('flashlight off');
 });
 
-/*
- * House
- */
-
+// house
 require('module/mod/helper/house.js');
-
-// globals
-var house_keys_once = true;
-
-// key pressed
-on('InputKeyPressed', function() {
-	if (!house_keys_once) return;
-	house_keys_once = false;
-
-	if (key('H') && key('O') && key('U') && key('S') && key('E')) {
-		// build house around the player
-	    var offset = position(player());
-	    house(offset[0], offset[1], offset[2]);
-	}
+key('HOUSE'.split(''), function() {
+	var offset = position(player());
+	house(offset[0], offset[1], offset[2]);
 });
 
-// key released
-on('InputKeyReleased', function() {
-	if (!key('H') || !key('O') || !key('U') || !key('S') || !key('E')) {
-		house_keys_once = true;
-	}
-});
-
-/*
- * Hide interface and stuff
- */
+// hide interface and stuff
 function hide() {
 	renderpass('preview');
 	placemarker();
 	interface();
 }
 
-/*
- * Place torch like light
- */
+// place torch like light
+var torches = [];
 function torch() {
 	var pos = position(player());
-	light(pos[0], pos[1], pos[2], 3, 1, 0.7, 0.2, 3);
+	torches.push({
+		id: light(pos[0], pos[1], pos[2], 3, 1, 0.7, 0.2, 3),
+		states: [
+			{ value: 0, speed: 0.1 * (Math.random() / 2 + 0.5), },
+			{ value: 0, speed: 0.2 * (Math.random() / 2 + 0.5), },
+			{ value: 0, speed: 0.3 * (Math.random() / 2 + 0.5), },
+		]
+	});
+}
+
+// place big light five meters above player for lighting tests
+function shine() {
+	var pos = position(player());
+	return light(pos[0], pos[1] + 5, pos[2], 40, 1, .8, .7, 1);
 }

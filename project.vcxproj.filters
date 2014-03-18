@@ -323,6 +323,9 @@
     <ClCompile Include="module\renderer\culling.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="module\window\keyboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="module\camera\init.js" />

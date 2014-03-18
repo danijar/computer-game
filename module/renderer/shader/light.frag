@@ -37,7 +37,7 @@ void main()
 	// reflection phong
 	vec3 lookat = normalize(position);
 	float reflection = max(0, dot(reflect(arriving, normal), lookat));
-	float specular = shininess * pow(reflection, pow(10, shininess - 1));
+	float specular = shininess * pow(reflection, 2 * pow(10, shininess - 1));
 
 	// reflection blinn-phong
 	// vec3 eye = normalize(-position);

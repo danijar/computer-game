@@ -2,6 +2,8 @@
 
 #include "system/system.h"
 
+#include <string>
+#include <sfml/Window.hpp>
 
 class ModuleWindow : public Module
 {
@@ -15,6 +17,10 @@ class ModuleWindow : public Module
 	void Create();
 	void Create(bool Fullscreen);
 	void Close();
+
+	// keyboard
+	sf::Keyboard::Key Key(std::string Name);
+	bool Pressed(std::vector<sf::Keyboard::Key> Keys);
 
 public:
 	// callbacks

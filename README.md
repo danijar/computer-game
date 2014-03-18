@@ -95,12 +95,13 @@ Interaction with the world
 
 Inserting test objects
 
-- `C` Insert a capsule body.
-- `V` Shoot a cube in view direction.
-- `B` Place barrel on the floor.
-- `N` Insert a big rock.
-- `M` Set a shrine.
-- `X` Insert a big cube with the material in global `texture` scripting variable.
+- `Ctrl` + `C` Insert a capsule body.
+- `Ctrl` + `V` Shoot a cube in view direction.
+- `Ctrl` + `B` Place barrel on the floor.
+- `Ctrl` + `N` Insert a big rock.
+- `Ctrl` + `M` Set a shrine.
+- `Ctrl` + `X` Insert a big cube with the material in global `texture` scripting variable.
+- `H` + `O` + `U` + `S` + `E` Insert a procedurally generated house.
 
 ### Saves
 

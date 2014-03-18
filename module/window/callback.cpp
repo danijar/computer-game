@@ -84,73 +84,53 @@ Handle<Value> ModuleWindow::jsWindowsize(const Arguments& args)
  */
 Handle<Value> ModuleWindow::jsKey(const Arguments& args)
 {
-	if(args.Length() < 1 || !args[0]->IsString())
-		return Undefined();
+	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 
-	string name = *String::Utf8Value(args[0]);
+	bool multiple = false;
 	sf::Keyboard::Key key;
-
-	if     (name == "A") key = sf::Keyboard::A;
-	else if(name == "B") key = sf::Keyboard::B;
-	else if(name == "C") key = sf::Keyboard::C;
-	else if(name == "D") key = sf::Keyboard::D;
-	else if(name == "E") key = sf::Keyboard::E;
-	else if(name == "F") key = sf::Keyboard::F;
-	else if(name == "G") key = sf::Keyboard::G;
-	else if(name == "H") key = sf::Keyboard::H;
-	else if(name == "I") key = sf::Keyboard::I;
-	else if(name == "J") key = sf::Keyboard::J;
-	else if(name == "K") key = sf::Keyboard::K;
-	else if(name == "L") key = sf::Keyboard::L;
-	else if(name == "M") key = sf::Keyboard::M;
-	else if(name == "N") key = sf::Keyboard::N;
-	else if(name == "O") key = sf::Keyboard::O;
-	else if(name == "P") key = sf::Keyboard::P;
-	else if(name == "Q") key = sf::Keyboard::Q;
-	else if(name == "R") key = sf::Keyboard::R;
-	else if(name == "S") key = sf::Keyboard::S;
-	else if(name == "T") key = sf::Keyboard::T;
-	else if(name == "U") key = sf::Keyboard::U;
-	else if(name == "V") key = sf::Keyboard::V;
-	else if(name == "W") key = sf::Keyboard::W;
-	else if(name == "X") key = sf::Keyboard::X;
-	else if(name == "Y") key = sf::Keyboard::Y;
-	else if(name == "Z") key = sf::Keyboard::Z;
-	else if(name == "0") key = sf::Keyboard::Num0;
-	else if(name == "1") key = sf::Keyboard::Num1;
-	else if(name == "2") key = sf::Keyboard::Num2;
-	else if(name == "3") key = sf::Keyboard::Num3;
-	else if(name == "4") key = sf::Keyboard::Num4;
-	else if(name == "5") key = sf::Keyboard::Num5;
-	else if(name == "6") key = sf::Keyboard::Num6;
-	else if(name == "7") key = sf::Keyboard::Num7;
-	else if(name == "8") key = sf::Keyboard::Num8;
-	else if(name == "9") key = sf::Keyboard::Num9;
-	else if(name == "Shift") key = sf::Keyboard::LShift;
-	else if(name == "Ctrl" ) key = sf::Keyboard::LControl;
-	else if(name == "Space") key = sf::Keyboard::Space;
-	else if(name == "Enter") key = sf::Keyboard::Return;
+	vector<sf::Keyboard::Key> keys;
+	// get keys from string or array of strings
+	if (args.Length() > 0 && args[0]->IsString()) {
+		key = module->Key(*String::Utf8Value(args[0]));
+	} else if (args.Length() > 0 && args[0]->IsArray()) {
+		multiple = true;
+		Handle<Array> array = Handle<Array>::Cast(args[0]);
+		for (size_t i = 0; i < array->Length(); ++i)
+			if (array->Get(i)->IsString())
+				keys.push_back(module->Key(*String::Utf8Value(array->Get(i))));
+	} else return Undefined();
 
 	// return current key pressed state
-	if(args.Length() < 2 || !args[1]->IsFunction()) {
+	if (args.Length() < 2 || !args[1]->IsFunction()) {
 		bool pressed = sf::Keyboard::isKeyPressed(key);
 		return Boolean::New(pressed);
 	}
 	// bind function to key pressed event
 	else {
-		ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
+		if (args.Length() > 2 || args[2]->IsFunction()) {
+			bool pressed = multiple ? module->Pressed(keys) : sf::Keyboard::isKeyPressed(key);
+			return Boolean::New(pressed);
+		}
 
+		// fetch callback
 		Handle<Function> callback = Local<Function>::Cast(args[1]->ToObject());
-		if(callback.IsEmpty())
-		{
+		if (callback.IsEmpty()) {
 			ManagerLog::Fail("script", "invalid callback function");
 			return Undefined();
 		}
 
+		// register to key press event
 		Persistent<Function> persistent = Persistent<Function>::New(args.GetIsolate(), callback);
-
-		module->Event->Listen<sf::Keyboard::Key>("InputKeyPressed", [=](sf::Keyboard::Key Code){
-			if (Code == key) {
+		module->Event->Listen<sf::Keyboard::Key>("InputKeyPressed", [=](sf::Keyboard::Key Code) {
+			bool trigger = false;
+			if (multiple) {
+				bool related = (std::find(keys.begin(), keys.end(), Code) != keys.end());
+				bool pressed = module->Pressed(keys);
+				trigger = related && pressed;
+			} else {
+				trigger = (Code == key);
+			}
+			if (trigger) {
 				HandleScope scope(Isolate::GetCurrent());
 				TryCatch trycatch;
 				persistent->Call(persistent, 0, NULL);

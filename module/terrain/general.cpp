@@ -86,11 +86,12 @@ void ModuleTerrain::Update()
 			Entity->Add<Terrain>(id, new Terrain(current));
 			auto mdl = Entity->Add<Model>(id);
 			auto frm = Entity->Add<Form>(id);
-			// textures
-			mdl->Diffuse = diffuse;
-			mdl->Normal = normal;
-			mdl->Specular = specular;
-			// bounding box
+			// material
+			mdl->Diffuse   = diffuse;
+			mdl->Normal    = normal;
+			mdl->Specular  = specular;
+			mdl->Shininess = 1.0f;
+			// bounding box, later move into form type
 			mdl->Box.X.Max = (float)CHUNK_SIZE.x;
 			mdl->Box.Y.Max = (float)CHUNK_SIZE.y;
 			mdl->Box.Z.Max = (float)CHUNK_SIZE.z;

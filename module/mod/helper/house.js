@@ -34,25 +34,22 @@ function house(position_x, position_y, position_z, size_x, size_y, size_z)
 
 	// door
 	var side = Math.floor(Math.random() * 3) + 1;
-	if(side == 1) {
+	if (side == 1) {
 		blocks(origin_x + size_x/2 - 1, origin_y, origin_z, 2, 2, 1, 0);
 		blocks(origin_x + size_x/2 - 1, origin_y + 1, origin_z + size_z - 1, 2, 1, 1, 0);
-	}
-	else if(side == 2) {
+	} else if (side == 2) {
 		blocks(origin_x, origin_y, origin_z + size_z/2 - 1, 1, 2, 2, 0);
 		blocks(origin_x + size_x - 1, origin_y + 1, origin_z + size_z/2 - 1, 1, 1, 2, 0);
-	}
-	else if(side == 3) {
+	} else if (side == 3) {
 		blocks(origin_x + size_x/2 - 1, origin_y, origin_z + size_z - 1, 2, 2, 1, 0);
 		blocks(origin_x + size_x/2 - 1, origin_y + 1, origin_z, 2, 1, 1, 0);
-	}
-	else if(side == 4) {
+	} else if (side == 4) {
 		blocks(origin_x + size_x - 1, origin_y, origin_z + size_z/2 - 1, 1, 2, 2, 0);
 		blocks(origin_x, origin_y + 1, origin_z + size_z/2 - 1, 1, 1, 2, 0);
 	}
 
 	// gable
-	if(orientation == true)
+	if (orientation == true)
 		for(var i = 1; i < size_z - 1; ++i) {
 			blocks(origin_x,              origin_y + size_y, origin_z + i, 1, 1, 1, brick);
 			blocks(origin_x + size_x - 1, origin_y + size_y, origin_z + i, 1, 1, 1, brick);
@@ -64,18 +61,15 @@ function house(position_x, position_y, position_z, size_x, size_y, size_z)
 		}
 
 	// roof
-	if(orientation == true)
-	{
-		for(var i = 0; i < size_z / 2 + 1 && i < 3; ++i) {
+	if (orientation == true) {
+		for (var i = 0; i < size_z / 2 + 1 && i < 3; ++i) {
 			blocks(origin_x - 1, origin_y - 2 + size_y + i, origin_z - 1      + i, size_x + 2, 1, 1, roof);
 			blocks(origin_x - 1, origin_y - 2 + size_y + i, origin_z + size_z - i, size_x + 2, 1, 1, roof);
 		}
 		for(var i = 2; i < size_z - 2; ++i)
 			blocks(origin_x - 1, origin_y + size_y + 1, origin_z + i, size_x + 2, 1, 1, roof);
-	}
-	else
-	{
-		for(var i = 0; i < size_x / 2 + 1 && i < 3; ++i) {
+	} else {
+		for (var i = 0; i < size_x / 2 + 1 && i < 3; ++i) {
 			blocks(origin_x - 1      + i, origin_y - 2 + size_y + i, origin_z - 1, 1, 1, size_z + 2, roof);
 			blocks(origin_x + size_x - i, origin_y - 2 + size_y + i, origin_z - 1, 1, 1, size_z + 2, roof);
 		}

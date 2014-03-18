@@ -112,6 +112,7 @@
     <ClCompile Include="module\window\callback.cpp" />
     <ClCompile Include="module\window\create.cpp" />
     <ClCompile Include="module\window\general.cpp" />
+    <ClCompile Include="module\window\keyboard.cpp" />
     <ClCompile Include="system\module.cpp" />
     <ClCompile Include="system\system.cpp" />
     <ClCompile Include="type\person\general.cpp" />
