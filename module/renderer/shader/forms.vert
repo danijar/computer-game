@@ -12,7 +12,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-vec4 round(vec4 value, float prec = 0)
+vec4 round(vec4 value, float prec)
 {
 	return floor(value / prec + 0.5) * prec;
 }
