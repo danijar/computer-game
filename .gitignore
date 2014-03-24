@@ -1,10 +1,10 @@
 # dependencies
-/lib/
-/build/
+/lib/*
+/build/*
 /bin/*/
 
 # savegames
-/save/
+/save/*
 
 # windows
 Thumbs.db
@@ -12,3 +12,7 @@ desktop.ini
 
 # visual studio
 project.opensdf
+
+# repository
+!.gitignore
+!.gitkeep
