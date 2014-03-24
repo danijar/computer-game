@@ -3,9 +3,11 @@ Binaries
 
 Precompiled dependencies are available for some platforms and toolchains.
 
-1. Download all binaries of the configurations you need.
+1. Download binaries mentioned below of the configurations you need.
 2. Create new folders inside `/bin/` with the names of the Google Drive folders.
 3. Put the binaries into the created folders accordingly.
+
+Currently, you need the following library files of a configuration: assimp.lib, bullet.lib, sfml.lib, squlite.lib, v8.lib and zip.lib.
 
 Windows
 -------
