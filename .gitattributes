@@ -1,0 +1,21 @@
+# Text and line endings options
+* text=auto
+* text eol=lf
+
+# Convert line endings
+*.md text
+*.h text
+*.c text
+*.hpp text
+*.cpp text
+*.js text
+*.vert text
+*.frag text
+*.mtl text
+
+# Should not be modified
+*.png binary
+*.jpg binary
+*.3ds binary
+*.obj binary
+*.lib binary

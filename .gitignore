@@ -1,18 +1,14 @@
+# dependencies
+/lib/
+/build/
+/bin/*/
 
-# visual studio
-project.opensdf
-Debug
-Release
-/main.lib
-/main.pdb
-/main.exp
+# savegames
+/save/
 
 # windows
 Thumbs.db
 desktop.ini
 
-# savegames
-/save/
-
-# custom tools
-/distribution/
+# visual studio
+project.opensdf

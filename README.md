@@ -8,7 +8,7 @@ The application is thought out and written by Danijar Hafner.
 Screenshots
 -----------
 
-![Screenshot](screenshot.png?raw=true)
+![Screenshot](screenshot/2014.02.08%20landscape.png?raw=true)
 
 <img src="screenshot/2014.02.11%20normal%20maps%20and%20specular%20magic.png?raw=true" width="150">&nbsp;
 <img src="screenshot/2014.03.02%20stairs%20day.png?raw=true" width="150">&nbsp;
