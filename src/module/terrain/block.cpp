@@ -1,10 +1,11 @@
 #include "module.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace glm;
 
 #include "type/terrain/type.h"
 
+using namespace glm;
 
 uint8_t ModuleTerrain::GetBlock(ivec3 Block)
 {

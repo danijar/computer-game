@@ -1,15 +1,16 @@
 #include "module.h"
 
 #include <string>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace std;
-using namespace glm;
-using namespace v8;
 
 #include "type/terrain/type.h"
 #include "type/model/type.h"
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
+using namespace v8;
 
 void ModuleTerrain::Callbacks()
 {

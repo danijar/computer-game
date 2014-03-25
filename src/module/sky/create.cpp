@@ -2,16 +2,17 @@
 
 #include <vector>
 #include <string>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glew/glew.h>
 #include <sfml/Graphics.hpp>
-using namespace std;
-using namespace glm;
-using namespace sf;
 
 #include "type/model/type.h"
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
+using namespace sf;
 
 Model ModuleSky::CreateSky()
 {
@@ -44,7 +45,7 @@ ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
 	for(float latitude = -1; latitude < 1 + Step + Tolerance; latitude += Step)
 	{
 		// create circle of longitudes
-		float radius = sqrt(1 - pow(latitude, 2)) * Radius;
+		float radius = std::sqrt(1 - pow(latitude, 2)) * Radius;
 		for(float longitude = -1; longitude < 1 + Step + Tolerance; longitude += Step) // use range from 0 to 1 instead
 		{
 			float longitude_rad = (longitude / 2 + 0.5f) * 2 * glm::pi<float>();

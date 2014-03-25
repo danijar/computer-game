@@ -5,6 +5,7 @@
 #include <vector>
 #include <future>
 #include <atomic>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glew/glew.h>
 #include <sfml/Graphics.hpp>
@@ -12,7 +13,6 @@
 #include "type/terrain/type.h"
 #include "type/model/type.h"
 #include "type/form/type.h"
-
 
 #define TILES_U 4
 #define TILES_V 4

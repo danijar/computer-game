@@ -2,8 +2,8 @@
 
 #include <string>
 #include <glew/glew.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-
 
 struct Model
 {

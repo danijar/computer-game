@@ -2,18 +2,19 @@
 
 #include <string>
 #include <mutex>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
 #include <sfml/OpenGL.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
-using namespace std;
-using namespace glm;
-using namespace sf;
 
 #include "type/terrain/type.h"
 #include "type/form/type.h"
 #include "type/model/type.h"
 
+using namespace std;
+using namespace glm;
+using namespace sf;
 
 void ModuleTerrain::Loading()
 {

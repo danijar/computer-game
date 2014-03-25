@@ -1,12 +1,14 @@
 #include "module.h"
 
 #include <string>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
+
+#include "type/form/type.h"
+
 using namespace std;
 using namespace glm;
 using namespace v8;
-
-#include "type/form/type.h"
 
 void ModuleModel::Callbacks()
 {
@@ -191,7 +193,7 @@ void ModuleModel::jsScale(const FunctionCallbackInfo<Value> &args)
 				isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be scale values as number")));
 				return;
 			}
-			scale = vec3(args[1]->NumberValue());
+			scale = vec3((float)args[1]->NumberValue());
 		}
 		else {
 			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second or second, third and fourth arguments must be scale values as numbers")));
@@ -316,7 +318,7 @@ void ModuleModel::jsColor(const FunctionCallbackInfo<Value> &args)
 				isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be a color value as number")));
 				return;
 			}
-			color = vec3(args[1]->NumberValue());
+			color = vec3((float)args[1]->NumberValue());
 		}
 		else {
 			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second or second, third and fourth arguments must be color values as numbers")));

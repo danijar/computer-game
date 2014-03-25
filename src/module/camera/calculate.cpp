@@ -1,5 +1,6 @@
 #include "module.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
 
@@ -9,7 +10,6 @@
 
 using namespace glm;
 using namespace sf;
-
 
 void ModuleCamera::Projection()
 {

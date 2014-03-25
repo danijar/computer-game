@@ -3,13 +3,13 @@
 #include <string>
 #include <sfml/System.hpp>
 #include <glm/gtc/type_ptr.hpp>
-using namespace std;
-using namespace v8;
-using namespace glm;
 
 #include "type/settings/type.h"
 #include "type/camera/type.h"
 
+using namespace std;
+using namespace v8;
+using namespace glm;
 
 void ModuleRenderer::Callbacks()
 {
@@ -278,14 +278,17 @@ void ModuleRenderer::jsUniform(const FunctionCallbackInfo<Value> &args)
 	}
 	string name = *String::Utf8Value(args[1]);
 
-	if (args.Length() < 3)  {
+	if (args.Length() < 3) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "third argument must be uniform value as number, boolean or array of one of them")));
 		return;
 	}
 
 	// get pass
 	Pass *pass = module->PassGet(passname);
-	if(!pass) { module->Log->Warning("script", "pass (" + passname + ") not found"); return Undefined(); }
+	if (!pass) {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, string("pass (" + passname + ") not found").c_str())));
+		return;
+	}
 
 	// get location
 	glUseProgram(pass->Program);
@@ -475,7 +478,6 @@ void ModuleRenderer::jsProjection(const FunctionCallbackInfo<Value> &args)
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "camera is not initialized yet")));
 		return;
 	}
-	auto cam = module->Entity->Get<Camera>(id);
 	mat4 projection = cam->Projection;
 	float *value = value_ptr(projection);
 

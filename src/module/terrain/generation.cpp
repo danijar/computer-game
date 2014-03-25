@@ -2,13 +2,14 @@
 
 #include <vector>
 #include <cstdlib>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
-using namespace glm;
-using namespace std;
 
 #include "type/terrain/type.h"
 
+using namespace glm;
+using namespace std;
 
 void ModuleTerrain::Generate(Terrain *Terrain)
 {

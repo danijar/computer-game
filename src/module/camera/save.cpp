@@ -1,14 +1,15 @@
 #include "module.h"
 
 #include <string>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace std;
-using namespace glm;
 
 #include "type/settings/type.h"
 #include "type/camera/type.h"
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
 
 void ModuleCamera::Load()
 {

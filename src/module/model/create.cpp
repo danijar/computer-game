@@ -1,15 +1,16 @@
 #include "module.h"
 
 #include <glew/glew.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
-using namespace std;
-using namespace glm;
 
 #include "type/form/type.h"
 #include "type/model/type.h"
 #include "type/light/type.h"
 
+using namespace std;
+using namespace glm;
 
 uint64_t ModuleModel::CreateModel(string Mesh, string Material, vec3 Position, vec3 Rotation, vec3 Scale, float Mass)
 {

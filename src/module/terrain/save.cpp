@@ -2,14 +2,15 @@
 
 #include <string>
 #include <filesystem>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <zip/zipint.h>
-using namespace std;
-using namespace std::tr2::sys;
-using namespace glm;
 
 #include "type/settings/type.h"
 
+using namespace std;
+using namespace std::tr2::sys;
+using namespace glm;
 
 bool ModuleTerrain::Load(Terrain *Terrain)
 {

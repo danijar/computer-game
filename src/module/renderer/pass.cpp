@@ -3,11 +3,11 @@
 #include <sfml/OpenGL.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "type/camera/type.h"
 using namespace std;
 using namespace sf;
 using namespace glm;
-
-#include "type/camera/type.h"
 
 void ModuleRenderer::PassCreate(string Name, string Vertex, string Fragment, unordered_map<GLenum, string> Targets, unordered_map<string, string> Samplers, unordered_map<string, string> Copyfallbacks, unordered_map<string, vec3> Colorfallbacks, Function Function, bool Depth, bool Clear, vec3 Clearcolor, float Size, GLenum StencilFunction, GLint StencilReference, GLenum StencilOperation)
 {

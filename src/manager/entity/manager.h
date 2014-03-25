@@ -10,7 +10,6 @@
 
 #include "manager/log/manager.h"
 
-
 class ManagerEntity
 {
 public:

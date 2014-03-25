@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/System.hpp>
-
 
 class ModuleRenderer : public Module
 {

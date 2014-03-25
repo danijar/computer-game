@@ -1,13 +1,14 @@
 #include "module.h"
 
 #include <bullet/btBulletDynamicsCommon.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace std;
-using namespace glm;
 
 #include "type/person/type.h"
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
 
 bool ModulePerson::Ground(uint64_t Id)
 {

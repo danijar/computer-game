@@ -4,13 +4,13 @@
 
 #include <unordered_map>
 #include <sfml/OpenGL.hpp>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <v8/v8.h>
 
 #include "type/model/type.h"
 #include "type/light/type.h"
-
 
 class ModuleModel : public Module
 {

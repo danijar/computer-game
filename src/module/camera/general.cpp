@@ -2,15 +2,16 @@
 
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace glm;
-using namespace sf;
 
 #include "type/settings/type.h"
 #include "type/form/type.h"
 #include "type/camera/type.h"
 #include "type/person/type.h"
 
+using namespace glm;
+using namespace sf;
 
 void ModuleCamera::Init()
 {

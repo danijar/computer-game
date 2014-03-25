@@ -1,13 +1,14 @@
 #include "module.h"
 
 #include <bullet/btBulletDynamicsCommon.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-using namespace glm;
 
 #include "type/person/type.h"
 #include "type/form/type.h"
 #include "type/camera/type.h" // get rid of that later
 
+using namespace glm;
 
 void ModulePerson::Move(uint64_t Id, vec3 Amount, float Speed)
 {

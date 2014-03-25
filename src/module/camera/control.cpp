@@ -1,13 +1,14 @@
 #include "module.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
-using namespace std;
-using namespace glm;
 
 #include "type/camera/type.h"
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
 
 void ModuleCamera::Rotate(vec3 Amount, float Sensitivity)
 {

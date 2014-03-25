@@ -3,8 +3,8 @@
 #include "system/system.h"
 
 #include <sfml/System.hpp>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
-
 
 class ModuleCamera : public Module
 {

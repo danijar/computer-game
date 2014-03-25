@@ -3,11 +3,9 @@
 #include <string>
 #include <future>
 #include <mutex>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/Window.hpp>
-using namespace std;
-using namespace glm;
-using namespace sf;
 
 #include "type/terrain/type.h"
 #include "type/form/type.h"
@@ -17,6 +15,9 @@ using namespace sf;
 #include "type/person/type.h"
 #include "type/print/type.h"
 
+using namespace std;
+using namespace glm;
+using namespace sf;
 
 void ModuleTerrain::Init()
 {
@@ -119,7 +120,7 @@ void ModuleTerrain::Update()
 	if(!loading && access.try_lock())
 	{
 		// relative range to check for chunk candidates
-		ivec3 range = ivec3(inradius) / CHUNK_SIZE + ivec3(1);
+		ivec3 range(ivec3(inradius) / CHUNK_SIZE + ivec3(1));
 		range.y = 1;
 
 		// offset of relative range to camera

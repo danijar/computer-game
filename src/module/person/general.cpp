@@ -2,6 +2,7 @@
 
 #include <string>
 #include <bullet/btBulletDynamicsCommon.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/Window.hpp>
 
@@ -17,7 +18,6 @@
 using namespace std;
 using namespace glm;
 using namespace sf;
-
 
 void ModulePerson::Init()
 {

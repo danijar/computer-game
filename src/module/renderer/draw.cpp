@@ -1,6 +1,7 @@
 #include "module.h"
 
 #include <sfml/Graphics/RenderWindow.hpp>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -12,7 +13,6 @@
 
 using namespace sf;
 using namespace glm;
-
 
 void ModuleRenderer::DrawQuad(Pass *Pass)
 {

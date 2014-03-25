@@ -2,11 +2,11 @@
 
 #include "system/system.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 
 #include "type/form/type.h"
-
 
 class ModulePerson : public Module
 {

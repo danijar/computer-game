@@ -1,15 +1,16 @@
 #include "module.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
-#include <assimp/postprocess.h>
-using namespace std;
-using namespace glm;
 
+#include <assimp/postprocess.h>
 #include "type/form/type.h"
 
+using namespace std;
+using namespace glm;
 
 btRigidBody *ModuleModel::CreateBody(string Path, vec3 Scale, float Mass)
 {

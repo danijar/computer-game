@@ -6,20 +6,20 @@
 using namespace std;
 using namespace v8;
 
-HelperScript::HelperScript(string Name, Module *Module, Persistent<Context> Context) : name(Name), global(Context) // make context static instead of passing it
+HelperScript::HelperScript(string Name, Module *Module, Persistent<Context, CopyablePersistentTraits<Context>> Context) : name(Name), context(Context) // make context static instead of passing it
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
 	Local<External> external = External::New(isolate, reinterpret_cast<void*>(Module));
-	module = Persistent<External>(isolate, external);
+	module = Persistent<External, CopyablePersistentTraits<External>>(isolate, external);
 }
 HelperScript::~HelperScript()
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
-	Local<Context>::New(isolate, global)->Exit();
+	Local<Context>::New(isolate, context)->Exit();
 }
 
 void HelperScript::Bind(string Name, function<void(FunctionCallbackInfo<Value> const &)> Function)
@@ -28,12 +28,15 @@ void HelperScript::Bind(string Name, function<void(FunctionCallbackInfo<Value> c
 	HandleScope scope(isolate);
 
 	FunctionCallback *function = Function.target<FunctionCallback>();
-	Local<Object> global = Local<Context>::New(isolate, global)->Global();
+	Local<Object> global = Local<Context>::New(isolate, context)->Global();
 	global->Set(String::NewFromUtf8(isolate, Name.c_str()), FunctionTemplate::New(isolate, *function, Local<External>::New(isolate, module))->GetFunction(), ReadOnly);
 }
 
-bool HelperScript::Load(string Path, bool Module = true)
+bool HelperScript::Load(string Path, bool Module)
 {
+	Isolate *isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
+
 	if (scripts.find(Path) != scripts.end()) {
 		ManagerLog::Warning("system", "the script (" + Path + ") is already loaded");
 		return true;
@@ -41,7 +44,7 @@ bool HelperScript::Load(string Path, bool Module = true)
 
 	string path = Module ? "module/" + name + "/" + Path : Path;
 	string source = HelperFile::Read(name, path);
-	Persistent<Script> script = Compile(source);
+	Persistent<Script, CopyablePersistentTraits<Script>> script(isolate, Compile(source));
 	if (script.IsEmpty()) {
 		ManagerLog::Warning("system", "the script (" + Path + ") cannot be compiled");
 		return false;
@@ -51,27 +54,27 @@ bool HelperScript::Load(string Path, bool Module = true)
 	return true;
 }
 
-Persistent<Value> HelperScript::Run(string Path, bool Module = true)
+Persistent<Value, CopyablePersistentTraits<Value>> HelperScript::Run(string Path, bool Module)
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
 	if (scripts.find(Path) == scripts.end())
 		if (!Load(Path, Module))
-			return Persistent<Value>(isolate, Undefined(isolate));
+			return Persistent<Value, CopyablePersistentTraits<Value>>(isolate, Undefined(isolate));
 
 	return Execute(scripts[Path]);
 }
 
-Persistent<Value> HelperScript::Inline(string Source)
+Persistent<Value, CopyablePersistentTraits<Value>> HelperScript::Inline(string Source)
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
-	Persistent<Script> script = Compile(Source);
+	Persistent<Script, CopyablePersistentTraits<Script>> script = Compile(Source);
 	if (script.IsEmpty()) {
 		ManagerLog::Warning("system", "inline script cannot be compiled");
-		return Persistent<Value>(isolate, Undefined(isolate));
+		return Persistent<Value, CopyablePersistentTraits<Value>>(isolate, Undefined(isolate));
 	}
 
 	return Execute(script);
@@ -91,16 +94,16 @@ Module *HelperScript::Unwrap(Local<Value> Data)
 	return static_cast<Module*>(handle->Value());
 }
 
-Persistent<Script> HelperScript::Compile(string Source)
+Persistent<Script, CopyablePersistentTraits<Script>> HelperScript::Compile(string Source)
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
 
 	Handle<Script> script = Script::Compile(String::NewFromUtf8(isolate, Source.c_str()));
-	return Persistent<Script>(isolate, script);
+	return Persistent<Script, CopyablePersistentTraits<Script>>(isolate, script);
 }
 
-Persistent<Value> HelperScript::Execute(Persistent<Script> Script, string Name)
+Persistent<Value, CopyablePersistentTraits<Value>> HelperScript::Execute(Persistent<Script, CopyablePersistentTraits<Script>> Script, string Name)
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
@@ -118,7 +121,7 @@ Persistent<Value> HelperScript::Execute(Persistent<Script> Script, string Name)
 		else
 			ManagerLog::Fail("system", "script (" + Name + ") crashed:");
 		ManagerLog::Inline(string(*message) + "\n");
-		return Persistent<Value>(isolate, Undefined(isolate));
+		return Persistent<Value, CopyablePersistentTraits<Value>>(isolate, Undefined(isolate));
 	}
-	return Persistent<Value>(isolate, result);
+	return Persistent<Value, CopyablePersistentTraits<Value>>(isolate, result);
 }

@@ -45,20 +45,16 @@ void ModuleConsole::jsOn(const FunctionCallbackInfo<Value> &args)
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be a function to execute on fire")));
 		return;
 	}
-	Handle<Function> callback = Local<Function>::Cast(args[1]->ToObject());
-
+	Local<Function> callback = Local<Function>::Cast(args[1]);
 	if (callback.IsEmpty()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "callback function is empty")));
 		return;
 	}
-
-	Persistent<Function> persistent = Persistent<Function>(isolate, callback);
+	Persistent<Function, CopyablePersistentTraits<Function>> persistent(isolate, callback);
 	module->Event->Listen(name, [=]{
-		Isolate* isolate = args.GetIsolate();
-		HandleScope scope(isolate);
 		TryCatch trycatch;
-		Handle<Function> callback = Handle<Function>::New(isolate, persistent);
-		callback->Call(callback, 0, NULL);
+		Handle<Function> function = Handle<Function>::New(Isolate::GetCurrent(), persistent);
+		function->Call(function, 0, NULL);
 	});
 }
 

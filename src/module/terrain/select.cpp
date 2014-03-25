@@ -1,16 +1,17 @@
 #include "module.h"
 
 #include <cmath>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/System.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
-using namespace std;
-using namespace glm;
-using namespace sf;
 
 #include "type/camera/type.h"
 #include "type/settings/type.h"
 
+using namespace std;
+using namespace glm;
+using namespace sf;
 
 tuple<ivec3, ivec3, uint8_t> ModuleTerrain::Selection()
 {

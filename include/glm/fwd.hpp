@@ -287,7 +287,7 @@ namespace glm
 	/// 64 bit signed integer type.
 	/// @see gtc_type_precision
 	typedef detail::int64 int64;
-
+	/*
 	/// 8 bit signed integer type.
 	/// @see gtc_type_precision
 	typedef detail::int8 int8_t;
@@ -303,7 +303,7 @@ namespace glm
 	/// 64 bit signed integer type.
 	/// @see gtc_type_precision
 	typedef detail::int64 int64_t;
-
+	*/
 	/// 8 bit signed integer type.
 	/// @see gtc_type_precision
 	typedef detail::int8 i8;
@@ -873,7 +873,7 @@ namespace glm
 	typedef detail::uint64 highp_u64;
 	
 	
-	
+	/*
 	/// 8 bit unsigned integer type.
 	/// @see gtc_type_precision
 	typedef detail::uint8 uint8;
@@ -905,7 +905,7 @@ namespace glm
 	/// 64 bit unsigned integer type.
 	/// @see gtc_type_precision
 	typedef detail::uint64 uint64_t;
-	
+	*/
 	/// 8 bit unsigned integer type.
 	/// @see gtc_type_precision
 	typedef detail::uint8 u8;

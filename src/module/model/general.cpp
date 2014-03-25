@@ -3,18 +3,19 @@
 #include <unordered_map>
 #include <cstdlib>
 #include <glew/glew.h>
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <sfml/Window/Keyboard.hpp>
 #include <bullet/btBulletDynamicsCommon.h>
-using namespace std;
-using namespace sf;
-using namespace glm;
 
 #include "type/model/type.h"
 #include "type/form/type.h"
 #include "type/print/type.h"
 #include "type/light/type.h"
 
+using namespace std;
+using namespace sf;
+using namespace glm;
 
 void ModuleModel::Init()
 {

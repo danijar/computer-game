@@ -2,11 +2,11 @@
 
 #include <string>
 #include <glm/gtc/noise.hpp>
-using namespace std;
-using namespace glm;
 
 #include "type/model/type.h"
 
+using namespace std;
+using namespace glm;
 
 bool ModuleRenderer::Visible(uint64_t Id)
 {

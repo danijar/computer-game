@@ -1,9 +1,10 @@
 #include "module.h"
 
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/noise.hpp>
-using namespace glm;
 
+using namespace glm;
 
 float ModuleTerrain::NoisePositive(float Zoom, vec2 Sample)
 {
