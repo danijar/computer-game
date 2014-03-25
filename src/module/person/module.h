@@ -35,5 +35,5 @@ class ModulePerson : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsPlayer(const v8::Arguments& args);
+	static void jsPlayer(const v8::FunctionCallbackInfo<v8::Value> &args);
 };

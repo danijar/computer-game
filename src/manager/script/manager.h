@@ -6,134 +6,25 @@
 
 #include <v8/v8.h>
 
-#include "manager/log/manager.h"
-#include "manager/file/manager.h"
-
-
 class Module; // better use void* pointer directly
 
 class HelperScript
 {
 public:
-	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context> Context) : name(Name), context(Context) // make context static instead of passing it
-	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-
-		v8::Local<v8::External> handle = v8::External::New(reinterpret_cast<void*>(Module));
-		module = v8::Persistent<v8::External>::New(isolate, handle);
-	}
-	~HelperScript()
-	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-		context->Exit();
-	}
-
-	void Bind(std::string Name, std::function<v8::Handle<v8::Value>(v8::Arguments const &)> Function)
-	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-
-		v8::InvocationCallback *function = Function.target<v8::InvocationCallback>();
-		v8::Local<v8::Object> global = context->Global();
-		global->Set(v8::String::New(Name.c_str()), v8::FunctionTemplate::New(*function, module)->GetFunction(), v8::ReadOnly);
-	}
-
-	bool Load(std::string Path, bool Module = true)
-	{
-		if(scripts.find(Path) != scripts.end())
-		{
-			ManagerLog::Warning("system", "the script (" + Path + ") is already loaded");
-			return true;
-		}
-
-		std::string path = Module ? "module/" + name + "/" + Path : Path;
-		std::string source = HelperFile::Read(name, path);
-		v8::Persistent<v8::Script> script = Compile(source);
-		if(script.IsEmpty())
-		{
-			ManagerLog::Warning("system", "the script (" + Path + ") cannot be compiled");
-			return false;
-		}
-		
-		scripts.insert(std::make_pair(Path, script));
-		return true;
-	}
-
-	v8::Persistent<v8::Value> Run(std::string Path, bool Module = true)
-	{
-		if(scripts.find(Path) == scripts.end())
-			if(!Load(Path, Module))
-				return v8::Persistent<v8::Value>(v8::Undefined());
-
-		return Execute(scripts[Path]);
-	}
-
-	v8::Persistent<v8::Value> Inline(std::string Source)
-	{
-		v8::Persistent<v8::Script> script = Compile(Source);
-		if(script.IsEmpty())
-		{
-			ManagerLog::Warning("system", "inline script cannot be compiled");
-			return v8::Persistent<v8::Value>(v8::Undefined());
-		}
-
-		return Execute(script);
-	}
-
-	static Module *Unwrap(v8::Local<v8::Value> Data)
-	{
-		if(Data.IsEmpty())
-		{
-			ManagerLog::Fail("", "cannot get module from script argument because it is empty");
-			return nullptr;
-		}
-		else if(!Data->IsExternal())
-		{
-			ManagerLog::Fail("", "cannot get module from script argument because it's a wrong type");
-			return nullptr;
-		}
-
-		v8::External *handle = v8::External::Cast(*Data);
-		return static_cast<Module*>(handle->Value());
-	}
+	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context> Context);
+	~HelperScript();
+	void Bind(std::string Name, std::function<void(v8::FunctionCallbackInfo<v8::Value> const &)> Function);
+	bool Load(std::string Path, bool Module = true);
+	v8::Persistent<v8::Value> Run(std::string Path, bool Module = true);
+	v8::Persistent<v8::Value> Inline(std::string Source);
+	static Module *Unwrap(v8::Local<v8::Value> Data);
 
 private:
 	std::string name;
-	v8::Persistent<v8::Context> context;
+	v8::Persistent<v8::Context> global;
 	std::unordered_map<std::string, v8::Persistent<v8::Script> > scripts;
 	v8::Persistent<v8::External> module; // this is only for binding scripts
 
-	v8::Persistent<v8::Script> Compile(std::string Source)
-	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-
-		v8::Handle<v8::Script> script = v8::Script::Compile(v8::String::New(Source.c_str()));
-		return v8::Persistent<v8::Script>::New(isolate, script);
-	}
-
-	v8::Persistent<v8::Value> Execute(v8::Persistent<v8::Script> Script, std::string Name = "")
-	{
-		v8::Isolate *isolate = v8::Isolate::GetCurrent();
-		v8::HandleScope scope(isolate);
-
-		v8::TryCatch trycatch;
-		v8::Local<v8::Value> result = Script->Run();
-		if(result.IsEmpty())
-		{
-			v8::Handle<v8::Value> exception = trycatch.Exception();
-			v8::String::AsciiValue message(exception);
-			if(Name == "")
-				ManagerLog::Fail("system", "script crashed:");
-			else if(Name == "inline")
-				ManagerLog::Fail("system", "inline script crashed:");
-			else
-				ManagerLog::Fail("system", "script (" + Name + ") crashed:");
-			ManagerLog::Inline(std::string(*message) + "\n");
-			return v8::Persistent<v8::Value>(v8::Undefined());
-		}
-		return v8::Persistent<v8::Value>::New(isolate, result);
-	}
+	v8::Persistent<v8::Script> Compile(std::string Source);
+	v8::Persistent<v8::Value> Execute(v8::Persistent<v8::Script> Script, std::string Name = "");
 };

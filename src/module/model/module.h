@@ -74,13 +74,13 @@ public:
 	uint64_t CreateLight(glm::vec3 Position, float Radius, glm::vec3 Color = glm::vec3(1), float Intensity = 1.0f, Light::Shape Type = Light::POINT);
 
 	// callbacks
-	static v8::Handle<v8::Value> jsModel    (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsLight    (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPosition (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRotation (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsScale    (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsDirection(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRadius   (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsIntensity(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsColor    (const v8::Arguments& args);
+	static void jsModel    (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsLight    (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsPosition (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsRotation (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsScale    (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsDirection(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsRadius   (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsIntensity(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsColor    (const v8::FunctionCallbackInfo<v8::Value> &args);
 };

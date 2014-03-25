@@ -21,25 +21,28 @@ void ModuleWindow::Callbacks()
  * title(string?)
  * Set or get window title.
  */
-Handle<Value> ModuleWindow::jsTitle(const Arguments& args)
+void ModuleWindow::jsTitle(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate *isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
 	auto wnd = module->Global->Get<sf::RenderWindow>("window");
 
-	if(0 < args.Length())
-	{
-		if(args[0]->IsString())
-		{
+	// set title
+	if(args.Length() > 0) {
+		if (!args[0]->IsString()) {
+			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be title as string")));
+			return;
+		} else {
 			string title = *String::Utf8Value(args[0]);
 			stg->Set<string>("Title", title);
 			wnd->setTitle(title);
 		}
-		return Undefined();
 	}
-	else
-	{
-		return String::New(stg->Get<string>("Title")->c_str());
+	// get title
+	else {
+		args.GetReturnValue().Set(String::NewFromUtf8(isolate, stg->Get<string>("Title")->c_str()));
 	}
 }
 
@@ -47,7 +50,7 @@ Handle<Value> ModuleWindow::jsTitle(const Arguments& args)
  * vsync()
  * Toggles Vsync.
  */
-Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
+void ModuleWindow::jsVsync(const FunctionCallbackInfo<Value> &args)
 {
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 	auto stg = module->Global->Get<Settings>("settings");
@@ -57,7 +60,6 @@ Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
 	wnd->setVerticalSyncEnabled(stg->Is("Verticalsync"));
 
 	ManagerLog::Print("script", string(stg->Is("Verticalsync") ? "enabled" : "disabled") + " vertical sync");
-	return Undefined();
 }
 
 /*
@@ -65,31 +67,38 @@ Handle<Value> ModuleWindow::jsVsync(const Arguments& args)
  * Get dimensions of the window. Return value is an array of length two.
  * Later on also allow to set the window size.
  */
-Handle<Value> ModuleWindow::jsWindowsize(const Arguments& args)
+void ModuleWindow::jsWindowsize(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 	auto wnd = module->Global->Get<sf::RenderWindow>("window");
 
 	sf::Vector2u size = module->Global->Get<sf::RenderWindow>("window")->getSize();
 
-	Handle<Array> result = Array::New(2);
-	result->Set(0, Number::New(size.x));
-	result->Set(1, Number::New(size.y));
-	return result;
+	Handle<Array> result = Array::New(isolate, 2);
+	result->Set(0, Number::New(isolate, size.x));
+	result->Set(1, Number::New(isolate, size.y));
+	args.GetReturnValue().Set(result);
 }
 
 /*
- * key(character)
+ * key(character | array of characters, callback?)
  * Checks whether the key corresponding to the passed letter is currently pressed.
+ * When passing an array of letters, it gets checked whether all of those are
+ * currently pressed. When a callback is passed, it gets registered to the key
+ * press event of the key or keys instead.
  */
-Handle<Value> ModuleWindow::jsKey(const Arguments& args)
+void ModuleWindow::jsKey(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
 	ModuleWindow *module = (ModuleWindow*)HelperScript::Unwrap(args.Data());
 
+	// get keys from string or array of strings
 	bool multiple = false;
 	sf::Keyboard::Key key;
 	vector<sf::Keyboard::Key> keys;
-	// get keys from string or array of strings
 	if (args.Length() > 0 && args[0]->IsString()) {
 		key = module->Key(*String::Utf8Value(args[0]));
 	} else if (args.Length() > 0 && args[0]->IsArray()) {
@@ -98,29 +107,27 @@ Handle<Value> ModuleWindow::jsKey(const Arguments& args)
 		for (size_t i = 0; i < array->Length(); ++i)
 			if (array->Get(i)->IsString())
 				keys.push_back(module->Key(*String::Utf8Value(array->Get(i))));
-	} else return Undefined();
-
-	// return current key pressed state
-	if (args.Length() < 2 || !args[1]->IsFunction()) {
-		bool pressed = sf::Keyboard::isKeyPressed(key);
-		return Boolean::New(pressed);
+	} else {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be key as string or array of that")));
+		return;
 	}
+
 	// bind function to key pressed event
-	else {
-		if (args.Length() > 2 || args[2]->IsFunction()) {
-			bool pressed = multiple ? module->Pressed(keys) : sf::Keyboard::isKeyPressed(key);
-			return Boolean::New(pressed);
-		}
+	if (args.Length() > 1) {
 
 		// fetch callback
+		if (!args[1]->IsFunction()) {
+			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be a function to execute on key press")));
+			return;
+		}
 		Handle<Function> callback = Local<Function>::Cast(args[1]->ToObject());
 		if (callback.IsEmpty()) {
-			ManagerLog::Fail("script", "invalid callback function");
-			return Undefined();
+			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "callback function is empty")));
+			return;
 		}
 
 		// register to key press event
-		Persistent<Function> persistent = Persistent<Function>::New(args.GetIsolate(), callback);
+		Persistent<Function> persistent = Persistent<Function>(isolate, callback);
 		module->Event->Listen<sf::Keyboard::Key>("InputKeyPressed", [=](sf::Keyboard::Key Code) {
 			bool trigger = false;
 			if (multiple) {
@@ -133,10 +140,14 @@ Handle<Value> ModuleWindow::jsKey(const Arguments& args)
 			if (trigger) {
 				HandleScope scope(Isolate::GetCurrent());
 				TryCatch trycatch;
-				persistent->Call(persistent, 0, NULL);
+				Handle<Function> callback = Handle<Function>::New(isolate, persistent);
+				callback->Call(callback, 0, NULL);
 			}
 		});
-
-		return Undefined();
+	}
+	// return current key pressed state
+	else {
+		bool pressed = multiple ? module->Pressed(keys) : sf::Keyboard::isKeyPressed(key);
+		args.GetReturnValue().Set(pressed);
 	}
 }

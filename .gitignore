@@ -1,6 +1,5 @@
 # dependencies
 /lib/*
-/build/*
 /bin/*/
 
 # savegames
@@ -12,6 +11,9 @@ desktop.ini
 
 # visual studio
 project.opensdf
+
+# intermediate
+/src/build/
 
 # repository
 !.gitignore

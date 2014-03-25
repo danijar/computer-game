@@ -17,5 +17,5 @@ class ModuleSettings : public Module
 
 	// callbacks
 public:
-	static v8::Handle<v8::Value> jsSettings(const v8::Arguments& args);
+	static void jsSettings(const v8::FunctionCallbackInfo<v8::Value> &args);
 };

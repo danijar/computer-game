@@ -13,14 +13,23 @@ void ModulePerson::Callbacks()
 	Script->Bind("player", jsPlayer);
 }
 
-Handle<Value> ModulePerson::jsPlayer(const Arguments& args)
+void ModulePerson::jsPlayer(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
+
 	ModulePerson *module = (ModulePerson*)HelperScript::Unwrap(args.Data());
 	uint64_t id = *module->Global->Get<uint64_t>("camera");
-	if (!id) return Undefined();
+	if (!id) {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "camera is not initialized yet")));
+		return;
+	}
 	auto cam = module->Entity->Get<Camera>(id);
-	if (!cam) return Undefined();
+	if (!cam) {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "camera is not initialized yet")));
+		return;
+	}
 
 	uint64_t person = cam->Person;
-	return String::New(to_string(person).c_str());
+	args.GetReturnValue().Set(String::NewFromUtf8(isolate, to_string(person).c_str()));
 }

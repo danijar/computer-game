@@ -93,10 +93,10 @@ class ModuleRenderer : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsRenderpass      (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRendertarget    (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsRendertargetload(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsUniform         (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsWireframe       (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsProjection      (const v8::Arguments& args);
+	static void jsRenderpass      (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsRendertarget    (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsRendertargetload(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsUniform         (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsWireframe       (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsProjection      (const v8::FunctionCallbackInfo<v8::Value> &args);
 };

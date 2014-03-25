@@ -120,15 +120,6 @@
     <ClCompile Include="module\person\save.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="module\physic\callback.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="module\physic\debug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="module\physic\general.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="module\renderer\callback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -210,6 +201,18 @@
     <ClCompile Include="type\person\general.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="manager\script\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\callback.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="module\physic\general.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="manager\archive\manager.h">
@@ -278,9 +281,6 @@
     <ClInclude Include="module\person\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="module\physic\module.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="module\renderer\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -324,6 +324,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="type\terrain\type.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="module\physic\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

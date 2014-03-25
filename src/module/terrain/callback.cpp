@@ -19,97 +19,101 @@ void ModuleTerrain::Callbacks()
 	Script->Bind("placemarker", jsPlacemarker);
 }
 
-Handle<Value> ModuleTerrain::jsChunk(const Arguments& args)
+void ModuleTerrain::jsChunk(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
 	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
 
-	if(!module->loading && module->access.try_lock())
-	{
-		if(2 < args.Length() && args[0]->IsInt32() && args[1]->IsInt32() && args[2]->IsInt32())
-		{
+	if (!module->loading && module->access.try_lock()) {
+		if (2 < args.Length() && args[0]->IsInt32() && args[1]->IsInt32() && args[2]->IsInt32()) {
 			ivec3 key(args[0]->Int32Value(), args[1]->Int32Value(), args[2]->Int32Value());
-
 			module->current = Terrain();
 			module->current.Key = key;
 			module->null = false;
 			module->loading = true;
+			ManagerLog::Print("script", "load new chunk at (" + to_string(key.x) + ", " + to_string(key.y) + ", " + to_string(key.z) + ")");
 		}
 		module->access.unlock();
+	} else {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "another chunk is loaded at the moment")));
 	}
-	else
-	{
-		ManagerLog::Fail("script", "another chunk is loaded or added at the moment");
-	}
-
-	return Undefined();
 }
 
-Handle<Value> ModuleTerrain::jsBlock(const Arguments& args)
+void ModuleTerrain::jsBlock(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
 	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
 
-	if(args.Length() < 3 || !args[0]->IsInt32() || !args[1]->IsInt32() || !args[2]->IsInt32())
-		return Undefined();
+	if (args.Length() < 3 || !args[0]->IsInt32() || !args[1]->IsInt32() || !args[2]->IsInt32()) {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first, second and third arguments must be block coordinates as numbers")));
+		return;
+	}
 	ivec3 block(args[0]->Int32Value(), args[1]->Int32Value(), args[2]->Int32Value());
 
 	// containing chunk is not loaded
-	if(!module->GetChunk(module->PosChunk(block)))
-		return Undefined();
+	if (!module->GetChunk(module->PosChunk(block))) {
+		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "the chunk is not loaded")));
+		return;
+	}
 
 	// set block
-	if(3 < args.Length() && args[3]->IsUint32())
-	{
+	if (3 < args.Length() && args[3]->IsUint32()) {
 		uint8_t type = args[3]->Uint32Value();
 		module->SetBlock(block, type);
-		return Undefined();
 	}
 	// get block
-	else
-	{
+	else {
 		uint8_t type = module->GetBlock(block);
-		return Uint32::New(type);
+		args.GetReturnValue().Set(type);
 	}
 }
 
-Handle<Value> ModuleTerrain::jsPlacetype(const Arguments& args)
+void ModuleTerrain::jsPlacetype(const FunctionCallbackInfo<Value> &args)
 {
+	Isolate* isolate = args.GetIsolate();
+	HandleScope scope(isolate);
 	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
 
 	// set place type
-	if(0 < args.Length())
-	{
-		if(args[0]->IsUint32())
-		{
+	if (0 < args.Length()) {
+		if (args[0]->IsUint32()) {
 			module->type = args[0]->Uint32Value();
-		}
-		else if(args[0]->IsString())
-		{
+		} else if (args[0]->IsString()) {
 			string name = *String::Utf8Value(args[0]);
-			if(name == "air")
-				module->type = 0;
-			else if(name == "dirt")
-				module->type = 1;
-			else if(name == "grass")
-				module->type = 2;
+			vector<string> types;
+			types.push_back("air");
+			types.push_back("dirt");
+			types.push_back("grass");
+			types.push_back("rock");
+			types.push_back("sand");
+			types.push_back("wood");
+			types.push_back("planks");
+			types.push_back("leaves");
+			types.push_back("coal");
+			types.push_back("cobble");
+			types.push_back("concrete");
+			auto i = find(types.begin(), types.end(), name);
+			if (i != types.end())
+				module->type = i - types.begin();
 		}
-		return Undefined();
+		else  {
+			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be block type as number or string")));
+			return;
+		}
 	}
 	// get place type
-	else
-	{
-		return Uint32::New(module->type);
+	else {
+		args.GetReturnValue().Set(module->type);
 	}
 }
 
-Handle<Value> ModuleTerrain::jsPlacemarker(const Arguments& args)
+void ModuleTerrain::jsPlacemarker(const FunctionCallbackInfo<Value> &args)
 {
 	ModuleTerrain *module = (ModuleTerrain*)HelperScript::Unwrap(args.Data());
-
 	module->show = !module->show;
-
 	if(!module->show)
 		module->Entity->Get<Form>(module->marker)->Position(vec3(0, -9999, 0));
-
 	ManagerLog::Print("script", string(module->show ? "enabled" : "disabled") + " placing marker");
-	return Undefined();
 }

@@ -76,9 +76,9 @@ private:
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsChunk      (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsBlock      (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPlacetype  (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsPlacemarker(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsWorld      (const v8::Arguments& args);
+	static void jsChunk      (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsBlock      (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsPlacetype  (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsPlacemarker(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsWorld      (const v8::FunctionCallbackInfo<v8::Value> &args);
 };

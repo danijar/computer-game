@@ -24,8 +24,8 @@ class ModuleWindow : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsTitle     (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsVsync     (const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsWindowsize(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsKey       (const v8::Arguments& args);
+	static void jsTitle     (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsVsync     (const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsWindowsize(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsKey       (const v8::FunctionCallbackInfo<v8::Value> &args);
 };

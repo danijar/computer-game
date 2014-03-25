@@ -36,6 +36,6 @@ class ModuleCamera : public Module
 
 public:
 	// callbacks
-	static v8::Handle<v8::Value> jsCamera(const v8::Arguments& args);
-	static v8::Handle<v8::Value> jsFov   (const v8::Arguments& args);
+	static void jsCamera(const v8::FunctionCallbackInfo<v8::Value> &args);
+	static void jsFov   (const v8::FunctionCallbackInfo<v8::Value> &args);
 };
