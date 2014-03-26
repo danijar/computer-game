@@ -1,9 +1,9 @@
 #include "system/system.h"
 
 using namespace std;
+using namespace v8;
 
-
-void Module::Set(string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, v8::Persistent<v8::Context> Context, string *Message)
+void Module::Set(string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, Persistent<Context, CopyablePersistentTraits<Context>> Context, string *Message)
 {
 	this->name    = Name;
 	this->Event   = Event;

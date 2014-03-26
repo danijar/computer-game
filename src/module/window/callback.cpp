@@ -120,7 +120,7 @@ void ModuleWindow::jsKey(const FunctionCallbackInfo<Value> &args)
 			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be a function to execute on key press")));
 			return;
 		}
-		Handle<Function> callback = Local<Function>::Cast(args[1]);
+		Handle<Function> callback = args[1].As<Function>();
 		if (callback.IsEmpty()) {
 			isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "callback function is empty")));
 			return;
@@ -128,6 +128,7 @@ void ModuleWindow::jsKey(const FunctionCallbackInfo<Value> &args)
 
 		// register to key press event
 		Persistent<Function, CopyablePersistentTraits<Function>> persistent(isolate, callback);
+
 		module->Event->Listen<sf::Keyboard::Key>("InputKeyPressed", [=](sf::Keyboard::Key Code) {
 			bool trigger = false;
 			if (multiple) {
@@ -138,9 +139,8 @@ void ModuleWindow::jsKey(const FunctionCallbackInfo<Value> &args)
 				trigger = (Code == key);
 			}
 			if (trigger) {
-				HandleScope scope(Isolate::GetCurrent());
 				TryCatch trycatch;
-				Handle<Function> function = Handle<Function>::New(isolate, persistent);
+				Local<Function> function = Local<Function>::New(Isolate::GetCurrent(), persistent);
 				function->Call(function, 0, NULL);
 			}
 		});

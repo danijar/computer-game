@@ -21,7 +21,7 @@
 class Module
 {
 public:
-	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, v8::Persistent<v8::Context> Context, std::string *Message);
+	void Set(std::string Name, ManagerEvent *Event, ManagerEntity *Entity, ManagerGlobal *Global, ManagerData *Data, v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>> Context, std::string *Message);
 	virtual void Init() = 0;
 	virtual void Update() = 0;
 	virtual ~Module() {};

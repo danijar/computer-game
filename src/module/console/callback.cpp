@@ -41,19 +41,21 @@ void ModuleConsole::jsOn(const FunctionCallbackInfo<Value> &args)
 	}
 	string name = *String::Utf8Value(args[0]);
 	
+	// fetch callback
 	if (args.Length() < 2 || !args[1]->IsFunction()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "second argument must be a function to execute on fire")));
 		return;
 	}
-	Local<Function> callback = Local<Function>::Cast(args[1]);
+	Handle<Function> callback = args[1].As<Function>();
 	if (callback.IsEmpty()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "callback function is empty")));
 		return;
 	}
+
 	Persistent<Function, CopyablePersistentTraits<Function>> persistent(isolate, callback);
 	module->Event->Listen(name, [=]{
 		TryCatch trycatch;
-		Handle<Function> function = Handle<Function>::New(Isolate::GetCurrent(), persistent);
+		Local<Function> function = Local<Function>::New(Isolate::GetCurrent(), persistent);
 		function->Call(function, 0, NULL);
 	});
 }

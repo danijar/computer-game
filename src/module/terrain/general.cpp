@@ -120,7 +120,7 @@ void ModuleTerrain::Update()
 	if(!loading && access.try_lock())
 	{
 		// relative range to check for chunk candidates
-		ivec3 range(ivec3(inradius) / CHUNK_SIZE + ivec3(1));
+		ivec3 range(inradius / vec3(CHUNK_SIZE) + vec3(1));
 		range.y = 1;
 
 		// offset of relative range to camera

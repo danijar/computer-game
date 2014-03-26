@@ -17,7 +17,7 @@ void System::Init()
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	Local<Context> context = Context::New(isolate);
-	Persistent<Context> persistent(isolate, context);
+	Persistent<Context, CopyablePersistentTraits<Context>> persistent(isolate, context);
 	context->Enter();
 	for (auto i : list) {
 		get<1>(i)->Set(get<0>(i), event, entity, global, data, persistent, &message);

@@ -10,10 +10,12 @@ Thumbs.db
 desktop.ini
 
 # visual studio
-project.opensdf
+application.opensdf
+/*.exp
+/*.lib
 
 # intermediate
-/src/build/
+/build/
 
 # repository
 !.gitignore

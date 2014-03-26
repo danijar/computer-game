@@ -23,55 +23,31 @@
 ////////////////////////////////////////////////////////////
 
 
-namespace sf
-{
 ////////////////////////////////////////////////////////////
 template <typename T>
-ThreadLocalPtr<T>::ThreadLocalPtr(T* value) :
-ThreadLocal(value)
+String String::fromUtf8(T begin, T end)
 {
+    String string;
+    Utf8::toUtf32(begin, end, std::back_inserter(string.m_string));
+    return string;
 }
 
 
 ////////////////////////////////////////////////////////////
 template <typename T>
-T& ThreadLocalPtr<T>::operator *() const
+String String::fromUtf16(T begin, T end)
 {
-    return *static_cast<T*>(getValue());
+    String string;
+    Utf16::toUtf32(begin, end, std::back_inserter(string.m_string));
+    return string;
 }
 
 
 ////////////////////////////////////////////////////////////
 template <typename T>
-T* ThreadLocalPtr<T>::operator ->() const
+String String::fromUtf32(T begin, T end)
 {
-    return static_cast<T*>(getValue());
+    String string;
+    string.m_string.assign(begin, end);
+    return string;
 }
-
-
-////////////////////////////////////////////////////////////
-template <typename T>
-ThreadLocalPtr<T>::operator T*() const
-{
-    return static_cast<T*>(getValue());
-}
-
-
-////////////////////////////////////////////////////////////
-template <typename T>
-ThreadLocalPtr<T>& ThreadLocalPtr<T>::operator =(T* value)
-{
-    setValue(value);
-    return *this;
-}
-
-
-////////////////////////////////////////////////////////////
-template <typename T>
-ThreadLocalPtr<T>& ThreadLocalPtr<T>::operator =(const ThreadLocalPtr<T>& right)
-{
-    setValue(right.getValue());
-    return *this;
-}
-
-} // namespace sf
