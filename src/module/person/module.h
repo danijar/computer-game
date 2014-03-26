@@ -24,10 +24,11 @@ class ModulePerson : public Module
 	void Jump(uint64_t Id, float Multiplier = 5.0f, bool Force = false);
 
 	// checks
+	static btVector3 Zero;
 	bool Ground(uint64_t Id);
 	bool Edge(uint64_t Id, glm::vec3 Direction);
 	std::pair<bool, float> RayDown(btVector3 &Position, float Length);
-	bool Ray(btVector3 &From, btVector3 &To, btVector3 &Point = btVector3(), btVector3 &Normal = btVector3());
+	bool Ray(btVector3 &From, btVector3 &To, btVector3 &Point = Zero, btVector3 &Normal = Zero);
 
 	// save
 	void Load();

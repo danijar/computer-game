@@ -19,6 +19,8 @@ using namespace std;
 using namespace glm;
 using namespace sf;
 
+btVector3 ModulePerson::Zero(0, 0, 0);
+
 void ModulePerson::Init()
 {
 	Listeners();
