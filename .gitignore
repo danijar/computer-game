@@ -10,9 +10,12 @@ Thumbs.db
 desktop.ini
 
 # visual studio
-application.opensdf
+/src/*.opensdf
+/src/*.sdf
 /*.exp
+/*.ilk
 /*.lib
+/*.pdb
 
 # intermediate
 /build/

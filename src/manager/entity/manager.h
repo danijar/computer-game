@@ -5,8 +5,13 @@
 #include <typeindex>
 #include <stdint.h>
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
+extern "C" {
+#ifdef WIN32
+#include <Rpc.h>
+#else
+#include <uuid/uuid.h>
+#endif
+}
 
 #include "manager/log/manager.h"
 
@@ -16,13 +21,23 @@ public:
 	uint64_t New()
 	{
 		uint64_t id = 0;
-		boost::uuids::uuid uuid = boost::uuids::random_generator()();
-		for(int i = 0; i < 8; ++i)
-		{
+#ifdef WIN32
+		UUID uuid;
+		UuidCreate(&uuid);
+		id |= uuid.Data1;
+		id <<= 32;
+		id |= uuid.Data2;
+		id <<= 16;
+		id |= uuid.Data2;
+#else
+		// untested
+		uuid_t uuid;
+		uuid_generate_random(uuid);
+		for (int i = 0; i < 8; ++i) {
 			id <<= 8;
-			id |= uuid.data[i];
-			// id |= rand() % 128;
+			id |= uuid[i];
 		}
+#endif
 		return id;
 	}
 	template <typename T>

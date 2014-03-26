@@ -1,8 +1,8 @@
-# Text and line endings options
+# global settings
 * text=auto
 * text eol=lf
 
-# Convert line endings
+# text files
 *.md text
 *.h text
 *.c text
@@ -13,9 +13,15 @@
 *.frag text
 *.mtl text
 
-# Should not be modified
+# binaries
+*.exe binary
 *.png binary
 *.jpg binary
 *.3ds binary
 *.obj binary
 *.lib binary
+
+# visual studio
+*.sln text eol=crlf
+*.vcxproj text eol=crlf
+*.vcxproj.user text eol=crlf

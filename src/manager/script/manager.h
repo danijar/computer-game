@@ -11,7 +11,7 @@ class Module; // better use void* pointer directly
 class HelperScript
 {
 public:
-	HelperScript(std::string Name, Module *Module, v8::Persistent<v8::Context, v8::CopyablePersistentTraits<v8::Context>> Context);
+	HelperScript(std::string Name, Module *Module, v8::Handle<v8::Context> Context);
 	~HelperScript();
 	void Bind(std::string Name, std::function<void(v8::FunctionCallbackInfo<v8::Value> const &)> Function);
 	bool Load(std::string Path, bool Module = true);

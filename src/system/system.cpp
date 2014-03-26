@@ -16,13 +16,15 @@ System::System()
 void System::Init()
 {
 	Isolate *isolate = Isolate::GetCurrent();
+	HandleScope scope(isolate);
 	Local<Context> context = Context::New(isolate);
-	Persistent<Context, CopyablePersistentTraits<Context>> persistent(isolate, context);
 	context->Enter();
+
 	for (auto i : list) {
-		get<1>(i)->Set(get<0>(i), event, entity, global, data, persistent, &message);
+		get<1>(i)->Set(get<0>(i), event, entity, global, data, context, &message);
 		get<1>(i)->Init();
 	}
+
 	event->Fire("SystemInitialized");
 }
 

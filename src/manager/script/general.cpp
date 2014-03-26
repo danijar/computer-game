@@ -6,10 +6,12 @@
 using namespace std;
 using namespace v8;
 
-HelperScript::HelperScript(string Name, Module *Module, Persistent<Context, CopyablePersistentTraits<Context>> Context) : name(Name), context(Context) // make context static instead of passing it
+HelperScript::HelperScript(string Name, Module *Module, Handle<Context> Context) : name(Name)
 {
 	Isolate *isolate = Isolate::GetCurrent();
 	HandleScope scope(isolate);
+
+	context = Persistent<v8::Context, CopyablePersistentTraits<v8::Context>>(isolate, Context);
 
 	Local<External> external = External::New(isolate, reinterpret_cast<void*>(Module));
 	module = Persistent<External, CopyablePersistentTraits<External>>(isolate, external);
@@ -42,7 +44,7 @@ bool HelperScript::Load(string Path, bool Module)
 		return true;
 	}
 
-	string path = Module ? "module/" + name + "/" + Path : Path;
+	string path = "script/" + (Module ? name + "/" : "") + Path;
 	string source = HelperFile::Read(name, path);
 	Persistent<Script, CopyablePersistentTraits<Script>> script(isolate, Compile(source));
 	if (script.IsEmpty()) {
