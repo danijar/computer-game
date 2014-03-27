@@ -1,6 +1,6 @@
 
 // flashlight
-require('module/mod/helper/togglekey.js');
+require('mod/helper/togglekey.js');
 var flashlight = false;
 togglekey('F', function() {
 	flashlight = light(0, 0, 0, 18, 0.8, 0.7, 0.5, 1);
@@ -12,7 +12,7 @@ togglekey('F', function() {
 });
 
 // house
-require('module/mod/helper/house.js');
+require('mod/helper/house.js');
 key('HOUSE'.split(''), function() {
 	var offset = position(player());
 	house(offset[0], offset[1], offset[2]);

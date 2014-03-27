@@ -1,4 +1,4 @@
-require('module/mod/helper/blocks.js');
+require('mod/helper/blocks.js');
 
 function house(position_x, position_y, position_z, size_x, size_y, size_z)
 {

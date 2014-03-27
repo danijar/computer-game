@@ -19,8 +19,7 @@ void ModuleCamera::Init()
 	Load();
 
 	// if there is no camera at all, add a default one
-	if(Entity->Get<Camera>().size() < 1)
-	{
+	if (Entity->Get<Camera>().size() < 1) {
 		uint64_t id = Entity->New();
 		auto cam = Entity->Add<Camera>(id);
 		auto frm = Entity->Add<Form>(id);
@@ -32,8 +31,7 @@ void ModuleCamera::Init()
 	}
 	
 	// if there is no bound camera, bound the first one
-	if(!Global->Check("camera"))
-	{
+	if (!Global->Check("camera")) {
 		uint64_t id = Entity->Get<Camera>().begin()->first;
 		Entity->Get<Camera>(id)->Active = !Global->Get<Settings>("settings")->Is("Mouse");
 		*Global->Add<uint64_t>("camera") = id;

@@ -15,11 +15,12 @@
 
 # binaries
 *.exe binary
+*.lib binary
 *.png binary
 *.jpg binary
 *.3ds binary
 *.obj binary
-*.lib binary
+*.ttf binary
 
 # visual studio
 *.sln text eol=crlf

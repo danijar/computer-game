@@ -35,6 +35,15 @@ void ModulePerson::Init()
 	*/
 
 	Script->Run("init.js");
+
+	// add camer position output
+	Entity->Add<Print>(Entity->New())->Text = [&]() -> string {
+		uint64_t id = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Person;
+		if (!id) return "";
+		vec3 position = Entity->Get<Form>(id)->Position();
+		float height = Entity->Check<Person>(id) ? Entity->Get<Person>(id)->Height : 0;
+		return "position  X " + to_string((int)position.x) + " Y " + to_string((int)(position.y - height / 2 + 0.01f)) + " Z " + to_string((int)position.z);
+	};
 }
 
 void ModulePerson::Update()
@@ -126,13 +135,12 @@ void ModulePerson::Listeners()
 			Jump(id);
 	});
 
-	Event->Listen("TerrainLoadingFinished", [=]{
+	Event->Listen("TerrainLoadingFinished", [=] {
 		// load persons
 		Load();
 
 		// if there is no person at all, add a default one at camera position
-		if(Entity->Get<Person>().size() < 1)
-		{
+		if (Entity->Get<Person>().size() < 1) {
 			uint64_t id = Entity->New();
 			auto psn = Entity->Add<Person>(id);
 			auto frm = Entity->Add<Form>(id);
@@ -146,20 +154,10 @@ void ModulePerson::Listeners()
 
 		// if there is no person bound to camera, bound the first one
 		auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
-		if(!cam->Person)
-		{
+		if (!cam->Person) {
 			uint64_t id = Entity->Get<Person>().begin()->first;
 			cam->Person = id;
 			Log->Pass("not bound to camera, fallback to first one");
 		}
-
-		// add player position output
-		Entity->Add<Print>(Entity->New())->Text = [=]()-> string{
-			uint64_t id = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"))->Person;
-			if(!id) return "";
-			vec3 position = Entity->Get<Form>(id)->Position();
-			float height = Entity->Get<Person>(id)->Height;
-			return "position  X " + to_string((int)position.x) + " Y " + to_string((int)(position.y - height/2 + 0.01f)) + " Z " + to_string((int)position.z);
-		};
 	});
 }
