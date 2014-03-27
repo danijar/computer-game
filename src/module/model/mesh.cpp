@@ -21,14 +21,14 @@ ModuleModel::Mesh ModuleModel::GetMesh(string Path)
 	glGenBuffers(1, &mesh.Elements);
 	LoadMesh(mesh, Path);
 
-	meshes.insert(make_pair(Path, make_pair(mesh, File->Hash("module/" + Name() + "/mesh/" + Path))));
+	meshes.insert(make_pair(Path, make_pair(mesh, File->Hash("asset/" + Name() + "/mesh/" + Path))));
 	return mesh;
 }
 
 void ModuleModel::ReloadMeshes()
 {
 	for (auto i = meshes.begin(); i != meshes.end(); ++i) {
-		int hash = File->Hash("module/" + Name() + "/mesh/" + i->first);
+		int hash = File->Hash("asset/" + Name() + "/mesh/" + i->first);
 		if (i->second.second != hash) {
 			i->second.second = hash;
 			LoadMesh(i->second.first, i->first);
@@ -42,7 +42,7 @@ void ModuleModel::LoadMesh(Mesh &Mesh, string Path)
 	if (Path == "cube.prim")  return LoadMeshCube(Mesh);
 	if (Path == "plane.prim") return LoadMeshPlane(Mesh);
 
-	const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene *scene = aiImportFile(("asset/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if (!scene) {
 		Log->Fail("mesh (" + Path + ") cannot be loaded");
 		return;

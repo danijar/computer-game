@@ -19,7 +19,7 @@ GLuint ModuleModel::GetTexture(string Path)
 	glGenTextures(1, &texture);
 	LoadTexture(texture, Path);
 
-	textures.insert(make_pair(Path, make_pair(texture, File->Hash("module/" + Name() + "/texture/" + Path))));
+	textures.insert(make_pair(Path, make_pair(texture, File->Hash("asset/" + Name() + "/texture/" + Path))));
 	return texture;
 }
 
@@ -27,7 +27,7 @@ void ModuleModel::ReloadTextures()
 {
 	for(auto i = textures.begin(); i != textures.end(); ++i)
 	{
-		int hash = File->Hash("module/" + Name() + "/texture/" + i->first);
+		int hash = File->Hash("asset/" + Name() + "/texture/" + i->first);
 		if(i->second.second != hash)
 		{
 			i->second.second = hash;
@@ -40,7 +40,7 @@ void ModuleModel::ReloadTextures()
 void ModuleModel::LoadTexture(GLuint &Texture, string Path)
 {
 	Image image;
-	bool result = image.loadFromFile("module/" + Name() + "/texture/" + Path);
+	bool result = image.loadFromFile("asset/" + Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Log->Fail("texture (" + Path + ") cannot be loaded");

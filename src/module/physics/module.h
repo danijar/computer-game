@@ -6,7 +6,7 @@
 #include <bullet/btBulletDynamicsCommon.h>
 
 
-class ModulePhysic : public Module
+class ModulePhysics : public Module
 {
 	// general
 	sf::Clock clock;
@@ -15,7 +15,7 @@ class ModulePhysic : public Module
 	btCollisionDispatcher               *dispatcher;
 	btSequentialImpulseConstraintSolver *solver;
 	void Init();
-	~ModulePhysic();
+	~ModulePhysics();
 	void Update();
 	void Listeners();
 	void Callbacks();

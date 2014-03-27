@@ -3,7 +3,6 @@
 using namespace std;
 using namespace v8;
 
-
 void ModuleConsole::Callbacks()
 {
 	Script->Bind("print",   jsPrint);
@@ -54,8 +53,10 @@ void ModuleConsole::jsOn(const FunctionCallbackInfo<Value> &args)
 
 	Persistent<Function, CopyablePersistentTraits<Function>> persistent(isolate, callback);
 	module->Event->Listen(name, [=]{
+		Isolate* isolate = Isolate::GetCurrent();
+		HandleScope scope(isolate);
 		TryCatch trycatch;
-		Local<Function> function = Local<Function>::New(Isolate::GetCurrent(), persistent);
+		Local<Function> function = Local<Function>::New(isolate, persistent);
 		function->Call(function, 0, NULL);
 	});
 }

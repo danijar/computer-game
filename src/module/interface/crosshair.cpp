@@ -12,9 +12,8 @@ pair<Texture*, Sprite*> ModuleInterface::LoadImage(string Path)
 	Texture *texture = new Texture();
 	Sprite *sprite = new Sprite();
 
-	bool result = texture->loadFromFile("module/" + Name() + "/" + Path);
-	if(!result)
-	{
+	bool result = texture->loadFromFile("asset/" + Name() + "/" + Path);
+	if (!result) {
 		Log->Fail("image (" + Path + ") cannot be loaded");
 		return make_pair(texture, sprite);
 	}

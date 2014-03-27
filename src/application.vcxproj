@@ -58,7 +58,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <PreprocessorDefinitions>GLEW_STATIC;SFML_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -77,7 +77,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)..\include\;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ObjectFileName>$(IntDir)%(RelativeDir)</ObjectFileName>
       <PreprocessorDefinitions>GLEW_STATIC;SFML_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -124,9 +124,9 @@
     <ClCompile Include="module\person\general.cpp" />
     <ClCompile Include="module\person\movement.cpp" />
     <ClCompile Include="module\person\save.cpp" />
-    <ClCompile Include="module\physic\callback.cpp" />
-    <ClCompile Include="module\physic\debug.cpp" />
-    <ClCompile Include="module\physic\general.cpp" />
+    <ClCompile Include="module\physics\callback.cpp" />
+    <ClCompile Include="module\physics\debug.cpp" />
+    <ClCompile Include="module\physics\general.cpp" />
     <ClCompile Include="module\renderer\callback.cpp" />
     <ClCompile Include="module\renderer\culling.cpp" />
     <ClCompile Include="module\renderer\draw.cpp" />
@@ -178,7 +178,7 @@
     <ClInclude Include="module\model\module.h" />
     <ClInclude Include="module\mod\module.h" />
     <ClInclude Include="module\person\module.h" />
-    <ClInclude Include="module\physic\module.h" />
+    <ClInclude Include="module\physics\module.h" />
     <ClInclude Include="module\renderer\module.h" />
     <ClInclude Include="module\settings\module.h" />
     <ClInclude Include="module\sky\module.h" />

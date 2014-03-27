@@ -14,16 +14,16 @@ using namespace std;
 using namespace glm;
 
 
-ModulePhysic::DebugDrawer::DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Global, HelperFile *File, ManagerLog *Log) : Entity(Entity), Global(Global), File(File), Log(Log), mode(btIDebugDraw::DBG_NoDebug)
+ModulePhysics::DebugDrawer::DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Global, HelperFile *File, ManagerLog *Log) : Entity(Entity), Global(Global), File(File), Log(Log), mode(btIDebugDraw::DBG_NoDebug)
 {
 	GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-	{ string source = File->Read("shader/shader.vert");
+	{ string source = File->Read("shader/physics/shader.vert");
 	const GLchar *chars = source.c_str();
 	glShaderSource(vertex, 1, &chars, NULL);
 	glCompileShader(vertex); }
 
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	{ string source = File->Read("shader/shader.frag");
+	{ string source = File->Read("shader/physics/shader.frag");
 	const GLchar *chars = source.c_str();
 	glShaderSource(fragment, 1, &chars, NULL);
 	glCompileShader(fragment); }
@@ -44,7 +44,7 @@ ModulePhysic::DebugDrawer::DebugDrawer(ManagerEntity *Entity, ManagerGlobal *Glo
 	glDeleteShader(fragment);
 }
 
-void ModulePhysic::DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
+void ModulePhysics::DebugDrawer::drawLine(const btVector3 &from, const btVector3 &to, const btVector3 &color)
 {
 	auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 
@@ -61,12 +61,12 @@ void ModulePhysic::DebugDrawer::drawLine(const btVector3 &from, const btVector3 
 	glUseProgram(0);
 }
 
-void ModulePhysic::DebugDrawer::setDebugMode(int debugMode)
+void ModulePhysics::DebugDrawer::setDebugMode(int debugMode)
 {
 	mode = debugMode;
 }
 
-int	ModulePhysic::DebugDrawer::getDebugMode() const
+int	ModulePhysics::DebugDrawer::getDebugMode() const
 {
 	return mode;
 }

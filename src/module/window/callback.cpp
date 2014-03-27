@@ -139,8 +139,10 @@ void ModuleWindow::jsKey(const FunctionCallbackInfo<Value> &args)
 				trigger = (Code == key);
 			}
 			if (trigger) {
+				Isolate* isolate = Isolate::GetCurrent();
+				HandleScope scope(isolate);
 				TryCatch trycatch;
-				Local<Function> function = Local<Function>::New(Isolate::GetCurrent(), persistent);
+				Local<Function> function = Local<Function>::New(isolate, persistent);
 				function->Call(function, 0, NULL);
 			}
 		});

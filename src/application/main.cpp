@@ -7,7 +7,7 @@
 #include "module/model/module.h"
 #include "module/terrain/module.h"
 #include "module/sky/module.h"
-#include "module/physic/module.h"
+#include "module/physics/module.h"
 #include "module/person/module.h"
 #include "module/camera/module.h"
 #include "module/renderer/module.h"
@@ -31,7 +31,7 @@ int main()
 	World.Add("person",    new ModulePerson()   );
 	World.Add("camera",    new ModuleCamera()   );
 	World.Add("renderer",  new ModuleRenderer() );
-	World.Add("physic",    new ModulePhysic()   );
+	World.Add("physics",   new ModulePhysics()  );
 	World.Add("interface", new ModuleInterface());
 	World.Add("mod",       new ModuleMod()      );
 

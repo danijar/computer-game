@@ -18,7 +18,7 @@ ModuleModel::Material ModuleModel::GetMaterial(string Path)
 	Material material;
 	LoadMaterial(material, Path);
 
-	materials.insert(make_pair(Path, make_pair(material, File->Hash("module/" + Name() + "/material/" + Path))));
+	materials.insert(make_pair(Path, make_pair(material, File->Hash("asset/" + Name() + "/material/" + Path))));
 	return material;
 }
 
@@ -27,7 +27,7 @@ void ModuleModel::ReloadMaterials()
 	auto mds = Entity->Get<Model>();
 
 	for (auto i = materials.begin(); i != materials.end(); ++i) {
-		int hash = File->Hash("module/" + Name() + "/material/" + i->first);
+		int hash = File->Hash("asset/" + Name() + "/material/" + i->first);
 		if (i->second.second != hash) {
 			i->second.second = hash;
 
@@ -48,7 +48,7 @@ void ModuleModel::ReloadMaterials()
 
 void ModuleModel::LoadMaterial(Material &Material, string Path)
 {
-	ifstream stream("module/" + Name() + "/material/" + Path);
+	ifstream stream("asset/" + Name() + "/material/" + Path);
 	if (!stream.is_open()) {
 		Log->Fail("material (" + Path + ") cannot be loaded");
 		return;

@@ -4,7 +4,6 @@
 #include <unordered_map>
 #include <functional>
 
-
 class ManagerEvent
 {
 	typedef std::unordered_map<std::string, std::unordered_map<int, std::vector<std::pair<void*, bool>>>> Events;
@@ -35,15 +34,14 @@ public:
 	{
 		auto Functions = list[Name][State];
 
-		for (auto i = Functions.begin(); i != Functions.end(); ++i)
-		{
-			if(i->second) continue;
+		for (auto i = Functions.begin(); i != Functions.end(); ++i) {
+			if (i->second) continue;
 			else (*(std::function<void()>*)(i->first))();
 		}
 	}
 	void FireRange(std::string Name, int From, int To)
 	{
-		for(int i = From; i <= To; ++i) Fire(Name, i);
+		for (int i = From; i <= To; ++i) Fire(Name, i);
 	}
 	template <typename T>
 	void Fire(std::string Name, T Data)
@@ -55,10 +53,9 @@ public:
 	{
 		auto Functions = list[Name][State];
 
-		for (auto i = Functions.begin(); i != Functions.end(); ++i)
-		{
-			if(i->second) (*(std::function<void(T)>*)i->first)(Data);
-			else          (*(std::function<void()>*)i->first)();
+		for (auto i = Functions.begin(); i != Functions.end(); ++i) {
+			if (i->second) (*(std::function<void(T)>*)i->first)(Data);
+			else           (*(std::function<void()>*)i->first)();
 		}
 	}
 private:

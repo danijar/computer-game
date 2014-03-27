@@ -6,18 +6,18 @@ using namespace v8;
 #include "type/form/type.h"
 
 
-void ModulePhysic::Callbacks()
+void ModulePhysics::Callbacks()
 {
 	Script->Bind("impulse",    jsImpulse );
 	Script->Bind("force",      jsForce   );
 	Script->Bind("velocity",   jsVelocity);
 }
 
-void ModulePhysic::jsImpulse(const FunctionCallbackInfo<Value> &args)
+void ModulePhysics::jsImpulse(const FunctionCallbackInfo<Value> &args)
 {
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
-	ModulePhysic *module = (ModulePhysic*)HelperScript::Unwrap(args.Data());
+	ModulePhysics *module = (ModulePhysics*)HelperScript::Unwrap(args.Data());
 
 	if (args.Length() < 1 || !args[0]->IsString()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be entity id as string")));
@@ -58,11 +58,11 @@ void ModulePhysic::jsImpulse(const FunctionCallbackInfo<Value> &args)
 	frm->Body->applyCentralImpulse(impulse);
 }
 
-void ModulePhysic::jsForce(const FunctionCallbackInfo<Value> &args)
+void ModulePhysics::jsForce(const FunctionCallbackInfo<Value> &args)
 {
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
-	ModulePhysic *module = (ModulePhysic*)HelperScript::Unwrap(args.Data());
+	ModulePhysics *module = (ModulePhysics*)HelperScript::Unwrap(args.Data());
 
 	if (args.Length() < 1 || !args[0]->IsString()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be entity id as string")));
@@ -102,11 +102,11 @@ void ModulePhysic::jsForce(const FunctionCallbackInfo<Value> &args)
 	frm->Body->applyCentralForce(force);
 }
 
-void ModulePhysic::jsVelocity(const FunctionCallbackInfo<Value> &args)
+void ModulePhysics::jsVelocity(const FunctionCallbackInfo<Value> &args)
 {
 	Isolate* isolate = args.GetIsolate();
 	HandleScope scope(isolate);
-	ModulePhysic *module = (ModulePhysic*)HelperScript::Unwrap(args.Data());
+	ModulePhysics *module = (ModulePhysics*)HelperScript::Unwrap(args.Data());
 
 	if (args.Length() < 1 || !args[0]->IsString()) {
 		isolate->ThrowException(Exception::TypeError(String::NewFromUtf8(isolate, "first argument must be entity id as string")));

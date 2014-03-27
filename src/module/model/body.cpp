@@ -37,7 +37,7 @@ btCollisionShape *ModuleModel::GetShape(string Path, vec3 Scale, bool Static)
 	btCollisionShape *shape = NULL;
 	LoadShape(shape, Path, Scale, Static);
 
-	shapes.insert(make_pair(key, make_pair(shape, File->Hash("module/" + Name() + "/mesh/" + Path))));
+	shapes.insert(make_pair(key, make_pair(shape, File->Hash("asset/" + Name() + "/mesh/" + Path))));
 
 	return shape;
 }
@@ -48,7 +48,7 @@ void ModuleModel::ReloadShapes()
 
 	for(auto i = shapes.begin(); i != shapes.end(); ++i)
 	{
-		int hash = File->Hash("module/" + Name() + "/mesh/" + get<0>(i->first));
+		int hash = File->Hash("asset/" + Name() + "/mesh/" + get<0>(i->first));
 		if(i->second.second != hash)
 		{
 			i->second.second = hash;
@@ -69,7 +69,7 @@ void ModuleModel::LoadShape(btCollisionShape *&Shape, string Path, vec3 Scale, b
 	if(Path == "cube.prim")  return LoadShapeCube (Shape, Scale);
 	if(Path == "plane.prim") return LoadShapePlane(Shape);
 
-	const aiScene *scene = aiImportFile(("module/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+	const aiScene *scene = aiImportFile(("asset/" + Name() + "/mesh/" + Path).c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 	if(!scene) {
 		Log->Fail("mesh (" + Path + ") cannot be loaded for collision");
 		return;

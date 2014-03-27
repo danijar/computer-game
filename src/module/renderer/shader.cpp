@@ -29,7 +29,7 @@ GLuint ModuleRenderer::CreateProgram(string Vertex, string Fragment)
 GLuint ModuleRenderer::CreateShader(string Path, GLenum Type)
 {
 	GLuint id = glCreateShader(Type);
-	string source = File->Read("shader/" + Path);
+	string source = File->Read("shader/renderer/" + Path);
 	const GLchar *chars = source.c_str();
 	glShaderSource(id, 1, &chars, NULL);
 	glCompileShader(id);

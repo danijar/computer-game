@@ -3,9 +3,9 @@
 #include <glew/glew.h>
 #include <sfml/OpenGL.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
+
 using namespace std;
 using namespace sf;
-
 
 GLuint ModuleRenderer::FramebufferCreate(unordered_map<GLenum, GLuint> Targets)
 {
@@ -41,7 +41,8 @@ void ModuleRenderer::FramebufferTargets(GLuint Id, unordered_map<GLenum, GLuint>
 		glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, i.first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
 		if(type != GL_TEXTURE && Output) Log->Fail("framebuffer target could not be attached");
 	}
-	glDrawBuffers(buffers.size(), &buffers[0]);
+	if (buffers.size())
+		glDrawBuffers(buffers.size(), &buffers[0]);
 
 	if(Output) Log->PassFail("framebuffer setup", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
@@ -70,7 +71,7 @@ tuple<GLuint, GLenum, float> ModuleRenderer::TextureGet(string Name)
 void ModuleRenderer::TextureLoad(string Name, string Path, bool Repeat, bool Filtering, bool Mipmapping)
 {
 	Image image;
-	bool result = image.loadFromFile("module/" + this->Name() + "/texture/" + Path);
+	bool result = image.loadFromFile("asset/" + this->Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Log->Fail("texture (" + Path + ") cannot be loaded.");

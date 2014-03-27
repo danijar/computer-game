@@ -204,13 +204,13 @@
     <ClCompile Include="manager\script\general.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="module\physic\callback.cpp">
+    <ClCompile Include="module\physics\callback.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="module\physic\debug.cpp">
+    <ClCompile Include="module\physics\debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="module\physic\general.cpp">
+    <ClCompile Include="module\physics\general.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -326,7 +326,7 @@
     <ClInclude Include="type\terrain\type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="module\physic\module.h">
+    <ClInclude Include="module\physics\module.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

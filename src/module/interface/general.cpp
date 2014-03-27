@@ -9,7 +9,7 @@ using namespace sf;
 
 void ModuleInterface::Init()
 {
-	bool result = font.loadFromFile("module/" + Name() + "/font/" + "source.ttf");
+	bool result = font.loadFromFile("asset/" + Name() + "/font/" + "source.ttf");
 	Log->PassFail("font loading", result);
 
 	crosshair = LoadImage("texture/crosshair.png");

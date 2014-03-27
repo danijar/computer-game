@@ -2,12 +2,12 @@
 
 #include <sfml/Window.hpp>
 #include <sfml/Graphics/RenderWindow.hpp>
-using namespace std;
-using namespace sf;
 
 #include "type/settings/type.h"
 #include "type/print/type.h"
 
+using namespace std;
+using namespace sf;
 
 void ModuleRenderer::Init()
 {

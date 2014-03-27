@@ -116,7 +116,7 @@ ModuleSky::Mesh ModuleSky::CreateMesh(int Steps, float Radius)
 GLuint ModuleSky::TextureLoad(string Path)
 {
 	Image image;
-	bool result = image.loadFromFile("module/" + Name() + "/texture/" + Path);
+	bool result = image.loadFromFile("asset/" + Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Log->Fail("texture " + Path + " cannot be loaded");

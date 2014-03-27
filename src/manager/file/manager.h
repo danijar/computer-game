@@ -69,7 +69,7 @@ public:
 	 */
 	std::string Read(std::string Path)
 	{
-		return Read(name, "module/" + name + '/' + Path);
+		return Read(name, Path);
 	}
 	static std::string Read(std::string Name, std::string Path)
 	{
@@ -88,12 +88,11 @@ public:
 	 */
 	void Write(std::string Path, std::string Text)
 	{
-		Write("module/" + name, Path, Text);
+		Write(name, Path, Text);
 	}
 	static void Write(std::string Name, std::string Path, std::string Text)
 	{
-		std::string path = Name + "/" + Path;
-		// write here
+		// ...
 	}
 
 private:

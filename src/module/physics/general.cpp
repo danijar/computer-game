@@ -6,7 +6,7 @@
 btDynamicsWorld* Form::World = NULL;
 
 
-void ModulePhysic::Init()
+void ModulePhysics::Init()
 {
 	Opengl->Init();
 
@@ -15,7 +15,7 @@ void ModulePhysic::Init()
 	dispatcher = new btCollisionDispatcher(configuration);
 	solver = new btSequentialImpulseConstraintSolver;
 	auto world = Global->Add<btDiscreteDynamicsWorld>("world", new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, configuration));
-	world->setDebugDrawer(new ModulePhysic::DebugDrawer(Entity, Global, File, Log));
+	world->setDebugDrawer(new ModulePhysics::DebugDrawer(Entity, Global, File, Log));
 
 	world->setGravity(btVector3(0, -9.81f, 0));
 
@@ -26,7 +26,7 @@ void ModulePhysic::Init()
 	Listeners();
 }
 
-ModulePhysic::~ModulePhysic()
+ModulePhysics::~ModulePhysics()
 {
 	Form::World = NULL;
 	Global->Delete("world");
@@ -36,7 +36,7 @@ ModulePhysic::~ModulePhysic()
 	delete broadphase;
 }
 
-void ModulePhysic::Update()
+void ModulePhysics::Update()
 {
 	auto world = Global->Get<btDiscreteDynamicsWorld>("world");
 
@@ -51,7 +51,7 @@ void ModulePhysic::Update()
 	world->debugDrawWorld();
 }
 
-void ModulePhysic::Listeners()
+void ModulePhysics::Listeners()
 {
 	Event->Listen("InputBindDebugdraw", [=]{
 		auto world = Global->Get<btDiscreteDynamicsWorld>("world");

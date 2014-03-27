@@ -8,7 +8,7 @@ using namespace sf;
 GLuint ModuleTerrain::Texture(string Path)
 {
 	Image image;
-	bool result = image.loadFromFile("module/" + Name() + "/texture/" + Path);
+	bool result = image.loadFromFile("asset/" + Name() + "/texture/" + Path);
 	if(!result)
 	{
 		Log->Fail("texture loading fail");
