@@ -9,6 +9,7 @@ Bugs
 - Two framebuffer creations fail at startup
 - Stencil doesn't work in all cases
 - Out of range chunks aren't freed completely
+- Player can sometimes jump although he isn't on the ground
 
 Considerations
 --------------
