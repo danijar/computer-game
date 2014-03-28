@@ -16,6 +16,8 @@
 # binaries
 *.exe binary
 *.lib binary
+*.dll binary
+*.pdb binary
 *.png binary
 *.jpg binary
 *.3ds binary
@@ -24,5 +26,6 @@
 
 # visual studio
 *.sln text eol=crlf
+*.suo text eol=crlf
 *.vcxproj text eol=crlf
 *.vcxproj.user text eol=crlf

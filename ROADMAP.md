@@ -12,9 +12,6 @@ Bugs
 
 Considerations
 --------------
-- Implement second use case of key() callback
-	- accepts a function as second parameter that gets executed on key down
-	- refacor code for flashlight and placement of barrels and magic cubes
 - Cache for persons whether they stay on ground
 - Improve Data Manager
 	- speed up by reusing compiled prepared statements
@@ -44,15 +41,14 @@ Roadmap
 	- provide Pause() and Resume() function for modules to override
 - Readd forward renderer as alternative
 - Live reload for scripts
-	- [x] move file hash function into a file helper
+	- move file hash function into a file helper
 	- maybe even store scripts in asset manager
 - Improve Texture Mapping
 	- fallback to 1x1 diffuse map with pink color
 	- added texture tinting through color vertex attributes
 - Support camera rotation along all axis, even roll
 - When mouse is free, select block unter cursor instead of in the middle of screen
-- Improve Lighting
-	- Desaturate colors in low light
+- Speed up lighting
 	- Draw bounding geometry for point lights to cull not affected pixels
 	- support for spot lights
 - Implement Window as entity (do this later and mainly for consistency)
@@ -174,6 +170,10 @@ Feature Visions
 
 Finished
 --------
+- Implement second use case of key() callback
+	- accepts a function as second parameter that gets executed on key down
+	- refacor code for flashlight and placement of barrels and magic cubes
+- Desaturate colors in low light
 - Merge terrain branch back into master and continue there
 - Split into header and source files
 - Implement data manager to store entities in databases

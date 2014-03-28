@@ -1,7 +1,7 @@
 Graphics Application
 ====================
 
-This is a modular game engine architecture for grounded cross platform graphics applications. It provides managers for messaging, entities and automatedly storing them in databases. Additionally, it provides functionality for unified logging, scripting, file access and asset management. Currently implemented modules cover OpenGL rendering, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
+This is a modular game engine architecture for grounded cross platform graphics applications. It provides managers for messaging, entities, automated storing to databases, unified logging, scripting, file access and asset management. Currently implemented modules cover advanced OpenGL rendering, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
 
 The application is thought out and written by Danijar Hafner.
 
@@ -14,7 +14,6 @@ Screenshots
 <img src="screenshot/2014.03.02%20stairs%20day.png?raw=true" width="150">&nbsp;
 <img src="screenshot/2014.03.02%20stairs%20night.png?raw=true" width="150">&nbsp;
 <img src="screenshot/2014.01.24%20specular%20barrel.png?raw=true" width="150">
-
 
 Features
 --------
@@ -50,13 +49,13 @@ Libraries
 ---------
 
 - [Assimp](http://assimp.sourceforge.net/) Open Asset Import Library (3.0)
-- [Bullet](http://bulletphysics.org/) Realtime Physics Simulation (2.81)
-- [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler (1.9.0)
-- [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.4.1)
+- [Bullet](http://bulletphysics.org/) Realtime Physics Simulation (2.82)
+- [GLEW](http://glew.sourceforge.net/) OpenGL Extension Wrangler (1.10.0)
+- [GLM](http://glm.g-truc.net/) OpenGL Mathematics (0.9.5.2)
 - [libzip](http://www.nih.at/libzip/) Zip Archives (0.11.1)
-- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.0 RC)
+- [SFML](http://www.sfml-dev.org/) Multimedia Library (2.1)
 - [SQLite](http://www.sqlite.org/) SQL Database Engine (3.8.1)
-- [V8](https://developers.google.com/v8/) JavaScript Engine (30.03.2013)
+- [V8](https://developers.google.com/v8/) JavaScript Engine (3.24.40)
 - [zlib](http://www.zlib.net/) General Purpose Compression (1.2.8)
 
 Instructions

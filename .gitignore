@@ -12,10 +12,13 @@ desktop.ini
 # visual studio
 /src/*.opensdf
 /src/*.sdf
-/*.exp
-/*.ilk
-/*.lib
-/*.pdb
+
+# binaries
+*.exe
+*.exp
+*.ilk
+*.lib
+*.pdb
 
 # intermediate
 /build/
