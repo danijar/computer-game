@@ -1,5 +1,5 @@
-Graphics Application
-====================
+Computer Game
+=============
 
 This is a modular game engine architecture for grounded cross platform graphics applications. It provides managers for messaging, entities, automated storing to databases, unified logging, scripting, file access and asset management. Currently implemented modules cover advanced OpenGL rendering, physics simulation, text drawing, skydome, character control, voxel based terrain and more.
 
@@ -36,7 +36,7 @@ Upcoming Features
 - Modding support
 - Editor capabilities
 
-Take a look at the [Roadmap](https://raw.github.com/ComputerGame/GraphicsApplication/master/ROADMAP.md) for an overview of all planned features.
+Take a look at the [Roadmap](ROADMAP.md) for an overview of all planned features.
 
 Feature Visions
 
@@ -118,8 +118,9 @@ As described above, the scripting console can be accessed by pressing the `Tab` 
 
 To enable debug mode, blindly press `Tab`, type in `debug()` and hit `Enter`. You can now see debug information on the screen like the scripting console, frames per second, number of loaded meshes, coordinates of the camera, and so on.
 
-For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/ComputerGame/GraphicsApplication/wiki/List-of-Scripting-Functions).
+For a full list of scripting functions, see the [List of Scripting Functions](https://github.com/danijar/computer-game/wiki/List-of-Scripting-Functions).
 
-### Questions
+Questions
+---------
 
 If you have any questions, feel free to contact me. I'm sure you will find a way.

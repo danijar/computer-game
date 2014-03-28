@@ -1,5 +1,5 @@
-Roadmap for Graphics Application
-================================
+Roadmap
+=======
 
 Bugs
 ----
