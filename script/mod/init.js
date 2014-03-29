@@ -44,3 +44,22 @@ function shine() {
 	var pos = position(player());
 	return light(pos[0], pos[1] + 5, pos[2], 40, 1, .8, .7, 1);
 }
+
+// place three color lights moving in circles
+var sparks = [];
+function spark() {
+	var pos = position(player());
+	pos[1] += 2;
+	sparks.push({
+		id: light(pos[0], pos[1], pos[2], 5, 1, 0, 0, 5),
+		state: { origin: pos, value: 0, speed: +0.05 * (Math.random() / 2 + 0.5), },
+	});
+	sparks.push({
+		id: light(pos[0], pos[1], pos[2], 5, 0, 1, 0, 5),
+		state: { origin: pos, value: 0, speed: -0.05 * (Math.random() / 2 + 0.5), },
+	});
+	sparks.push({
+		id: light(pos[0], pos[1], pos[2], 5, 0, 0, 1, 5),
+		state: { origin: pos, value: 0, speed: +0.05 * (Math.random() / 2 + 0.5), },
+	});
+}

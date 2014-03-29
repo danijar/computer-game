@@ -1,12 +1,12 @@
 
 // toggle through lights
-var sun1, sun2, moon, shine;
+var sun1, sun2, moon, magic;
 var mode = 0;
 function daytime() {
-	if (sun1) { remove(sun1); sun1 = undefined; }
-	if (sun2) { remove(sun2); sun2 = undefined; }
-	if (moon) { remove(moon); moon = undefined; }
-	if (shine) { remove(shine); shine = undefined; }
+	if (sun1)  { remove(sun1);  sun1  = undefined; }
+	if (sun2)  { remove(sun2);  sun2  = undefined; }
+	if (moon)  { remove(moon);  moon  = undefined; }
+	if (magic) { remove(magic); magic = undefined; }
 	if (mode == 0) {
 		sun1 = light(0.5, 1.0, 1.5, 0, 0.75, 0.74, 0.67, 0.8, 'directional');
 		sun2 = light(0.5, 1.0,-1.0, 0, 0.75, 0.74, 0.67, 0.4, 'directional');
@@ -14,7 +14,7 @@ function daytime() {
 	else if (mode == 1)
 		moon = light(0.5, 1.5, 1.0, 0, 0.6, 0.6, 0.8, 0.4, 'directional');
 	else if (mode == 2)
-		shine = light(0, 8, 0, 100, .2, .4, .9, 3.0, 'directional');
+		magic = light(0, 8, 0, 100, .2, .4, .9, 3.0, 'directional');
 	mode = mode < 2 ? mode + 1 : 0;
 }
 
