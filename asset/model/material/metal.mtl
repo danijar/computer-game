@@ -1,0 +1,5 @@
+newmtl metal
+map_Kd metal_d.jpg
+map_Bump metal_n.jpg
+map_Ns metal_s.jpg
+Ns 1.5
