@@ -8,12 +8,12 @@ The application is thought out and developed by Danijar Hafner.
 Screenshots
 -----------
 
-![Screenshot](screenshot/2014.02.08%20landscape.png?raw=true)
+![Screenshot](screenshot/2014-02-08%20landscape.png?raw=true)
 
-<img src="screenshot/2014.02.11%20normal%20maps%20and%20specular%20magic.png?raw=true" width="120">&nbsp;
-<img src="screenshot/2014.03.02%20stairs%20day.png?raw=true" width="120">&nbsp;
-<img src="screenshot/2014.03.02%20stairs%20night.png?raw=true" width="120">&nbsp;
-<img src="screenshot/2014.01.24%20specular%20barrel.png?raw=true" width="120">
+<img src="screenshot/2014-02-11%20normal%20maps%20and%20specular%20magic.png?raw=true" width="120">&nbsp;
+<img src="screenshot/2014-03-02%20stairs%20day.png?raw=true" width="120">&nbsp;
+<img src="screenshot/2014-03-02%20stairs%20night.png?raw=true" width="120">&nbsp;
+<img src="screenshot/2014-01-24%20specular%20barrel.png?raw=true" width="120">
 
 Features
 --------
