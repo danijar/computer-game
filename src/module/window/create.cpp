@@ -24,6 +24,8 @@ void ModuleWindow::Create(bool Fullscreen)
 	stg->Set<bool>("Fullscreen", Fullscreen);
 
 	bool Recreated = wnd->isOpen();
+	if (wnd->isOpen())
+		wnd->close();
 	VideoMode mde = VideoMode::getDesktopMode();
 
 	ContextSettings cts;
@@ -33,21 +35,22 @@ void ModuleWindow::Create(bool Fullscreen)
 	cts.majorVersion      =  3;
 	cts.minorVersion      =  3;
 
-	if(Fullscreen)
-	{
+	if (Fullscreen) {
 		stg->Set<>("Position", wnd->getPosition());
 		wnd->create(VideoMode(mde.width, mde.height), *stg->Get<string>("Title"), Style::Fullscreen, cts);
-	}
-	else
-	{
+	} else {
 		wnd->create(VideoMode(stg->Get<Vector2u>("Size")->x, stg->Get<Vector2u>("Size")->y), *stg->Get<string>("Title"), Style::Default, cts);
 		wnd->setPosition(*stg->Get<Vector2i>("Position"));
 	}
+
 	wnd->setVerticalSyncEnabled(stg->Is("Verticalsync"));
+
+	Opengl->Init();
 
 	Log->PassFail("creation", wnd->isOpen());
 
-	if(Recreated) Event->Fire<bool>("WindowRecreated", Fullscreen);
+	if (Recreated)
+		Event->Fire<bool>("WindowRecreated", Fullscreen);
 }
 
 void ModuleWindow::Close()

@@ -53,8 +53,10 @@ void System::Remove(string Name)
 void System::Pause(string Name)
 {
 	for (auto i : list) {
-		if (get<2>(i) == false) ManagerLog::Warning("system", "module (" + Name + ") is already paused");
-		else get<2>(i) = false;
+		if (get<2>(i) == false)
+			ManagerLog::Warning("system", "module (" + Name + ") is already paused");
+		else
+			get<2>(i) = false;
 		return;
 	}
 	ManagerLog::Warning("system", "cannot pause module (" + Name + ") because the name was not found");
@@ -64,8 +66,10 @@ void System::Resume(string Name)
 {
 	for (auto i : list) {
 		if (get<0>(i) == Name) {
-			if (get<2>(i) == true) ManagerLog::Warning("system", "module (" + Name + ") isn't paused");
-			else get<2>(i) = true;
+			if (get<2>(i) == true)
+				ManagerLog::Warning("system", "module (" + Name + ") isn't paused");
+			else
+				get<2>(i) = true;
 			return;
 		}
 	}
@@ -84,7 +88,9 @@ bool System::Paused(string Name)
 bool System::Update()
 {
 	for (auto i : list) {
-		if (message != "") return false;
+		if (message != "")
+			return false;
+		// cout << "Update " << get<0>(i) << endl;
 		if (get<2>(i))
 			get<1>(i)->Update();
 	}

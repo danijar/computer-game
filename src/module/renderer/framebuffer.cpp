@@ -39,12 +39,14 @@ void ModuleRenderer::FramebufferTargets(GLuint Id, unordered_map<GLenum, GLuint>
 		// check if it is really bound
 		GLint type;
 		glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, i.first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
-		if(type != GL_TEXTURE && Output) Log->Fail("framebuffer target could not be attached");
+		if (type != GL_TEXTURE && Output)
+			Log->Fail("framebuffer target could not be attached");
 	}
 	if (buffers.size())
 		glDrawBuffers(buffers.size(), &buffers[0]);
 
-	if(Output) Log->PassFail("framebuffer setup", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+	if (Output)
+		Log->PassFail("framebuffer setup", glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 
 void ModuleRenderer::TextureCreate(string Name, GLenum Type, float Size)

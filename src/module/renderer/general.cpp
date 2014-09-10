@@ -69,8 +69,17 @@ void ModuleRenderer::Update()
 
 	glEnable(GL_STENCIL_TEST);
 
-	for(auto i = passes.begin(); i != passes.end(); ++i) {
+	for (auto i = passes.begin(); i != passes.end(); ++i) {
 		Pass *pass = &i->second;
+
+		// Ensure correct state
+		Log->Print("Framebuffer " + (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) ? "valid" : "invalid");
+		for (auto i : pass->Targets) {
+			glBindTexture(GL_TEXTURE_2D, i.second);
+			int width = 0;
+			glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
+			Log->Print("Target resolution " + to_string(width));
+		}
 
 		// measure time for this pass
 		if (profile) {
@@ -86,20 +95,20 @@ void ModuleRenderer::Update()
 		glStencilOp(GL_KEEP, pass->StencilOperation, pass->StencilOperation);
 		glViewport(0, 0, int(size.x * pass->Size), int(size.y * pass->Size));
 
-		if(pass->Enabled) {
+		if (pass->Enabled) {
 			// call render function
 			glBindFramebuffer(GL_FRAMEBUFFER, pass->Framebuffer);
-			if(pass->Clear) {
+			if (pass->Clear) {
 				glClearColor(pass->Clearcolor.r, pass->Clearcolor.g, pass->Clearcolor.b, 1.0f);
 				glClear(GL_COLOR_BUFFER_BIT);
 			}
-			if(pass->Depth) {
+			if (pass->Depth) {
 				glEnable(GL_DEPTH_TEST);
 				glDepthMask(GL_TRUE);
 			}
 			glUseProgram(pass->Program);
 			pass->Function(pass);
-			if(pass->Depth) {
+			if (pass->Depth) {
 				glDisable(GL_DEPTH_TEST);
 				glDepthMask(GL_FALSE);
 			}
@@ -107,17 +116,18 @@ void ModuleRenderer::Update()
 			// apply copy fallbacks
 			glBindFramebuffer(GL_FRAMEBUFFER, copy.Framebuffer);
 			glUseProgram(copy.Program);
-			for(auto j = pass->Copyfallbacks.begin(); j != pass->Copyfallbacks.end(); ++j) {
+			for (auto j = pass->Copyfallbacks.begin(); j != pass->Copyfallbacks.end(); ++j) {
 				// attach fallback target and stencil
 				unordered_map<GLenum, GLuint> targets;
 				targets.insert(make_pair(GL_COLOR_ATTACHMENT0, j->first));
 				auto depthstencil = pass->Targets.find(GL_DEPTH_STENCIL_ATTACHMENT);
-				if(depthstencil != pass->Targets.end())
+				if (depthstencil != pass->Targets.end())
 					targets.insert(make_pair(depthstencil->first, depthstencil->second));
 				FramebufferTargets(copy.Framebuffer, targets, false);
 
 				// clear
-				if(pass->Clear) glClear(GL_COLOR_BUFFER_BIT);
+				if (pass->Clear)
+					glClear(GL_COLOR_BUFFER_BIT);
 
 				// copy texture over
 				copy.Samplers.clear();
@@ -128,17 +138,18 @@ void ModuleRenderer::Update()
 			// apply color fallbacks
 			glBindFramebuffer(GL_FRAMEBUFFER, color.Framebuffer);
 			glUseProgram(color.Program);
-			for(auto j = pass->Colorfallbacks.begin(); j != pass->Colorfallbacks.end(); ++j) {
+			for (auto j = pass->Colorfallbacks.begin(); j != pass->Colorfallbacks.end(); ++j) {
 				// attach fallback target and stencil
 				unordered_map<GLenum, GLuint> targets;
 				targets.insert(make_pair(GL_COLOR_ATTACHMENT0, j->first));
 				auto depthstencil = pass->Targets.find(GL_DEPTH_STENCIL_ATTACHMENT);
-				if(depthstencil != pass->Targets.end())
+				if (depthstencil != pass->Targets.end())
 					targets.insert(make_pair(depthstencil->first, depthstencil->second));
 				FramebufferTargets(copy.Framebuffer, targets, false);
 
 				// clear
-				if(pass->Clear) glClear(GL_COLOR_BUFFER_BIT);
+				if (pass->Clear)
+					glClear(GL_COLOR_BUFFER_BIT);
 
 				// fill with color
 				float array[3] = { j->second.r, j->second.g, j->second.b };
@@ -146,7 +157,8 @@ void ModuleRenderer::Update()
 				color.Function(&color);
 			}
 		}
-		if (profile) glEndQuery(GL_TIME_ELAPSED);
+		if (profile)
+			glEndQuery(GL_TIME_ELAPSED);
 	}
 
 	glDisable(GL_STENCIL_TEST);
@@ -161,30 +173,35 @@ void ModuleRenderer::Update()
 
 void ModuleRenderer::Listeners()
 {
-	Event->Listen("WindowFocusGained", [=]{
-		for(auto i = passes.begin(); i != passes.end(); ++i)
-		{
-			// check whether file actually changed
+	Event->Listen("WindowFocusGained", [=] {
+		for (auto i = passes.begin(); i != passes.end(); ++i) {
+			// Check whether file actually changed
 			glDeleteProgram(i->second.Program);
 			i->second.Program = CreateProgram(i->second.Vertex, i->second.Fragment);
 		}
 		this->Event->Fire("ShaderUpdated");
 	});
 
-	Event->Listen("WindowRecreated", [=]{
-		for(auto i : textures)
-			if(get<2>(i.second))
+	Event->Listen("WindowRecreated", [=] {
+		for (auto i : textures)
+			if (get<2>(i.second))
 				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
-		for(auto i = passes.begin(); i != passes.end(); ++i)
-		{
+		for (auto i = passes.begin(); i != passes.end(); ++i) {
 			glDeleteFramebuffers(1, &i->second.Framebuffer);
 			i->second.Framebuffer = FramebufferCreate(i->second.Targets);
 		}
+
+		// profile renderer
+		glDeleteQueries(1, &query);
+		glGenQueries(1, &query);
+		glBeginQuery(GL_TIME_ELAPSED, query);
+		glEndQuery(GL_TIME_ELAPSED);
+		time = 0;
 	});
 
-	Event->Listen("WindowResize", [=]{
-		for(auto i : textures)
-			if(get<2>(i.second))
+	Event->Listen("WindowResize", [=] {
+		for (auto i : textures)
+			if (get<2>(i.second))
 				TextureResize(get<0>(i.second), get<1>(i.second), get<2>(i.second));
 	});
 }

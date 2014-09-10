@@ -19,8 +19,6 @@ using namespace glm;
 
 void ModuleModel::Init()
 {
-	Opengl->Init();
-
 	Listeners();
 	Callbacks();
 

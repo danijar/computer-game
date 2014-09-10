@@ -85,32 +85,31 @@ void ModuleCamera::Update()
 
 void ModuleCamera::Listeners()
 {
-	Event->Listen("InputBindCamera", [=]{
+	Event->Listen("InputBindCamera", [=] {
 		auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 		State(!cam->Active);
 	});
 
-	Event->Listen("WindowRecreated", [=]{
+	Event->Listen("WindowRecreated", [=] {
 		State();
 		Projection();
 	});
 
-	Event->Listen<Vector2u>("WindowResize", [=](Vector2u Size){
+	Event->Listen<Vector2u>("WindowResize", [=] (Vector2u Size) {
 		State();
 		Projection(Size);
 	});
 
-	Event->Listen("WindowFocusLost", [=]{
+	Event->Listen("WindowFocusLost", [=] {
 		Global->Get<RenderWindow>("window")->setMouseCursorVisible(true);
 	});
 
-	Event->Listen("WindowFocusGained", [=]{
+	Event->Listen("WindowFocusGained", [=] {
 		auto wnd = Global->Get<RenderWindow>("window");
 		auto cam = Entity->Get<Camera>(*Global->Get<uint64_t>("camera"));
 
 		// recover state
-		if(cam->Active)
-		{
+		if (cam->Active) {
 			wnd->setMouseCursorVisible(false);
 			Vector2i center(wnd->getSize().x / 2, wnd->getSize().y / 2);
 			Mouse::setPosition(center, *wnd);
