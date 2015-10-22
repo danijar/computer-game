@@ -1,18 +1,6 @@
-Roadmap
-=======
+Ideas
+=====
 
-Bugs
-----
-- Switch to fullscreen doen't work
-- Testing on intel tablet, the screen pass doesn't work after resize
-- Material live reload is not reliable
-- Two framebuffer creations fail at startup
-- Stencil doesn't work in all cases
-- Out of range chunks aren't freed completely
-- Player can sometimes jump although he isn't on the ground
-
-Considerations
---------------
 - Cache for persons whether they stay on ground
 - Improve Data Manager
 	- speed up by reusing compiled prepared statements
@@ -29,9 +17,6 @@ Considerations
 	- maybe reuse textures
 - Get id of focused object
 	- cast ray and compare result against all forms to get id
-
-Roadmap
--------
 - Treat managers and helpers the same
 	- http://ideone.com/csNMx5
 - Create asset manager
@@ -156,9 +141,6 @@ Roadmap
 	- maybe procedurally generate meshes and or textures
 	- or use prebuilt meshes
 	- bend vegetation by contacting forms
-
-Feature Visions
----------------
 - Dynamic destruction, for example of vegetation
 - Weather system, affects multiple systems
 	- wet shining, wind flackering, bending trees
@@ -168,23 +150,3 @@ Feature Visions
 - Smooth voxel landscapes by particular algorithm
 - Support dynamical rounded blocks, e.g. for tree trunks
 	- detect neighbours and join shapes
-
-Finished
---------
-- Implement second use case of key() callback
-	- accepts a function as second parameter that gets executed on key down
-	- refacor code for flashlight and placement of barrels and magic cubes
-- Desaturate colors in low light
-- Merge terrain branch back into master and continue there
-- Split into header and source files
-- Implement data manager to store entities in databases
-	- make use of SQLite for saves
-	- use treats or lamdas for conversion between structs and table rows
-- Set shader uniforms from within scripts
-- Improve render pass system
-	- disable or enable passes while rendering still works by just copying unmodified textures through
-	- allow to set texture rendered to screen by a scripting callback at runtime
-- Specular Lighting
-- Normal Mapping
-	- http://blog.selfshadow.com/publications/blending-in-detail/
-- Add damping to player to prevent sliding
